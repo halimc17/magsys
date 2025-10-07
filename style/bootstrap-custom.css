@@ -6,18 +6,36 @@
 /* Import Inter Font from Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-/* Custom Color Variables - Based on original theme */
+/* Custom Color Variables - Professional Navy & Orange */
 :root {
-    --primary-color: #275370;
-    --primary-light: #97AECA;
-    --primary-lighter: #CFE9FA;
-    --bg-main: #E8F4F4;
-    --bg-content: #D7EBFA;
-    --border-color: #3E71B2;
-    --text-dark: #000000;
-    --text-light: #A5C1D6;
-    --hover-color: #FFF688;
-    --success-color: #165F10;
+    /* Primary Colors */
+    --primary-color: #1E3A8A;
+    --primary-light: #1E40AF;
+    --primary-lighter: #3B82F6;
+
+    /* Accent & Status Colors */
+    --accent-color: #EA580C;
+    --success-color: #16A34A;
+    --warning-color: #F59E0B;
+    --error-color: #DC2626;
+
+    /* Background Colors */
+    --bg-main: #F9FAFB;
+    --bg-content: #FFFFFF;
+    --bg-surface: #FFFFFF;
+
+    /* Border Colors */
+    --border-color: #1E40AF;
+
+    /* Text Colors */
+    --text-dark: #111827;
+    --text-light: #6B7280;
+    --text-secondary: #6B7280;
+
+    /* Hover & Interactive */
+    --hover-color: #FEF3C7;
+
+    /* Font */
     --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
@@ -137,7 +155,7 @@ body {
 
 /* Navbar styling to match original menu */
 .navbar {
-    background-color: var(--primary-color);
+    background-color: var(--primary-color) !important;
     border: 1px solid var(--primary-color);
     padding: 5px 0;
     position: sticky;
@@ -162,7 +180,7 @@ body {
 }
 
 .navbar-dark .navbar-nav .nav-link:hover {
-    background-color: #5A86A3;
+    background-color: var(--accent-color);
     color: #FFFFFF;
 }
 
@@ -239,12 +257,12 @@ body {
 }
 
 .dropdown-item:hover, .dropdown-item:focus {
-    background-color: #5A86A3;
+    background-color: var(--accent-color);
     color: #FFFFFF;
 }
 
 .dropdown-item.active {
-    background-color: #5A86A3;
+    background-color: var(--accent-color);
     color: #FFFFFF;
 }
 
@@ -272,7 +290,7 @@ body {
 
 /* Dropdown Header/Title */
 .dropdown-header {
-    color: #FBDC89;
+    color: var(--warning-color);
     font-size: 11px;
     font-weight: 600;
     padding: 6px 15px;
@@ -300,7 +318,7 @@ body {
 }
 
 #qm0 > li > a:hover {
-    background-color: #5A86A3;
+    background-color: var(--accent-color);
 }
 
 #qm0 ul {
@@ -341,7 +359,7 @@ body {
 }
 
 #qm0 ul li a:hover {
-    background-color: #5A86A3;
+    background-color: var(--accent-color);
     color: #FFFFFF;
     padding-left: 18px;
 }
@@ -391,7 +409,7 @@ body {
 }
 
 .qmtitle {
-    color: #FBDC89;
+    color: var(--warning-color);
     font-size: 11px;
     font-weight: 600;
     padding: 6px 15px;

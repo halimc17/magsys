@@ -7,13 +7,29 @@ echo open_body();
 <?
 include('master_mainMenu.php');
 OPEN_BOX();
-echo OPEN_THEME($_SESSION['lang']['menusettings'].":");
 //=================================================================================
 //menuSettings
-echo" <div id=menuSettingContainer>
-     <input type=radio name=rad onclick=expandAll()>".$_SESSION['lang']['expandall']."
-	 <input type=radio name=rad onclick=collapsAll() checked>".$_SESSION['lang']['colapsall']."
-	 <hr><b>Menu Settings:</b>
+echo" <div id=menuSettingContainer class='container mt-3'>
+     <div class='row justify-content-center'>
+       <div class='col-lg-8 col-md-10 col-sm-12'>
+         <div class='card mb-3 shadow'>
+           <div class='card-header text-white' style='background-color:#1E3A8A;'>
+             <h5 class='mb-0'><i class='fas fa-cog'></i> ".$_SESSION['lang']['menusettings']."</h5>
+           </div>
+           <div class='card-body'>
+         <div class='form-group mb-3'>
+           <div class='btn-group btn-group-toggle d-block' data-toggle='buttons'>
+             <label class='btn btn-outline-info'>
+               <input type=radio name=rad onclick=expandAll()> <i class='fas fa-expand-arrows-alt'></i> ".$_SESSION['lang']['expandall']."
+             </label>
+             <label class='btn btn-outline-info active'>
+               <input type=radio name=rad onclick=collapsAll() checked> <i class='fas fa-compress-arrows-alt'></i> ".$_SESSION['lang']['colapsall']."
+             </label>
+           </div>
+         </div>
+         <hr>
+         <h6 class='font-weight-bold' style='color:#1E3A8A;'><i class='fas fa-list'></i> Menu Settings:</h6>
+         <div class='list-group'>
 	";
 //get max id of menu=================================
 //default id 0
@@ -35,13 +51,29 @@ echo"<ul>
      <div id=group0>";
 while($bar=mysql_fetch_object($res))
 {
-	echo "<li class=mmgr><img title=expand class=arrow src='images/foldc_.png' height=17px   onclick=show_sub('child".$bar->id."',this);> 
-	      <a class=lab id=lab".$bar->id." onclick=edit('".$bar->id."') title='Click to Change'>".$bar->caption."</a><a class=formeditcaption id=edit".$bar->id."></a>";
+	echo "<li class='mmgr mb-2'>
+	      <div class='d-flex align-items-center justify-content-between p-2 bg-white border rounded'>
+	        <div class='d-flex align-items-center flex-grow-1'>
+	          <img title='Expand' class='arrow mr-2' src='images/foldc_.png' height=17px onclick=show_sub('child".$bar->id."',this) style='cursor:pointer;'>
+	          <a class='lab font-weight-bold text-dark' id=lab".$bar->id." onclick=edit('".$bar->id."') title='Click to Change' style='cursor:pointer;'>".$bar->caption."</a>
+	          <a class=formeditcaption id=edit".$bar->id."></a>
+	        </div>
+	        <div class='d-flex align-items-center'>";
 	if($bar->hide==0)
-		echo" <input class=cbox type=checkbox id=check".$bar->id." onclick=\"activate('".$bar->id."');\" checked title='Click to deActivate!'>";
+		echo" <div class='custom-control custom-switch mr-2'>
+		        <input class='cbox custom-control-input' type=checkbox id=check".$bar->id." onclick=\"activate('".$bar->id."');\" checked title='Click to deActivate!'>
+		        <label class='custom-control-label' for=check".$bar->id."></label>
+		      </div>";
 	else
-	  	echo" <input class=cbox type=checkbox id=check".$bar->id." onclick=\"activate('".$bar->id."');\" title='Click to Activate!'>";	    
-	echo" &nbsp &nbsp <img class=dellicon title='Delete!' src='images/menu/delete1.jpg' onclick=\"delet('".$bar->id."');\" id=img".$bar->id.">";	  
+	  	echo" <div class='custom-control custom-switch mr-2'>
+		        <input class='cbox custom-control-input' type=checkbox id=check".$bar->id." onclick=\"activate('".$bar->id."');\" title='Click to Activate!'>
+		        <label class='custom-control-label' for=check".$bar->id."></label>
+		      </div>";
+	echo" <button class='btn btn-danger btn-sm' title='Delete!' onclick=\"delet('".$bar->id."');\" id=img".$bar->id.">
+	        <i class='fas fa-trash'></i>
+	      </button>
+	        </div>
+	      </div>";
 //=========================================================
 	     $str1="select * from ".$dbname.".menu 
                 where parent=".$bar->id." order by urut";
@@ -334,11 +366,22 @@ echo "</div>
 	  <input type=checkbox  title='Check to create this file' id=newFile0 disabled><font color=white>".$_SESSION['lang']['createfile']."</font>
 	  <input type=hidden id=master_menu0 value=0>
 
-	  <input type=button class=mybutton value=".$_SESSION['lang']['save']." onclick=saveMenu('master_menu0','newCaption0','newCaption2x','newCaption3x','newAction0','link0','inputmenu0','type0','newFile0');>
-	  <input type=button class=mybutton value=".$_SESSION['lang']['close']." onclick=showById('inputmenu0','link0')>
+	  <button type='button' class='btn btn-primary btn-sm' onclick=saveMenu('master_menu0','newCaption0','newCaption2x','newCaption3x','newAction0','link0','inputmenu0','type0','newFile0');>
+	    <i class='fas fa-save'></i> ".$_SESSION['lang']['save']."
+	  </button>
+	  <button type='button' class='btn btn-secondary btn-sm' onclick=showById('inputmenu0','link0')>
+	    <i class='fas fa-times'></i> ".$_SESSION['lang']['close']."
+	  </button>
       </div>
-	  <a class=newMenu id=link0  title='Create New Link'  onclick=\"javascript:hideObject(this);showObject(document.getElementById('inputmenu0'));\">".$_SESSION['lang']['new']."</a></li>";
-echo"</ul></div>";
+	  <a class='newMenu btn btn-success btn-sm' id=link0 title='Create New Link' onclick=\"javascript:hideObject(this);showObject(document.getElementById('inputmenu0'));\">
+	    <i class='fas fa-plus-circle'></i> ".$_SESSION['lang']['new']."
+	  </a></li>";
+echo"</ul>
+         </div>
+           </div>
+         </div>
+       </div>
+     </div>";
 //end menuSettingss
 
 
@@ -526,10 +569,29 @@ echo"</div>";
 
 //end menuOrder
 //==================================================================================================================================================================
-echo "<hr><center><input type=button class=mybutton value=".$_SESSION['lang']['apply']." onclick=window.location.reload()><hr></center>
-      <fieldset><legend>".$_SESSION['lang']['options'].":</legend>";
-     echo"<img src=images/menu/star.png> <span class=elink onclick=showMenuOrder() title='Click to manage menu order' id=optionController>Order Arrangement</span><br>";
-echo "</fieldset>";
+echo "<div class='container mt-3'>
+        <div class='row justify-content-center'>
+          <div class='col-lg-8 col-md-10 col-sm-12'>
+            <div class='card shadow mb-3'>
+              <div class='card-body text-center'>
+                <button class='btn btn-lg' style='background-color:#1E3A8A; color:#FFFFFF;' onclick='window.location.reload()'>
+                  <i class='fas fa-check-circle'></i> ".$_SESSION['lang']['apply']."
+                </button>
+              </div>
+            </div>
+            <div class='card shadow mb-3'>
+              <div class='card-header text-white' style='background-color:#EA580C;'>
+                <h6 class='mb-0'><i class='fas fa-cogs'></i> ".$_SESSION['lang']['options'].":</h6>
+              </div>
+              <div class='card-body'>";
+     echo"    <button class='btn btn-block' style='background-color:#F59E0B; color:#FFFFFF;' onclick='showMenuOrder()' title='Click to manage menu order' id='optionController'>
+                  <i class='fas fa-star'></i> Order Arrangement
+                </button>";
+echo "      </div>
+            </div>
+          </div>
+        </div>
+      </div>";
 echo CLOSE_THEME();
 CLOSE_BOX();
 echo close_body();

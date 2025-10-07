@@ -23,58 +23,58 @@ SELECT{
 }
 
     table .data{
-        background-color:#97AECA;
-                font-size:12px;
+        background-color:#1E40AF;
+        font-size:12px;
         font-family: 'Inter', sans-serif;
     }
         table .sortable thead{
-        background-color:#97AECA;
+        background-color:#1E40AF;
                 font-size:13px;
                 text-transform:capitalize;
                 cursor:pointer;
-                text-align:center;	
+                text-align:center;
     }
         table .sortable, table .data  thead tr {
-        background-color:#56B5E7;
+        background-color:#1E3A8A;
         }
 
         table .sortable thead tr td, table .data thead tr td{
-        background-color:#275370;
-        color:#A5C1D6;
-        text-transform:capitalize;	
+        background-color:#1E3A8A;
+        color:#6B7280;
+        text-transform:capitalize;
         }
         thead tr td{
-        background-color:#275370;
-        color:#A5C1D6;
-        text-transform:capitalize;	
+        background-color:#1E3A8A;
+        color:#6B7280;
+        text-transform:capitalize;
         }
 
         thead tr td:hover{
-                background-color:#97AECA;
+                background-color:#EA580C;
                 color:#FFFFFF;
                 cursor:pointer;
         }
 
         table  .sortable thead td:hover, table .data  thead td:hover{
-                background-color:#97AECA;
+                background-color:#EA580C;
                 color:#FFFFFF;
         }
 
     table tfoot{
-        background-color:#97AECA;
-                text-transform:capitalize;	    	
+        background-color:#1E40AF;
+                text-transform:capitalize;
     }
     table tfoot td:hover{
-        background-color:#9eada8;	    	
-    }	
+        background-color:#EA580C;
+    }
         .head{
                 text-align:center;
-                background-color:#275370;
-                color:#A5C1D6;
-                text-transform:capitalize;	
-                }	
+                background-color:#1E3A8A;
+                color:#6B7280;
+                text-transform:capitalize;
+                }
         .head td:hover{
-                        background-color:#97AECA;
+                        background-color:#EA580C;
                         color:#FFFFFF;
                 }
     UL{
@@ -88,7 +88,7 @@ SELECT{
         margin-bottom:1px;
     }
         textarea{
-        border:#97AECA solid 1px;		
+        border:#1E40AF solid 1px;
         }
 
 /****************************************************************
@@ -172,11 +172,11 @@ SELECT{
 }
 
 .x-box-blue .x-box-mc {
-        background-color: #c3daf9;
+        background-color: #DBEAFE;
 }
 
 .x-box-blue .x-box-mc h3 {
-        color: #17385b;
+        color: #1E3A8A;
 }
 
 .x-box-blue .x-box-ml {
@@ -200,35 +200,35 @@ SELECT{
                 cursor:move;
                 }
         .rowcontent{
-        background-color:#D7EBFA;	
-    }	
+        background-color:#FFFFFF;
+    }
 
         .rowcontentClick{
-        background-color:#D7EBFA;
+        background-color:#FFFFFF;
                 cursor:pointer;
-    }	
+    }
 
         .rowcontentClick:hover{
        font-weight:bolder;
-    }	
+    }
         .rowcontentClick td:hover{
-                background-color:#FFF688;
+                background-color:#FEF3C7;
         }
         tr.rowcontent:hover{
-                background-color:#FFFFFF;
+                background-color:#F9FAFB;
         }
         tr.rowcontentClick:hover{
-                background-color:#FFFFFF;
+                background-color:#F9FAFB;
         }
         .rowcontent td:hover{
-                background-color:#FFF688;
-        }	
+                background-color:#FEF3C7;
+        }
         .standardrow{
-           background-color:#E8F2FE;
+           background-color:#F9FAFB;
         }
         .standardrow:hover{
            cursor:pointer;
-           background-color:#DEDEDE;
+           background-color:#E5E7EB;
         }	
 
         .mybutton{
@@ -245,19 +245,19 @@ SELECT{
 
 		
         .mytextbox{
-                 border:#97AECA solid 1px;
-                 color:#000000;
+                 border:#1E40AF solid 1px;
+                 color:#111827;
                          font-family:Tahoma,Arial;
                          font-size:11px;
                  font-weight:bolder;
-                         height:17px; 
-        }	
+                         height:17px;
+        }
         .mybutton:hover {
                                          text-transform:capitalize;
                          }
     .myinputtext{
-        border:#97AECA solid 1px;
-        height:14px;	
+        border:#1E40AF solid 1px;
+        height:14px;
         vertical-align:middle;
         font-size:11px;
     }
@@ -275,11 +275,11 @@ SELECT{
         }
 
         .myinputtextnumber{
-            border:#97AECA solid 1px;
+            border:#1E40AF solid 1px;
                 height:14px;
                 vertical-align:middle;
-                text-align:right;	
-        color:#165F10;
+                text-align:right;
+        color:#16A34A;
                 font-size:11px;
         }
         .myradio{
@@ -289,11 +289,11 @@ SELECT{
                 vertical-align:middle;   	
     }	
     .sortable{
-        background-color:#76B1DA;
+        background-color:#1E40AF;
                 font-size:12px;
     }
  .firsttd{
-   background-color:#C7D6E9;
+   background-color:#DBEAFE;
   } 
   .mmgr{
         list-style:none;
@@ -306,16 +306,16 @@ SELECT{
   }
 
   .menuinput{
-   border:orange solid 1px;
-   background-color:#275370;
+   border:#EA580C solid 1px;
+   background-color:#1E3A8A;
   }
   .newMenu{
-        color:#2222AA;
+        color:#1E40AF;
         cursor:pointer;
   }
 
   .newMenu:hover{
-        background-color:#BDBDBD;
+        background-color:#E5E7EB;
   }
   .dellicon{
         cursor:pointer;
@@ -362,13 +362,13 @@ SELECT{
         background-color:#DEDEDE;
     }  
    .elink{
-        color:#4444FF;
+        color:#1E40AF;
         padding-left:8px;
         font-size:11px;
         font-weight:550;
    }
    .elink:hover{
-        background-color:#E9740C;
+        background-color:#EA580C;
         cursor:pointer;
         font-weight:bold;
    }	
@@ -380,8 +380,8 @@ SELECT{
          vertical-align:top;   	
    }
    .loginhead{
-     font-size:13px; 
-         color:#0000aa; 	
+     font-size:13px;
+         color:#1E3A8A;
    }
    .power{
         font-size:9px;
@@ -398,10 +398,10 @@ SELECT{
          cursor:pointer;
   }
   .box{
-        background-color:#76B1DA;
+        background-color:#1E40AF;
                 font-family: 'Inter', sans-serif;
-                border:#3E71B2 solid 2px;
-                color:#000000;
+                border:#1E3A8A solid 2px;
+                color:#111827;
   }
 
         .tab td{
@@ -425,7 +425,7 @@ SELECT{
     .pBarTop{
         width:0px;
                 height:22px;
-                background-color:#1E5896;
+                background-color:#1E3A8A;
                 text-align:center;
     }
         .pLegend{

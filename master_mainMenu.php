@@ -2,7 +2,7 @@
 require_once('config/connection.php');
 
 echo "
-<nav class=\"navbar navbar-expand-lg navbar-dark bg-primary-custom mb-3\" style=\"background-color:#275370 !important;\">
+<nav class=\"navbar navbar-expand-lg navbar-dark bg-primary-custom mb-3\" style=\"background-color:#1E3A8A !important;\">
 	<div class=\"container-fluid\">
 		<button class=\"navbar-toggler\" type=\"button\" data-bs-toggle=\"collapse\" data-bs-target=\"#mainNavbar\"
 				aria-controls=\"mainNavbar\" aria-expanded=\"false\" aria-label=\"Toggle navigation\">
