@@ -86,7 +86,8 @@ if($dataH[0]['hutangunit']==1) {
     "' and noakun like '1210%' and tipetransaksi='".$param['tipetransaksi']."'";
 	$qCek=mysql_query($sCek) or die(mysql_error($conn));
 	while($rCek=mysql_fetch_assoc($qCek)){
-		$whrdt="akunpiutang='".$rCek['noakun']."'";
+		//$whrdt="akunpiutang='".$rCek['noakun']."'";
+		$whrdt="akunpiutang='".$rCek['noakun']."' and kodeorg='".$pemilikhutang."'";
 		$optCek=makeOption($dbname,'keu_5caco','akunpiutang,kodeorg',$whrdt);
 		if($optCek[$rCek['noakun']]!=$pemilikhutang){
 			$rwError+=1;
@@ -161,10 +162,10 @@ if($dataH[0]['hutangunit']==1) {
     // ini yang dipake
     $whereNocacol = "jenis='".$jenisinduk."' and kodeorg='".
         $pembayarhutang."'";
-    $query = selectQuery($dbname,'keu_5caco','akunpiutang',
+    $query = selectQuery($dbname,'keu_5caco','akunhutang',
         $whereNocacol);
     $noKon = fetchData($query);
-    $noakuncacol = $noKon[0]['akunpiutang'];
+    $noakuncacol = $noKon[0]['akunhutang'];
 }else{
 	#cek jika detail ada hutang unit tetapi headernya belum tercentang
 	$sCek="select * from ".$dbname.".keu_kasbankdt where notransaksi='".$param['notransaksi']."' and hutangunit1=1  and kodeorg='".$param['kodeorg'].
@@ -691,6 +692,150 @@ if($dataH[0]['hutangunit']==1) {
         echo "DB Error :\n".$errorJRB;
         exit;
     }
-}    
+} 
+
+    #=== Update Perdin dibayar sdm_pjdinasht === =======================================
+	if($param['tipetransaksi']=='K'){
+		$nodok='';
+		$ada=0;
+		foreach($dataD as $row) {
+		if(substr($row['keterangan2'],0,4)=='SPPD'){
+			if($nodok!=$row['keterangan1']){
+				$nodok=$row['keterangan1'];
+				$ada=0;
+			}
+			$querySlcperdin = "select notransaksi from ".$dbname.".sdm_pjdinasht where (tglbayar='0000-00-00' or tglbayar='' or tglbayar is NULL) and notransaksi='".$nodok."'";
+			$resperdin=mysql_query($querySlcperdin);
+			while($bar=mysql_fetch_object($resperdin)){
+				$ada=1;
+			}
+			//if(substr($row['nodok'],0,4)==$_SESSION['empl']['lokasitugas']){
+				if($ada==1){
+					if(substr($nodok,2,2)!='HO'){
+						$queryUpdperdin = "update ".$dbname.".sdm_pjdinasht set dibayar=0,tglbayar='".$dataH[0]['tanggal']."',sisa=0 where notransaksi='".$nodok."'";
+					}else{
+						$queryUpdperdin = "update ".$dbname.".sdm_pjdinasht set dibayar=dibayar+".$row['jumlah'].",tglbayar='".$dataH[0]['tanggal']."' where notransaksi='".$nodok."'";
+					}
+					if(!mysql_query($queryUpdperdin)){
+						$errorDB .= "Update Nilai Perdin Error :".mysql_error()."\n";
+					}
+				}else{
+//					$queryUpdperdin = "update ".$dbname.".sdm_pjdinasdt set jumlahdibayar=jumlahdibayar+".$row['jumlah']." where jumlahhrd=".$row['jumlah']." 
+//					and notransaksi='".$nodok."'";
+					$queryUpdperdin = "update ".$dbname.".sdm_pjdinasdt set jumlahdibayar=".$row['jumlah']." where jumlahhrd=".$row['jumlah']." 							and notransaksi='".$nodok."' and jumlahdibayar=0";
+					if(!mysql_query($queryUpdperdin)){
+						$errorDB .= "Update Nilai Perdin Error :".mysql_error()."\n";
+					}
+				}
+			//}
+		}
+		}
+	}
+
+    #=== Start: Kirim Email yang punya NIK ==========================================
+  if(substr($param['kodeorg'],2,2)=='HO'){
+	//$sDetail="select a.*,b.namakaryawan,b.email from ".$dbname.".keu_kasbankdt a 
+	//		  left join ".$dbname.".datakaryawan b on b.karyawanid=a.nik
+	//		  where a.notransaksi='".$param['notransaksi']."' and a.kodeorg='".$param['kodeorg']."' and a.noakun2a='".$param['noakun']."' and	
+	//				a.tipetransaksi='".$param['tipetransaksi']."' and a.nik<>'' and b.email<>''
+	//		  order by a.nik,a.noakun";
+	$sDetail="select a.*,b.namakaryawan,b.email from ".$dbname.".keu_kasbankdt a 
+			  left join ".$dbname.".datakaryawan b on b.karyawanid=a.nik
+			  where a.notransaksi='".$param['notransaksi']."' and a.kodeorg='".$param['kodeorg']."' and a.noakun2a='".$param['noakun']."' and	
+					a.tipetransaksi='K' and a.nik<>'' and b.email<>'' and a.jumlah>0
+			  order by a.nik,a.noakun";
+	$qDetail=mysql_query($sDetail);
+	if(mysql_num_rows($qDetail)>0){
+		$sKaryttd="select namakaryawan from ".$dbname.".datakaryawan where karyawanid='".$dataH[0]['userid']."'";
+		$qKaryttd=mysql_query($sKaryttd);
+		$ttd="System Administrator";
+		while($rKaryttd=mysql_fetch_assoc($qKaryttd)){
+			$ttd=$rKaryttd['namakaryawan'];
+		}
+		$d_nik='';
+		$d_notrans='';
+		$d_namakaryawan='';
+		$d_emailkaryawan='';
+		$d_jumlah=0;
+		$d_keterangan='';
+		while($rDetail=mysql_fetch_assoc($qDetail)){
+			if($rDetail['nik']!=$d_nik and $d_namakaryawan!=''){
+				//==== Kirim Email
+				//$subject='Your Payment Has been transfer by Sundries';
+				$subject=$dataH[0]['keterangan'];
+				$body="<html><head></head>
+						<body style='font-family:arial;font-size:100%;'>
+							Dear ".$d_namakaryawan.",<br><br>
+							Telah dibayarkan dengan BKU: ".$d_notrans."
+							<br>
+							<table style='font-family:arial;font-size:100%;'>
+								".$d_keterangan."
+								<tr><td>Total : </td><td>&nbsp;&nbsp;&nbsp;</td><td>".number_format($d_jumlah)."</td></tr>
+							</table>
+							<br>
+							Regards,<br><br>
+							".$ttd.",<br>
+							at ".date('d-m-Y H:i:s')."
+						</body>
+					</html>"; 
+				$to=$d_emailkaryawan;
+				if($to!=''){ 
+					$kirim=kirimEmail($to,'',$subject,$body);     
+					if($kirim==1){
+						echo "\nAn announcement email has been sent to user.";
+						//exit('Warning: An announcement email has been sent to user. '.$sDetail);
+					}else{
+						echo "\nAn announcement email was failed to send: ".$kirim;
+						//exit('Warning: An announcement email was failed to send: '.$kirim);
+					}
+				}
+				// ==== End : Kirim Email
+				$d_notrans='';
+				$d_namakaryawan='';
+				$d_emailkaryawan='';
+				$d_keterangan='';
+				$d_jumlah=0;
+			}
+			$d_nik=$rDetail['nik'];
+			$d_notrans=$rDetail['notransaksi'].' tanggal: '.tanggalnormal($dataH[0]['tanggal']).($rDetail['keterangan1']=='' ? '' : ' ('.$rDetail['keterangan1'].')');
+			$d_namakaryawan=$rDetail['namakaryawan'];
+			$d_emailkaryawan=$rDetail['email'];
+			$d_jumlah+=abs($rDetail['jumlah']);
+			$d_keterangan.="<tr><td>".$rDetail['keterangan2']."</td><td>&nbsp;&nbsp;&nbsp;</td><td>".number_format(abs($rDetail['jumlah']))."</td></tr>";
+		}
+		//==== Kirim Email
+		//$subject='Your Payment Has been transfer by Sundries';
+		$subject=$dataH[0]['keterangan'];
+		$body="<html><head></head>
+				<body style='font-family:arial;'>
+					Dear ".$d_namakaryawan.",<br><br>
+					Telah dibayarkan dengan BKU: ".$d_notrans."
+					<br>
+					<table style='font-family:arial;font-size:100%;'>
+						".$d_keterangan."
+						<tr><td>Total : </td><td>&nbsp;&nbsp;&nbsp;</td><td>".number_format($d_jumlah)."</td></tr>
+					</table>
+					<br>
+					Regards,<br><br>
+					".$ttd.",<br>
+					at ".date('d-m-Y H:i:s')."
+				</body>
+			</html>"; 
+		$to=$d_emailkaryawan;
+		if($to!=''){ 
+			$kirim=kirimEmail($to,'',$subject,$body);     
+			if($kirim==1){
+				echo "\nAn announcement email has been sent to user.";
+				//exit('Warning: An announcement email has been sent to user. '.$sDetail);
+			}else{
+				echo "\nAn announcement email was failed to send: ".$kirim;
+				//exit('Warning: An announcement email was failed to send: '.$kirim);
+			}
+		}
+		// ==== End : Kirim Email
+	}
+  }
+    #=== End: Kirim Email yang punya NIK ==========================================
+
 }
 ?>

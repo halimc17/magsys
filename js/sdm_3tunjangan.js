@@ -29,8 +29,9 @@ function del(maxRow)
     unit=trim(document.getElementById('unit').value);
     per=document.getElementById('per').value;
     jenis=trim(document.getElementById('jenis').value);
+    tipe=trim(document.getElementById('tipe').value);
     
-	param='proses=del'+'&unit='+unit+'&per='+per+'&jenis='+jenis;
+	param='proses=del'+'&unit='+unit+'&per='+per+'&jenis='+jenis+'&tipe='+tipe;
 	tujuan='sdm_slave_save_3tunjangan.php';
         post_response_text(tujuan, param, respog);	
 	

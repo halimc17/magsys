@@ -64,7 +64,7 @@ while($bar=mysql_fetch_object($res)){
 
     if($proses=='getAfdAll'){
           $str="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi 
-                where kodeorganisasi like '".$kdAfd."%' and length(kodeorganisasi)=6 order by namaorganisasi";
+                where kodeorganisasi like '".$kdAfd."%' and length(kodeorganisasi)=6 and tipe not like 'GUDANG%' order by namaorganisasi";
           $op="<option value=''>".$_SESSION['lang']['all']."</option>";
           $res=mysql_query($str);
           while($bar=mysql_fetch_object($res))
@@ -80,9 +80,10 @@ while($bar=mysql_fetch_object($res)){
         }else{
             $caption='LAPORAN HARIAN DIVISI';
         }
-        $str="select namaorganisasi from ".$dbname.".organisasi where kodeorganisasi in(select induk from ".$dbname.".organisasi where kodeorganisasi='".substr($kdAfd,0,4)."') limit 1";
+        $str="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi where kodeorganisasi in(select induk from ".$dbname.".organisasi where kodeorganisasi='".substr($kdAfd,0,4)."') limit 1";
         $res=mysql_query($str);
         while($bar=mysql_fetch_object($res)){
+            $kodept=$bar->kodeorganisasi;
             $namapt=$bar->namaorganisasi;
         }
         
@@ -97,7 +98,7 @@ while($bar=mysql_fetch_object($res)){
                      </td>
                  </tr>
                  <tr>
-                     <td style='width:75px;'>".$_SESSION['lang']['kebun']."</td><td style='width:75px;'>:".substr($kdAfd,0,4)."</td><td></td><td style='width:75px;'>".$_SESSION['lang']['diperiksa']."</td><td style='width:75px;'>".$_SESSION['lang']['dibuat']."</td>
+                     <td style='width:75px;'>".$_SESSION['lang']['kebun']."</td><td style='width:75px;'>:".substr($kdAfd,0,4)."</td><td></td><td></td><td style='width:75px;'>".$_SESSION['lang']['dibuat']."</td><td style='width:75px;'>".$_SESSION['lang']['diperiksa']."</td><td style='width:75px;'>".$_SESSION['lang']['disetujui']."</td>
                  </tr>
                  <tr>
                     <td>".$_SESSION['lang']['afdeling']."</td><td>:".$kdAfd."</td><td>(".number_format($luas,2)." Ha)</td><td> </td><td> </td>
@@ -106,7 +107,7 @@ while($bar=mysql_fetch_object($res)){
                     <td>".$_SESSION['lang']['tanggal']."</td><td>:".tanggalnormal($tgl1_)."</td><td>".$tanggalsampai."</td><td> </td><td> </td>
                  </tr>   
                  <tr>
-                    <td></td><td></td><td></td><td>".$_SESSION['lang']['askep']."</td><td>".$_SESSION['lang']['asisten']."</td>
+                    <td></td><td></td><td></td><td></td><td>".$_SESSION['lang']['kerani']."</td> <td>".$_SESSION['lang']['asisten']."</td><td>".$_SESSION['lang']['divmanager']."</td>
                  </tr>                   
                 </table>";
 	if($proses=='excel')
@@ -121,10 +122,11 @@ while($bar=mysql_fetch_object($res)){
 		<td rowspan=2 align=center>".$_SESSION['lang']['satuan']."</td>
 		<td colspan=2 align=center>".$_SESSION['lang']['kodeblok']."</td>            
 		<td rowspan=2 align=center>".$_SESSION['lang']['thntnm']."</td>
-		<td colspan=2 align=center>HK KHT/KHL/PHL</td>    
+		<td colspan=2 align=center>HK KHT/PHL</td>    
 		<td colspan=2 align=center>HK KBL</td>
 		<td colspan=2 align=center>".$_SESSION['lang']['upahkerja']."</td>
 		<td colspan=2 align=center>".$_SESSION['lang']['upahpremi']."</td>
+		<td rowspan=2 align=center>".$_SESSION['lang']['denda']."</td>
 		<td colspan=2 align=center>Total Upah</td>
 		<td colspan=2 align=center>".$_SESSION['lang']['hasilkerjajumlah']."</td>
 		<td colspan=4 align=center>".$_SESSION['lang']['pemakaianBarang']."</td>
@@ -148,27 +150,30 @@ while($bar=mysql_fetch_object($res)){
 		<td align=center>".$_SESSION['lang']['jumlah']."</td>";
 		$stream.="<td align=center>Rp/unit</td>            
 		<td align=center>".$_SESSION['lang']['jumlah']."</td>";
+		//$stream.="<td align=center>Rp/unit</td>";
 		$stream.="<td align=center>Rp/unit</td>            
 		<td align=center>".$_SESSION['lang']['jumlah']."</td>";
 		
 		if($lha)$stream.="<td align=center>".$_SESSION['lang']['hi']."</td>
-        <td align=center>".$_SESSION['lang']['sdhi']."</td>"; else $stream.="<td align=center colspan=2></td>";
+        <td align=center>".$_SESSION['lang']['sdhi']."</td>"; else $stream.="<td align=center colspan=2>Vol</td>";
 		
 		$stream.="<td align=center>".$_SESSION['lang']['namabarang']."</td>
 		<td align=center>".$_SESSION['lang']['satuan']."</td>";
 		
 		if($lha)$stream.="<td align=center>".$_SESSION['lang']['hi']."</td>
-        <td align=center>".$_SESSION['lang']['sdhi']."</td>"; else $stream.="<td align=center colspan=2></td>";
+        <td align=center>".$_SESSION['lang']['sdhi']."</td>"; else $stream.="<td align=center colspan=2>Qty</td>";
         
 		$stream.="<td align=center>Rp/unit</td>            
 		<td align=center>".$_SESSION['lang']['jumlah']."</td>   
 	</tr>       
 	</thead>
 	<tbody>";
-    if($lha)$str="select distinct kodekegiatan,kodeorg,namakegiatan,satuan from ".$dbname.".kebun_perawatan_dan_spk_vw where kodeorg like '".$kdAfd."%' 
-             and tanggal ='".$tgl1_."'";
-    else $str="select distinct kodekegiatan,kodeorg,namakegiatan,satuan from ".$dbname.".kebun_perawatan_dan_spk_vw where kodeorg like '".$kdAfd."%' 
-             and tanggal between '".$tgl1_."' and '".$tgl2_."'";
+    if($lha)$str="select distinct a.kodekegiatan,a.kodeorg,a.namakegiatan,a.satuan,b.namaorganisasi from ".$dbname.".kebun_perawatan_dan_spk_vw a 
+				  left join ".$dbname.".organisasi b on a.kodeorg=b.kodeorganisasi
+				  where a.kodeorg like '".$kdAfd."%' and a.tanggal ='".$tgl1_."' order by a.kodekegiatan,a.kodeorg";
+    else	$str="select distinct a.kodekegiatan,a.kodeorg,a.namakegiatan,a.satuan,b.namaorganisasi from ".$dbname.".kebun_perawatan_dan_spk_vw a
+				  left join ".$dbname.".organisasi b on a.kodeorg=b.kodeorganisasi
+				  where a.kodeorg like '".$kdAfd."%' and a.tanggal between '".$tgl1_."' and '".$tgl2_."' order by a.kodekegiatan,a.kodeorg";
 //    echo $str;
         $res=mysql_query($str);        
         $master=Array();  
@@ -179,6 +184,7 @@ while($bar=mysql_fetch_object($res)){
         {
             $master['kegiatan'][]=$bar->kodekegiatan;
             $master['blok'][]=$bar->kodeorg;
+            $master['namablok'][]=$bar->namaorganisasi;
             $master['namakegiatan'][]=$bar->namakegiatan;
             $master['satuankegiatan'][]=$bar->satuan;
         }
@@ -202,14 +208,25 @@ while($bar=mysql_fetch_object($res)){
 
         }
 //upah KBL-==========================================        
-    if($lha)$str="select kodeorg,kodekegiatan,sum(jhk) as jhk,sum(umr) as upah, sum(insentif) as premi, sum(umr + insentif) as totalupah
+
+//    if($lha)$str="select kodeorg,kodekegiatan,sum(jhk) as jhk,sum(umr) as upah, sum(insentif) as premi, sum(umr + insentif) as totalupah
+//          from ".$dbname.".kebun_kehadiran_vw
+//          where  kodeorg like '".$kdAfd."%' and tanggal='".$tgl1_."' and tipekaryawan='Non Staff - [KBL]' and umr != '0'
+//          group by kodeorg,kodekegiatan;";  
+//    else $str="select kodeorg,kodekegiatan,sum(jhk) as jhk, sum(umr) as upah, sum(insentif) as premi, sum(umr + insentif) as totalupah
+//          from ".$dbname.".kebun_kehadiran_vw
+//          where  kodeorg like '".$kdAfd."%' and tanggal between '".$tgl1_."' and '".$tgl2_."' and tipekaryawan='Non Staff - [KBL]' and umr != '0'
+//          group by kodeorg,kodekegiatan;";  
+
+	if($lha)$str="select kodeorg,kodekegiatan,sum(jhk) as jhk,sum(umr) as upah,sum(insentif) as premi,sum(denda) as denda,sum(umr+insentif-denda) as totalupah
           from ".$dbname.".kebun_kehadiran_vw
-          where  kodeorg like '".$kdAfd."%' and tanggal='".$tgl1_."' and tipekaryawan='Non Staff - [KBL]' and umr != '0'
+          where  kodeorg like '".$kdAfd."%' and tanggal='".$tgl1_."' and tipekaryawan='Non Staff - [KBL]'
           group by kodeorg,kodekegiatan;";  
-    else $str="select kodeorg,kodekegiatan,sum(jhk) as jhk, sum(umr) as upah, sum(insentif) as premi, sum(umr + insentif) as totalupah
+    else $str="select kodeorg,kodekegiatan,sum(jhk) as jhk, sum(umr) as upah,sum(insentif) as premi,sum(denda) as denda,sum(umr+insentif-denda) as totalupah
           from ".$dbname.".kebun_kehadiran_vw
-          where  kodeorg like '".$kdAfd."%' and tanggal between '".$tgl1_."' and '".$tgl2_."' and tipekaryawan='Non Staff - [KBL]' and umr != '0'
+          where  kodeorg like '".$kdAfd."%' and tanggal between '".$tgl1_."' and '".$tgl2_."' and tipekaryawan='Non Staff - [KBL]'
           group by kodeorg,kodekegiatan;";  
+
 //    echo $str;
 		$hkKBL=Array();
 		$res=mysql_query($str);
@@ -220,6 +237,7 @@ while($bar=mysql_fetch_object($res)){
             $hkKBL['jhk'][]=$bar->jhk;
             $hkKBL['upah'][]=$bar->upah;
 			$hkKBL['premi'][]=$bar->premi;
+			$hkKBL['denda'][]=$bar->denda;
 			$hkKBL['totalupah'][]=$bar->totalupah;
         }
         if(!empty($master['kegiatan']))foreach($master['kegiatan'] as $key=>$val)
@@ -227,6 +245,7 @@ while($bar=mysql_fetch_object($res)){
             $master['hkkbl'][$key]=0;
             $master['upahkbl'][$key]=0;
 			$master['premikbl'][$key]=0;
+			$master['dendakbl'][$key]=0;
 			$master['totalupahkbl'][$key]=0;
             if(!empty($hkKBL)){
                 if(!empty($hkKBL['kegiatan']))foreach($hkKBL['kegiatan'] as $g=>$h){ 
@@ -235,15 +254,21 @@ while($bar=mysql_fetch_object($res)){
                         $master['hkkbl'][$key]=$hkKBL['jhk'][$g];
                         $master['upahkbl'][$key]=$hkKBL['upah'][$g];
 						$master['premikbl'][$key]=$hkKBL['premi'][$g];
+						$master['dendakbl'][$key]=$hkKBL['denda'][$g];
 						$master['totalupahkbl'][$key]=$hkKBL['totalupah'][$g];
                     }
             }
             }
         }  
      //====================sdbi
-    $str="select kodeorg,kodekegiatan,sum(jhk) as jhk,sum(umr) as upah, sum(insentif) as premi, sum(umr + insentif) as totalupah
+//    $str="select kodeorg,kodekegiatan,sum(jhk) as jhk,sum(umr) as upah, sum(insentif) as premi, sum(umr + insentif) as totalupah
+//          from ".$dbname.".kebun_kehadiran_vw
+//          where  kodeorg like '".$kdAfd."%' and tanggal between '".substr($tgl1_,0,6)."01' and '".$tgl1_."' and tipekaryawan='Non Staff - [KBL]' and umr != '0'
+//          group by kodeorg,kodekegiatan;";  
+  
+    $str="select kodeorg,kodekegiatan,sum(jhk) as jhk,sum(umr) as upah, sum(insentif) as premi, sum(denda) as denda, sum(umr+insentif-denda) as totalupah
           from ".$dbname.".kebun_kehadiran_vw
-          where  kodeorg like '".$kdAfd."%' and tanggal between '".substr($tgl1_,0,6)."01' and '".$tgl1_."' and tipekaryawan='Non Staff - [KBL]' and umr != '0'
+          where  kodeorg like '".$kdAfd."%' and tanggal between '".substr($tgl1_,0,6)."01' and '".$tgl1_."' and tipekaryawan='Non Staff - [KBL]'
           group by kodeorg,kodekegiatan;";  
   
      $hkKBL=Array();
@@ -255,6 +280,7 @@ while($bar=mysql_fetch_object($res)){
             $hkKBL['jhk'][]=$bar->jhk;
             $hkKBL['upah'][]=$bar->upah;
 			$hkKBL['premi'][]=$bar->premi;
+			$hkKBL['denda'][]=$bar->denda;
 			$hkKBL['totalupah'][]=$bar->totalupah;
         }
         if(!empty($master['kegiatan']))foreach($master['kegiatan'] as $key=>$val)
@@ -262,6 +288,7 @@ while($bar=mysql_fetch_object($res)){
             $master['hkkblsbi'][$key]=0;
             $master['upahkblsbi'][$key]=0;
 			$master['premikblsbi'][$key]=0;
+			$master['dendakblsbi'][$key]=0;
 			$master['totalupahkblsbi'][$key]=0;
 			if(!empty($hkKBL)){
                 if(!empty($hkKBL['kegiatan']))foreach($hkKBL['kegiatan'] as $g=>$h){ 
@@ -270,13 +297,15 @@ while($bar=mysql_fetch_object($res)){
                         $master['hkkblsbi'][$key]=$hkKBL['jhk'][$g];
                         $master['upahkblsbi'][$key]=$hkKBL['upah'][$g];
 						$master['premikblsbi'][$key]=$hkKBL['premi'][$g];
+						$master['dendakblsbi'][$key]=$hkKBL['denda'][$g];
 						$master['totalupahkblsbi'][$key]=$hkKBL['totalupah'][$g];
                     }
             }
             }
         }    
 //upah KHT/KHL-==========================================
-        if($lha)$str="select kodeorg,kodekegiatan,sum(jhk) as jhk,sum(umr) as upah, sum(insentif) as premi, sum(umr + insentif) as totalupah
+/*
+		if($lha)$str="select kodeorg,kodekegiatan,sum(jhk) as jhk,sum(umr) as upah, sum(insentif) as premi, sum(umr + insentif) as totalupah
 		  from ".$dbname.".kebun_kehadiran_vw
           where  kodeorg like '".$kdAfd."%' and tanggal='".$tgl1_."' and tipekaryawan in('PHL','KHL','KHT','Kontrak','Kontrak Karyawan (Usia Lanjut)') and umr != '0'
           group by kodeorg,kodekegiatan;";  
@@ -284,7 +313,17 @@ while($bar=mysql_fetch_object($res)){
 		  from ".$dbname.".kebun_kehadiran_vw
           where  kodeorg like '".$kdAfd."%' and tanggal between '".$tgl1_."' and '".$tgl2_."' and tipekaryawan in('PHL','KHL','KHT','Kontrak','Kontrak Karyawan (Usia Lanjut)') and umr != '0'
           group by kodeorg,kodekegiatan;";  
-        //echo $str;
+*/
+	if($lha)$str="select kodeorg,kodekegiatan,sum(jhk) as jhk,sum(umr) as upah,sum(insentif) as premi,sum(denda) as denda,sum(umr+insentif-denda) as totalupah
+		  from ".$dbname.".kebun_kehadiran_vw
+          where  kodeorg like '".$kdAfd."%' and tanggal='".$tgl1_."' and tipekaryawan in('PHL','KHL','KHT','Kontrak','Kontrak Karyawan (Usia Lanjut)')
+          group by kodeorg,kodekegiatan;";  
+		else $str="select kodeorg,kodekegiatan,sum(jhk) as jhk,sum(umr) as upah,sum(insentif) as premi,sum(denda) as denda,sum(umr+insentif-denda) as totalupah
+		  from ".$dbname.".kebun_kehadiran_vw
+          where  kodeorg like '".$kdAfd."%' and tanggal between '".$tgl1_."' and '".$tgl2_."' and tipekaryawan in('PHL','KHL','KHT','Kontrak','Kontrak Karyawan (Usia Lanjut)')
+          group by kodeorg,kodekegiatan;";  
+
+//exit('Warning: '.($lha ? ' 1 ' : ' 2 ').$str);
      $hkKHL=Array();
        $res=mysql_query($str);
          while($bar=mysql_fetch_object($res))
@@ -294,6 +333,7 @@ while($bar=mysql_fetch_object($res)){
             $hkKHL['jhk'][]=$bar->jhk;
             $hkKHL['upah'][]=$bar->upah;  
 			$hkKHL['premi'][]=$bar->premi;
+			$hkKHL['denda'][]=$bar->denda;
 			$hkKHL['totalupah'][]=$bar->totalupah;          
         }
         if(!empty($master['kegiatan']))foreach($master['kegiatan'] as $key=>$val)
@@ -301,6 +341,7 @@ while($bar=mysql_fetch_object($res)){
             $master['hkkhl'][$key]=0;
             $master['upahkhl'][$key]=0;
 			$master['premikhl'][$key]=0;
+			$master['dendakhl'][$key]=0;
 			$master['totalupahkhl'][$key]=0;
             if(count($hkKHL['kegiatan'])>0){
                 if(!empty($hkKHL['kegiatan']))foreach($hkKHL['kegiatan'] as $g=>$h){ 
@@ -309,6 +350,7 @@ while($bar=mysql_fetch_object($res)){
                         $master['hkkhl'][$key]=$hkKHL['jhk'][$g];
                         $master['upahkhl'][$key]=$hkKHL['upah'][$g];
 						$master['premikhl'][$key]=$hkKHL['premi'][$g];
+						$master['dendakhl'][$key]=$hkKHL['denda'][$g];
 						$master['totalupahkhl'][$key]=$hkKHL['totalupah'][$g];
                     }
             }
@@ -344,11 +386,18 @@ while($bar=mysql_fetch_object($res)){
             }
         }           
   //=======sbi
-        $str="select kodeorg,kodekegiatan,sum(jhk) as jhk,sum(umr) as upah, sum(insentif) as premi, sum(umr + insentif) as totalupah
+/*
+		$str="select kodeorg,kodekegiatan,sum(jhk) as jhk,sum(umr) as upah, sum(insentif) as premi, sum(umr + insentif) as totalupah
 		  from ".$dbname.".kebun_kehadiran_vw
           where  kodeorg like '".$kdAfd."%' and tanggal between '".substr($tgl1_,0,6)."01' and '".$tgl1_."' and tipekaryawan in('PHL','KHL','KHT','Kontrak','Kontrak Karyawan (Usia Lanjut)') and umr != '0'
           group by kodeorg,kodekegiatan;";  
-     $hkKHL=Array();
+*/
+		$str="select kodeorg,kodekegiatan,sum(jhk) as jhk,sum(umr) as upah, sum(insentif) as premi,sum(denda) as denda, sum(umr + insentif-denda) as totalupah
+		  from ".$dbname.".kebun_kehadiran_vw
+          where  kodeorg like '".$kdAfd."%' and tanggal between '".substr($tgl1_,0,6)."01' and '".$tgl1_."' and tipekaryawan in('PHL','KHL','KHT','Kontrak','Kontrak Karyawan (Usia Lanjut)')
+          group by kodeorg,kodekegiatan;";  
+
+	 $hkKHL=Array();
        $res=mysql_query($str);
          while($bar=mysql_fetch_object($res))
         {
@@ -357,6 +406,7 @@ while($bar=mysql_fetch_object($res)){
             $hkKHL['jhk'][]=$bar->jhk;
             $hkKHL['upah'][]=$bar->upah; 
 			$hkKHL['premi'][]=$bar->premi;
+			$hkKHL['denda'][]=$bar->denda;
 			$hkKHL['totalupah'][]=$bar->totalupah;
         }
         if(!empty($master['kegiatan']))foreach($master['kegiatan'] as $key=>$val)
@@ -364,6 +414,7 @@ while($bar=mysql_fetch_object($res)){
             $master['hkkhlsbi'][$key]=0;
             $master['upahkhlsbi'][$key]=0;
 			$master['premikhlsbi'][$key]=0;
+			$master['dendakhlsbi'][$key]=0;
 			$master['totalupahkhlsbi'][$key]=0;
             if(count($hkKHL['kegiatan'])>0){
                 if(!empty($hkKHL['kegiatan']))foreach($hkKHL['kegiatan'] as $g=>$h){ 
@@ -372,6 +423,7 @@ while($bar=mysql_fetch_object($res)){
                         $master['hkkhlsbi'][$key]=$hkKHL['jhk'][$g];
                         $master['upahkhlsbi'][$key]=$hkKHL['upah'][$g];
 						$master['premikhlsbi'][$key]=$hkKHL['premi'][$g];
+						$master['dendakhlsbi'][$key]=$hkKHL['denda'][$g];
 						$master['totalupahkhlsbi'][$key]=$hkKHL['totalupah'][$g];
                     }
             }
@@ -408,9 +460,11 @@ while($bar=mysql_fetch_object($res)){
     {
 		$master['totalupah'][$kut]=$master['upahkbl'][$kut]+$master['upahkhl'][$kut];
 		$master['totalpremi'][$kut]=$master['premikbl'][$kut]+$master['premikhl'][$kut];
+		$master['totaldenda'][$kut]=$master['dendakbl'][$kut]+$master['dendakhl'][$kut];
         $master['totalsumupah'][$kut]=$master['totalupahkbl'][$kut]+$master['totalupahkhl'][$kut];
 		@$master['upahperhk'][$kut]=$master['totalupah'][$kut]/($master['hkkhl'][$kut]+$master['hkkbl'][$kut]);
 		@$master['premiperhk'][$kut]=$master['totalpremi'][$kut]/($master['hkkhl'][$kut]+$master['hkkbl'][$kut]);
+		@$master['dendaperhk'][$kut]=$master['totaldenda'][$kut]/($master['hkkhl'][$kut]+$master['hkkbl'][$kut]);
         @$master['rpperhk'][$kut]=$master['totalsumupah'][$kut]/($master['hkkhl'][$kut]+$master['hkkbl'][$kut]);
         $master['totbiaya'][$kut]=$master['totalsumupah'][$kut];
     }
@@ -647,6 +701,7 @@ if(!empty($master['blok']))foreach($master['blok'] as $kun=>$tak)
 		'hkkblbi' => 0,'hkkblsbi' => 0,
 		'totalupah' => 0,
 		'totalpremi' => 0,
+		'totaldenda' => 0,
 		'totalsumupah' => 0,
 		'hasilbi' => 0,'hasilsbi' => 0,
 		'totalbiaya' => 0,
@@ -661,6 +716,7 @@ if(!empty($master['blok']))foreach($master['blok'] as $kun=>$tak)
 	$TOTAL['hkkblsbi']+=$master['hkkblsbi'][$kun];     
 	$TOTAL['totalupah']+=$master['totalupah'][$kun];
 	$TOTAL['totalpremi']+=$master['totalpremi'][$kun];
+	$TOTAL['totaldenda']+=$master['totaldenda'][$kun];
 	$TOTAL['totalsumupah']+=$master['totalsumupah'][$kun];
 	$TOTAL['hasilbi']+=$master['hasilbi'][$kun];
 	$TOTAL['hasilsbi']+=$master['hasilsbi'][$kun];
@@ -674,6 +730,7 @@ if(!empty($master['blok']))foreach($master['blok'] as $kun=>$tak)
 } 
 @$TOTAL['upahperhk']=$TOTAL['totalupah']/($TOTAL['hkkhlbi']+$TOTAL['hkkblbi']);
 @$TOTAL['premiperhk']=$TOTAL['totalpremi']/($TOTAL['hkkhlbi']+$TOTAL['hkkblbi']);
+@$TOTAL['dendaperhk']=$TOTAL['totaldenda']/($TOTAL['hkkhlbi']+$TOTAL['hkkblbi']);
 @$TOTAL['rpperhk']=$TOTAL['totalsumupah']/($TOTAL['hkkhlbi']+$TOTAL['hkkblbi']);
  
 
@@ -733,7 +790,7 @@ if(!empty($master['blok']))foreach($master['blok'] as $kun=>$tak)
             <td>".$master['kegiatan'][$kunc]."</td>
             <td>".$kegiatanx[$master['kegiatan'][$kunc]]."</td>    
             <td>".$master['satuankegiatan'][$kunc]."</td>
-            <td>".$master['blok'][$kunc]."</td>
+            <td>".$master['namablok'][$kunc]."</td>
             <td align=right>".number_format($master['luas'][$kunc],2)."</td>
             <td>".$master['thntnm'][$kunc]."</td>";
 			setIt($tunasdata[$master['kegiatan'][$kunc]]['hk'],0);
@@ -755,6 +812,7 @@ if(!empty($master['blok']))foreach($master['blok'] as $kun=>$tak)
             <td align=right>".number_format($master['totalupah'][$kunc],0)."</td>";
 			$stream.="<td align=right>".number_format($master['premiperhk'][$kunc],0)."</td>    
             <td align=right>".number_format($master['totalpremi'][$kunc],0)."</td>";
+			$stream.="<td align=right>".number_format($master['totaldenda'][$kunc],0)."</td>";
 			$stream.="<td align=right>".number_format($master['rpperhk'][$kunc],0)."</td>    
             <td align=right>".number_format($master['totalsumupah'][$kunc],0)."</td>"; 
 			
@@ -783,6 +841,7 @@ if(!empty($master['blok']))foreach($master['blok'] as $kun=>$tak)
                     <td></td>    
                     <td></td>
                     <td></td>
+					<td></td>
 					<td></td>
                     <td></td>    
                     <td></td>
@@ -824,6 +883,7 @@ if(!empty($master['blok']))foreach($master['blok'] as $kun=>$tak)
 	<td align=right>".number_format($TOTAL['totalupah'])."</td>";
 	$stream.="<td align=right></td>
 	<td align=right>".number_format($TOTAL['totalpremi'])."</td>";
+	$stream.="<td align=right>".number_format($TOTAL['totaldenda'])."</td>";
 	$stream.="<td align=right></td>
 	<td align=right>".number_format($TOTAL['totalsumupah'])."</td>";
  	if($lha)$stream.="<td align=right></td>
@@ -894,10 +954,16 @@ while($bar=mysql_fetch_object($res))
     $area[$bar->kodeorg]=$bar->luasareaproduktif;
 } 
 
-if($lha)$str="SELECT count(*) as hk,kodeorg FROM ".$dbname.".kebun_prestasi_vw 
-    where tanggal between '".substr($tgl1_,0,6)."01' and '".$tgl1_."' and kodeorg like '".$kdAfd."%' group by kodeorg";
-else $str="SELECT count(*) as hk,kodeorg FROM ".$dbname.".kebun_prestasi_vw 
-    where tanggal between '".$tgl1_."' and '".$tgl2_."' and kodeorg like '".$kdAfd."%' group by kodeorg";
+//if($lha)$str="SELECT count(*) as hk,kodeorg FROM ".$dbname.".kebun_prestasi_vw 
+//    where tanggal between '".substr($tgl1_,0,6)."01' and '".$tgl1_."' and kodeorg like '".$kdAfd."%' group by kodeorg";
+//else $str="SELECT count(*) as hk,kodeorg FROM ".$dbname.".kebun_prestasi_vw 
+//    where tanggal between '".$tgl1_."' and '".$tgl2_."' and kodeorg like '".$kdAfd."%' group by kodeorg";
+if($lha)$str="SELECT round(sum(a.upahkerja/(b.jumlah/25)),2) as hk,kodeorg FROM ".$dbname.".kebun_prestasi_vw a
+	LEFT JOIN ".$dbname.".sdm_5gajipokok b on b.karyawanid=a.karyawanid and idkomponen=1 and b.tahun=year(a.tanggal)
+    where a.tanggal between '".substr($tgl1_,0,6)."01' and '".$tgl1_."' and a.kodeorg like '".$kdAfd."%' group by a.kodeorg order by a.kodeorg";
+else $str="SELECT round(sum(a.upahkerja/(b.jumlah/25)),2) as hk,kodeorg FROM ".$dbname.".kebun_prestasi_vw a
+	LEFT JOIN ".$dbname.".sdm_5gajipokok b on b.karyawanid=a.karyawanid and idkomponen=1 and b.tahun=year(a.tanggal)
+    where a.tanggal between '".$tgl1_."' and '".$tgl2_."' and a.kodeorg like '".$kdAfd."%' group by a.kodeorg order by a.kodeorg";
 $res=mysql_query($str);
 while($bar=mysql_fetch_object($res))
 {
@@ -925,10 +991,26 @@ $jumlahupahtotal=0;
 $kgtotal=0;
 $kgsdtotal=0;
 
-if($lha)$str="SELECT count(*) as hk,kodeorg,tahuntanam,sum(hasilkerjakg)as hasil,sum(upahkerja)as upah,sum(upahpremi)as premi,sum(rupiahpenalty)penalty FROM ".$dbname.".kebun_prestasi_vw 
-    where tanggal = '".$tgl1_."' and kodeorg like '".$kdAfd."%' group by kodeorg";
-else $str="SELECT count(*) as hk,kodeorg,tahuntanam,sum(hasilkerjakg)as hasil,sum(upahkerja)as upah,sum(upahpremi)as premi,sum(rupiahpenalty)penalty FROM ".$dbname.".kebun_prestasi_vw 
-    where tanggal between '".$tgl1_."' and '".$tgl2_."' and kodeorg like '".$kdAfd."%' group by kodeorg";
+//if($lha)$str="select a.*,b.namaorganisasi from 
+//			  (SELECT count(*) as hk,kodeorg,tahuntanam,sum(hasilkerjakg)as hasil,sum(upahkerja)as upah,sum(upahpremi)as premi,sum(rupiahpenalty)penalty 
+//			   FROM ".$dbname.".kebun_prestasi_vw where tanggal = '".$tgl1_."' and kodeorg like '".$kdAfd."%' group by kodeorg) a 
+//			  left join ".$dbname.".organisasi b on a.kodeorg=b.kodeorganisasi order by kodeorg";
+//else    $str="select a.*,b.namaorganisasi from
+//			  (SELECT count(*) as hk,kodeorg,tahuntanam,sum(hasilkerjakg)as hasil,sum(upahkerja)as upah,sum(upahpremi)as premi,sum(rupiahpenalty)penalty 
+//			   FROM ".$dbname.".kebun_prestasi_vw where tanggal between '".$tgl1_."' and '".$tgl2_."' and kodeorg like '".$kdAfd."%' group by kodeorg) a
+//			  left join ".$dbname.".organisasi b on a.kodeorg=b.kodeorganisasi order by kodeorg";
+if($lha)$str="SELECT round(sum(a.upahkerja/(b.jumlah/25)),2) as hk,a.kodeorg,a.tahuntanam,sum(a.hasilkerjakg) as hasil,sum(a.upahkerja) as upah
+			  ,sum(a.upahpremi) as premi,sum(a.rupiahpenalty+a.upahpenalty) as penalty,c.namaorganisasi
+			  FROM ".$dbname.".kebun_prestasi_vw a 
+			  LEFT JOIN ".$dbname.".sdm_5gajipokok b on b.karyawanid=a.karyawanid and idkomponen=1 and b.tahun=year(a.tanggal)
+			  LEFT JOIN ".$dbname.".organisasi c on c.kodeorganisasi=a.kodeorg
+			  where a.tanggal = '".$tgl1_."' and a.kodeorg like '".$kdAfd."%' group by a.kodeorg order by a.kodeorg";
+else    $str="SELECT round(sum(a.upahkerja/(b.jumlah/25)),2) as hk,a.kodeorg,a.tahuntanam,sum(a.hasilkerjakg) as hasil,sum(a.upahkerja) as upah
+			  ,sum(a.upahpremi) as premi,sum(a.rupiahpenalty+a.upahpenalty) as penalty,c.namaorganisasi
+			  FROM ".$dbname.".kebun_prestasi_vw a
+			  LEFT JOIN ".$dbname.".sdm_5gajipokok b on b.karyawanid=a.karyawanid and idkomponen=1 and b.tahun=year(a.tanggal)
+			  LEFT JOIN ".$dbname.".organisasi c on c.kodeorganisasi=a.kodeorg
+			  where a.tanggal between '".$tgl1_."' and '".$tgl2_."' and a.kodeorg like '".$kdAfd."%' group by a.kodeorg order by a.kodeorg";
 //echo $str; 
 $res=mysql_query($str);
 while($bar=mysql_fetch_object($res))
@@ -949,7 +1031,7 @@ while($bar=mysql_fetch_object($res))
             <td align=left>".$kodepanen."</td>
             <td align=left>".$kegiatanx[$kodepanen]."</td>
             <td align=left>KG</td>
-            <td align=left>".$bar->kodeorg."</td>
+            <td align=left>".$bar->namaorganisasi."</td>
             <td align=right>".$area[$bar->kodeorg]."</td>
             <td align=center>".$bar->tahuntanam."</td>";
             if($lha)$stream.="<td align=right>".$bar->hk."</td>
@@ -1294,6 +1376,8 @@ $stream.="</tbody></table>";
             class PDF extends FPDF
             {
                 function Header() {
+                    global $kodept;
+                    global $namapt;
                     global $kdAfd;
                     global $tgl1_,$tgl2_;
                     global $dbname;
@@ -1302,12 +1386,24 @@ $stream.="</tbody></table>";
                     $width = $this->w - $this->lMargin - $this->rMargin;
                     $height = 12;
                     $path='images/logo.jpg';
-                    $this->Image($path,$this->lMargin,$this->tMargin,20);	
+                    //$this->Image($path,$this->lMargin,$this->tMargin,30);	
+					//$this->Image($path,12,2,0,30);
+					if($kodept=='CKS'){
+						$path2='images/logo_cks.jpg';
+						//$this->Image($path2,172,2,0,30);
+						$this->Image($path2,$this->lMargin,$this->tMargin,30);	
+					}elseif($kodept=='MPA'){
+						$path2='images/logo_mpa.jpg';
+						//$this->Image($path2,172,2,0,30);
+						$this->Image($path2,$this->lMargin,$this->tMargin,30);	
+					}
                     $this->SetFont('Arial','B',9);
-                    $this->SetFillColor(255,255,255);	
-                    $this->SetX(50);   
-                    $this->Cell($width-50,$height,'OWL',0,1,'L');	 
-                    $this->Line($this->lMargin+25,$this->tMargin+($height*1),
+                    $this->SetFillColor(255,255,255);
+                    //$this->Ln();
+                    //$this->Ln();
+                    $this->SetX(70);
+                    $this->Cell($width-70,$height,$namapt,0,1,'L');	 
+                    $this->Line($this->lMargin+45,$this->tMargin+($height*1),
                         $this->lMargin+$width,$this->tMargin+($height*1));
                     $this->Ln();
                     $this->SetFont('Arial','U',10);
@@ -1322,9 +1418,10 @@ $stream.="</tbody></table>";
                     $this->Cell((7/100*$width)-5,$height,$_SESSION['lang']['kebun'],'',0,'L');
                     $this->Cell(5,$height,':','',0,'L');
                     $this->Cell(43/100*$width,$height,substr($kdAfd,0,4),'',0,'L');		
-                    $this->Cell(20/100*$width,$height,'','',0,'L');		
-                    $this->Cell(15/100*$width,$height,$_SESSION['lang']['diperiksa'],'',0,'C');		
-                    $this->Cell(15/100*$width,$height,$_SESSION['lang']['dibuat'],'',0,'C');		
+                    $this->Cell(20/100*$width,$height,'','',0,'L');
+                    $this->Cell(10/100*$width,$height,$_SESSION['lang']['dibuat'],'',0,'C');		
+                    $this->Cell(10/100*$width,$height,$_SESSION['lang']['diperiksa'],'',0,'C');		
+                    $this->Cell(10/100*$width,$height,$_SESSION['lang']['disetujui'],'',0,'C');
                     $this->Ln();	
                     $this->Cell((7/100*$width)-5,$height,$_SESSION['lang']['afdeling'],'',0,'L');
                     $this->Cell(5,$height,':','',0,'L');
@@ -1334,9 +1431,10 @@ $stream.="</tbody></table>";
                     $this->Cell(5,$height,':','',0,'L');
                     $this->Cell(43/100*$width,$height,tanggalnormal($tgl1_).' '.tanggalnormal($tgl2_),'',0,'L');		
                     $this->Ln();	
-                    $this->Cell(70/100*$width,$height,'','',0,'L');		
-                    $this->Cell(15/100*$width,$height,$_SESSION['lang']['askep'],'',0,'C');		
-                    $this->Cell(15/100*$width,$height,$_SESSION['lang']['asisten'],'',0,'C');		
+                    $this->Cell(70/100*$width,$height,'','',0,'L');
+                    $this->Cell(10/100*$width,$height,$_SESSION['lang']['kerani'],'',0,'C');		
+                    $this->Cell(10/100*$width,$height,$_SESSION['lang']['asisten'],'',0,'C');		
+                    $this->Cell(10/100*$width,$height,$_SESSION['lang']['divmanager'],'',0,'C');		
                     $this->Ln();	
                 }
 
@@ -1415,7 +1513,7 @@ $stream.="</tbody></table>";
                 $pdf->Cell($lpeker/100*$width,$height,$kegiatanx[$master['kegiatan'][$kunc]],1,0,'L',1);
                 $pdf->Cell($llain/100*$width,$height,$master['satuankegiatan'][$kunc],1,0,'L',1);
                 $pdf->SetFont('Arial','',4);
-                $pdf->Cell($lkojur/100*$width,$height,$master['blok'][$kunc],1,0,'L',1);
+                $pdf->Cell($lkojur/100*$width,$height,$master['namablok'][$kunc],1,0,'L',1);
                 $pdf->SetFont('Arial','',5);
                 $pdf->Cell($llain/100*$width,$height,number_format($master['luas'][$kunc],2),1,0,'R',1);
                 $pdf->Cell($llain/100*$width,$height,$master['thntnm'][$kunc],1,0,'C',1);
@@ -1428,7 +1526,7 @@ $stream.="</tbody></table>";
                 $pdf->Cell($llain/100*$width,$height,$master['hkkblsbi'][$kunc],1,0,'R',1);
                 }else $pdf->Cell($llain*2/100*$width,$height,$master['hkkbl'][$kunc],1,0,'R',1);
                 $pdf->Cell($llain/100*$width,$height,number_format($master['rpperhk'][$kunc],0),1,0,'R',1);
-                $pdf->Cell($llain/100*$width,$height,number_format($master['totalupah'][$kunc],0),1,0,'R',1);
+                $pdf->Cell($llain/100*$width,$height,number_format($master['totalsumupah'][$kunc],0),1,0,'R',1);
                 if($lha){
                 $pdf->Cell($llain/100*$width,$height,number_format($master['hasilbi'][$kunc],2),1,0,'R',1);
                 $pdf->Cell($llain/100*$width,$height,number_format($master['hasilsbi'][$kunc],2),1,0,'R',1);
@@ -1469,7 +1567,7 @@ $stream.="</tbody></table>";
             $pdf->Cell($llain/100*$width,$height,number_format($TOTAL['hkkblsbi']),1,0,'R',1);
             }else $pdf->Cell($llain*2/100*$width,$height,number_format($TOTAL['hkkblbi']),1,0,'R',1);
             $pdf->Cell($llain/100*$width,$height,'',1,0,'R',1);
-            $pdf->Cell($llain/100*$width,$height,number_format($TOTAL['totalupah']),1,0,'R',1);
+            $pdf->Cell($llain/100*$width,$height,number_format($TOTAL['totalsumupah']),1,0,'R',1);
             if($lha){
             $pdf->Cell($llain/100*$width,$height,'',1,0,'R',1);
             $pdf->Cell($llain/100*$width,$height,'',1,0,'R',1);
@@ -1537,9 +1635,9 @@ $jumlahupahtotal=0;
 $kgtotal=0;
 $kgsdtotal=0;
 
-if($lha)$str="SELECT count(*) as hk,kodeorg,tahuntanam,sum(hasilkerjakg)as hasil,sum(upahkerja)as upah,sum(upahpremi)as premi,sum(rupiahpenalty)penalty FROM ".$dbname.".kebun_prestasi_vw 
+if($lha)$str="SELECT count(*) as hk,kodeorg,tahuntanam,sum(hasilkerjakg)as hasil,sum(upahkerja) as upah,sum(upahpremi) as premi,sum(upahpenalty+rupiahpenalty) as penalty FROM ".$dbname.".kebun_prestasi_vw 
     where tanggal = '".$tgl1_."' and kodeorg like '".$kdAfd."%' group by kodeorg";
-else $str="SELECT count(*) as hk,kodeorg,tahuntanam,sum(hasilkerjakg)as hasil,sum(upahkerja)as upah,sum(upahpremi)as premi,sum(rupiahpenalty)penalty FROM ".$dbname.".kebun_prestasi_vw 
+else $str="SELECT count(*) as hk,kodeorg,tahuntanam,sum(hasilkerjakg) as hasil,sum(upahkerja) as upah,sum(upahpremi) as premi,sum(upahpenalty+rupiahpenalty) as penalty FROM ".$dbname.".kebun_prestasi_vw 
     where tanggal between '".$tgl1_."' and '".$tgl2_."' and kodeorg like '".$kdAfd."%' group by kodeorg";
 $res=mysql_query($str);
 while($bar=mysql_fetch_object($res))

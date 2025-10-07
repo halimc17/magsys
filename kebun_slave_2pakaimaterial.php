@@ -19,9 +19,9 @@ if($mode=='pdf') {
     $param = $_POST;
 }
 
-//echo"<pre>";
-//print_r($param);        
-//echo"</pre>";
+// echo"<pre>";
+// print_r($param);        
+// echo"</pre>";
 
 # Tanggal Margin
 $currTahun = $tahun = $param['periode_tahun'];
@@ -48,7 +48,7 @@ switch($level) {
         # Afdeling dan Blok
         $afd = substr($param['kodeorg'],0,6);
         $kodeorg = substr($param['kodeorg'],0,4);
-        $optBelow = getOrgBelow($dbname,$kodeorg);
+        //$optBelow = getOrgBelow($dbname,$kodeorg);
 
         # Mutasi Blok
         if($_SESSION['language']=='EN'){
@@ -56,15 +56,22 @@ switch($level) {
         }else{
             $zz='namakegiatan';
         }
-        $cols = "mat.notransaksi,akt.tanggal,keg.".$zz.",mat.kodeorg,mat.kodebarang,mat.kwantitas,mat.hargasatuan,per.hasilkerja,keg.kodekegiatan";
+        $wbarang='';
+        if($_POST['barang']!=''){
+            $wbarang=" and kodebarang='".$_POST['barang']."' ";
+        }
+        $cols = "mat.notransaksi,akt.tanggal,keg.".$zz.",mat.kodeorg,org.namaorganisasi,mat.kodebarang,mat.kwantitas,mat.hargasatuan,per.hasilkerja,keg.kodekegiatan";
+
         $where = "left(mat.notransaksi,6)='".$currPeriod."' and ".
             "left(mat.kodeorg,4)='".$kodeorg."' and ".
-            "akt.jurnal=1";
+            "akt.jurnal=1 ". $wbarang;
+        
         $query = "select ".$cols." from `".$dbname."`.`kebun_pakaimaterial` as mat 
-                        join `".$dbname."`.`kebun_aktifitas` as akt on akt.notransaksi=mat.notransaksi 
-                        join `".$dbname."`.`kebun_perawatan_vw` as per on per.notransaksi=mat.notransaksi 
-                        join `".$dbname."`.`setup_kegiatan` as keg on keg.kodekegiatan=per.kodekegiatan 
-                        where ".$where;
+                        left join `".$dbname."`.`kebun_aktifitas` as akt on akt.notransaksi=mat.notransaksi 
+                        left join `".$dbname."`.`kebun_perawatan_vw` as per on per.notransaksi=mat.notransaksi 
+                        left join `".$dbname."`.`setup_kegiatan` as keg on keg.kodekegiatan=per.kodekegiatan 
+                        left join `".$dbname."`.`organisasi` as org on org.kodeorganisasi=mat.kodeorg 
+                        where ".$where;            
         $tmpRes = fetchData($query);
         if(empty($tmpRes)) {
             echo 'Warning : No data found';
@@ -96,20 +103,25 @@ switch($level) {
         $dataShow = $dataExcel = $data;
 		$tharga=0;
         foreach($data as $key=>$row) {
-            $dataShow[$key]['kodeorg'] = $optBelow[$row['kodeorg']];
+            $dataShow[$key]['kodeorg'] = $row['kodeorg'];
+            $dataShow[$key]['namaorganisasi'] = $row['namaorganisasi'];
             $dataShow[$key]['tanggal'] = tanggalnormal($row['tanggal']);
             $dataShow[$key]['kodebarang'] = $optBrg[$row['kodebarang']];
             $dataShow[$key]['namakegiatan'] = $row['namakegiatan'];
             $dataShow[$key]['kwantitas'] = number_format($row['kwantitas'],2);
-            $dataShow[$key]['hargasatuan'] =number_format($row['hargasatuan']);//number_format($optHrg[$row['kodebarang']],2);
+            $dataShow[$key]['hargasatuan'] =number_format($row['hargasatuan']*$row['kwantitas']);//number_format($optHrg[$row['kodebarang']],2);
             $dataShow[$key]['kodekegiatan'] = $optSat[$row['kodekegiatan']];
-            $dataExcel[$key]['kodeorg'] = $optBelow[$row['kodeorg']];
+
+			$dataExcel[$key]['kodeorg'] = $row['kodeorg'];
+            $dataShow[$key]['namaorganisasi'] = $row['namaorganisasi'];
             $dataExcel[$key]['tanggal'] = $row['tanggal'];
             $dataExcel[$key]['kodebarang'] = $optBrg[$row['kodebarang']];
             $dataExcel[$key]['kwantitas'] = number_format($row['kwantitas'],2);
-            $dataExcel[$key]['hargasatuan'] = number_format($row['hargasatuan'],2);
+            $dataExcel[$key]['hargasatuan'] = number_format($row['hargasatuan']*$row['kwantitas']);
             $dataExcel[$key]['kodekegiatan'] = $optSat[$row['kodekegiatan']];
-            $tharga+=$row['hargasatuan'];
+            $tmaterial+=$row['kwantitas'];
+            $tharga+=$row['hargasatuan']*$row['kwantitas'];
+            $tluas+=$row['hasilkerja'];
         }
 
         # Report Gen
@@ -118,13 +130,14 @@ switch($level) {
             $_SESSION['lang']['tanggal'],
             $_SESSION['lang']['namakegiatan'],
             $_SESSION['lang']['kodeorg'],
+            $_SESSION['lang']['blok'],
             $_SESSION['lang']['kodebarang'],
             $_SESSION['lang']['kwantitas'],
-            $_SESSION['lang']['hargasatuan'],
+            $_SESSION['lang']['biaya'],
             substr($_SESSION['lang']['hasilkerja'],0,12),
             $_SESSION['lang']['satuan'],
         );
-        $align = explode(",","L,L,L,L,L,R,R,R,L");
+        $align = explode(",","L,L,L,L,L,L,R,R,R,L");
         break;
     default:
     break;
@@ -133,10 +146,10 @@ switch($level) {
 switch($mode) {
     case 'pdf':
         /** Report Prep **/
-        $colPdf = array('notransaksi','tanggal','kodekegiatan','kodeorg','kodebarang','kwantitas',
-            'hargasatuan','hasilkerja','satuan');
+        $colPdf = array('notransaksi','tanggal','kodekegiatan','kodeorg','blok','kodebarang','kwantitas',
+            'biaya','hasilkerja','satuan');
         $title = $_SESSION['lang']['lapmaterial'];
-        $length = explode(",","15,7,20,10,10,10,10,10,10");
+        $length = explode(",","15,7,20,10,8,11,6,8,10,5");
 
         $pdf = new zPdfMaster('L','pt','A4');
         $pdf->setAttr1($title,$align,$length,$colPdf);
@@ -157,6 +170,11 @@ switch($mode) {
             }
             $pdf->Ln();
         }
+        $pdf->Cell(557,$height,'Total',1,0,$align[$i],0);
+        $pdf->Cell(48,$height,number_format($tmaterial,2),1,0,'R',0);
+        $pdf->Cell(62,$height,number_format($tharga),1,0,'R',0);
+        $pdf->Cell(78,$height,number_format($tluas,2),1,0,'R',0);
+        $pdf->Cell(40,$height,'',1,0,$align[$i],1);
 
         $pdf->Output();
         break;
@@ -209,7 +227,7 @@ switch($mode) {
             $tab .= "</tr>";
         }
         $tab .= "</tbody>";
-        $tab .= "<tfoot><tr class=rowcontent><td colspan=6>Total</td><td align=right>".number_format($tharga)."</td><td colspan=2>&nbsp;</td></tr></tbody>";
+        $tab .= "<tfoot><tr class=rowcontent><td colspan=6>Total</td><td align=right>".number_format($tmaterial,2)."</td><td align=right>".number_format($tharga)."</td><td align=right>".number_format($tluas,2)."</td><td>&nbsp;</td></tr></tbody>";
         
         $tab .= "</table>";
 

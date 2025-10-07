@@ -14,6 +14,7 @@ OPEN_BOX();
 $optJual="<option value='loco'>Loco</option>";
 $optJual.="<option value='franco'>Franco</option>";		
 $optJual.="<option value='fob'>FOB</option>";
+$optJual.="<option value='cif'>CIF</option>";
 
 
 echo"<fieldset>

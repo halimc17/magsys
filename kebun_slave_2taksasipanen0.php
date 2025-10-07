@@ -43,9 +43,10 @@ if($proses=='preview'||$proses=='excel'){
     }
     
     #ambil data taksasi
-    $sTaksasi="select afdeling, tanggal, blok, seksi, hasisa, haesok, jmlhpokok, persenbuahmatang, jjgmasak, jjgoutput, hkdigunakan, bjr, (bjr*jjgmasak) as kg from ".$dbname.".kebun_taksasi 
-        where afdeling like '".$kebun."%' and afdeling like '%".$afdeling."%' and tanggal like '".$periode."%' 
-        ";    
+    $sTaksasi="select a.afdeling, a.tanggal, a.blok, b.namaorganisasi as namablok, a.seksi, a.hasisa, a.haesok, a.jmlhpokok, a.persenbuahmatang, a.jjgmasak, a.jjgoutput, a.hkdigunakan, a.bjr, (a.bjr*a.jjgmasak) as kg 
+				from ".$dbname.".kebun_taksasi a
+				left join ".$dbname.".organisasi b on b.kodeorganisasi=a.blok
+				where a.afdeling like '".$kebun."%' and a.afdeling like '%".$afdeling."%' and a.tanggal like '".$periode."%' ";    
     $restaksasi=mysql_query($sTaksasi);
     while($bar1=mysql_fetch_object($restaksasi)){        
         $kunci=$bar1->afdeling.$bar1->tanggal;
@@ -70,7 +71,7 @@ if($proses=='preview'||$proses=='excel'){
         $dzArr[$kunci]['hkpanen']+=$bisapanen;    
         $dzArr[$kunci]['counter']+=1;
         $dzArr[$kunci]['afdeling']=$bar1->afdeling;
-        $dzArr[$kunci]['blok'].=$bar1->blok.'</br>';
+        $dzArr[$kunci]['blok'].=$bar1->namablok.'</br>';
         $dzArr[$kunci]['seksi'].=$bar1->seksi.'</br>';
         $dzArr[$kunci]['hasisa']+=$bar1->hasisa;
         $dzArr[$kunci]['haesok']+=$bar1->haesok;
@@ -115,9 +116,9 @@ if($proses=='preview'||$proses=='excel'){
     <thead>
     <tr>
         <td ".$bgcoloraja." rowspan=3>".$_SESSION['lang']['tanggal']."</td>";
-        if(!empty($listafd))foreach($listafd as $laf)$tab.="<td ".$bgcoloraja." colspan=12 align=center>".$laf."</td>";
+        if(!empty($listafd))foreach($listafd as $laf)$tab.="<td ".$bgcoloraja." colspan=13 align=center>".$laf."</td>";
         $tab.="
-        <td ".$bgcoloraja." colspan=12 align=center>".$kebun."</td>
+        <td ".$bgcoloraja." colspan=11 align=center>".$kebun."</td>
     </tr>
     <tr>";
         if(!empty($listafd))foreach($listafd as $laf)$tab.="<td ".$bgcoloraja." rowspan=2>".$_SESSION['lang']['section']."</td>
@@ -213,7 +214,14 @@ if($proses=='preview'||$proses=='excel'){
             <td align=right>".number_format($dzArr[$kunci]['hkdigunakan'])."</td>
             <td align=right>".number_format($dzArr[$kunci]['hkpanen'])."</td>
             <td align=right>".number_format($dzArr[$kunci]['bjr'],2)."</td>
-            <td align=right>".number_format($dzArr[$kunci]['kg'])."</td>";            
+            <td align=right>".number_format($dzArr[$kunci]['kg'])."</td>";
+			$gthasisa[$laf]+=$dzArr[$kunci]['hasisa'];
+			$gthaesok[$laf]+=$dzArr[$kunci]['haesok'];
+			$gtjmlhpokok[$laf]+=$dzArr[$kunci]['jmlhpokok'];
+			$gtjjgmasak[$laf]+=$dzArr[$kunci]['jjgmasak'];
+			$gthkdigunakan[$laf]+=$dzArr[$kunci]['hkdigunakan'];
+			$gthkpanen[$laf]+=$dzArr[$kunci]['hkpanen'];
+			$gtkg[$laf]+=$dzArr[$kunci]['kg'];
         }
         @$pbm2=$dzArr[$kunci2]['jjgmasak']*100/$dzArr[$kunci2]['jmlhpokok'];
         $tab.="
@@ -228,12 +236,50 @@ if($proses=='preview'||$proses=='excel'){
         <td align=right>".number_format($varian_kgsdhi)."</td>
         <td align=right>".number_format($varian_ps,2)."</td>
         <td align=right>".number_format($varian_pssdhi,2)."</td>
-        </tr>";                        
-        
+        </tr>";
+		$gttthkdigunakan+=$dzArr[$kunci2]['hkdigunakan'];
+		$gttthasisa+=$dzArr[$kunci2]['hasisa'];
+		$gttthaesok+=$dzArr[$kunci2]['haesok'];
+		$gtttjmlhpokok+=$dzArr[$kunci2]['jmlhpokok'];
+		$gtttjjgmasak+=$dzArr[$kunci2]['jjgmasak'];
+		$gttthkpanen+=$dzArr[$kunci2]['hkpanen'];
+		$gtttkg+=$dzArr[$kunci2]['kg'];
+		$gtttp_kg+=$dzArr[$kunci2]['p_kg'];
     }
-    
-    $tab.="</tbody></table></td></tr></tbody><table>";
-
+    $tab.="<tr class=rowcontent>
+			<td align=right bgcolor='#FEDEFE'>Total</td>";
+	if(!empty($listafd))foreach($listafd as $laf){
+		$gtpbm=($gtjmlhpokok[$laf]==0 ? 0 : $gtjjgmasak[$laf]*100/$gtjmlhpokok[$laf]);
+		$gtjjgoutput=($gthkdigunakan[$laf]==0 ? 0 : $gtjjgmasak[$laf]/$gthkdigunakan[$laf]);
+		$gtbjr=($gtjjgmasak[$laf]==0 ? 0 : $gtkg[$laf]/$gtjjgmasak[$laf]);
+		$tab.="	<td bgcolor='#FEDEFE'></td><td bgcolor='#FEDEFE'></td>
+	        <td align=right bgcolor='#FEDEFE'>".number_format($gthasisa[$laf],2)."</td>
+		    <td align=right bgcolor='#FEDEFE'>".number_format($gthaesok[$laf],2)."</td>
+			<td align=right bgcolor='#FEDEFE'>".number_format($gthasisa[$laf]+$gthaesok[$laf],2)."</td>
+			<td align=right bgcolor='#FEDEFE'>".number_format($gtjmlhpokok[$laf],0)."</td>
+	        <td align=right bgcolor='#FEDEFE'>".number_format($gtpbm,2)."</td>
+		    <td align=right bgcolor='#FEDEFE'>".number_format($gtjjgmasak[$laf],0)."</td>
+			<td align=right bgcolor='#FEDEFE'>".number_format($gtjjgoutput,0)."</td>
+			<td align=right bgcolor='#FEDEFE'>".number_format($gthkdigunakan[$laf],0)."</td>
+			<td align=right bgcolor='#FEDEFE'>".number_format($gthkpanen[$laf],0)."</td>
+			<td align=right bgcolor='#FEDEFE'>".number_format($gtbjr,2)."</td>
+			<td align=right bgcolor='#FEDEFE'>".number_format($gtkg[$laf],0)."</td>";
+    }
+	$gtttpbm=($gtttjmlhpokok==0 ? 0 : $gtttjjgmasak*100/$gtttjmlhpokok);
+	$gtttvarian_kg=$gtttp_kg-$gtttkg;
+	$gtttvarian_ps=100-($gtttp_kg-$gtttkg)/$gtttp_kg*100;
+	$tab.="	<td align=right bgcolor='#FEDEFE'>".number_format($gttthkdigunakan)."</td>
+			<td align=right bgcolor='#FEDEFE'>".number_format($gttthasisa+$gttthaesok,2)."</td>
+			<td align=right bgcolor='#FEDEFE'>".number_format($gtttpbm,2)."</td>
+			<td align=right bgcolor='#FEDEFE'>".number_format($gtttkg)."</td>
+			<td align=right bgcolor='#FEDEFE'>".number_format($kgsdhi)."</td>
+			<td align=right bgcolor='#FEDEFE'>".number_format($gtttp_kg)."</td>
+			<td align=right bgcolor='#FEDEFE'>".number_format($p_kgsdhi)."</td>
+			<td align=right bgcolor='#FEDEFE'>".number_format($gtttvarian_kg)."</td>
+			<td align=right bgcolor='#FEDEFE'>".number_format($varian_kgsdhi)."</td>
+			<td align=right bgcolor='#FEDEFE'>".number_format($varian_ps,2)."</td>
+			<td align=right bgcolor='#FEDEFE'>".number_format($varian_pssdhi,2)."</td>";
+    $tab.="</tr></tbody></table>";
 }	
 switch($proses)
 {

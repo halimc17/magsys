@@ -269,12 +269,12 @@ function prosesByBengkel(){
                    $interco1=$bar->akunhutang; 
             }       
           if($status=='B'){
-              $akunspl=$interco1;
-              $inter=$interco;
+              $akunspl=$intraco1;
+              $inter=$intraco;
           }
           if($status=='C'){
-               $akunspl=$intraco1;
-               $inter=$intraco;             
+               $akunspl=$interco1;
+               $inter=$interco;             
           }
           if($akunspl=='' or $inter=='')
           {

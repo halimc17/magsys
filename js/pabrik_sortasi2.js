@@ -112,7 +112,8 @@ function loadData()
 }
 function cariBast(num)
 {
-                param='proses=LoadData';
+                noTiket=document.getElementById('noTiketcr').value;
+                param='noTiket='+noTiket+'&proses=LoadData';
                 param+='&page='+num;
                 tujuan = 'pabrik_slave_sortasi2.php';
                 post_response_text(tujuan, param, respog);			
@@ -302,7 +303,8 @@ function cariTiket()
         document.getElementById('headher').style.display='none';
         document.getElementById('listData').style.display='block';
         noTiket=document.getElementById('noTiketcr').value;
-        param='noTiket='+noTiket+'&proses=cariData';
+        //param='noTiket='+noTiket+'&proses=cariData';
+        param='noTiket='+noTiket+'&proses=LoadData';
         //alert(param);
         tujuan='pabrik_slave_sortasi2.php';
         post_response_text(tujuan, param, respog);
@@ -332,7 +334,7 @@ function cariTiket()
 function cariData(num)
 {
                 noTiket=document.getElementById('noTiketcr').value;
-                param='noTiket='+noTiket+'&proses=cariData';
+                param='noTiket='+noTiket+'&proses=LoadData';
                 param+='&page='+num;
                 tujuan = 'pabrik_slave_sortasi2.php';
                 post_response_text(tujuan, param, respog);			
@@ -434,6 +436,7 @@ function addDetail(brs)
 {
     baris=brs;
     row=baris;
+    row2=baris/2;
     strUrl = '';
     for(i=1;i<=row;i++)
     {
@@ -441,14 +444,24 @@ function addDetail(brs)
         if(strUrl != '')
         {
             Fraksi=document.getElementById('fraksi_'+i).getAttribute('value');
-            strUrl += '&isiData['+Fraksi+']='+encodeURIComponent(trim(document.getElementById('inputan_'+i).value))
-                   +'&kdFraksi[]='+Fraksi;
+			if(i<=row2){
+	            strUrl += '&isiData['+Fraksi+']='+encodeURIComponent(trim(document.getElementById('inputan_'+i).value))
+		               +'&kdFraksi[]='+Fraksi;
+			}else{
+	            strUrl += '&isiData2['+Fraksi+']='+encodeURIComponent(trim(document.getElementById('inputan_'+i).value))
+		               +'&kdFraksi2[]='+Fraksi;
+			}
         }
         else
         {
             Fraksi=document.getElementById('fraksi_'+i).getAttribute('value');
-            strUrl += '&isiData['+Fraksi+']='+encodeURIComponent(trim(document.getElementById('inputan_'+i).value))
-                   +'&kdFraksi[]='+Fraksi;
+			if(i<=row2){
+		        strUrl += '&isiData['+Fraksi+']='+encodeURIComponent(trim(document.getElementById('inputan_'+i).value))
+			           +'&kdFraksi[]='+Fraksi;
+			}else{
+		        strUrl += '&isiData2['+Fraksi+']='+encodeURIComponent(trim(document.getElementById('inputan_'+i).value))
+			           +'&kdFraksi2[]='+Fraksi;
+			}
         }
     }
     catch(e){}
@@ -457,11 +470,13 @@ function addDetail(brs)
     jmlh=document.getElementById('jmlhJJg').value;
     //prsn=document.getElementById('persenBrnd').value
     kgPtngan=document.getElementById('kgPtngan').value
+    jmlJJgAsli=document.getElementById('jmlJJgAsli').value;
+    kgPotAsli=document.getElementById('kgPotAsli').value
     pros=document.getElementById('proses').value;
-    param="proses="+pros+"&noTiket="+noTkt+"&jmlhJJg="+jmlh+'&kgPtngan='+kgPtngan;
+    param="proses="+pros+"&noTiket="+noTkt+"&jmlhJJg="+jmlh+'&kgPtngan='+kgPtngan+"&jmlJJgAsli="+jmlJJgAsli+'&kgPotAsli='+kgPotAsli;
     param+=strUrl;
     fileTarget='pabrik_slave_sortasi2.php';
-   // alert(param);
+    //alert(param);
 
     function respon() {
         if (con.readyState == 4) {
@@ -500,9 +515,12 @@ function bersihForm()
     document.getElementById('jmlhJJg').value=0;
     //document.getElementById('persenBrnd').value=0;
     document.getElementById('kgPtngan').value=0;
+    document.getElementById('jmlJJgAsli').value=0;
+    document.getElementById('kgPotAsli').value=0;
     document.getElementById('noTkt').disabled=false;
     document.getElementById('noTkt').value='';
     document.getElementById('nettox').innerHTML='';
+    document.getElementById('jmlJJg').value=0;
     document.getElementById('bjrx').innerHTML='';
     
     document.getElementById('proses').value='insert';
@@ -597,9 +615,17 @@ function getNetto(noticket)
                 if (!isSaveResponse(con.responseText)) {
                     alert('ERROR TRANSACTION,\n' + con.responseText);
                 } else {
-
-                   document.getElementById('nettox').innerHTML=con.responseText;
-                   document.getElementById('bjrx').innerHTML='';
+					arr=con.responseText.split("###");
+					document.getElementById('nettox').value=arr[0];
+					document.getElementById('nettox').innerHTML=arr[0];
+					document.getElementById('jmlJJg').value=arr[1];
+					if(arr[1]==0){
+						document.getElementById('bjrx').value=0;
+						document.getElementById('bjrx').innerHTML=0;
+					}else{
+						document.getElementById('bjrx').value=(arr[0]/arr[1]).toFixed(2);
+						document.getElementById('bjrx').innerHTML=(arr[0]/arr[1]).toFixed(2);
+					}
                 }
             } else {
                 busy_off();
@@ -617,12 +643,16 @@ function hitungPotongan(val,kodefraksi,field)
 		fraksi = JSON.parse(document.getElementById('fraksi').value);
 		potFraksi = JSON.parse(document.getElementById('potFraksi').value),
         pt = getValue('kodePt'),
-        koef = 7;
+        //koef = 7;
+        koef = 12.5;
         if (pt=='SMA') {
             koef = 12.5;
         }
         
-        jjg = 100;
+        jjg = document.getElementById('jmlhJJg').value;
+		if(jjg==0){
+			//alert('Janjang Sortasi Tidak boleh 0');
+		}
         totpot=0;
         totprsn=0;
 		for(x=1;x<=field;x++){
@@ -632,7 +662,11 @@ function hitungPotongan(val,kodefraksi,field)
 			if(fCode=='A') tm1 = tm1 - 5;
 			if(tm1<0) tm1=0;
 			if(fraksi[fCode]=='JJG') {
-				p = parseFloat(tm1) * potFraksi[fCode] * 100/jjg;
+				if(jjg==0){
+					p = 0;
+				}else{
+					p = parseFloat(tm1) * potFraksi[fCode] * 100/jjg;
+				}
 			} else {
 				if(parseFloat(tm1) > koef) {
 					p = 0;
@@ -644,9 +678,65 @@ function hitungPotongan(val,kodefraksi,field)
         }
         nettox=document.getElementById('nettox').innerHTML;
         nettox=parseFloat(nettox);
-        totpot=nettox*(totprsn/100);
+		if(jjg==0){
+	        totpot=0;
+		}else{
+	        totpot=nettox*(totprsn/100);
+		}
+	    document.getElementById('kgPtngan').value=totpot.toFixed(2);
     }
-    document.getElementById('kgPtngan').value=totpot.toFixed(2);
+}
+
+function hitungPotAsli(val,kodefraksi,field)
+{
+    if(document.getElementById('bjrx').innerHTML=='' || document.getElementById('bjrx').innerHTML==0)
+        alert('Please insert bunch...!');
+    else{
+		field2=field*2;
+		fraksi = JSON.parse(document.getElementById('fraksi').value);
+		potFraksi = JSON.parse(document.getElementById('potFraksi').value),
+        pt = getValue('kodePt'),
+        //koef = 7;
+        koef = 12.5;
+        if (pt=='SMA') {
+            koef = 12.5;
+        }
+        jjg = document.getElementById('jmlJJgAsli').value;
+		if(jjg==0){
+			//alert('Janjang Sortasi Tidak boleh 0');
+		}
+        totprsn=0;
+		for(x=1+field;x<=field2;x++){
+            tm1 = document.getElementById('inputan_'+x).value;
+			fCode = document.getElementById('fraksi_'+x).value;
+			var p;
+			if(fCode=='A') tm1 = tm1 - 5;
+			if(tm1<0) tm1=0;
+			if(fraksi[fCode]=='JJG') {
+				if(jjg==0){
+					p = 0;
+				}else{
+					p = parseFloat(tm1) * potFraksi[fCode] * 100/jjg;
+				}
+			} else {
+				if(parseFloat(tm1) > koef) {
+					p = 0;
+				} else {
+					p = (koef - parseFloat(tm1)) * 0.3;
+				}
+			}
+			totprsn = totprsn+p;
+        }
+        nettox=document.getElementById('nettox').innerHTML;
+        nettox=parseFloat(nettox);
+		if(jjg==0){
+	        totpot=0;
+		}else{
+	        totpot=nettox*(totprsn/100);
+		}
+		document.getElementById('kgPotAsli').value=totpot.toFixed(2);
+		//alert(' Netto:'+nettox+' fraksi:'+fraksi+' potFraksi:'+potFraksi+' pt:'+pt+' totprsn:'+totprsn);
+    }
 }
 
 function hitungBJR(d,val)

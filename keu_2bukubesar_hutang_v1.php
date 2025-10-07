@@ -62,7 +62,7 @@ while($bar=mysql_fetch_object($res))
 
 //ambil akun
 $str="select noakun,namaakun from ".$dbname.".keu_5akun
-    where level = '5' and noakun = '2111101'
+    where level = '5' and noakun in ('2111101','2111201')
     order by noakun
     ";
 $res=mysql_query($str);

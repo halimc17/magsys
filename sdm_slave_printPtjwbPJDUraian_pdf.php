@@ -3,9 +3,20 @@ require_once('master_validation.php');
 require_once('config/connection.php');
 require_once('lib/nangkoelib.php');
 require_once('lib/fpdf.php');
+require_once('lib/zLib.php');
 $notransaksi=$_GET['notransaksi'];
 
 //=============
+
+$namadept=  makeOption($dbname, 'sdm_5departemen', 'kode,nama');
+$str="select a.kodeorganisasi,a.namaorganisasi from ".$dbname.".organisasi a where a.kodeorganisasi in (select b.induk from ".$dbname.".sdm_pjdinasht c left join ".$dbname.".organisasi b on c.kodeorg=b.kodeorganisasi where c.notransaksi='".$notransaksi."')";	
+$res=mysql_query($str);
+while($bar=mysql_fetch_object($res))
+{
+  $namaorganisasi=$bar->namaorganisasi;
+  $kodeorganisasi=$bar->kodeorganisasi;
+  $_SESSION['empl']['ptpdf']=$bar->namaorganisasi;
+}
 
 //create Header
 class PDF extends FPDF
@@ -19,7 +30,8 @@ class PDF extends FPDF
                 $this->SetFont('Arial','B',10);
                 $this->SetFillColor(255,255,255);	
                 $this->SetY(5);   
-            $this->Cell(130,5,strtoupper($namapt),0,1,'C');	 
+            //$this->Cell(130,5,strtoupper($namapt),0,1,'C');	 
+            $this->Cell(130,5,strtoupper($_SESSION['empl']['ptpdf']),0,1,'C');	 
                 $this->SetFont('Arial','',15);
             $this->Cell(190,5,'',0,1,'C');
                 $this->SetFont('Arial','',6); 
@@ -158,7 +170,7 @@ while($barw=mysql_fetch_object($resw)){
                 $pdf->Cell(50,5," : ".$namakaryawan,0,1,'L');	
         $pdf->SetX(20);	
         $pdf->Cell(30,5,$_SESSION['lang']['bagian'],0,0,'L');	
-                $pdf->Cell(50,5," : ".$bagian,0,1,'L');	
+                $pdf->Cell(50,5," : ".$namadept[$bagian],0,1,'L');	
         $pdf->SetX(20);	
         $pdf->Cell(30,5,$_SESSION['lang']['functionname'],0,0,'L');	
                 $pdf->Cell(50,5," : ".$jabatan,0,1,'L');	

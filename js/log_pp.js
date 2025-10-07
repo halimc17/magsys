@@ -855,9 +855,9 @@ function cek_pembuat(nopp)
 }
 function delPp(rnopp,stat,statTgl)
 {
-        if(statTgl!=0)
+      if(statTgl!=0)
         {
-                if(stat==1)
+		        if(stat==1)
                 {
                         alert('No.PP'+rnopp+'. being on submission process');
                         return;

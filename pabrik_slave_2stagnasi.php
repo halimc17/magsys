@@ -55,7 +55,7 @@ $dzArr=array();
 $kmrn=strtotime ('-1 day',strtotime ($tgl_1));
 $kmrn=date ('Y-m-d', $kmrn );
 
-function dates_inbetween($date1, $date2)
+function dates_inbetwee($date1, $date2)
 {
     $day = 60*60*24;
     $date1 = strtotime($date1);
@@ -76,7 +76,8 @@ function dates_inbetween($date1, $date2)
 		$tgl1=tanggalsystem($tgl1);
 		$tgl22=tanggalsystem($tgl22);
 	}
-	$test = dates_inbetween($tgl1, $tgl22);
+	//$test = dates_inbetwee($tgl1, $tgl22);
+	$test = rangeTanggal($tgl1, $tgl22);
 
         
 $brdr=0;
@@ -99,12 +100,11 @@ $tab.="<table cellpadding=1 cellspacing=1 border=".$brdr." class=sortable><thead
     $tab.="<td align=center  ".$bgclr.">".$_SESSION['lang']['keterangan']."</td>";
     $tab.="</tr></thead><tbody>";        
         
-        
-$sData="select b.tahuntanam,b.downstatus,a.tanggal,b.kodeorg,b.jamstagnasi,keterangan FROM ".$dbname.".`pabrik_pengolahanmesin` b left join 
-        ".$dbname.".pabrik_pengolahan a on b.nopengolahan=b.nopengolahan where 
-        b.kodeorg like '".$kdPabrik."%' and tanggal between '".$tgl_1."' and '".$tgl_2."'
+$sData="select b.tahuntanam,b.downstatus,a.tanggal,b.kodeorg,b.jamstagnasi,keterangan 
+		FROM ".$dbname.".`pabrik_pengolahanmesin` b 
+		left join ".$dbname.".pabrik_pengolahan a on a.nopengolahan=b.nopengolahan where 
+        b.kodeorg like '".$kdPabrik."%' and a.tanggal between '".$tgl_1."' and '".$tgl_2."'
         ".$stad." order by tanggal asc";
-
 
 $qData=mysql_query($sData) or die(mysql_error($conn));
 

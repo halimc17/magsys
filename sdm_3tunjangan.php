@@ -34,7 +34,7 @@ while ($data=mysql_fetch_assoc($qry))
 
 
 $optTipe="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
-$iTipe="select * from ".$dbname.".sdm_5tipekaryawan where id in ('1','3') ";
+$iTipe="select * from ".$dbname.".sdm_5tipekaryawan where id in ('1','2','3','4','5','6') ";
 $nTipe=  mysql_query($iTipe) or die (mysql_errno($conn));
 while($dTipe=   mysql_fetch_assoc($nTipe))
 {
@@ -124,7 +124,7 @@ echo "<fieldset><legend><b>Proses Tunjangan</b></legend>
     <tr>
         <td>Uang Makan</td>
         <td>:</td>
-        <td><input type=text id=makan value=0 disabled size=10 onkeypress=\"return angka_doang(event);\" class=myinputtextnumber maxlength=4 style=\"width:125px;\"></td>
+        <td><input type=text id=makan value=0 size=10 onkeypress=\"return angka_doang(event);\" class=myinputtextnumber maxlength=4 style=\"width:125px;\"></td>
     </tr>
     
     <tr>

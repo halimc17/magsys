@@ -111,11 +111,12 @@ $where = $_GET['cond'];
                 $this->Ln();	
                 $this->SetFont('Arial','B',9);	
                 $this->SetFillColor(220,220,220);
-                                $this->Cell(3/100*$width,$height,'No',1,0,'C',1);
-                                $this->Cell(15/100*$width,$height,$_SESSION['lang']['blok'],1,0,'C',1);	
+                                $this->Cell(5/100*$width,$height,'No',1,0,'C',1);
+                                $this->Cell(30/100*$width,$height,$_SESSION['lang']['blok'],1,0,'C',1);	
                                 $this->Cell(10/100*$width,$height,$_SESSION['lang']['janjang'],1,0,'C',1);						
                                 $this->Cell(10/100*$width,$height,$_SESSION['lang']['bjr'],1,0,'C',1);
-                                $this->Cell(15/100*$width,$height,$_SESSION['lang']['brondolan'],1,1,'C',1);
+                                $this->Cell(15/100*$width,$height,$_SESSION['lang']['brondolan'],1,0,'C',1);
+                                $this->Cell(30/100*$width,$height,$_SESSION['lang']['keterangan'],1,1,'C',1);
 
             }
 
@@ -133,18 +134,19 @@ $where = $_GET['cond'];
                 $pdf->SetFillColor(255,255,255);
                 $pdf->SetFont('Arial','',9);
 
-                $str="select * from ".$dbname.".kebun_spbdt   where nospb='".$noSpb."'"; //echo $str;exit();
+                $str="select a.*,b.namaorganisasi from ".$dbname.".kebun_spbdt a left join ".$dbname.".organisasi b on b.kodeorganisasi=a.blok where nospb='".$noSpb."' order by blok desc"; //echo $str;exit();
                 $re=mysql_query($str);
                 $no=0;
                 while($res=mysql_fetch_assoc($re))
                 {
                         $no+=1;
 
-                        $pdf->Cell(3/100*$width,$height,$no,1,0,'L',1);
-                        $pdf->Cell(15/100*$width,$height,$res['blok'],1,0,'L',1);	
+                        $pdf->Cell(5/100*$width,$height,$no,1,0,'C',1);
+                        $pdf->Cell(30/100*$width,$height,$res['namaorganisasi'],1,0,'L',1);	
                         $pdf->Cell(10/100*$width,$height,number_format($res['jjg'],2),1,0,'R',1);
                         $pdf->Cell(10/100*$width,$height,number_format($res['bjr'],2),1,0,'R',1);
-                        $pdf->Cell(15/100*$width,$height,number_format($res['brondolan'],2),1,1,'R',1);
+                        $pdf->Cell(15/100*$width,$height,number_format($res['brondolan'],2),1,0,'R',1);
+                        $pdf->Cell(30/100*$width,$height,$res['keterangan'],1,1,'L',1);
                 }
 
         $pdf->Output();

@@ -17,7 +17,8 @@ if(($_SESSION['empl']['tipelokasitugas']=='HOLDING')or($_SESSION['empl']['tipelo
 }
 else
 {
-	$sOrg="select namaorganisasi,kodeorganisasi from ".$dbname.".organisasi where tipe='KEBUN' and induk='".$_SESSION['empl']['lokasitugas']."' or kodeorganisasi='".$_SESSION['empl']['lokasitugas']."' order by kodeorganisasi asc";
+	//$sOrg="select namaorganisasi,kodeorganisasi from ".$dbname.".organisasi where tipe='KEBUN' and induk='".$_SESSION['empl']['lokasitugas']."' or //kodeorganisasi='".$_SESSION['empl']['lokasitugas']."' order by kodeorganisasi asc";
+	$sOrg="select namaorganisasi,kodeorganisasi from ".$dbname.".organisasi where tipe='KEBUN' and induk='".$_SESSION['org']['kodeorganisasi']."' or kodeorganisasi='".$_SESSION['empl']['lokasitugas']."' order by kodeorganisasi asc";
 }
 $qOrg=mysql_query($sOrg) or die(mysql_error($conn));
 while($rOrg=mysql_fetch_assoc($qOrg))
@@ -77,8 +78,15 @@ $title[1]=$_SESSION['lang']['rotasi']." ".$_SESSION['lang']['pemeltanaman'];
 $frm[0]="<fieldset style=\"float: left;\">
 <legend><b>".$title[0]."</b></legend>
 <table cellspacing=\"1\" border=\"0\" >
-<tr><td><label>".$_SESSION['lang']['kebun']."</label></td><td><select id=\"kdOrg\" name=\"kdOrg\" style=\"width:150px\" onchange=\"getAfd()\">".$optOrg."</select></td></tr>
-<tr><td><label>".$_SESSION['lang']['afdeling']."</label></td><td><select id=\"kdAfd\" name=\"kdAfd\" style=\"width:150px\"><option value=\"\"></option></select></td></tr>
+<tr><td><label>".$_SESSION['lang']['kebun']."</label></td><td>
+        <select id=\"kdOrg\" name=\"kdOrg\" style=\"width:150px\" onchange=\"getAfd()\">".$optOrg."</select>
+    </td>
+</tr>
+<tr>
+    <td>
+        <label>".$_SESSION['lang']['afdeling']."</label></td><td><select id=\"kdAfd\" name=\"kdAfd\" style=\"width:150px\"><option value=\"\"></option></select>
+    </td>
+</tr>
 <tr><td><label>".$_SESSION['lang']['tanggal']."</label></td><td>
 <input type=\"text\" class=\"myinputtext\" id=\"tgl1\" name=\"tgl1\" onmousemove=\"setCalendar(this.id);\" onkeypress=\"return false;\"  maxlength=\"10\" style=\"width:60px;\" /> s.d.
 <input type=\"text\" class=\"myinputtext\" id=\"tgl2\" name=\"tgl2\" onmousemove=\"setCalendar(this.id);\" onkeypress=\"return false;\"  maxlength=\"10\" style=\"width:60px;\" /></td></tr>

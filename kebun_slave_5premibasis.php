@@ -18,6 +18,9 @@ $premiliburcapaibasis=checkPostGet('premiliburcapaibasis',0);
 $topografi=checkPostGet('topografi','');
 $premitopografi=checkPostGet('premitopografi',0);
 $premibrondolan=checkPostGet('premibrondolan',0);
+$jenisbasis=checkPostGet('jenisbasis','');
+$premilebih2=checkPostGet('premilebih2',0);
+$premilebih3=checkPostGet('premilebih3',0);
 
 $optTopografi = makeOption($dbname,'setup_topografi','topografi,keterangan');
 $optJenis = array(
@@ -25,6 +28,10 @@ $optJenis = array(
 	'LIBUR' => 'Hari Libur'
 );
 $optKelas = makeOption($dbname,'kebun_5kelaspohon','kelas,nama');
+$optJenisbasis = array(
+	'KG'  => 'Kilogram',
+	'JJG' => 'Janjang'
+);
 
 switch($method)
 {
@@ -42,8 +49,10 @@ switch($method)
     case'insert':
 		if($afd=='') exit("Warning: Silakan pilih Perusahaan");
 		if($kelaspohon=='') exit("warning: Silakan pilih Kelas Pohon");
-		if($basis=='') exit("warning: Silakan isi Basis (JJG)");
-		if($premilebih=='') exit("warning: Silakan isi Premi Lebih Basis (/JJG)");
+		if($basis=='') exit("warning: Silakan isi Basis");
+		if($premilebih=='') exit("warning: Silakan isi Premi Lebih Basis 1");
+		if($premilebih2=='') exit("warning: Silakan isi Premi Lebih Basis 2");
+		if($premilebih3=='') exit("warning: Silakan isi Premi Lebih Basis 3");
 		
 		$scek="select * from ".$dbname.".kebun_5basispanen2 
 			   where afdeling='".$afd."' and jenispremi='".$jenispremi.
@@ -56,10 +65,10 @@ switch($method)
 		
 		$sIns="insert into ".$dbname.".kebun_5basispanen2 (afdeling,jenispremi,
 			kelaspohon,basis,premilebihbasis,premilibur,premiliburcapaibasis,
-			topografi,premitopografi,premibrondolan) 
+			topografi,premitopografi,premibrondolan,jenisbasis,premilebihbasis2,premilebihbasis3) 
 			values ('".$afd."','".$jenispremi."','".$kelaspohon."','".$basis."','".
 				$premilebih."','".$premilibur."','".$premiliburcapaibasis."','".
-				$topografi."','".$premitopografi."','".$premibrondolan."')";
+				$topografi."','".$premitopografi."','".$premibrondolan."','".$jenisbasis."','".$premilebih2."','".$premilebih3."')";
 		if(!mysql_query($sIns))
 		{
 			echo"Gagal".mysql_error($conn);
@@ -76,9 +85,12 @@ switch($method)
 						<td align=center>".$_SESSION['lang']['jenispremi']."</td>
 						<td align=center>".$_SESSION['lang']['kelaspohon']."</td>
 						<td align=center>".$_SESSION['lang']['basisjjg']."</td>
-						<td align=center>".$_SESSION['lang']['premilebihbasis']."(/JJG)</td>
+						<td align=center>".$_SESSION['lang']['jenis']."</td>
+						<td align=center>".$_SESSION['lang']['premilebihbasis']."1</td>
+						<td align=center>".$_SESSION['lang']['premilebihbasis']."2</td>
+						<td align=center>".$_SESSION['lang']['premilebihbasis']."3</td>
 						<td align=center>".$_SESSION['lang']['premi']." ".$_SESSION['lang']['harilibur']."</td>
-						<td align=center>".$_SESSION['lang']['premi']." ".$_SESSION['lang']['harilibur']." Capai Basis</td>
+						<td align=center>".$_SESSION['lang']['premi']." Capai Basis</td>
 						<td align=center>".$_SESSION['lang']['topografi']."</td>
 						<td align=center>".$_SESSION['lang']['premi']." ".$_SESSION['lang']['absensi']."</td>
 						<td align=center>".$_SESSION['lang']['premi']." ".$_SESSION['lang']['brondolan']."</td>
@@ -112,16 +124,20 @@ switch($method)
 			<td>".$bar['jenispremi']."</td>
 			<td>".$bar['kelaspohon']."</td>
 			<td style='text-align:center'>".number_format($bar['basis'],0)."</td>
+			<td>".$bar['jenisbasis']."</td>
 			<td style='text-align:center'>".number_format($bar['premilebihbasis'],0)."</td>
+			<td style='text-align:center'>".number_format($bar['premilebihbasis2'],0)."</td>
+			<td style='text-align:center'>".number_format($bar['premilebihbasis3'],0)."</td>
 			<td style='text-align:center'>".number_format($bar['premilibur'],0)."</td>
 			<td style='text-align:center'>".number_format($bar['premiliburcapaibasis'],0)."</td>
 			<td>".$optTopografi[$bar['topografi']]."</td>
 			<td style='text-align:center'>".number_format($bar['premitopografi'],0)."</td>
 			<td style='text-align:center'>".number_format($bar['premibrondolan'],0)."</td>
 			<td>
-				<img src=images/application/application_edit.png class=resicon  title='Edit' onclick=\"fillField('".
-					$bar['afdeling']."','".$bar['jenispremi']."','".$bar['kelaspohon']."','".$bar['basis']."','".$bar['premilebihbasis']."'
-					,'".$bar['premilibur']."','".$bar['premiliburcapaibasis']."','".$bar['topografi']."','".$bar['premitopografi']."','".$bar['premibrondolan']."');\">
+				<img src=images/application/application_edit.png class=resicon  title='Edit' onclick=\"fillField('"
+			        .$bar['afdeling']."','".$bar['jenispremi']."','".$bar['kelaspohon']."','".$bar['basis']."','".$bar['premilebihbasis']."','"
+					.$bar['premilibur']."','".$bar['premiliburcapaibasis']."','".$bar['topografi']."','".$bar['premitopografi']."','"
+					.$bar['premibrondolan']."','".$bar['jenisbasis']."','".$bar['premilebihbasis2']."','".$bar['premilebihbasis3']."');\">
 				<img src=images/application/application_delete.png class=resicon  title='Delete' onclick=\"del('".$bar['afdeling']."','".$bar['jenispremi']."','".$bar['kelaspohon']."','".$bar['topografi']."');\">             
 			</td>
 			</tr>";	
@@ -146,16 +162,17 @@ switch($method)
     case'update':
     if($basis=='')
     {
-        echo"warning: Silakan isi Basis (JJG)"; exit();
+        echo"warning: Silakan isi Basis ...!"; exit();
     }
-    if($premilebih=='')
+    if($premilebih=='' or $premilebih2=='' or $premilebih3=='')
     {
-        echo"warning: Silakan isi Premi Lebih Basis (/JJG)"; exit();
+        echo"warning: Silakan isi Premi Lebih Basis ...!"; exit();
     }
     
     $sUpd="update ".$dbname.".kebun_5basispanen2 set basis='".$basis."', premilebihbasis='".$premilebih."',
             premilibur='".$premilibur."',premiliburcapaibasis='".$premiliburcapaibasis."',
-			premitopografi='".$premitopografi."',premibrondolan='".$premibrondolan."' 
+			premitopografi='".$premitopografi."',premibrondolan='".$premibrondolan."'
+			,jenisbasis='".$jenisbasis."',premilebihbasis2='".$premilebih2."',premilebihbasis3='".$premilebih3."'
 			where afdeling='".$afd."' and jenispremi='".$jenispremi."' and kelaspohon = '".$kelaspohon."' and topografi='".$topografi."'";
     
     if(!mysql_query($sUpd))

@@ -393,7 +393,7 @@ function createTabDetail($id,$data) {
 		<tr>
             <td>&nbsp;</td>
             <td style='vertical-align:top;' colspan=7 align=right>PPh (%)</td>
-            <td><input type=text id=ppH name=ppH  class='myinputtextnumber' style='width:100px' onkeyup=\"calculatePph()\"  maxlength='5'  onkeypress='return angka_doang(event)' onblur=\"getZero()\" />  <input type='hidden' id='pph' name='pph' class='myinputtext' onkeypress='return angka_doang(event)' style='width:100px' onblur=\"getZero()\" /><span id='hslPPh'> </span> </td>
+            <td><input type=text id=ppH name=ppH  class='myinputtextnumber' style='width:100px' onkeyup=\"calculatePph()\"  maxlength='18' onblur=\"getZero()\" />  <input type='hidden' id='pph' name='pph' class='myinputtext' style='width:100px' onblur=\"getZero()\" /><span id='hslPPh'> </span> </td>
         </tr>
          <tr>
             <td>&nbsp;</td>
@@ -557,7 +557,7 @@ function createTabEditDetail($id,$data) {
         <tr>
             <td>&nbsp;</td>
             <td style='vertical-align:top;' colspan=7 align=right>PPh (%)</td>
-            <td><input type=text id='ppH' name='ppH'  class='myinputtextnumber' style='width:100px' onkeyup='calculatePph()'  maxlength='5'  onkeypress='return angka_doang(event)' onblur=\"getZero()\" />  <input type='hidden' id='pph' name='pph' class='myinputtext' onkeypress='return angka_doang(event)' style='width:100px' onblur=\"getZero()\" /><span id='hslPPh'> </span> </td>
+            <td><input type=text id='ppH' name='ppH' class='myinputtextnumber' style='width:100px' onkeyup='calculatePph()'  maxlength='18' onblur=\"getZero()\" />  <input type='hidden' id='pph' name='pph' class='myinputtext' style='width:100px' onblur=\"getZero()\" /><span id='hslPPh'> </span> </td>
         </tr>
          <tr>
             <td>&nbsp;</td>

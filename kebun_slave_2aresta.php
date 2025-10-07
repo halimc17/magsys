@@ -32,10 +32,12 @@ if($proses=='preview'||$proses=='excel'||$proses=='pdf'){
     @$tahunlalu=$tahun-1;
     #ambil data pokok awal tahun
     $sWhat="select kodeorg, tahuntanam, kelaspohon, luasareaproduktif, luasareanonproduktif, jumlahpokok, statusblok, 
-            cadangan, okupasi, rendahan, sungai, rumah, kantor, pabrik, jalan, kolam, umum
-        from ".$dbname.".setup_blok_tahunan 
+            cadangan, okupasi, rendahan, sungai, rumah, kantor, pabrik, jalan, kolam, umum, b.detail
+        from ".$dbname.".setup_blok_tahunan a
+		left join ".$dbname.".organisasi b on b.kodeorganisasi=a.kodeorg
         where kodeorg like '".$kebun."%' and kodeorg like '".$afdeling."%' and tahuntanam like '".$tahuntanam."%'
-            and (luasareaproduktif+luasareanonproduktif)>0 and tahun = '".$tahunlalu."'";  
+            and (luasareaproduktif+luasareanonproduktif)>0 and tahun = '".$tahunlalu."' and b.detail='1'"; 
+    		
     $rWhat=mysql_query($sWhat);
 	
     while($bWhat=mysql_fetch_object($rWhat)){
@@ -44,10 +46,12 @@ if($proses=='preview'||$proses=='excel'||$proses=='pdf'){
     
     #ambil data pokok tahun yang dipilih
     $sWhat="select kodeorg, tahuntanam, kelaspohon, luasareaproduktif, luasareanonproduktif, jumlahpokok, statusblok, 
-            cadangan, okupasi, rendahan, sungai, rumah, kantor, pabrik, jalan, kolam, umum, intiplasma
-        from ".$dbname.".setup_blok_tahunan 
+            cadangan, okupasi, rendahan, sungai, rumah, kantor, pabrik, jalan, kolam, umum, intiplasma, b.detail
+        from ".$dbname.".setup_blok_tahunan a
+		left join ".$dbname.".organisasi b on b.kodeorganisasi=a.kodeorg
         where kodeorg like '".$kebun."%' and kodeorg like '".$afdeling."%' and tahuntanam like '".$tahuntanam."%'
-            and (luasareaproduktif+luasareanonproduktif)>0 and tahun = '".$tahun."'";  
+            and (luasareaproduktif+luasareanonproduktif)>0 and tahun = '".$tahun."' and b.detail='1'"; 
+		
     $rWhat=mysql_query($sWhat);
     while($bWhat=mysql_fetch_object($rWhat)){
         @$luaskerangka=$bWhat->luasareaproduktif+$bWhat->luasareanonproduktif;
@@ -81,10 +85,11 @@ if($proses=='preview'||$proses=='excel'||$proses=='pdf'){
     if($tahun==$tahunini){
         #ambil data pokok teraktual (setup blok) jika yang dipilih adalah tahun ini
         $sWhat="select kodeorg, tahuntanam, kelaspohon, luasareaproduktif, luasareanonproduktif, jumlahpokok, statusblok, 
-                cadangan, okupasi, rendahan, sungai, rumah, kantor, pabrik, jalan, kolam, umum, intiplasma
-            from ".$dbname.".setup_blok 
+                cadangan, okupasi, rendahan, sungai, rumah, kantor, pabrik, jalan, kolam, umum, intiplasma, b.detail
+            from ".$dbname.".setup_blok a
+			left join ".$dbname.".organisasi b on b.kodeorganisasi=a.kodeorg
             where kodeorg like '".$kebun."%' and kodeorg like '".$afdeling."%' and tahuntanam like '".$tahuntanam."%'
-                and (luasareaproduktif+luasareanonproduktif)>0";  
+                and (luasareaproduktif+luasareanonproduktif)>0 and b.detail='1'";
         $rWhat=mysql_query($sWhat);
         while($bWhat=mysql_fetch_object($rWhat)){
             @$luaskerangka=$bWhat->luasareaproduktif+$bWhat->luasareanonproduktif;

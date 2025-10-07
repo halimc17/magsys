@@ -54,14 +54,15 @@ if($_SESSION['language']=='EN'){
     }
     
     // kamus blok
-    $str="select kodeorg, luasareaproduktif, tahuntanam
-        from ".$dbname.".setup_blok
+    $str="select a.kodeorg, a.luasareaproduktif, a.tahuntanam, b.namaorganisasi
+        from ".$dbname.".setup_blok a left join ".$dbname.".organisasi b on a.kodeorg=b.kodeorganisasi
         ";
     $res=mysql_query($str);
     while($bar=mysql_fetch_object($res))
     {
         $kamusOrg[$bar->kodeorg]['luas']=$bar->luasareaproduktif;
         $kamusOrg[$bar->kodeorg]['tata']=$bar->tahuntanam;
+        $kamusOrg[$bar->kodeorg]['namaorg']=$bar->namaorganisasi;
     }
     
     
@@ -238,7 +239,8 @@ if($_SESSION['language']=='EN'){
         
         if($adadata){
             if(!$bariskegiatan)$stream.="<tr class=rowcontent>";
-                $stream.="<td>".$rOrg."</td>";        
+                //$stream.="<td>".$rOrg."</td>";        
+                $stream.="<td align=right>".$kamusOrg[$rOrg]['namaorg']."</td>";        
                 $stream.="<td align=right>".$kamusOrg[$rOrg]['luas']."</td>";        
                 $stream.="<td align=right>".$kamusOrg[$rOrg]['tata']."</td>";     
 
@@ -402,7 +404,7 @@ switch($proses)
     case 'excel':
         $stream.="</table>Print Time:".date('YmdHis')."<br>By:".$_SESSION['empl']['name'];	
         $dte=date("YmdHms");
-        $nop_="Pusingan_Perawatan_".$kdAfd1."_".$tahun1."_".$kegiatan1."_".date('YmdHis');
+        $nop_="Rotasi_Perawatan_".$kdAfd1."_".$tahun1."_".$kegiatan1."_".date('YmdHis');
         $gztralala = gzopen("tempExcel/".$nop_.".xls.gz", "w9");
         gzwrite($gztralala, $stream);
         gzclose($gztralala);

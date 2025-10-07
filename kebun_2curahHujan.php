@@ -52,11 +52,18 @@ if($_SESSION['empl']['tipelokasitugas']=='HOLDING')
     $sOrg="select namaorganisasi,kodeorganisasi from ".$dbname.".organisasi where tipe='AFDELING' order by namaorganisasi asc";
     $sOrg2="select namaorganisasi,kodeorganisasi from ".$dbname.".organisasi where tipe='KEBUN' order by namaorganisasi asc";
 }
+elseif($_SESSION['empl']['tipelokasitugas']=='KANWIL')
+{
+    $sOrg="select namaorganisasi,kodeorganisasi from ".$dbname.".organisasi where tipe='AFDELING' and induk in
+(select kodeorganisasi from ".$dbname.".organisasi where induk='".$_SESSION['empl']['induk']."') order by namaorganisasi asc";
+    $sOrg2="select namaorganisasi,kodeorganisasi from ".$dbname.".organisasi where tipe='KEBUN' and induk='".$_SESSION['empl']['induk']."' order by namaorganisasi asc";
+}
 else
 {
     $sOrg="select namaorganisasi,kodeorganisasi from ".$dbname.".organisasi where tipe='AFDELING' and induk='".$_SESSION['empl']['lokasitugas']."' order by namaorganisasi asc";
     $sOrg2="select namaorganisasi,kodeorganisasi from ".$dbname.".organisasi where kodeorganisasi='".$_SESSION['empl']['lokasitugas']."' order by namaorganisasi asc";
 }
+//exit($sOrg2);
 $qOrg=mysql_query($sOrg) or die(mysql_error($conn));
 while($rOrg=mysql_fetch_assoc($qOrg))
 {

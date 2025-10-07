@@ -27,7 +27,7 @@ $lastday = date('t',strtotime($tgkAwal));
 $tgkAkhir=$periodeData."-".$lastday;
 
 $arrTgl=dates_inbetween($tgkAwal,$tgkAkhir);
-function dates_inbetween($date1, $date2){
+function dates_inbetwee($date1, $date2){
 
     $day = 60*60*24;
 
@@ -50,6 +50,19 @@ function dates_inbetween($date1, $date2){
     }
     return $dates_array;
 }
+	function dates_inbetween($date1, $date2){ //Function Baru
+		$date1 = date('Y-m-d',strtotime($date1));
+		$date2 = date('Y-m-d',strtotime($date2));
+		$dates_array = array();
+		$dates_array[] = $date1;
+		$tgl = $date1;
+		while($tgl<$date2){
+			$dates_array[]=date('Y-m-d',strtotime('+1 days',strtotime(substr($tgl,0,10))));
+			$tgl=date('Y-m-d',strtotime('+1 days',strtotime(substr($tgl,0,10))));
+		}
+		return $dates_array;
+	}
+
 if($kdUnit=='')
 {
 	exit("Error: Estate is obligatory");
@@ -68,6 +81,7 @@ if($afdId!='')
 $sPanen="select * from ".$dbname.".kebun_5bjr
 		 where kodeorg like '".$kdUnit."%' and tahunproduksi = '".substr($periodeData,0,4)."%'";
 $qPanen=mysql_query($sPanen) or die(mysql_error($conn));
+//exit('Warning: '.$sPanen);
 while($rPanen=  mysql_fetch_assoc($qPanen))
 {
 	$kamusBjr[$rPanen['kodeorg']]=$rPanen['bjr'];
@@ -76,16 +90,18 @@ while($rPanen=  mysql_fetch_assoc($qPanen))
 $dtKdOrg=array();
 
 //panen
-$sPanen="select sum(hasilkerja) as jjg,kodeorg,tanggal from ".$dbname.".kebun_prestasi_vw
+$sPanen="select sum(hasilkerja) as jjg,sum(hasilkerjakg) as kg,kodeorg,tanggal from ".$dbname.".kebun_prestasi_vw
 		 where kodeorg like '".$kdUnit."%' and tanggal like '".$periodeData."%' 
-		 group by kodeorg,tanggal order by tanggal asc,kodeorg asc";
+		 group by kodeorg,tanggal order by kodeorg,tanggal";
 $qPanen=mysql_query($sPanen) or die(mysql_error($conn));
 while($rPanen=  mysql_fetch_assoc($qPanen))
 {
 	$dtKdOrg[$rPanen['kodeorg']]=$rPanen['kodeorg'];
 	$dtJJgPan[$rPanen['kodeorg'].$rPanen['tanggal']]=$rPanen['jjg'];
+	$dtKgPan[$rPanen['kodeorg'].$rPanen['tanggal']]=$rPanen['kg'];
+	//$dtBJRPan[$rPanen['kodeorg'].$rPanen['tanggal']]=$rPanen['kg']/$rPanen['jjg'];
+	$kamusBjr[$rPanen['kodeorg']]=$rPanen['kg']/$rPanen['jjg'];
 }
-
 $sparam="select  nilai from ".$dbname.".setup_parameterappl where kodeparameter='JJGKT'";
 $qParam=mysql_query($sparam) or die(mysql_error($conn));
 $rParam=mysql_fetch_assoc($qParam);
@@ -93,7 +109,7 @@ $rParam=mysql_fetch_assoc($qParam);
 
 $sKontanan="select sum(jjgkontanan) as jjgkontan,kodeblok as kodeorg,tanggal from ".$dbname.".log_baspk
 		   where kodeblok like '".$kdUnit."%'  and tanggal like '".$periodeData."%'  group by kodeblok,tanggal
-			order by tanggal asc,kodeblok asc";
+			order by kodeblok,tanggal";
 $qKontanan=mysql_query($sKontanan)  or die(mysql_error($conn));
 while($rKontan=mysql_fetch_assoc($qKontanan))
 {
@@ -104,7 +120,7 @@ while($rKontan=mysql_fetch_assoc($qKontanan))
 
 $sPanen2="select SUM( jjg ) AS angkut, blok as kodeorg,tanggal from ".$dbname.".kebun_spb_vw
 		where blok like '".$kdUnit."%' and tanggal like '".$periodeData."%' group by blok,tanggal
-		  order by tanggal asc,blok asc";
+		  order by blok,tanggal";
 $qPanen2=mysql_query($sPanen2) or die(mysql_error($conn));
 while($rPanen2=  mysql_fetch_assoc($qPanen2))
 {
@@ -112,17 +128,38 @@ while($rPanen2=  mysql_fetch_assoc($qPanen2))
 	$dtJJg[$rPanen2['kodeorg'].$rPanen2['tanggal']]=$rPanen2['angkut'];
 }
 
-$periodelalu=periodelalu($periodeData);
+	$sAdj="select a.kodeorg,a.tanggal
+				,sum(if(a.jenis='Afkir',a.janjang,0)) as jjgAfkir
+				,sum(if(a.jenis='Borongan',a.janjang,0)) as jjgBorongan
+				,sum(if(a.jenis='Temuan_BKM',a.janjang,0)) as jjgTemuan_BKM
+				,sum(if(a.jenis='Temuan_NonBKM',a.janjang,0)) as jjgTemuan_NonBKM
+				,sum(if(a.jenis='Hilang_TPH',a.janjang,0)) as jjgHilang_TPH
+				,sum(if(a.jenis='Hilang_Pokok',a.janjang,0)) as jjgHilang_Pokok
+			from ".$dbname.".kebun_adjpanen a
+			where a.kodeorg like '".$kdUnit."%' and a.tanggal like '".$periodeData."%'
+			GROUP BY a.kodeorg,a.Tanggal
+			ORDER BY a.kodeorg,a.Tanggal
+			";
+	//exit('Warning: '.$sAdj);
+	$qAdj=mysql_query($sAdj);
+	while($rAdj=mysql_fetch_assoc($qAdj)){
+		$dtKdOrg[$rAdj['kodeorg']]=$rAdj['kodeorg'];
+		$jjgAfkir[$rAdj['kodeorg'].$rAdj['tanggal']]=$rAdj['jjgAfkir'];
+		//$jjgBorongan[$rAdj['kodeorg'].$rAdj['tanggal']]=$rAdj['jjgBorongan'];
+		$dtJJgkntn[$rAdj['kodeorg'].$rAdj['tanggal']]+=$rAdj['jjgBorongan'];
+		$jjgTemuan_BKM[$rAdj['kodeorg'].$rAdj['tanggal']]=$rAdj['jjgTemuan_BKM'];
+		$jjgTemuan_NonBKM[$rAdj['kodeorg'].$rAdj['tanggal']]=$rAdj['jjgTemuan_NonBKM'];
+		$jjgHilang_TPH[$rAdj['kodeorg'].$rAdj['tanggal']]=$rAdj['jjgHilang_TPH'];
+		$jjgHilang_Pokok[$rAdj['kodeorg'].$rAdj['tanggal']]=$rAdj['jjgHilang_Pokok'];
+	}
 
-$str="select * from ".$dbname.".kebun_restanv where blok like '".$kdUnit."%' and periode='".$periodelalu."' ";		
+$periodelalu=periodelalu($periodeData);
+$str="select * from ".$dbname.".kebun_restanv where blok like '".$kdUnit."%' and periode='".$periodelalu."' order by blok,tanggal";		
 $res=mysql_query($str) or die (mysql_error($conn));
 while($bar=mysql_fetch_assoc($res))
 {
 	$jjgreslalu[$bar['blok']]=$bar['jjg'];
 }
-
-
-
 
 $dcek=count($dtKdOrg);
 if($dcek==0)
@@ -139,18 +176,21 @@ if($proses=='excel')
         $tab="<table cellpadding=1 cellspacing=1 border=".$brd." class=sortable>";
         $tab.="<thead><tr>";
         $tab.="<td ".$bgcolordt." rowspan=2 align=center >".$_SESSION['lang']['blok']."</td>";
-		$tab.="<td ".$bgcolordt." rowspan=2  align=center >Restan BL (Jjg)</td>";
+		$tab.="<td ".$bgcolordt." rowspan=2  align=center >Restan Lalu (Jjg)</td>";
         foreach($arrTgl as $dtTgl=>$isi)
         {
-            $tab.="<td ".$bgcolordt." align=center colspan=5>".substr($isi,-2,2)."</td>";
+            $tab.="<td ".$bgcolordt." align=center colspan=8>".substr($isi,-2,2)."</td>";
         }
         $tab.="</tr><tr>";
         
         foreach($arrTgl as $dtTgl)
         {
         $tab.="<td align=center ".$bgcolordt.">".$_SESSION['lang']['panen']." (Jjg)</td>";
-        $tab.="<td align=center ".$bgcolordt.">".$_SESSION['lang']['jjgkontanan']."</td>";
+        $tab.="<td align=center ".$bgcolordt.">Borongan (Jjg)</td>";
         $tab.="<td align=center ".$bgcolordt.">".$_SESSION['lang']['kirim']." (Jjg)</td>";
+        $tab.="<td align=center ".$bgcolordt.">Afkir (Jjg)</td>";
+        $tab.="<td align=center ".$bgcolordt.">Temuan_NonBKM (Jjg)</td>";
+        $tab.="<td align=center ".$bgcolordt.">Hilang_TPH (Jjg)</td>";
         $tab.="<td align=center ".$bgcolordt.">Restan (Jjg)</td>";
         $tab.="<td align=center ".$bgcolordt.">Restan (Kg)</td>";
         }
@@ -158,7 +198,7 @@ if($proses=='excel')
         foreach($dtKdOrg as $isi)
         {
             $tab.="<tr class=rowcontent>";
-            $tab.="<td>".$isi."</td>";
+            $tab.="<td>".$optNm[$isi]."</td>";
 			$tab.="<td align=right>".number_format($jjgreslalu[$isi])."</td>";
 			$tjjgreslalu+=$jjgreslalu[$isi];
 			$ard=0;
@@ -168,10 +208,20 @@ if($proses=='excel')
 				setIt($dtJJgPan[$isi.$ertDt],0);
 				setIt($dtJJgkntn[$isi.$ertDt],0);
 				setIt($dtJJg[$isi.$ertDt],0);
+				setIt($jjgAfkir[$isi.$ertDt],0);
+				setIt($jjgTemuan_BKM[$isi.$ertDt],0);
+				setIt($jjgTemuan_NonBKM[$isi.$ertDt],0);
+				setIt($jjgHilang_TPH[$isi.$ertDt],0);
+				setIt($jjgHilang_Pokok[$isi.$ertDt],0);
 				setIt($rest[$isi.$ertDt],0);
 				setIt($totPanen[$ertDt],0);
-				setIt($totKirim[$ertDt],0);
 				setIt($totKontan[$ertDt],0);
+				setIt($totKirim[$ertDt],0);
+				setIt($totAfkir[$ertDt],0);
+				setIt($totTemuan_BKM[$ertDt],0);
+				setIt($totTemuan_NonBKM[$ertDt],0);
+				setIt($totHilang_TPH[$ertDt],0);
+				setIt($totHilang_Pokok[$ertDt],0);
 				setIt($totRest[$ertDt],0);
 				setIt($totkgkg[$ertDt],0);
                 if($ard==1)
@@ -179,16 +229,24 @@ if($proses=='excel')
 					$tab.="<td align=right>".number_format($dtJJgPan[$isi.$ertDt])."</td>";
 					$tab.="<td align=right>".number_format($dtJJgkntn[$isi.$ertDt])."</td>";
 					$tab.="<td align=right>".number_format($dtJJg[$isi.$ertDt])."</td>";
-					$rest[$isi.$ertDt]=($dtJJgPan[$isi.$ertDt]+$dtJJgkntn[$isi.$ertDt])-$dtJJg[$isi.$ertDt]+$jjgreslalu[$isi];
+					$tab.="<td align=right>".number_format($jjgAfkir[$isi.$ertDt])."</td>";
+					$tab.="<td align=right>".number_format($jjgTemuan_NonBKM[$isi.$ertDt])."</td>";
+					$tab.="<td align=right>".number_format($jjgHilang_TPH[$isi.$ertDt])."</td>";
+					$rest[$isi.$ertDt]=$jjgreslalu[$isi]+($dtJJgPan[$isi.$ertDt]+$dtJJgkntn[$isi.$ertDt])-$dtJJg[$isi.$ertDt]-$jjgAfkir[$isi.$ertDt]+$jjgTemuan_NonBKM[$isi.$ertDt]-$jjgHilang_TPH[$isi.$ertDt];
 					$tab.="<td align=right>".number_format($rest[$isi.$ertDt])."</td>";
 					$kgkg=$kamusBjr[$isi]*$rest[$isi.$ertDt];
+					//$kgkg=$dtBJRPan[$isi.$ertDt]*$rest[$isi.$ertDt];
 					$tab.="<td align=right>".number_format($kgkg,2)."</td>";
 					$totPanen[$ertDt]+=$dtJJgPan[$isi.$ertDt];
-					$totKirim[$ertDt]+=$dtJJg[$isi.$ertDt];
 					$totKontan[$ertDt]+=$dtJJgkntn[$isi.$ertDt];
+					$totKirim[$ertDt]+=$dtJJg[$isi.$ertDt];
+					$totAfkir[$ertDt]+=$jjgAfkir[$isi.$ertDt];
+					$totTemuan_BKM[$ertDt]+=$jjgTemuan_BKM[$isi.$ertDt];
+					$totTemuan_NonBKM[$ertDt]+=$jjgTemuan_NonBKM[$isi.$ertDt];
+					$totHilang_TPH[$ertDt]+=$jjgHilang_TPH[$isi.$ertDt];
+					$totHilang_Pokok[$ertDt]+=$jjgHilang_Pokok[$isi.$ertDt];
 					$totRest[$ertDt]+=$rest[$isi.$ertDt];
 					$totkgkg[$ertDt]+=$kgkg;
-					
                 }
                 else
                 {
@@ -197,15 +255,24 @@ if($proses=='excel')
                     $tab.="<td align=right>".number_format($dtJJgPan[$isi.$ertDt])."</td>";
                     $tab.="<td align=right>".number_format($dtJJgkntn[$isi.$ertDt])."</td>";
                     $tab.="<td align=right>".number_format($dtJJg[$isi.$ertDt])."</td>";
-                    $rest[$isi.$ertDt]=($dtJJgPan[$isi.$ertDt]+$dtJJgkntn[$isi.$ertDt]+$rest[$isi.$kmrn])-$dtJJg[$isi.$ertDt];
+                    $tab.="<td align=right>".number_format($jjgAfkir[$isi.$ertDt])."</td>";
+                    $tab.="<td align=right>".number_format($jjgTemuan_NonBKM[$isi.$ertDt])."</td>";
+                    $tab.="<td align=right>".number_format($jjgHilang_TPH[$isi.$ertDt])."</td>";
+					$rest[$isi.$ertDt]=$rest[$isi.$kmrn]+($dtJJgPan[$isi.$ertDt]+$dtJJgkntn[$isi.$ertDt])-$dtJJg[$isi.$ertDt]-$jjgAfkir[$isi.$ertDt]+$jjgTemuan_NonBKM[$isi.$ertDt]-$jjgHilang_TPH[$isi.$ertDt];
                     $tab.="<td align=right>".number_format($rest[$isi.$ertDt])."</td>";
                     $kgkg=$kamusBjr[$isi]*$rest[$isi.$ertDt];
+					//$kgkg=$dtBJRPan[$isi.$ertDt]*$rest[$isi.$ertDt];
                     $tab.="<td align=right>".number_format($kgkg,2)."</td>";
-                    $totPanen[$ertDt]+=$dtJJgPan[$isi.$ertDt];
-                    $totKirim[$ertDt]+=$dtJJg[$isi.$ertDt];
-                    $totKontan[$ertDt]+=$dtJJgkntn[$isi.$ertDt];
-                    $totRest[$ertDt]+=$rest[$isi.$ertDt];
-                    $totkgkg[$ertDt]+=$kgkg;
+					$totPanen[$ertDt]+=$dtJJgPan[$isi.$ertDt];
+					$totKontan[$ertDt]+=$dtJJgkntn[$isi.$ertDt];
+					$totKirim[$ertDt]+=$dtJJg[$isi.$ertDt];
+					$totAfkir[$ertDt]+=$jjgAfkir[$isi.$ertDt];
+					$totTemuan_BKM[$ertDt]+=$jjgTemuan_BKM[$isi.$ertDt];
+					$totTemuan_NonBKM[$ertDt]+=$jjgTemuan_NonBKM[$isi.$ertDt];
+					$totHilang_TPH[$ertDt]+=$jjgHilang_TPH[$isi.$ertDt];
+					$totHilang_Pokok[$ertDt]+=$jjgHilang_Pokok[$isi.$ertDt];
+					$totRest[$ertDt]+=$rest[$isi.$ertDt];
+					$totkgkg[$ertDt]+=$kgkg;
                 }
             }
             $tab.="</tr>";
@@ -217,6 +284,9 @@ if($proses=='excel')
             $tab.="<td align=right>".number_format($totPanen[$ertDt])."</td>";
             $tab.="<td align=right>".number_format($totKontan[$ertDt])."</td>";
             $tab.="<td align=right>".number_format($totKirim[$ertDt])."</td>";
+            $tab.="<td align=right>".number_format($totAfkir[$ertDt])."</td>";
+            $tab.="<td align=right>".number_format($totTemuan_NonBKM[$ertDt])."</td>";
+            $tab.="<td align=right>".number_format($totHilang_TPH[$ertDt])."</td>";
             $tab.="<td align=right>".number_format($totRest[$ertDt])."</td>";
             $tab.="<td align=right>".number_format($totkgkg[$ertDt],2)."</td>";
 		}

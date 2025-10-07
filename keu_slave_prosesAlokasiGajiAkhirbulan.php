@@ -13,12 +13,13 @@ if($param['row']=='1'){
     //         'KBNL0','KBNL1','KBNL2','KBNL3','M6','PKS01','PKS02','PNN01','SIPL1','VHCG0','VHCG1','VHCG2','VHCG3','VHCG4',
     //         'VHCG5','WSG0','WSG1','WSG2','WSG3','WSG4','WSG5') and tanggal='".$tanggal."' 
     //and nojurnal like '%/".$_SESSION['empl']['lokasitugas']."/%'";
-    $str="delete from ".$dbname.".keu_jurnalht where kodejurnal in ('KBNB0','KBNB1','KBNB2','KBNB3','KBNB4','KBNB5',
-             'KBNL0','KBNL1','KBNL2','KBNL3','PKS01','PKS02','PKS03','PKS04','PKS05','PKS06','PKS07','PKS08','SIPL1','VHCG0','VHCG1','VHCG2','VHCG3','VHCG4',
-             'VHCG5','WSG0','WSG1','WSG2','WSG3','WSG4','WSG5') and tanggal='".$tanggal."' 
+    $str="delete from ".$dbname.".keu_jurnalht where kodejurnal in ('KBNB0','KBNB1','KBNB2','KBNB3','KBNB4','KBNB5'
+			 ,'SCRT0','SCRT1','SCRT2','SCRT3','SCRT4','SCRT5','MESS0','MESS1','MESS2','MESS3','MESS4','MESS5','SAPI0'
+             ,'KBNL0','KBNL1','KBNL2','KBNL3','PKS01','PKS02','PKS03','PKS04','PKS05','PKS06','PKS07','PKS08','SIPL1','VHCG0','VHCG1','VHCG2','VHCG3','VHCG4'
+             ,'VHCG5','WSG0','WSG1','WSG2','WSG3','WSG4','WSG5') and tanggal='".$tanggal."' 
     and nojurnal like '%/".$_SESSION['empl']['lokasitugas']."/%'";
    mysql_query($str);
-   // exit ("Error".$str);
+   //exit ("Warning: ".$str);
 }
 
 #==========================================konfigurasi database
@@ -98,7 +99,6 @@ $param['subbagian']=str_replace(" ","",$param['subbagian']);
 $defSegment = colDefaultValue($dbname,'keu_5segment','kodesegment');
 
 
-
 if($tip=='PABRIK' and $param['tipeorganisasi']=='TRAKSI')
     prosesGajiTraksi(); 
 else if($tip=='PABRIK' and $param['subbagian']!='')
@@ -113,6 +113,10 @@ else if($param['tipeorganisasi']=='TRAKSI' && $param['mesin']=='')
    prosesGajiWs();
 else if($param['tipeorganisasi']=='TRAKSI')
    prosesGajiTraksi();
+else if($param['tipeorganisasi']=='SECURITY')
+   prosesGajiKeamananMess();
+else if($param['tipeorganisasi']=='MESS')
+   prosesGajiKeamananMess();
 else if($tip=='TRAKSI')//jika tipe yang dilempar kosong
    prosesGajiTraksi();
 else if( $tip=='WORKSHOP')//jika tipe yang dilempar kosong
@@ -977,6 +981,60 @@ function prosesGajiPabrik(){
             # Data Detail
             $noUrut = 1;
 
+	if($param['komponen']==33){
+	    $sAkum="select a.* from (
+					SELECT karyawanid,SUM(uangkelebihanjam+((uangmakan+uangtransport)*uangkelebihanjam/(uangkelebihanjam+uanglembur2))) as uanglembur
+					,'' as beban,'' as noakun 
+					from ".$dbname.".sdm_lemburdt where karyawanid='".$param['karyawanid']."' and tanggal like '".$param['periode']."%' and uangkelebihanjam>0
+					GROUP BY karyawanid
+					UNION
+					SELECT karyawanid,SUM(uanglembur2+((uangmakan+uangtransport)*uanglembur2/(uangkelebihanjam+uanglembur2))) as uanglembur,beban,noakun
+					from ".$dbname.".sdm_lemburdt where karyawanid='".$param['karyawanid']."' and tanggal like '".$param['periode']."%' and uanglembur2>0
+					GROUP BY karyawanid,beban,noakun) a
+					ORDER BY karyawanid,beban,noakun";
+		//exit('Warning: jum='.$param['jumlah'].'  '.$sAkum);
+	    $qAkum=mysql_query($sAkum);
+		$nAkum=mysql_num_rows($qAkum);
+		$asli_akundebet=$akundebet;
+		while($rAkum=mysql_fetch_assoc($qAkum)){
+			$kdasset="";
+			if($rAkum['beban']=='' or $rAkum['beban']=='Normal'){
+				$akundebet=$asli_akundebet;
+			}else{
+				$akundebet=$rAkum['noakun'];
+				if(substr($rAkum['beban'],0,2)=='AK'){
+					$kdasset=$rAkum['beban'];
+				}
+			}
+            # Debet
+            $dataRes['detail'][] = array(
+                'nojurnal'=>$nojurnal,
+                'tanggal'=>$tanggal,
+                'nourut'=>$noUrut,
+                'noakun'=>$akundebet,
+                'keterangan'=> $param['namakomponen'].' '.$rAkum['beban'].' '.$param['namakaryawan'],
+                'jumlah'=>$rAkum['uanglembur'],
+                'matauang'=>'IDR',
+                'kurs'=>'1',
+                'kodeorg'=>$_SESSION['empl']['lokasitugas'],
+                'kodekegiatan'=>'',
+                'kodeasset'=>$kdasset,
+                'kodebarang'=>'',
+                'nik'=>$param['karyawanid'],
+                'kodecustomer'=>'',
+                'kodesupplier'=>'',
+                'noreferensi'=>'ALK_GAJI',
+                'noaruskas'=>'',
+                'kodevhc'=>'',
+                'nodok'=>'',
+                'kodeblok'=>$param['subbagian'],
+                'revisi'=>'0',
+				'kodesegment'=>$defSegment
+            );
+            $noUrut++;
+		}
+		
+	}else{
             # Debet
             $dataRes['detail'][] = array(
                 'nojurnal'=>$nojurnal,
@@ -1003,6 +1061,7 @@ function prosesGajiPabrik(){
 				'kodesegment'=>$defSegment
             );
             $noUrut++;
+	}
 
             # Kredit
             $dataRes['detail'][] = array(
@@ -1094,10 +1153,13 @@ function prosesGajiKebun(){
     global $dbname;
 	global $defSegment;
   #karyawan kebun
-  #output pada jurnal kolom noreferensi ALK_GAJI  
+  #output pada jurnal kolom noreferensi ALK_GAJI
+  if($_SESSION['empl']['lokasitugas']=='KACB'){
+      $group='SAPI0';
+  }else{
     if($param['komponen']==1 or $param['komponen']==14)
       $group='KBNB0';
-    elseif($param['komponen']==16 or $param['komponen']==32 or $param['komponen']==33)
+    elseif($param['komponen']==16 or $param['komponen']==32 or $param['komponen']==33 or $param['komponen']==58)
       $group='KBNB1';
     elseif($param['komponen']==28)
       $group='KBNB3';  
@@ -1107,7 +1169,7 @@ function prosesGajiKebun(){
       $group='KBNB5';
     else
       $group='KBNB2';  //defaultnya tunjangan
-    
+  }  
     $str="select noakundebet,noakunkredit from ".$dbname.".keu_5parameterjurnal
           where jurnalid='".$group."' limit 1";
     $res=mysql_query($str);
@@ -1128,6 +1190,7 @@ function prosesGajiKebun(){
         # Get Journal Counter
         $queryJ = selectQuery($dbname,'keu_5kelompokjurnal','nokounter',
             "kodeorg='".$_SESSION['org']['kodeorganisasi']."' and kodekelompok='".$kodeJurnal."' ");
+		//exit('Warning: '.$queryJ);
         $tmpKonter = fetchData($queryJ);
         $konter = addZero($tmpKonter[0]['nokounter']+1,3);
 
@@ -1230,6 +1293,191 @@ if(mysql_num_rows(mysql_query($str))>0)
                     $insDet = insertQuery($dbname,'keu_jurnaldt',$row);echo $insDet;
                     if(!mysql_query($insDet)) {
                         $detailErr .= "Insert Detail Error 2 : ".mysql_error()."\n";
+                        break;
+                    }
+                }
+
+                if($detailErr=='') {
+                    # Header and Detail inserted
+                    #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Update Kode Jurnal
+                    $updJurnal = updateQuery($dbname,'keu_5kelompokjurnal',array('nokounter'=>$konter),
+                        "kodeorg='".$_SESSION['org']['kodeorganisasi'].
+                        "' and kodekelompok='".$kodeJurnal."'");
+                    if(!mysql_query($updJurnal)) {
+                        echo "Update Kode Jurnal Error : ".mysql_error()."\n";
+                        # Rollback if Update Failed
+                        $RBDet = deleteQuery($dbname,'keu_jurnalht',"nojurnal='".$nojurnal."'");
+                        if(!mysql_query($RBDet)) {
+                            echo "Rollback Delete Header BTL Error : ".mysql_error()."\n";
+                            exit;
+                        }
+                        exit;
+                    } else {
+                    }
+                } else {
+                    echo $detailErr;
+                    # Rollback, Delete Header
+                    $RBDet = deleteQuery($dbname,'keu_jurnalht',"nojurnal='".$nojurnal."'");
+                    if(!mysql_query($RBDet)) {
+                        echo "Rollback Delete Header Error : ".mysql_error();
+                        exit;
+                    }
+                }
+            } else {
+                echo $headErr;
+                exit;
+            }                 
+}
+
+function prosesGajiKeamananMess(){ 
+    global $conn;
+    global $tanggal;
+    global $param;
+    global $dbname;
+	global $defSegment;
+  #karyawan kebun
+  #output pada jurnal kolom noreferensi ALK_GAJI  
+  if($param['tipeorganisasi']=='SECURITY'){
+		if($param['komponen']==1 or $param['komponen']==14)
+			$group='SCRT0';
+		elseif($param['komponen']==16 or $param['komponen']==32 or $param['komponen']==33 or $param['komponen']==40 or $param['komponen']==58)
+			$group='SCRT1';
+		elseif($param['komponen']==28)
+			$group='SCRT3';  
+		elseif($param['komponen']==26 or $param['komponen']==46 or $param['komponen']==47)
+			$group='SCRT4';  
+		elseif($param['komponen']==21 or $param['komponen']==15 or $param['komponen']==25)
+			$group='SCRT5';
+		else
+			$group='SCRT2';  //defaultnya tunjangan
+	}else{
+		if($param['komponen']==1 or $param['komponen']==14)
+			$group='MESS0';
+		elseif($param['komponen']==16 or $param['komponen']==32 or $param['komponen']==33 or $param['komponen']==40 or $param['komponen']==58)
+			$group='MESS1';
+		elseif($param['komponen']==28)
+			$group='MESS3';  
+		elseif($param['komponen']==26 or $param['komponen']==46 or $param['komponen']==47)
+			$group='MESS4';  
+		elseif($param['komponen']==21 or $param['komponen']==15 or $param['komponen']==25)
+			$group='MESS5';
+		else
+			$group='MESS2';  //defaultnya tunjangan
+	}
+	  
+    $str="select noakundebet,noakunkredit from ".$dbname.".keu_5parameterjurnal
+          where jurnalid='".$group."' limit 1";
+    $res=mysql_query($str);
+    if(mysql_num_rows($res)<1)
+        exit("Error: No.Akun pada parameterjurnal belum ada untuk ".$param['namakomponen']);
+    else
+    {
+        $akundebet='';
+        $akunkredit='';
+        $bar=mysql_fetch_object($res);
+        $akundebet=$bar->noakundebet;
+        $akunkredit=$bar->noakunkredit;
+    }
+    
+       #proses data
+        $kodeJurnal = $group;
+        #======================== Nomor Jurnal =============================
+        # Get Journal Counter
+        $queryJ = selectQuery($dbname,'keu_5kelompokjurnal','nokounter',
+            "kodeorg='".$_SESSION['org']['kodeorganisasi']."' and kodekelompok='".$kodeJurnal."' ");
+        $tmpKonter = fetchData($queryJ);
+        $konter = addZero($tmpKonter[0]['nokounter']+1,3);
+
+        # Transform No Jurnal dari No Transaksi
+        $nojurnal = str_replace("-","",$tanggal)."/".$_SESSION['empl']['lokasitugas']."/".$kodeJurnal."/".$konter;
+        #======================== /Nomor Jurnal ============================
+        
+        # Prep Header
+            $dataRes['header'] = array(
+                'nojurnal'=>$nojurnal,
+                'kodejurnal'=>$kodeJurnal,
+                'tanggal'=>$tanggal,
+                'tanggalentry'=>date('Ymd'),
+                'posting'=>1,
+                'totaldebet'=>$param['jumlah'],
+                'totalkredit'=>-1*$param['jumlah'],
+                'amountkoreksi'=>'0',
+                'noreferensi'=>'ALK_GAJI_SCRT_MESS',
+                'autojurnal'=>'1',
+                'matauang'=>'IDR',
+                'kurs'=>'1',
+                'revisi'=>'0'                
+            );
+
+            # Data Detail
+            $noUrut = 1;
+
+            # Debet
+            $dataRes['detail'][] = array(
+                'nojurnal'=>$nojurnal,
+                'tanggal'=>$tanggal,
+                'nourut'=>$noUrut,
+                'noakun'=>$akundebet,
+                'keterangan'=> $param['namakomponen'].' '.$param['namakaryawan'],
+                'jumlah'=>$param['jumlah'],
+                'matauang'=>'IDR',
+                'kurs'=>'1',
+                'kodeorg'=>$_SESSION['empl']['lokasitugas'],
+                'kodekegiatan'=>'',
+                'kodeasset'=>'',
+                'kodebarang'=>'',
+                'nik'=>$param['karyawanid'],
+                'kodecustomer'=>'',
+                'kodesupplier'=>'',
+                'noreferensi'=>'ALK_GAJI_SCRT_MESS',
+                'noaruskas'=>'',
+                'kodevhc'=>'',
+                'nodok'=>'',
+                'kodeblok'=>$param['subbagian'],
+                'revisi'=>'0',
+				'kodesegment'=>$defSegment
+            );
+            $noUrut++;
+
+            # Kredit
+            $dataRes['detail'][] = array(
+                'nojurnal'=>$nojurnal,
+                'tanggal'=>$tanggal,
+                'nourut'=>$noUrut,
+                'noakun'=>$akunkredit,
+                'keterangan'=> $param['namakomponen'].' '.$param['namakaryawan'],
+                'jumlah'=>-1*$param['jumlah'],
+                'matauang'=>'IDR',
+                'kurs'=>'1',
+                'kodeorg'=>$_SESSION['empl']['lokasitugas'],
+                'kodekegiatan'=>'',
+                'kodeasset'=>'',
+                'kodebarang'=>'',
+                'nik'=>$param['karyawanid'],
+                'kodecustomer'=>'',
+                'kodesupplier'=>'',
+                'noreferensi'=>'ALK_GAJI_SCRT_MESS',
+                'noaruskas'=>'',
+                'kodevhc'=>'',
+                'nodok'=>'',
+                'kodeblok'=>$param['subbagian'],
+                'revisi'=>'0',
+				'kodesegment'=>$defSegment
+            );
+            $noUrut++;      
+
+            $insHead = insertQuery($dbname,'keu_jurnalht',$dataRes['header']);
+            if(!mysql_query($insHead)) {
+                $headErr .= 'Insert Header BTL Error : '.mysql_error()."\n";
+            }
+
+            if($headErr=='') {
+                #>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Insert Detail
+                $detailErr = '';
+                foreach($dataRes['detail'] as $row) {
+                    $insDet = insertQuery($dbname,'keu_jurnaldt',$row);
+                    if(!mysql_query($insDet)) {
+                        $detailErr .= "Insert Detail Error 5 : ".mysql_error()."\n";
                         break;
                     }
                 }

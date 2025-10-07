@@ -204,6 +204,7 @@ zz=verify();
 }
 function error_catch(x)
 {
+	//alert(x); return false;
 	switch (x){
       case 203:
 	  alert('Dibutuhkan Authority');
@@ -238,6 +239,7 @@ function error_catch(x)
 	  case 415:
 	  alert('Unsupported Media Type');
 	  break;
+	  
 	  case 500:
 	  alert('Server busy, try submit later');
 	  break;

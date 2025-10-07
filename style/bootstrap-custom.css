@@ -1,0 +1,552 @@
+/*
+ * Bootstrap Custom Theme for ERP Mill
+ * Maintaining original color scheme while using Bootstrap framework
+ */
+
+/* Import Inter Font from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* Custom Color Variables - Based on original theme */
+:root {
+    --primary-color: #275370;
+    --primary-light: #97AECA;
+    --primary-lighter: #CFE9FA;
+    --bg-main: #E8F4F4;
+    --bg-content: #D7EBFA;
+    --border-color: #3E71B2;
+    --text-dark: #000000;
+    --text-light: #A5C1D6;
+    --hover-color: #FFF688;
+    --success-color: #165F10;
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* Override Bootstrap primary colors to match original theme */
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-light);
+    border-color: var(--primary-light);
+}
+
+/* Body styling with Inter font */
+body {
+    background-color: var(--bg-main);
+    font-family: var(--font-family);
+    font-size: 12px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    margin: 0;
+    padding: 0;
+}
+
+/* Apply Inter to all elements */
+* {
+    font-family: var(--font-family);
+}
+
+/* Custom Card styling to match original box design */
+.card {
+    background-color: #eee;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+}
+
+.card-header {
+    background-color: var(--primary-color);
+    color: var(--text-light);
+    font-weight: bold;
+    border-bottom: 2px solid var(--border-color);
+}
+
+/* Table styling - matching original theme */
+.table {
+    font-size: 12px;
+    font-family: "Tahoma", sans-serif, "Myriad Pro", "Myriad Web", "Arial";
+}
+
+.table thead {
+    background-color: var(--primary-color);
+    color: var(--text-light);
+    text-transform: capitalize;
+}
+
+.table thead th {
+    background-color: var(--primary-color);
+    color: var(--text-light);
+    border-color: var(--primary-light);
+}
+
+.table thead th:hover {
+    background-color: var(--primary-light);
+    color: #FFFFFF;
+    cursor: pointer;
+}
+
+.table tbody tr {
+    background-color: var(--bg-content);
+}
+
+.table tbody tr:hover {
+    background-color: #FFFFFF;
+}
+
+.table tbody td:hover {
+    background-color: var(--hover-color);
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #E8F2FE;
+}
+
+/* Form controls styling */
+.form-control, .form-select {
+    border: 1px solid var(--primary-light);
+    font-size: 11px;
+    height: auto;
+    padding: 0.25rem 0.5rem;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(39, 83, 112, 0.25);
+}
+
+/* Button styling - matching original mybutton class */
+.btn {
+    font-family: Tahoma;
+    font-size: 11px;
+    font-weight: bolder;
+    text-transform: capitalize;
+    padding: 0.25rem 0.75rem;
+}
+
+.btn-sm {
+    font-size: 10px;
+    padding: 0.15rem 0.5rem;
+}
+
+/* Number input styling */
+.form-control.text-end {
+    color: var(--success-color);
+    font-weight: bold;
+}
+
+/* Navbar styling to match original menu */
+.navbar {
+    background-color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+    padding: 5px 0;
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+    width: 100%;
+    margin: 0;
+}
+
+.navbar .container-fluid {
+    position: relative;
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.navbar-dark .navbar-nav .nav-link {
+    color: #FFFFFF;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    padding: 8px 15px;
+}
+
+.navbar-dark .navbar-nav .nav-link:hover {
+    background-color: #5A86A3;
+    color: #FFFFFF;
+}
+
+/* Dropdown Menu Styling */
+.dropdown-menu {
+    background-color: var(--primary-color);
+    border: 1px solid var(--primary-light);
+    padding: 5px 0;
+    margin: 0;
+    border-radius: 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    min-width: 200px;
+    max-height: 80vh;
+    overflow-y: auto;
+    z-index: 9999;
+    display: none;
+    position: absolute;
+}
+
+/* Show dropdown when parent has 'show' class or on hover */
+.dropdown-menu.show {
+    display: block !important;
+}
+
+/* Dropend (submenu to the right) - use fixed positioning to escape frame */
+.dropend {
+    position: relative;
+}
+
+.dropend > .dropdown-menu {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    margin: 0;
+    z-index: 9999;
+}
+
+/* Position submenu next to parent */
+.dropend:hover > .dropdown-menu {
+    display: block !important;
+}
+
+.dropend .dropdown-toggle::after {
+    display: inline-block;
+    margin-left: 0.5em;
+    vertical-align: 0.1em;
+    content: "";
+    border-top: 0.3em solid transparent;
+    border-right: 0;
+    border-bottom: 0.3em solid transparent;
+    border-left: 0.3em solid;
+}
+
+/* Show submenu on hover - Pure CSS hover for nested menus */
+.navbar .dropdown:hover > .dropdown-menu {
+    display: block;
+}
+
+.dropdown-menu .dropend:hover > .dropdown-menu {
+    display: block;
+}
+
+/* Keep parent menu open when hovering over child menu */
+.navbar .dropdown-menu:hover {
+    display: block;
+}
+
+.dropdown-item {
+    color: #CDCDCD;
+    font-size: 11px;
+    padding: 6px 15px;
+    font-family: 'Inter', sans-serif;
+    transition: all 0.2s;
+}
+
+.dropdown-item:hover, .dropdown-item:focus {
+    background-color: #5A86A3;
+    color: #FFFFFF;
+}
+
+.dropdown-item.active {
+    background-color: #5A86A3;
+    color: #FFFFFF;
+}
+
+/* Nested Dropdown Support */
+.dropdown-submenu {
+    position: relative;
+}
+
+.dropdown-submenu .dropdown-menu {
+    top: 0;
+    left: 100%;
+    margin-top: -1px;
+    margin-left: 0;
+}
+
+.dropdown-submenu:hover > .dropdown-menu {
+    display: block;
+}
+
+/* Dropdown Divider */
+.dropdown-divider {
+    border-top: 1px solid rgba(255,255,255,0.1);
+    margin: 4px 0;
+}
+
+/* Dropdown Header/Title */
+.dropdown-header {
+    color: #FBDC89;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 6px 15px;
+    text-transform: uppercase;
+}
+
+/* Fix for old menu classes compatibility */
+#qm0 li {
+    list-style: none;
+}
+
+#qm0 > li {
+    display: inline-block;
+    position: relative;
+}
+
+#qm0 > li > a {
+    display: block;
+    padding: 8px 15px;
+    color: #FFFFFF;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-size: 11px;
+    font-family: 'Inter', sans-serif;
+}
+
+#qm0 > li > a:hover {
+    background-color: #5A86A3;
+}
+
+#qm0 ul {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    display: none;
+    background-color: var(--primary-color);
+    border: 1px solid var(--primary-light);
+    padding: 5px 0;
+    min-width: 220px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 1050;
+    max-height: 70vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border-radius: 4px;
+    margin: 0;
+    scroll-behavior: smooth;
+}
+
+#qm0 li:hover > ul {
+    display: block;
+}
+
+#qm0 ul li {
+    position: relative;
+}
+
+#qm0 ul li a {
+    display: block;
+    padding: 6px 15px;
+    color: #CDCDCD;
+    text-decoration: none;
+    font-size: 11px;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+#qm0 ul li a:hover {
+    background-color: #5A86A3;
+    color: #FFFFFF;
+    padding-left: 18px;
+}
+
+#qm0 ul li a img {
+    margin-right: 5px;
+    vertical-align: middle;
+}
+
+/* Star icon in menu */
+#qm0 img.arrow, #qm0 img[src*="star.png"], #qm0 img[src*="arrow"] {
+    opacity: 0.7;
+    transition: opacity 0.2s;
+}
+
+#qm0 a:hover img.arrow, #qm0 a:hover img[src*="star.png"] {
+    opacity: 1;
+}
+
+#qm0 ul ul {
+    top: -5px;
+    left: 100%;
+    margin-top: 0;
+    margin-left: -1px;
+}
+
+/* Prevent menu from going off-screen on right */
+#qm0 ul li:hover > ul {
+    display: block;
+}
+
+@media (max-width: 1200px) {
+    #qm0 ul {
+        max-width: 250px;
+    }
+}
+
+/* Old menu compatibility classes */
+.qmparent {
+    position: relative;
+}
+
+.qmdivider, .qmdividerx {
+    height: 1px;
+    background-color: rgba(255,255,255,0.1);
+    margin: 4px 0;
+}
+
+.qmtitle {
+    color: #FBDC89;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 6px 15px;
+    display: block;
+    text-transform: uppercase;
+}
+
+/* Custom Scrollbar for Dropdown */
+#qm0 ul::-webkit-scrollbar {
+    width: 8px;
+}
+
+#qm0 ul::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.1);
+}
+
+#qm0 ul::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.3);
+    border-radius: 4px;
+}
+
+#qm0 ul::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.5);
+}
+
+.dropdown-menu::-webkit-scrollbar {
+    width: 8px;
+}
+
+.dropdown-menu::-webkit-scrollbar-track {
+    background: rgba(0,0,0,0.1);
+}
+
+.dropdown-menu::-webkit-scrollbar-thumb {
+    background: rgba(255,255,255,0.3);
+    border-radius: 4px;
+}
+
+.dropdown-menu::-webkit-scrollbar-thumb:hover {
+    background: rgba(255,255,255,0.5);
+}
+
+/* Modal styling */
+.modal-content {
+    background-color: var(--primary-lighter);
+    border: 2px solid var(--border-color);
+}
+
+.modal-header {
+    background-image: url('../images/titledialog.jpg');
+    background-repeat: repeat-x;
+    border-bottom: 2px solid var(--border-color);
+}
+
+/* Custom utilities */
+.bg-primary-custom {
+    background-color: var(--primary-color) !important;
+}
+
+.bg-light-custom {
+    background-color: var(--bg-main) !important;
+}
+
+.bg-content-custom {
+    background-color: var(--bg-content) !important;
+}
+
+.text-primary-custom {
+    color: var(--primary-color) !important;
+}
+
+/* Legacy class compatibility */
+.rowcontent {
+    background-color: var(--bg-content);
+}
+
+.rowcontent:hover, .rowcontentClick:hover {
+    background-color: #FFFFFF;
+}
+
+.rowcontent td:hover, .rowcontentClick td:hover {
+    background-color: var(--hover-color);
+}
+
+/* Custom drag class for Bootstrap */
+.drag {
+    cursor: move;
+    background-image: url('../images/titledialog.jpg');
+    background-repeat: repeat-x;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    body {
+        font-size: 11px;
+    }
+
+    .table {
+        font-size: 10px;
+    }
+
+    .btn {
+        font-size: 10px;
+    }
+
+    /* Hide some badges on small screens */
+    .navbar .badge:nth-child(2),
+    .navbar .badge:nth-child(3) {
+        display: none;
+    }
+}
+
+@media (max-width: 576px) {
+    /* Stack user info vertically on very small screens */
+    .navbar .d-flex {
+        flex-direction: column;
+        align-items: flex-start !important;
+        gap: 0.5rem !important;
+    }
+}
+
+/* Loading/Progress indicator */
+#progress {
+    position: fixed;
+    right: 20px;
+    top: 65px;
+    width: 150px;
+    background-color: #FFFFFF;
+    border: 1px solid orange;
+    color: #ff0000;
+    font-family: Tahoma;
+    font-size: 13px;
+    font-weight: bolder;
+    text-align: center;
+    z-index: 10000;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+/* OWL background image */
+#smallOwl {
+    position: fixed;
+    z-index: -999;
+    opacity: 0.3;
+}
+
+/* Footer styling */
+.footer-custom {
+    width: 100%;
+    background-color: #EFEFEF;
+    color: #ADADAD;
+    text-align: center;
+    position: fixed;
+    bottom: 0;
+    padding: 10px 0;
+    font-size: 11px;
+}

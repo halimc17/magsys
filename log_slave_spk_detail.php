@@ -13,26 +13,26 @@ switch($proses) {
         if($_SESSION['empl']['tipelokasitugas']=='KEBUN' or substr($param['kebun'],3,1)=='E')
         {
             $scek="select distinct tipe from ".$dbname.".organisasi where induk='".$param['divisi']."'";
+			
             $qcek=mysql_query($scek) or die(mysql_error($conn));
             $rcek=mysql_fetch_assoc($qcek);
             $tpdt="BLOK";
             if($rcek['tipe']=='BIBITAN'){
                   $tpdt="BIBITAN";
             }
-			
+			/*
             $optBlok = makeOption($dbname,'organisasi','kodeorganisasi,namaorganisasi',
                 "tipe='".$tpdt."' 
                  and kodeorganisasi like '".$param['divisi']."%' 
                  and length(kodeorganisasi)>5 
                  and kodeorganisasi in (select distinct kodeorg from ".$dbname.".setup_blok where kodeorg like '".$param['divisi']."%' and luasareaproduktif>0)");
-        }
+			*/
+            $optBlok = makeOption($dbname,'organisasi','kodeorganisasi,namaorganisasi',"kodeorganisasi like '".$param['divisi']."%'");
+		}
         else
         {
 		    $a = substr($param['divisi'],0,4);
-			print_r('MASUKKK<br/>');
-			print_r($param['divisi']);
-		    print_r('<br/>');
-		    print_r($a);
+			
             $optBlok = makeOption($dbname,'organisasi','kodeorganisasi,namaorganisasi',
                 #"tipe='BLOK' and kodeorganisasi like '".substr($param['divisi'],0,4)."%' and length(kodeorganisasi)>5");
                     "induk='".$param['divisi']."' or kodeorganisasi like '".substr($param['divisi'],0,4)."%'");
@@ -42,7 +42,7 @@ switch($proses) {
 			"kodeorg='".key($optBlok)."'");
 			$whereAct =" status = '1'";
 			if(strlen(getFirstKey($optBlokStat))==10) {
-				$whereAct .= " and kelompok='".getFirstContent($optBlokStat)."'";
+				$whereAct .= " and kelompok='".trim(substr(getFirstContent($optBlokStat),0,3))."'";
 			}
 			$optAct = makeOption($dbname,'setup_kegiatan','kodekegiatan,namakegiatan,satuan,noakun',$whereAct,'6');
 		} else {
@@ -219,7 +219,7 @@ switch($proses) {
 		} else {
 			$optBlokStat = makeOption($dbname,'setup_blok','kodeorg,statusblok,kodeorg',"kodeorg='".$param['kodeblok']."'");
 			if(strlen(getFirstKey($optBlokStat))==10) {
-				$whereAct = "kelompok='".getFirstContent($optBlokStat)."' and status = '1'";
+				$whereAct = "kelompok='".trim(substr(getFirstContent($optBlokStat),0,3))."' and status = '1'";
 			} else {
 				$whereAct = "status = '1'";
 			}

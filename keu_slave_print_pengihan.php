@@ -59,7 +59,27 @@ class PDF extends FPDF {
 		//$qBrg=mysql_query($sBrg) or die(mysql_error());
 		//$rBrg=mysql_fetch_assoc($qBrg);
 		
-		$path='images/logo.jpg';
+				if($pt=='AMP'){
+					$path='images/logo_amp.jpg';
+				}else if($pt=='CKS'){
+					$path='images/logo_cks.jpg';
+				}else if($pt=='KAA'){
+					$path='images/logo_kaa.jpg';
+				}else if($pt=='KAL'){
+					$path='images/logo_kal.jpg';
+				}else if($pt=='LKA'){
+					$path='images/logo_lka.jpg';
+				}else if($pt=='MPA'){
+					$path='images/logo_mpa.jpg';
+				}else if($pt=='MHS'){
+					$path='images/logo_mhs.jpg';
+				}else if($pt=='MEA'){
+					$path='images/logo_mea.jpg';
+				}else if($pt=='SMA'){
+					$path='images/logo_sma.jpg';
+				}else{
+					$path='images/logo.jpg';
+				}
 		
 	    $this->Image($path,25,5,20);
 

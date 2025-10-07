@@ -1,0 +1,269 @@
+/**
+ * Pabrik Verifikasi Ampere
+ */
+
+function loadData(){
+	kodeorg=document.getElementById('kodeorg').options[document.getElementById('kodeorg').selectedIndex].value;
+	stasiun=document.getElementById('stasiun').options[document.getElementById('stasiun').selectedIndex].value;
+	jenis=document.getElementById('jenis').value;
+	param='proses=loadData'+'&kodeorg='+kodeorg+'&stasiun='+stasiun+'&jenis='+jenis;
+	tujuan='pabrik_preventifpanel_slave.php';
+	post_response_text(tujuan, param, respog);
+	function respog(){
+		if(con.readyState==4){
+			if (con.status == 200){
+				busy_off();
+				if (!isSaveResponse(con.responseText)){
+					alert('ERROR TRANSACTION,\n' + con.responseText);
+				}else{
+					document.getElementById('container').innerHTML=con.responseText;
+				}
+			}else{
+				busy_off();
+				error_catch(con.status);
+			}
+		}	
+	}  
+}
+
+function loadDataP(){
+	kodeorgP=document.getElementById('kodeorgP').options[document.getElementById('kodeorgP').selectedIndex].value;
+	stasiunP=document.getElementById('stasiunP').options[document.getElementById('stasiunP').selectedIndex].value;
+	jenisP=document.getElementById('jenisP').value;
+	param='proses=loadDataP'+'&kodeorgP='+kodeorgP+'&stasiunP='+stasiunP+'&jenisP='+jenisP;
+	tujuan='pabrik_preventifpanel_slave.php';
+	post_response_text(tujuan, param, respog);
+	function respog(){
+		if(con.readyState==4){
+			if (con.status == 200){
+				busy_off();
+				if (!isSaveResponse(con.responseText)){
+					alert('ERROR TRANSACTION,\n' + con.responseText);
+				}else{
+					document.getElementById('containerP').innerHTML=con.responseText;
+				}
+			}else{
+				busy_off();
+				error_catch(con.status);
+			}
+		}	
+	}  
+}
+
+function simpanData(){
+	kodeorg 	=document.getElementById('kodeorg').options[document.getElementById('kodeorg').selectedIndex].value;
+	stasiun		=document.getElementById('stasiun').options[document.getElementById('stasiun').selectedIndex].value;
+	jenis		=document.getElementById('jenis').value;
+	tanggal  	=document.getElementById('tanggal').value;
+	tgllama  	=document.getElementById('tgllama').value;
+	keterangan	=document.getElementById('keterangan').value;
+	addedit		=document.getElementById('addedit').value;
+	if(kodeorg=='' ||  stasiun=='' ||  jenis=='' ||  tanggal==''){
+		alert('All fields are required');
+	}else{
+		param='kodeorg='+kodeorg+'&stasiun='+stasiun+'&jenis='+jenis+'&tanggal='+tanggal+'&tgllama='+tgllama;
+		param+='&keterangan='+keterangan+'&addedit='+addedit+'&proses=saveData';
+		tujuan='pabrik_preventifpanel_slave.php';
+		post_response_text(tujuan, param, respog);
+	}
+	function respog(){
+		if(con.readyState==4){
+			if (con.status == 200){
+				busy_off();
+				if (!isSaveResponse(con.responseText)) {
+					alert('ERROR TRANSACTION,\n' + con.responseText);
+				}else{
+					//document.getElementById('container').innerHTML=con.responseText;
+					bersihkanForm();
+					loadData();
+				}
+			}else{
+				busy_off();
+				error_catch(con.status);
+			}
+		}	
+	}
+}
+
+function simpanDataP(){
+	kodeorgP 	=document.getElementById('kodeorgP').options[document.getElementById('kodeorgP').selectedIndex].value;
+	stasiunP	=document.getElementById('stasiunP').options[document.getElementById('stasiunP').selectedIndex].value;
+	jenisP		=document.getElementById('jenisP').value;
+	tanggalP  	=document.getElementById('tanggalP').value;
+	tgllamaP  	=document.getElementById('tgllamaP').value;
+	keteranganP	=document.getElementById('keteranganP').value;
+	addeditP	=document.getElementById('addeditP').value;
+	if(kodeorgP=='' ||  stasiunP=='' ||  jenisP=='' ||  tanggalP==''){
+		alert('All fields are required');
+	}else{
+		param='kodeorgP='+kodeorgP+'&stasiunP='+stasiunP+'&jenisP='+jenisP+'&tanggalP='+tanggalP+'&tgllamaP='+tgllamaP;
+		param+='&keteranganP='+keteranganP+'&addeditP='+addeditP+'&proses=saveDataP';
+		tujuan='pabrik_preventifpanel_slave.php';
+		post_response_text(tujuan, param, respog);
+	}
+	function respog(){
+		if(con.readyState==4){
+			if (con.status == 200){
+				busy_off();
+				if (!isSaveResponse(con.responseText)) {
+					alert('ERROR TRANSACTION,\n' + con.responseText);
+				}else{
+					//document.getElementById('containerP').innerHTML=con.responseText;
+					bersihkanFormP();
+					loadDataP();
+				}
+			}else{
+				busy_off();
+				error_catch(con.status);
+			}
+		}	
+	}
+}
+
+function fillfield(kodeorg,stasiun,jenis,tanggal,keterangan){
+	document.getElementById('kodeorg').value=kodeorg;
+	document.getElementById('stasiun').value=stasiun;
+	document.getElementById('jenis').value=jenis;
+	document.getElementById('tanggal').value=tanggal;
+	document.getElementById('tgllama').value=tanggal;
+	document.getElementById('keterangan').value=keterangan;
+	document.getElementById('addedit').value='update';
+}
+
+function fillfieldP(kodeorgP,stasiunP,jenisP,tanggalP,keteranganP){
+	document.getElementById('kodeorgP').value=kodeorgP;
+	document.getElementById('stasiunP').value=stasiunP;
+	document.getElementById('jenisP').value=jenisP;
+	document.getElementById('tanggalP').value=tanggalP;
+	document.getElementById('tgllamaP').value=tanggalP;
+	document.getElementById('keteranganP').value=keteranganP;
+	document.getElementById('addeditP').value='update';
+}
+
+function bersihkanForm(){
+	//document.getElementById('kodeorg').value='';
+	//document.getElementById('stasiun').value='';
+	//document.getElementById('jenis').value='';
+	document.getElementById('tanggal').value='';
+	document.getElementById('tgllama').value='';
+	document.getElementById('keterangan').value='';
+	document.getElementById('addedit').value='insert';
+}
+
+function bersihkanFormP(){
+	//document.getElementById('kodeorgP').value='';
+	//document.getElementById('stasiunP').value='';
+	//document.getElementById('jenisP').value='';
+	document.getElementById('tanggalP').value='';
+	document.getElementById('tgllamaP').value='';
+	document.getElementById('keteranganP').value='';
+	document.getElementById('addeditP').value='insert';
+	loadDataP();
+}
+
+function deldata(kodeorg,stasiun,jenis,tanggal){
+	param='kodeorg='+kodeorg+'&stasiun='+stasiun+'&jenis='+jenis+'&tanggal='+tanggal;
+	param+='&proses=delData';
+	if (confirm('Delete ..?')) {
+		tujuan = 'pabrik_preventifpanel_slave.php';
+		post_response_text(tujuan, param, respog);
+	}
+	function respog(){
+		if(con.readyState==4){
+			if (con.status == 200) {
+				busy_off();
+				if (!isSaveResponse(con.responseText)) {
+					alert('ERROR TRANSACTION,\n' + con.responseText);
+				}else{
+					//document.getElementById('container').innerHTML=con.responseText;
+					loadData();
+				}
+			}else{
+				busy_off();
+				error_catch(con.status);
+			}
+		}	
+	} 	
+}
+
+function deldataP(kodeorgP,stasiunP,jenisP,tanggalP){
+	param='kodeorgP='+kodeorgP+'&stasiunP='+stasiunP+'&jenisP='+jenisP+'&tanggalP='+tanggalP;
+	param+='&proses=delDataP';
+	if (confirm('Delete ..?')) {
+		tujuan = 'pabrik_preventifpanel_slave.php';
+		post_response_text(tujuan, param, respog);
+	}
+	function respog(){
+		if(con.readyState==4){
+			if (con.status == 200) {
+				busy_off();
+				if (!isSaveResponse(con.responseText)) {
+					alert('ERROR TRANSACTION,\n' + con.responseText);
+				}else{
+					//document.getElementById('containerP').innerHTML=con.responseText;
+					loadDataP();
+				}
+			}else{
+				busy_off();
+				error_catch(con.status);
+			}
+		}	
+	} 	
+}
+
+function getStasiun(){
+	kodeorg=document.getElementById('kodeorg').value; 
+    param='kodeorg='+kodeorg;
+    param+='&proses=getStasiun';
+	tujuan='pabrik_preventifpanel_slave.php';
+    post_response_text(tujuan, param, respog);
+    function respog(){
+        if(con.readyState==4){
+            if (con.status == 200){
+                busy_off();
+                if (!isSaveResponse(con.responseText)){
+                        alert('ERROR TRANSACTION,\n' + con.responseText);
+                }else{
+                    document.getElementById('stasiun').innerHTML=con.responseText;
+					loadData();
+                }
+            }else{
+                busy_off();
+                error_catch(con.status);
+            }
+        }	
+	}  	
+}
+
+function getStasiunP(){
+	kodeorgP=document.getElementById('kodeorgP').value; 
+    param='kodeorgP='+kodeorgP;
+    param+='&proses=getStasiunP';
+	tujuan='pabrik_preventifpanel_slave.php';
+    post_response_text(tujuan, param, respog);
+    function respog(){
+        if(con.readyState==4){
+            if (con.status == 200){
+                busy_off();
+                if (!isSaveResponse(con.responseText)){
+                        alert('ERROR TRANSACTION,\n' + con.responseText);
+                }else{
+                    document.getElementById('stasiunP').innerHTML=con.responseText;
+					loadDataP();
+                }
+            }else{
+                busy_off();
+                error_catch(con.status);
+            }
+        }	
+	}  	
+}
+
+function showpopup(kodestasiun,periode,kdorg,namastasiun,jenis,type,ev){
+   param='kodestasiun='+kodestasiun+'&periode='+periode+'&kdorg='+kdorg+'&namastasiun='+namastasiun+'&jenis='+jenis+'&type='+type;
+   tujuan='pabrik_lap_preventifpanel_showpopup.php'+"?"+param;
+   width='1200';
+   height='470';
+   content="<iframe frameborder=0 width=100% height=100% src='"+tujuan+"'></iframe>"
+   showDialog1('Laporan Preventive Panel '+kdorg+' '+kodestasiun+' '+namastasiun+' '+periode,content,width,height,ev); 
+}

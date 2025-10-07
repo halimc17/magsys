@@ -1,0 +1,15 @@
+select a.kodept,a.kodeorg,a.noinvoice,a.nokontrak,a.kodecustomer,a.debet,a.tanggal,a.kuantitas,a.nilaiinvoice,a.nilaippn
+			,(rupiah1+rupiah2+rupiah3+rupiah4+rupiah5+rupiah6+rupiah7-rupiah8) as nilaiklaim
+			,b.jmlbayar,b.tglbayar
+			,(a.nilaiinvoice+nilaippn-rupiah1-rupiah2-rupiah3-rupiah4-rupiah5-rupiah6-rupiah7+rupiah8)
+			-if(isnull(b.jmlbayar),0,b.jmlbayar) as selisih
+			,b.noakun
+from keu_penagihanht a
+LEFT JOIN (select x.kodeorg,x.keterangan1,x.noakun,y.tanggal as tglbayar,sum(x.jumlah) as jmlbayar,y.posting 
+					from keu_kasbankdt x
+					LEFT JOIN keu_kasbankht y on y.notransaksi=x.notransaksi
+					where y.posting='1' and keterangan1<>'' and x.keterangan1<>'0' and (left(x.noakun,3)='113' or left(x.noakun,3)='114')
+					GROUP BY x.keterangan1
+					ORDER BY x.keterangan1,y.tanggal desc) b on b.keterangan1=a.noinvoice
+where a.posting='1'
+ORDER BY a.kodept,a.kodeorg,a.kodecustomer,a.tanggal

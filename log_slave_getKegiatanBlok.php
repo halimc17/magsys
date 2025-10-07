@@ -19,7 +19,7 @@ if(isTransactionPeriod())//check if transaction period is normal
 		{
 		 	$tipe=$bar->tipe;
 		}
-		if($tipe=='STENGINE' or $tipe=='STATION')
+		if($tipe=='STENGINE' or $tipe=='STATION' or $tipe=='MAINTENANCE')
 		{
 			$optKegiatan="<option value=''></option>";
 			$strf="select kodekegiatan,kelompok,namakegiatan from ".$dbname.".setup_kegiatan 
@@ -27,7 +27,7 @@ if(isTransactionPeriod())//check if transaction period is normal
 			$resf=mysql_query($strf);
 			while($barf=mysql_fetch_object($resf))
 			{
-				 $optKegiatan.="<option value='".$barf->kodekegiatan."'>[".$barf->kelompok."]-".$barf->namakegiatan."</option>";
+				 $optKegiatan.="<option value='".$barf->kodekegiatan."'>[".$barf->kelompok."][".$barf->kodekegiatan."]-".$barf->namakegiatan."</option>";
 			} 
 			echo $optKegiatan;
 		}
@@ -44,7 +44,7 @@ if(isTransactionPeriod())//check if transaction period is normal
 			$resf=mysql_query($strf);
 			while($barf=mysql_fetch_object($resf))
 			{
-				 $optKegiatan.="<option value='".$barf->kodekegiatan."'>[".$barf->kelompok."]-".$barf->namakegiatan."</option>";
+				 $optKegiatan.="<option value='".$barf->kodekegiatan."'>[".$barf->kelompok."][".$barf->kodekegiatan."]-".$barf->namakegiatan."</option>";
 			} 
 			echo $optKegiatan;			
 		}
@@ -55,20 +55,20 @@ if(isTransactionPeriod())//check if transaction period is normal
 			$resf=mysql_query($strf);
 			while($barf=mysql_fetch_object($resf))
 			{
-				 $optKegiatan.="<option value='".$barf->kodekegiatan."'>[".$barf->kelompok."]-".$barf->namakegiatan."</option>";
+				 $optKegiatan.="<option value='".$barf->kodekegiatan."'>[".$barf->kelompok."][".$barf->kodekegiatan."]-".$barf->namakegiatan."</option>";
 			} 
 			echo $optKegiatan;			
 		}
-                else if($tipe=='TRAKSI'){
+        else if($tipe=='TRAKSI'){
 			$optKegiatan="<option value=''></option>";
 			$strf="select kodekegiatan,kelompok,namakegiatan from ".$dbname.".setup_kegiatan 
 			       where kelompok='TRK' or kelompok='KNT' and status = '1' order by kelompok,namakegiatan";	   
 			$resf=mysql_query($strf);
 			while($barf=mysql_fetch_object($resf))
 			{
-				 $optKegiatan.="<option value='".$barf->kodekegiatan."'>[".$barf->kelompok."]-".$barf->namakegiatan."</option>";
+				 $optKegiatan.="<option value='".$barf->kodekegiatan."'>[".$barf->kelompok."][".$barf->kodekegiatan."]-".$barf->namakegiatan."</option>";
 			} 
-			echo $optKegiatan;			
+			echo $optKegiatan;
 		}
 		else if($tipe=='BIBITAN'){
 			$optKegiatan="<option value=''></option>";
@@ -77,7 +77,7 @@ if(isTransactionPeriod())//check if transaction period is normal
 			$resf=mysql_query($strf);
 			while($barf=mysql_fetch_object($resf))
 			{
-				 $optKegiatan.="<option value='".$barf->kodekegiatan."'>[".$barf->kelompok."]-".$barf->namakegiatan."</option>";
+				 $optKegiatan.="<option value='".$barf->kodekegiatan."'>[".$barf->kelompok."][".$barf->kodekegiatan."]-".$barf->namakegiatan."</option>";
 			} 
 			echo $optKegiatan;			
 		}
@@ -107,7 +107,7 @@ if(isTransactionPeriod())//check if transaction period is normal
                         $resf=mysql_query($strf);
                         while($barf=mysql_fetch_object($resf))
                         {
-                                 $optKegiatan.="<option value='".$barf->kodekegiatan."'>[".$barf->kelompok."]-".$barf->namakegiatan."</option>";
+                                 $optKegiatan.="<option value='".$barf->kodekegiatan."'>[".$barf->kelompok."][".$barf->kodekegiatan."]-".$barf->namakegiatan."</option>";
                         } 
                         echo $optKegiatan;                    
                 }    
@@ -121,7 +121,7 @@ if(isTransactionPeriod())//check if transaction period is normal
                             $resf=mysql_query($strf);
                             while($barf=mysql_fetch_object($resf))
                             {
-                                     $optKegiatan.="<option value='".$barf->kodekegiatan."'>[".$barf->kelompok."]-".$barf->namakegiatan."</option>";
+                                     $optKegiatan.="<option value='".$barf->kodekegiatan."'>[".$barf->kelompok."][".$barf->kodekegiatan."]-".$barf->namakegiatan."</option>";
                             } 
                             echo $optKegiatan;		
 	}

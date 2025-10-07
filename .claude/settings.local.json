@@ -1,0 +1,39 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(claude mcp)",
+      "Bash(move .claudemcp.json .mcp.json)",
+      "Bash(dir:*)",
+      "Bash(findstr:*)",
+      "Bash(claude mcp:*)",
+      "Bash(start chrome --remote-debugging-port=9222)",
+      "Bash(netstat:*)",
+      "Bash(curl:*)",
+      "Bash(npx:*)",
+      "WebSearch",
+      "mcp__ide__executeCode",
+      "Bash(mysql:*)",
+      "Bash(\"C:\\XAMPP\\xampp\\mysql\\bin\\mysql.exe\" -u root -e \"SELECT namauser, password, status, hak FROM erpmill.user WHERE namauser=''kingking.firdaus'';\")",
+      "Bash(md5sum:*)",
+      "Bash(php:*)",
+      "Bash(\"C:\\XAMPP\\xampp\\php\\php.exe\" -i)",
+      "Bash(\"C:\\XAMPP\\xampp\\php\\php.exe\" --ini)",
+      "Read(//c/XAMPP/xampp/php/**)",
+      "Bash(net stop:*)",
+      "Bash(net start:*)",
+      "Bash(\"C:\\XAMPP\\xampp\\apache\\bin\\httpd.exe\" -k restart)",
+      "Bash(sc query:*)",
+      "Bash(\"C:\\XAMPP\\xampp\\apache_stop.bat\")",
+      "Bash(\"C:\\XAMPP\\xampp\\apache_start.bat\")",
+      "Bash(tasklist)",
+      "Bash(wmic:*)",
+      "Bash(taskkill:*)",
+      "Bash(\"C:\\XAMPP\\xampp\\apache\\bin\\httpd.exe\")",
+      "Bash(\"C:\\XAMPP\\xampp\\mysql\\bin\\mysql.exe\" -u root -e \"UPDATE erpmill.user SET logged=0 WHERE namauser=''kingking.firdaus'';\")",
+      "Bash(\"C:\\XAMPP\\xampp\\mysql\\bin\\mysql.exe\" -u root -e \"SELECT namauser, logged, status FROM erpmill.user WHERE namauser=''kingking.firdaus'';\")",
+      "Bash(del C:XAMPPxampphtdocserpmilltest_login.php)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

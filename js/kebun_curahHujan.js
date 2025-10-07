@@ -2,6 +2,7 @@
 
 function add_new_data()
 {
+	document.getElementById('proses').value='insert';
 	param='proses=CekData';
 	//alert(param);
 	tujuan='kebun_slave_curahHujan.php';

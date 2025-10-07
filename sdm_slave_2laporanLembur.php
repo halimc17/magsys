@@ -20,13 +20,58 @@ $kdUnit = checkPostGet('kdUnit','');
 $pilihan = checkPostGet('pilihan','');
 $pilihan2 = checkPostGet('pilihan2','');
 $pilihan3 = checkPostGet('pilihan3','');
+$beban = checkPostGet('beban1','');
 
 $periodeGaji=$periode;
 $periode=explode('-',$periode);
 $total=0;
 if(!$kdOrg)$kdOrg=$_SESSION['empl']['lokasitugas'];
 
-function dates_inbetween($date1, $date2)
+	if($proses=='getTgl'){
+		$add='';
+        if($periode!='')
+        {
+                $tgl=$periode;
+                $tanggal= count($tgl)>1? $tgl[0]."-".$tgl[1]: '';
+        }
+        elseif($period!='')
+        {
+                $tgl=$period;
+                $tanggal= count($tgl)>1? $tgl[0]."-".$tgl[1]: '';
+        }
+        if($pilihan2=='bulanan')
+        {
+            $add=" and jenisgaji='B'";
+
+        }
+        if($pilihan2=='harian')
+        {
+            $add=" and jenisgaji='H'";
+
+        }
+        $sTgl="select distinct tanggalmulai,tanggalsampai from ".$dbname.".sdm_5periodegaji where 
+            kodeorg='".substr($kdUnit,0,4)."' and periode='".$tanggal."' ".$add."";
+        //echo"warning".$sTgl;
+        $qTgl=mysql_query($sTgl) or die(mysql_error());
+        $rTgl=mysql_fetch_assoc($qTgl);
+        echo tanggalnormal($rTgl['tanggalmulai'])."###".tanggalnormal($rTgl['tanggalsampai']);
+        exit();
+	}else if($proses=='getPeriode'){
+            //echo"warning:masuk";
+            $sPeriode="select distinct periode from ".$dbname.".sdm_5periodegaji  where kodeorg='".substr($kdOrg,0,4)."' order by periode desc";
+            $optPeriode="<option value''>".$_SESSION['lang']['pilihdata']."</option>";
+            $qPeriode=mysql_query($sPeriode) or die(mysql_error());
+            while($rPeriode=mysql_fetch_assoc($qPeriode))
+            {
+                //$optPeriode.="<option value=".$rPeriode['periode'].">".$rPeriode['periode']."</option>";
+                $optPeriode.="<option value=".$rPeriode['periode'].">".substr(tanggalnormal($rPeriode['periode']),1,7)."</option>";
+            }
+            echo $optPeriode;
+			exit();
+	}
+
+
+function dates_inbetwee($date1, $date2)
 {
     $day = 60*60*24;
     $date1 = strtotime($date1);
@@ -47,7 +92,8 @@ function dates_inbetween($date1, $date2)
                 $tgl1=$tgl_1;
                 $tgl2=$tgl_2;
         }
-        $test = dates_inbetween($tgl1, $tgl2);
+        //$test = dates_inbetwee($tgl1, $tgl2);
+        $test = rangeTanggal($tgl1, $tgl2);
 
 
 
@@ -63,37 +109,28 @@ function dates_inbetween($date1, $date2)
         }
         if(!$nmOrg)$nmOrg=$kdOrg;
         //ambil where untuk data karyawan
-        if($kdOrg!='')
-        {
-                $kodeOrg=$kdOrg;
-                if($_SESSION['empl']['tipelokasitugas']=='HOLDING')
-                {
-                        $where=" and lokasitugas = '".$kodeOrg."'";
-                        $where2=" and substr(kodeorg,1,4)='".$kdOrg."'";
-                }
-                else
-                {
-                        if(strlen($kdOrg)>4)
-                        {
-                                $where=" and subbagian='".$kdOrg."'";
-                                $where2=" and kodeorg='".$kdOrg."'";
-                        }
-                        else
-                        {
-                                $where=" and lokasitugas='".$kdOrg."'";
-                                $where2=" and substr(kodeorg,1,4)='".$kdOrg."'";
-                        }
-                }
-        }
-        else
-        {
-                $kodeOrg=$_SESSION['empl']['lokasitugas'];
-                $where=" and lokasitugas='".$kodeOrg."'";
+        if($kdOrg!=''){
+			$kodeOrg=$kdOrg;
+            //if($_SESSION['empl']['tipelokasitugas']=='HOLDING'){
+			//	$where=" and lokasitugas = '".$kodeOrg."'";
+			//	$where2=" and substr(kodeorg,1,4)='".$kdOrg."'";
+			//}else{
+				if(strlen($kdOrg)>4){
+					$where=" and subbagian='".$kdOrg."'";
+					$where2=" and b.kodeorg='".$kdOrg."'";
+				}else{
+					$where=" and lokasitugas='".$kdOrg."'";
+					$where2=" and substr(b.kodeorg,1,4)='".$kdOrg."'";
+				}
+			//}
+        }else{
+			$kodeOrg=$_SESSION['empl']['lokasitugas'];
+			$where=" and lokasitugas='".$kodeOrg."'";
         }
 //echo $sKebun.' '.$where; exit;
 
 // pilihan 2
-if($pilihan2=='semua'){
+if($pilihan2==''){
         $where3 = '';
 }else
 if($pilihan2=='bulanan'){
@@ -104,10 +141,20 @@ if($pilihan2=='harian'){
 }
 
 // pilihan 3
-if($pilihan3=='semua')
+if($pilihan3=='')
         $where4 = '';
 else
         $where4 = " and a.bagian = '".$pilihan3."' ";
+
+// pilihan Beban
+if($beban!=''){
+	if($beban=='Normal'){
+        $where4.=" and (b.beban = '".$beban."' or b.beban = '' or b.jamaktual>0)";
+	}else{
+        $where4.=" and b.beban = '".$beban."' ";
+	}
+}
+
 // building array: jabatan =========================================================================	
          $strJ="select * from ".$dbname.".sdm_5jabatan";
         $resJ=mysql_query($strJ,$conn);
@@ -127,25 +174,30 @@ else
         $total=0;
 // ambil data lembur konversi ================================================================================
         $resData=array();
-        $sGetLembur="select jamaktual, jamlembur,tipelembur from ".$dbname.".sdm_5lembur where kodeorg = '".$kodeOrg."'";
+        $sGetLembur="select jamaktual, jamlembur,tipelembur from ".$dbname.".sdm_5lembur where kodeorg = '".substr($kodeOrg,0,4)."'";
         $rGetLembur=fetchData($sGetLembur);
         foreach($rGetLembur as $row => $kar)
         {
             $GetLembur[$kar['jamaktual']][$kar['tipelembur']]=$kar['jamlembur'];
-        }  
+        }
+//exit('Warning: '.$sGetLembur);
 // ambil data lembur ================================================================================
 if($pilihan=='rupiah'){
-     $sPeople="SELECT a.subbagian,b.karyawanid as karyawanid, b.tanggal as tanggal, b.uangkelebihanjam as uangkelebihanjam, a.namakaryawan, a.bagian, a.kodejabatan
-                          FROM ".$dbname.".sdm_lemburdt b
-                          LEFT JOIN ".$dbname.".datakaryawan a on a.karyawanid = b.karyawanid
-                          WHERE b.tanggal between  '".$tgl1."' and '".$tgl2."' ".$where2." ".$where3." ".$where4." and b.uangkelebihanjam>0";
+	$sPeople="SELECT a.subbagian,b.karyawanid as karyawanid, b.tanggal as tanggal, (b.uangkelebihanjam + b.uanglembur2) as uangkelebihanjam
+					,b.tipelembur, a.namakaryawan,a.bagian,a.kodejabatan
+				FROM ".$dbname.".sdm_lemburdt b
+				LEFT JOIN ".$dbname.".datakaryawan a on a.karyawanid = b.karyawanid
+				WHERE b.tanggal between  '".$tgl1."' and '".$tgl2."' ".$where2." ".$where3." ".$where4." and (b.uangkelebihanjam + b.uanglembur2)>0";
 }else{
-        $sPeople="SELECT a.subbagian,b.karyawanid as karyawanid, b.tanggal as tanggal, b.jamaktual as uangkelebihanjam , b.tipelembur, a.namakaryawan, a.bagian, a.kodejabatan
-                          FROM ".$dbname.".sdm_lemburdt b 
-                          LEFT JOIN ".$dbname.".datakaryawan a on a.karyawanid = b.karyawanid
-                          WHERE b.tanggal between  '".$tgl1."' and '".$tgl2."' ".$where2." ".$where3." ".$where4." and b.jamaktual>0";
+	$sPeople="SELECT a.subbagian,b.karyawanid as karyawanid, b.tanggal as tanggal
+					,(if(isnull(b.jamaktual),0,b.jamaktual) + if(isnull(b.jamaktual2),0,b.jamaktual2)) as uangkelebihanjam 
+					,b.tipelembur,a.namakaryawan,a.bagian, a.kodejabatan
+				FROM ".$dbname.".sdm_lemburdt b 
+				LEFT JOIN ".$dbname.".datakaryawan a on a.karyawanid = b.karyawanid
+				WHERE b.tanggal between  '".$tgl1."' and '".$tgl2."' ".$where2." ".$where3." ".$where4." 
+					and (if(isnull(b.jamaktual),0,b.jamaktual)+if(isnull(b.jamaktual2),0,b.jamaktual2))>0";
 }
-//echo $sPeople; exit;
+//exit('Warning: '.$sPeople);
 
 //exit("Error".$sPeople);
         $query=mysql_query($sPeople) or die(mysql_error());
@@ -159,15 +211,12 @@ if($pilihan=='rupiah'){
         $dzArr[$res['karyawanid']]['jb']=$jab[$res['kodejabatan']];
         $dzArr[$res['karyawanid']][$res['karyawanid']]=$res['karyawanid'];
         
-        if($pilihan!='jam_lembur'){
-                    $dzArr[$res['karyawanid']][$res['tanggal']]=$res['uangkelebihanjam']; 
-
-                }else{
-                    $dzArr[$res['karyawanid']][$res['tanggal']]=$GetLembur[$res['uangkelebihanjam']][$res['tipelembur']];
-
-                } 
+			if($pilihan!='jam_lembur'){
+				$dzArr[$res['karyawanid']][$res['tanggal']]=$res['uangkelebihanjam']; 
+			}else{
+				$dzArr[$res['karyawanid']][$res['tanggal']]=$GetLembur[$res['uangkelebihanjam']][$res['tipelembur']];
+			} 
         }
-        
         
         //klo ada server busy di sini pasti karena tidak filter kodeorg $kdOrg
         $iGaji="select jumlah,karyawanid from ".$dbname.".sdm_5gajipokok where tahun='".substr($periodeGaji,0,4)."' "
@@ -183,9 +232,6 @@ if($pilihan=='rupiah'){
 
 switch($proses)
 {
-    
-    
-   
         case'preview': //exit("Error:ASD");
             
             
@@ -196,8 +242,46 @@ switch($proses)
                 exit();
         }
 // preview: nampilin header ================================================================================
+//exit('Warning: '.$kdOrg.' '.$pilihan.' '.$periodeGaji);
         echo"<table cellspacing='1' border='0' class='sortable'>
-        <thead class=rowheader>
+        <thead class=rowheader>";
+
+        //Pengolahan Pabrik =================
+		if(substr($kdOrg,3,1)=='M' and $pilihan=='jam_aktual'){
+	        $sOlah="select kodeorg,tanggal,ceil(sum(jamdinasbruto+jamstagnasi)) as jamolah,sum(tbsdiolah) as tbsolah 
+					from ".$dbname.".pabrik_pengolahan 
+					where kodeorg = '".substr($kdOrg,0,4)."' AND tanggal like '".$periodeGaji."%'
+					GROUP BY kodeorg,tanggal
+					ORDER BY kodeorg,tanggal";
+	        $qOlah=mysql_query($sOlah) or die (mysql_error($conn));
+			$rOlah=mysql_num_rows($qOlah);
+			//exit('Warning: '.$rOlah.' = '.$sOlah)
+			$ttjamolah=0;
+			$tttbsolah=0;
+			if($rOlah>0){
+			    while($dOlah=mysql_fetch_assoc($qOlah)){
+					$jamolah[$dOlah['tanggal']]=$dOlah['jamolah'];
+					$tbsolah[$dOlah['tanggal']]=$dOlah['tbsolah'];
+					$ttjamolah+=$dOlah['jamolah'];
+					$tttbsolah+=$dOlah['tbsolah'];
+				}
+				echo"<tr><td colspan=5>TBS Olah (Kg)</td>";
+				foreach($test as $ar => $isi){
+					echo"<td align=right>".($tbsolah[$isi]=='' ? number_format(0,1) : number_format($tbsolah[$isi],1))."</td>";
+				}
+				echo"<td align=right>".($tttbsolah=='' ? number_format(0,1) : number_format($tttbsolah,1))."</td>";
+				echo"</tr>";
+				echo"<tr><td colspan=5>Jam Olah</td>";
+				foreach($test as $ar => $isi){
+					echo"<td align=right>".($jamolah[$isi]=='' ? number_format(0,1) : number_format($jamolah[$isi],1))."</td>";
+				}
+				echo"<td align=right>".($ttjamolah=='' ? number_format(0,1) : number_format($ttjamolah,1))."</td>";
+				echo"</tr>";
+			}
+		}
+        //End Pengolahan Pabrik =================
+
+		echo"
         <tr>
         <td>No</td>
         <td>".$_SESSION['lang']['nama']."</td>
@@ -293,6 +377,7 @@ class PDF extends FPDF
                 global $length;
                 global $colArr;
                 global $title;
+                                global $periodeGaji;
                                 global $period;
                                 global $periode;
                                 global $kdOrg;
@@ -338,6 +423,46 @@ class PDF extends FPDF
                                 $this->Ln();
                 $this->SetFont('Arial','B',7);
                 $this->SetFillColor(220,220,220);
+
+        //Pengolahan Pabrik =================
+		if(substr($kdOrg,3,1)=='M' and $pilihan=='jam_aktual'){
+	        $sOlah="select kodeorg,tanggal,ceil(sum(jamdinasbruto+jamstagnasi)) as jamolah,sum(tbsdiolah) as tbsolah 
+					from ".$dbname.".pabrik_pengolahan 
+					where kodeorg = '".substr($kdOrg,0,4)."' AND tanggal like '".$periodeGaji."%'
+					GROUP BY kodeorg,tanggal
+					ORDER BY kodeorg,tanggal";
+	        $qOlah=mysql_query($sOlah) or die (mysql_error($conn));
+			$rOlah=mysql_num_rows($qOlah);
+			//exit('Warning: '.$rOlah.' = '.$sOlah)
+			$ttjamolah=0;
+			$tttbsolah=0;
+			if($rOlah>0){
+			    while($dOlah=mysql_fetch_assoc($qOlah)){
+					$jamolah[$dOlah['tanggal']]=$dOlah['jamolah'];
+					$tbsolah[$dOlah['tanggal']]=$dOlah['tbsolah'];
+					$ttjamolah+=$dOlah['jamolah'];
+					$tttbsolah+=$dOlah['tbsolah'];
+				}
+				$this->Cell(17/100*$width,$height,'TBS Olah (Ton)',1,0,'C',1);
+				foreach($test as $ar => $isi){
+					$this->Cell(2.6/100*$width,$height,($tbsolah[$isi]=='' ? number_format(0,1) : number_format($tbsolah[$isi]/1000,1)),1,0,'R',1);	
+					$akhirX=$this->GetX();
+				}
+				$this->SetY($this->GetY());
+				$this->SetX($akhirX);
+				$this->Cell(4/100*$width,$height,($tttbsolah==0 ? number_format(0,1) : number_format($tttbsolah/1000,1)),1,1,'R',1);
+				$this->Cell(17/100*$width,$height,'Jam Olah',1,0,'C',1);
+				foreach($test as $ar => $isi){
+					$this->Cell(2.6/100*$width,$height,($jamolah[$isi]=='' ? number_format(0,1) : number_format($jamolah[$isi],1)),1,0,'R',1);	
+					$akhirX=$this->GetX();
+				}
+				$this->SetY($this->GetY());
+				$this->SetX($akhirX);
+				$this->Cell(4/100*$width,$height,($ttjamolah==0 ? number_format(0,1) : number_format($ttjamolah,1)),1,1,'R',1);
+			}
+		}
+        //End Pengolahan Pabrik =================
+
                                 $this->Cell(2/100*$width,$height,'No',1,0,'C',1);
                                 $this->Cell(5/100*$width,$height,$_SESSION['lang']['nama'],1,0,'C',1);		
                                 $this->Cell(5/100*$width,$height,$_SESSION['lang']['jabatan'],1,0,'C',1);	
@@ -346,7 +471,7 @@ class PDF extends FPDF
                                 {
                                         $this->Cell(2.6/100*$width,$height,substr($isi,8,2),1,0,'C',1);	
                                         $akhirX=$this->GetX();
-                                }	
+                                }
                                 $this->SetY($this->GetY());
                                 $this->SetX($akhirX);
                                 $this->Cell(4/100*$width,$height,$_SESSION['lang']['jumlah'],1,1,'C',1);
@@ -447,7 +572,44 @@ class PDF extends FPDF
         <tr><td colspan='".$colatas."' align=center>".strtoupper($_SESSION['lang']['periode'])." :". tanggalnormal($tgl1)." s.d. ". tanggalnormal($tgl2)."</td></tr><tr><td colspan='".$colatas."'>&nbsp;</td></tr></table>";
 
         $stream.="<table cellspacing='1' border='1' class='sortable'>
-        <thead class=rowheader>
+        <thead class=rowheader>";
+
+        //Pengolahan Pabrik =================
+		if(substr($kdOrg,3,1)=='M' and $pilihan=='jam_aktual'){
+	        $sOlah="select kodeorg,tanggal,ceil(sum(jamdinasbruto+jamstagnasi)) as jamolah,sum(tbsdiolah) as tbsolah 
+					from ".$dbname.".pabrik_pengolahan 
+					where kodeorg = '".substr($kdOrg,0,4)."' AND tanggal like '".$periodeGaji."%'
+					GROUP BY kodeorg,tanggal
+					ORDER BY kodeorg,tanggal";
+	        $qOlah=mysql_query($sOlah) or die (mysql_error($conn));
+			$rOlah=mysql_num_rows($qOlah);
+			//exit('Warning: '.$rOlah.' = '.$sOlah)
+			$ttjamolah=0;
+			$tttbsolah=0;
+			if($rOlah>0){
+			    while($dOlah=mysql_fetch_assoc($qOlah)){
+					$jamolah[$dOlah['tanggal']]=$dOlah['jamolah'];
+					$tbsolah[$dOlah['tanggal']]=$dOlah['tbsolah'];
+					$ttjamolah+=$dOlah['jamolah'];
+					$tttbsolah+=$dOlah['tbsolah'];
+				}
+				$stream.="<tr><td colspan=5>TBS Olah (Kg)</td>";
+				foreach($test as $ar => $isi){
+					$stream.="<td align=right>".($tbsolah[$isi]=='' ? number_format(0,1) : number_format($tbsolah[$isi],1))."</td>";
+				}
+				$stream.="<td align=right>".($tttbsolah=='' ? number_format(0,1) : number_format($tttbsolah,1))."</td>";
+				$stream.="</tr>";
+				$stream.="<tr><td colspan=5>Jam Olah</td>";
+				foreach($test as $ar => $isi){
+					$stream.="<td align=right>".($jamolah[$isi]=='' ? number_format(0,1) : number_format($jamolah[$isi],1))."</td>";
+				}
+				$stream.="<td align=right>".($ttjamolah=='' ? number_format(0,1) : number_format($ttjamolah,1))."</td>";
+				$stream.="</tr>";
+			}
+		}
+        //End Pengolahan Pabrik =================
+
+		$stream.="
         <tr>
         <td bgcolor=#DEDEDE>No</td>
         <td bgcolor=#DEDEDE>".$_SESSION['lang']['nama']."</td>
@@ -593,46 +755,6 @@ class PDF extends FPDF
 		}
 		break;
 	
-    case'getTgl':
-            $add='';
-        if($periode!='')
-        {
-                $tgl=$periode;
-                $tanggal= count($tgl)>1? $tgl[0]."-".$tgl[1]: '';
-        }
-        elseif($period!='')
-        {
-                $tgl=$period;
-                $tanggal= count($tgl)>1? $tgl[0]."-".$tgl[1]: '';
-        }
-        if($pilihan2=='bulanan')
-        {
-            $add=" and jenisgaji='B'";
-
-        }
-        if($pilihan2=='harian')
-        {
-            $add=" and jenisgaji='H'";
-
-        }
-        $sTgl="select distinct tanggalmulai,tanggalsampai from ".$dbname.".sdm_5periodegaji where 
-            kodeorg='".substr($kdUnit,0,4)."' and periode='".$tanggal."' ".$add."";
-        //echo"warning".$sTgl;
-        $qTgl=mysql_query($sTgl) or die(mysql_error());
-        $rTgl=mysql_fetch_assoc($qTgl);
-        echo tanggalnormal($rTgl['tanggalmulai'])."###".tanggalnormal($rTgl['tanggalsampai']);
-        break;
-        case'getPeriode':
-            //echo"warning:masuk";
-            $sPeriode="select distinct periode from ".$dbname.".sdm_5periodegaji  where kodeorg='".$kdOrg."'";
-            $optPeriode="<option value''>".$_SESSION['lang']['pilihdata']."</option>";
-            $qPeriode=mysql_query($sPeriode) or die(mysql_error());
-            while($rPeriode=mysql_fetch_assoc($qPeriode))
-            {
-                $optPeriode.="<option value=".$rPeriode['periode'].">".$rPeriode['periode']."</option>";
-            }
-            echo $optPeriode;
-        break;
         default:
         break;
 }

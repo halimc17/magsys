@@ -7,10 +7,10 @@ include_once('lib/rTable.php');
 echo open_body();
 include('master_mainMenu.php');
 ?>
-<script language=javascript src=js/zMaster.js></script>
-<script language=javascript src=js/zSearch.js></script>
-<script language=javascript src=js/zTools.js></script>
-<script language=javascript1.2 src='js/log_realisasispk.js'></script>
+<script language=javascript1.2 src=js/zMaster.js></script>
+<script language=javascript1.2 src=js/zSearch.js></script>
+<script language=javascript1.2 src=js/zTools.js></script>
+<script language=javascript1.2 src=js/log_realisasispk.js></script>
 <link rel=stylesheet type=text/css href='style/zTable.css'>
 <?php
 #=== Prep Control & Search

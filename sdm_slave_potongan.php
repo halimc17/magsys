@@ -98,7 +98,7 @@ switch($param['proses']) {
 			$rGp=mysql_fetch_assoc($qGp);
 			
 			if($rGp['sudahproses']==0) {
-				if($_SESSION['standard']['userid']==$rlvhc['updateby'] || $_SESSION['empl']['bagian']=='IT') {
+				if($_SESSION['empl']['lokasitugas']==$rlvhc['kodeorg'] || $_SESSION['empl']['bagian']=='IT') {
 					echo"<img src=images/application/application_edit.png class=resicon  title='Edit' onclick=\"fillField('".$rlvhc['kodeorg']."','".$rlvhc['periodegaji']."','".$rlvhc['tipepotongan']."');\">";
 					echo"<img src=images/pdf.jpg class=resicon  title='Print' onclick=\"masterPDF('sdm_potonganht','".$rlvhc['kodeorg'].",".$rlvhc['periodegaji'].",".$rlvhc['tipepotongan']."','','sdm_slave_potonganPdf',event)\">
 						<img onclick=excel(event,'".$rlvhc['kodeorg']."','".$rlvhc['periodegaji']."','".$rlvhc['tipepotongan']."') src=images/excel.jpg class=resicon title='MS.Excel'>";
@@ -218,10 +218,10 @@ switch($param['proses']) {
 			}
 		}
 	   
-		$where=" lokasitugas='".$param['kdOrg']."' and (tanggalkeluar='0000-00-00' or tanggalkeluar<'".$tgl."')";
+		$where=" lokasitugas='".$param['kdOrg']."' and (tanggalkeluar='0000-00-00' or tanggalkeluar>'".$tgl."')";
 		/*if($optTipe[$param['kdOrg']]=='KANWIL'){
 			$where=" lokasitugas in (select kodeorganisasi from ".$dbname.".organisasi where induk='".$_SESSION['empl']['kodeorganisasi']."')"
-				 . " and (tanggalkeluar='0000-00-00' or tanggalkeluar<'".$tgl."')";
+				 . " and (tanggalkeluar='0000-00-00' or tanggalkeluar>'".$tgl."')";
 		}*/
 		$where .= " and left(kodegolongan,1)<=3";
                 $optTipeKar=  makeOption($dbname, 'sdm_5tipekaryawan','id,tipe');
@@ -301,10 +301,10 @@ switch($param['proses']) {
 		$tab.="<td>".$_SESSION['lang']['namakaryawan']."</td>";
 		$tab.="<td>".$_SESSION['lang']['lokasitugas']."</td>";
 		$tab.="</tr></thead><tbody>";
-		$where=" lokasitugas='".$param['unit']."' and (tanggalkeluar='0000-00-00' or tanggalkeluar<'".$tgl."')  and tipekaryawan!=0 ";
+		$where=" lokasitugas='".$param['unit']."' and (tanggalkeluar='0000-00-00' or tanggalkeluar>'".$tgl."')  and tipekaryawan!=0 ";
 		if($optTipe[$param['unit']]=='KANWIL'){
 			$where=" lokasitugas in (select distinct kodeunit from ".$dbname.".bgt_regional_assignment where regional='".$_SESSION['empl']['regional']."')"
-				 . " and (tanggalkeluar='0000-00-00' or tanggalkeluar<'".$tgl."') and tipekaryawan!=0 ";
+				 . " and (tanggalkeluar='0000-00-00' or tanggalkeluar>'".$tgl."') and tipekaryawan!=0 ";
 		}
 		if($param['nmkary']!=''){
 			$where.="and (namakaryawan like '%".$param['nmkary']."%' or nik like '%".$param['nmkary']."%')";

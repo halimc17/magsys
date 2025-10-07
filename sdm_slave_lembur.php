@@ -16,12 +16,17 @@ $tpLmbr=checkPostGet('tpLmbr','');
 $ungTrans=checkPostGet('ungTrans','');
 $ungMkn=checkPostGet('ungMkn','');
 $Jam=checkPostGet('Jam','');
+$Jam2=checkPostGet('Jam2','');
 $ungLbhjm=checkPostGet('ungLbhjm','');
+$ungLbhjm2=checkPostGet('ungLbhjm2','');
 $optKry='';
 $optTipelembur="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
 $arrsstk=array("0"=>$_SESSION['lang']['haribiasa'],"1"=>$_SESSION['lang']['hariminggu'],"2"=>$_SESSION['lang']['harilibur'],"3"=>$_SESSION['lang']['hariraya']);
 $kodeOrg=checkPostGet('kodeOrg','');
 $basisJam=checkPostGet('basisJam','');
+$noba=checkPostGet('noba','');
+$beban=checkPostGet('beban','');
+$noakun='';
 $thnPeriod="";
 //$arrsstk=getEnum($dbname,'sdm_5lembur','tipelembur');
 foreach($arrsstk as $kei=>$fal)
@@ -29,14 +34,63 @@ foreach($arrsstk as $kei=>$fal)
         //print_r($kei);exit();
         $optTipelembur.="<option value='".$kei."'>".ucfirst($fal)."</option>";
 } 
-
 $tpLembur=checkPostGet('tpLembur','');
 $basisJam=checkPostGet('basisJam','');
-        switch($proses)
+$basisJam2=checkPostGet('basisJam2','');
+
+$shrlbr="select * from ".$dbname.".sdm_5harilibur where tanggal='".$tgl."' and kebun in ('GLOBAL','".$_SESSION['empl']['tipelokasitugas']."','".substr($kdOrg,0,4)."')";
+$qhrlbr=mysql_query($shrlbr) or die(mysql_error($conn));
+$jmlhrlbr=mysql_num_rows($qhrlbr);
+
+		switch($proses)
         {
                 case'cekData':
-                //exit("Error:MASUK");
-                //echo"warning:masuk";
+				if($beban=='' and $Jam2>0){
+	                exit('Warning: Jika ada Jam2 maka beban tidak bolek kosong...!');
+				}
+				if($beban=='Loading_CPO'){
+			        $sBeban1="select noakundebet,keterangan from ".$dbname.".keu_5parameterjurnal where kodeaplikasi='PKS' and jurnalid='PKS09'";
+				    $qBeban1=mysql_query($sBeban1) or die(mysql_error());
+			        while($rBeban1=mysql_fetch_assoc($qBeban1)){
+						$noakun=$rBeban1['noakundebet'];
+					}
+				}else if(substr($beban,0,3)=='AK-'){
+			        $sBeban2="select a.kode,b.akunak,a.nama from ".$dbname.".project a
+								LEFT JOIN ".$dbname.".sdm_5tipeasset b on b.kodetipe=substr(a.kode,4,2)
+								where kode='".$beban."' and posting=0";
+				    $qBeban2=mysql_query($sBeban2) or die(mysql_error());
+				    while($rBeban2=mysql_fetch_assoc($qBeban2)){
+						$noakun=$rBeban2['akunak'];
+					}
+				}else{
+			        $sOrgtipe="select tipe from ".$dbname.".organisasi where kodeorganisasi='".$kdOrg."'";
+				    $qOrgtipe=mysql_query($sOrgtipe) or die(mysql_error());
+			        while($rOrgtipe=mysql_fetch_assoc($qOrgtipe)){
+						$OrgTipe=$rOrgtipe['tipe'];
+					}
+					if($OrgTipe=='MAINTENANCE'){
+						$group='PKS06';
+					}else if($OrgTipe=='STATION'){
+						$group='PKS02';
+					}else if($OrgTipe=='WORKSHOP'){
+						$group='WSG1';
+					}else if($OrgTipe=='TRAKSI'){
+						$group='VHCG1';
+					}else if($OrgTipe=='SECURITY'){
+						$group='SCRT1';
+					}else if($OrgTipe=='MESS'){
+						$group='MESS1';
+					}else{
+						$group='KBNB1';
+					}
+			        $sBeban1="select noakundebet,keterangan from ".$dbname.".keu_5parameterjurnal where jurnalid='".$group."'";
+				    $qBeban1=mysql_query($sBeban1) or die(mysql_error());
+			        while($rBeban1=mysql_fetch_assoc($qBeban1)){
+						$noakun=$rBeban1['noakundebet'];
+					}
+					//$noakun='';
+				}
+
                 $_SESSION['temp']['OrgKd2']=$kdOrg;
                 $sCek="select kodeorg,tanggal from ".$dbname.".sdm_lemburht where tanggal='".$tgl."' and kodeorg='".$kdOrg."'"; //echo "warning".$sCek;nospb
                 $qCek=mysql_query($sCek) or die(mysql_error());
@@ -46,26 +100,63 @@ $basisJam=checkPostGet('basisJam','');
                         $sIns="insert into ".$dbname.".sdm_lemburht (`kodeorg`,`tanggal`) values ('".$kdOrg."','".$tgl."')"; //echo"warning:".$sIns;
                         if(mysql_query($sIns))
                         {
-                                if(($tpLmbr!='')&&($Jam!=''))
-                                {
-                                        $sDetIns="insert into ".$dbname.".sdm_lemburdt 
-                                        (`kodeorg`,`tanggal`,`karyawanid`,`tipelembur`,`jamaktual`,`uangmakan`,`uangtransport`,`uangkelebihanjam`) values ('".$kdOrg."','".$tgl."','".$krywnId."','".$tpLmbr."','".$Jam."','".$ungMkn."','".$ungTrans."','".$ungLbhjm."')";
-                                        //echo"warning:".$sDetIns;exit();
-
-                                        if(mysql_query($sDetIns))
-                                        echo"";
-                                        else
-                                        echo "DB Error : ".mysql_error($conn);
+							if(($tpLmbr!='') and ($Jam!='' or $Jam2!=''))
+                            {
+								if($jmlhrlbr==0 and $tpLmbr==0){ //Bukan Hari Libur dan tipe lembur Hari Kerja
+									if(date('w', strtotime($tgl))==6){ //Hari Sabtu 
+										if(substr($kdOrg,0,4)=='SKDM'){
+											$batasjam=3;
+										}else{
+											$batasjam=5000;
+										}
+									}else{
+										if(substr($kdOrg,0,4)=='SKDM'){
+											$batasjam=1;
+										}else{
+											$batasjam=5000;
+										}
+									}
+								}else if($jmlhrlbr>0 and $tpLmbr>0){ //Hari Libur dan tipe lembur Hari Raya/libur/Minggu
+									if(substr($kdOrg,0,4)=='SKDM'){
+										$batasjam=8;
+									}else{
+										$batasjam=5000;
+									}
+								}else{
+									exit('Warning: Setting Tanggal atau Tipe Lembur Salah...!');
+								}
+								if(($Jam+$Jam2)>$batasjam and ($noba=='' or is_null($noba))){
+									exit('Warning: Jam melebihi batas yang ditentukan, Harus Input No. BA...!');
+								}
+								if(($Jam+$Jam2)<=$batasjam){
+									$noba='';
+								}
+								if(($Jam+$Jam2)>$batasjam){
+									$stspost=0;
+									$by_post='';
+								}else{
+									$stspost=1;
+									$by_post='System';
+								}
+								$sDetIns="insert into ".$dbname.".sdm_lemburdt 
+                                (`kodeorg`,`tanggal`,`karyawanid`,`tipelembur`,`jamaktual`,`jamaktual2`,`uangmakan`,`uangtransport`,`uangkelebihanjam`
+								,`uanglembur2`,`noba`,`beban`,`noakun`,`posting`,`postby`) values ('".$kdOrg."','".$tgl."','".$krywnId."','".$tpLmbr."','".$Jam."','".$Jam2."','".$ungMkn."','".$ungTrans."','".$ungLbhjm."'
+								,'".$ungLbhjm2."','".$noba."','".$beban."','".$noakun."',".$stspost.",'".$by_post."')";
+                                //echo"warning:".$sDetIns;exit();
+                                if(mysql_query($sDetIns))
+									echo"";
+								else
+									echo "DB Error : ".mysql_error($conn);
+							}
+                            else
+                            {
+								if($_SESSION['language']=='ID'){ 
+									echo"warning: Masukkan tipe lembur dan basis jam";
+								}else{
+									echo"warning: Please choose overtime type and actual hours";
                                 }
-                                else
-                                {
-                                       if($_SESSION['language']=='ID'){ 
-                                       echo"warning: Masukkan tipe lembur dan basis jam";
-                                       }else{
-                                        echo"warning: Please choose overtime type and actual hours";
-                                       }
-                                        exit();
-                                }
+								exit();
+                            }
                         }
                         else
                         {
@@ -74,34 +165,70 @@ $basisJam=checkPostGet('basisJam','');
                 }
                 else
                 {
-                        if(($tpLmbr!='')&&($Jam!=''))
-                        {
-
-                                $sDetIns="insert into ".$dbname.".sdm_lemburdt 
-                                (`kodeorg`,`tanggal`,`karyawanid`,`tipelembur`,`jamaktual`,`uangmakan`,`uangtransport`,`uangkelebihanjam`) values ('".$kdOrg."','".$tgl."','".$krywnId."','".$tpLmbr."','".$Jam."','".$ungMkn."','".$ungTrans."','".$ungLbhjm."')";
+					if(($tpLmbr!='') and ($Jam!='' or $Jam2!=''))
+                    {
+						if($jmlhrlbr==0 and $tpLmbr==0){ //Bukan Hari Libur dan tipe lembur Hari Kerja
+							if(date('w', strtotime($tgl))==6){ //Hari Sabtu
+								if(substr($kdOrg,0,4)=='SKDM'){
+									$batasjam=3;
+								}else{
+									$batasjam=5000;
+								}
+							}else{
+								if(substr($kdOrg,0,4)=='SKDM'){
+									$batasjam=1;
+								}else{
+									$batasjam=5000;
+								}
+							}
+						}else if($jmlhrlbr>0 and $tpLmbr>0){ //Hari Libur dan tipe lembur Hari Raya/libur/Minggu
+							if(substr($kdOrg,0,4)=='SKDM'){
+								$batasjam=8;
+							}else{
+								$batasjam=5000;
+							}
+						}else{
+							exit('Warning: Setting Tanggal atau Tipe Lembur Salah...!');
+						}
+						if(($Jam+$Jam2)>$batasjam and ($noba=='' or is_null($noba))){
+							exit('Warning: Jam melebihi batas yang ditentukan, Harus Input No. BA...!');
+						}
+						if(($Jam+$Jam2)<=$batasjam){
+							$noba='';
+						}
+						if(($Jam+$Jam2)>$batasjam){
+							$stspost=0;
+							$by_post='';
+						}else{
+							$stspost=1;
+							$by_post='System';
+						}
+						$sDetIns="insert into ".$dbname.".sdm_lemburdt 
+                     (`kodeorg`,`tanggal`,`karyawanid`,`tipelembur`,`jamaktual`,`jamaktual2`,`uangmakan`,`uangtransport`,`uangkelebihanjam`,`uanglembur2`
+					 ,`noba`,`beban`,`noakun`,`posting`,`postby`) values ('".$kdOrg."','".$tgl."','".$krywnId."','".$tpLmbr."','".$Jam."','".$Jam2."','".$ungMkn."','".$ungTrans."','".$ungLbhjm."','".$ungLbhjm2."'
+					 ,'".$noba."','".$beban."','".$noakun."',".$stspost.",'".$by_post."')";
                         //echo"warning:".$sDetIns;exit();
-
                         if(mysql_query($sDetIns))
-                        echo"";
+							echo"";
                         else
-                        echo "DB Error : ".mysql_error($conn);
-                        }
-                        else
-                        {
-                                       if($_SESSION['language']=='ID'){ 
-                                       echo"warning: Masukkan tipe lembur dan basis jam";
-                                       }else{
-                                        echo"warning: Please choose overtime type and actual hours";
-                                       }
-                                exit();
-                        }
+							echo "DB Error : ".mysql_error($conn);
+                    }
+					else
+                    {
+						if($_SESSION['language']=='ID'){ 
+							echo"warning: Masukkan tipe lembur dan basis jam";
+						}else{
+							echo"warning: Please choose overtime type and actual hours";
+						}
+						exit();
+					}
                 }
                 
                 //exit("Error:$tgl");
                 $per=substr($tgl,0,4).'-'.substr($tgl,4,2);
               
                 
-                $iLembur="select sum(uangkelebihanjam) as lembur from ".$dbname.".sdm_lemburdt where karyawanid='".$krywnId."'"
+                $iLembur="select sum(uangkelebihanjam+uanglembur2) as lembur from ".$dbname.".sdm_lemburdt where karyawanid='".$krywnId."'"
                         . " and tanggal like '%".$per."%' ";
                 //exit("Error:$iLembur"); 
                 $nLembur=  mysql_query($iLembur) or die (mysql_error($conn));
@@ -229,6 +356,16 @@ $basisJam=checkPostGet('basisJam','');
                 $thn=substr($tgl,0,4);
                 $bln=substr($tgl,4,2);
                 $periode=$thn."-".$bln;
+			#mencegah input data dengan tanggal lebih kecil dari periode penggajian unit
+	        $sPeriode="select DISTINCT periode from ".$dbname.".sdm_5periodegaji where kodeorg='".$_SESSION['empl']['lokasitugas']."' and periode='".$periode."' and sudahproses=0 and tanggalmulai<='".$tgl."' and tanggalsampai>='".$tgl."'";
+	        $qPeriode=mysql_query($sPeriode) or die(mysql_error($conn));
+			$rPeriode=mysql_fetch_assoc($qPeriode);
+			$nPeriode=mysql_num_rows($qPeriode);
+			if($nPeriode<1){
+				echo"Warning: Transaction date out of range";
+				exit();
+			}
+			#===========================================================================
 
                 $sCek="select kodeorg,tanggal from ".$dbname.".sdm_lemburht where tanggal='".$tgl."' and kodeorg='".$kdOrg."'"; //echo "warning".$sCek;nospb
                 $qCek=mysql_query($sCek) or die(mysql_error());
@@ -345,10 +482,90 @@ $offset=$page*$limit;
                 echo"</tbody></table></div>";
 
                 break;
-                case'updateDetail':
-                if(($tpLmbr!='')&&($Jam!=''))
-                {
-                $sUp="update ".$dbname.".sdm_lemburdt set tipelembur='".$tpLmbr."',jamaktual='".$Jam."',uangmakan='".$ungMkn."',uangtransport='".$ungTrans."',uangkelebihanjam='".$ungLbhjm."' where kodeorg='".$kdOrg."' and tanggal='".$tgl."' and karyawanid='".$krywnId."'";
+		case'updateDetail':
+				if($beban=='' and $Jam2>0){
+	                exit('Warning: Jika ada Jam2 maka beban tidak bolek kosong...!');
+				}
+				if($beban=='Loading_CPO'){
+			        $sBeban1="select noakundebet,keterangan from ".$dbname.".keu_5parameterjurnal where kodeaplikasi='PKS' and jurnalid='PKS09'";
+				    $qBeban1=mysql_query($sBeban1) or die(mysql_error());
+			        while($rBeban1=mysql_fetch_assoc($qBeban1)){
+						$noakun=$rBeban1['noakundebet'];
+					}
+				}else if(substr($beban,0,3)=='AK-'){
+			        $sBeban2="select a.kode,b.akunak,a.nama from ".$dbname.".project a
+								LEFT JOIN ".$dbname.".sdm_5tipeasset b on b.kodetipe=substr(a.kode,4,2)
+								where kode='".$beban."' and posting=0";
+				    $qBeban2=mysql_query($sBeban2) or die(mysql_error());
+				    while($rBeban2=mysql_fetch_assoc($qBeban2)){
+						$noakun=$rBeban2['akunak'];
+					}
+				}else{
+			        $sOrgtipe="select tipe from ".$dbname.".organisasi where kodeorganisasi='".$kdOrg."'";
+				    $qOrgtipe=mysql_query($sOrgtipe) or die(mysql_error());
+			        while($rOrgtipe=mysql_fetch_assoc($qOrgtipe)){
+						$OrgTipe=$rOrgtipe['tipe'];
+					}
+					if($OrgTipe=='MAINTENANCE'){
+						$group='PKS06';
+					}else if($OrgTipe=='STATION'){
+						$group='PKS02';
+					}else if($OrgTipe=='WORKSHOP'){
+						$group='WSG1';
+					}else if($OrgTipe=='TRAKSI'){
+						$group='VHCG1';
+					}else if($OrgTipe=='SECURITY'){
+						$group='SCRT1';
+					}else if($OrgTipe=='MESS'){
+						$group='MESS1';
+					}else{
+						$group='KBNB1';
+					}
+			        $sBeban1="select noakundebet,keterangan from ".$dbname.".keu_5parameterjurnal where jurnalid='".$group."'";
+				    $qBeban1=mysql_query($sBeban1) or die(mysql_error());
+			        while($rBeban1=mysql_fetch_assoc($qBeban1)){
+						$noakun=$rBeban1['noakundebet'];
+					}
+					//$noakun='';
+				}
+			if(($tpLmbr!='') and ($Jam!='' or $Jam2!='')){
+				if($jmlhrlbr==0 and $tpLmbr==0){ //Bukan Hari Libur dan tipe lembur Hari Kerja
+					if(date('w', strtotime($tgl))==6){// Hari Sabtu
+						if(substr($kdOrg,0,4)=='SKDM'){
+							$batasjam=3;
+						}else{
+							$batasjam=5000;
+						}
+					}else{
+						if(substr($kdOrg,0,4)=='SKDM'){
+							$batasjam=1;
+						}else{
+							$batasjam=5000;
+						}
+					}
+				}else if($jmlhrlbr>0 and $tpLmbr>0){ //Hari Libur dan tipe lembur Hari Raya/libur/Minggu
+					if(substr($kdOrg,0,4)=='SKDM'){
+						$batasjam=8;
+					}else{
+						$batasjam=5000;
+					}
+				}else{
+					exit('Warning: Setting Tanggal atau Tipe Lembur Salah...!');
+				}
+				if(($Jam+$Jam2)>$batasjam and ($noba=='' or is_null($noba))){
+					exit('Warning: Jam melebihi batas yang ditentukan, Harus Input No. BA...!');
+				}
+				if(($Jam+$Jam2)<=$batasjam){
+					$noba='';
+				}
+				if(($Jam+$Jam2)>$batasjam){
+					$stspost=0;
+				}else{
+					$stspost=1;
+				}
+				//exit('Warning: '.$noba);
+                $sUp="update ".$dbname.".sdm_lemburdt set tipelembur='".$tpLmbr."',jamaktual='".$Jam."',jamaktual2='".$Jam2."',uangmakan='".$ungMkn."',uangtransport='".$ungTrans."',uangkelebihanjam='".$ungLbhjm."',uanglembur2='".$ungLbhjm2."',beban='".$beban."',noakun='".$noakun."',noba='".$noba."',posting=".$stspost." where kodeorg='".$kdOrg."' and tanggal='".$tgl."' and karyawanid='".$krywnId."'";
+				//exit('Warning: '.$sUp);
                 if(mysql_query($sUp))
                         echo"";
                         else
@@ -386,30 +603,59 @@ $offset=$page*$limit;
                 $qKry=mysql_query($sKry) or die(mysql_error($conn));
                 while($rKry=mysql_fetch_assoc($qKry))
                 {
-                        $optKry.="<option value=".$rKry['karyawanid'].">".$rKry['namakaryawan']." [ ".$rKry['nik']." ] ".$optTipeKar[$rKry['tipekaryawan']]."</option>";
+                        $optKry.="<option value=".$rKry['karyawanid'].">".$rKry['namakaryawan']." [".$rKry['nik']."] ".$optTipeKar[$rKry['tipekaryawan']]."</option>";
                 }
+
+		$optbeban="<option value=''></option>";
+		//exit('Warning: 2='.$_SESSION['empl']['lokasitugas'].' '.substr($_SESSION['empl']['lokasitugas'],3,1));
+		if(substr($_SESSION['empl']['lokasitugas'],3,1)=='M'){
+	        $sBeban1="select noakundebet,keterangan from ".$dbname.".keu_5parameterjurnal where kodeaplikasi='PKS' and jurnalid='PKS09'";
+		    $qBeban1=mysql_query($sBeban1) or die(mysql_error());
+	        while($rBeban1=mysql_fetch_assoc($qBeban1)){
+				$optbeban.="<option value='Loading_CPO'>".$rBeban1['keterangan']."</option>";
+			}
+	        $sBeban2="select a.kode,b.akunak,a.nama from ".$dbname.".project a
+						LEFT JOIN ".$dbname.".sdm_5tipeasset b on b.kodetipe=substr(a.kode,4,2)
+						where kodeorg='".$_SESSION['empl']['lokasitugas']."' and posting=0";
+		    $qBeban2=mysql_query($sBeban2) or die(mysql_error());
+	        while($rBeban2=mysql_fetch_assoc($qBeban2)){
+				$optbeban.="<option value=".$rBeban2['kode'].">Project - ".$rBeban2['nama']."</option>";
+			}
+		}
 
                 $table="<table id='ppDetailTable' cellspacing='1' border='0' class='sortable'>
                 <thead>
                 <tr class=rowheader>
                 <td>".$_SESSION['lang']['namakaryawan']."</td>
                 <td>".$_SESSION['lang']['tipelembur']."</td>
-                <td>".$_SESSION['lang']['jamaktual']."</td>
-                <td>".$_SESSION['lang']['uangkelebihanjam']."</td>
+                <td>".$_SESSION['lang']['jam'].' 1'."</td>
+                <td>".$_SESSION['lang']['uangkelebihanjam'].' 1'."</td>
+                <td>".$_SESSION['lang']['jam'].' 2'."</td>
+                <td>".$_SESSION['lang']['uangkelebihanjam'].' 2'."</td>
+                <td>".$_SESSION['lang']['beban'].' '.$_SESSION['lang']['jam'].' 2'."</td>
+                <td>".$_SESSION['lang']['total'].' '.$_SESSION['lang']['uangkelebihanjam']."</td>
                 <td>".$_SESSION['lang']['penggantiantransport']."</td>
                 <td>".$_SESSION['lang']['uangmakan']."</td>
-                <td>Action</td>
+                <td>No.BA</td>
+                <td>".$_SESSION['lang']['action']."</td>
                 </tr></thead>
                 <tbody id='detailBody'>";
 
-                $table.="<tr class=rowcontent><td><select id=krywnId name=krywnId style='width:200px' onchange='getUangLem()'>".$optKry."</select></td>
-                <td><select id=tpLmbr name=tpLmbr style='width:100px' onchange='getLembur(0,0)'>".$optTipelembur."</select></td>
-                <td><select id=jam name=jam style='width:100px' onchange='getUangLem()'><option value=''>".$_SESSION['lang']['pilihdata']."</option></select></td>
-                <td><input type='text' class='myinputtextnumber' id='uang_lbhjm' name='uang_lbhjm' style='width:100px' onkeypress='return angka_doang(event)' value=0 disabled /></td>
-                <td><input type='text' class='myinputtextnumber' id='uang_trnsprt' name='uang_trnsprt' style='width:100px' onkeypress='return angka_doang(event)' value=0  /></td>
-                <td><input type='text' class='myinputtextnumber' id='uang_mkn' name='uang_mkn' style='width:100px' onkeypress='return angka_doang(event)' value=0 /></td>
-                <td><img id='detail_add' title='Simpan' class=zImgBtn onclick=\"addDetail()\" src='images/save.png'/></td>
-                </tr>
+                $table.="
+					<tr class=rowcontent>
+						<td><select id=krywnId name=krywnId style='width:190px' onchange='getUangLem()'>".$optKry."</select></td>
+						<td><select id=tpLmbr name=tpLmbr style='width:85px' onchange='getLembur(0,0)'>".$optTipelembur."</select></td>
+						<td><select id=jam name=jam style='width:50px' onchange='getUangLem()'><option value=''>".$_SESSION['lang']['pilihdata']."</option></select></td>
+						<td><input type='text' class='myinputtextnumber' id='uang_lbhjm' name='uang_lbhjm' style='width:80px' onkeypress='return angka_doang(event)' value=0 disabled /></td>
+						<td><select id=jam2 name=jam2 style='width:50px' onchange='getUangLem()'><option value=''>".$_SESSION['lang']['pilihdata']."</option></select></td>
+						<td><input type='text' class='myinputtextnumber' id='uang_lbhjm2' name='uang_lbhjm2' style='width:80px' onkeypress='return angka_doang(event)' value=0 disabled /></td>
+						<td><select id=beban name=beban style='width:120px'>".$optbeban."</select></td>
+						<td><input type='text' class='myinputtextnumber' id='uanglembur' name='uanglembur' style='width:100px' onkeypress='return angka_doang(event)' value=0 disabled /></td>
+						<td><input type='text' class='myinputtextnumber' id='uang_trnsprt' name='uang_trnsprt' style='width:80px' onkeypress='return angka_doang(event)' value=0  /></td>
+						<td><input type='text' class='myinputtextnumber' id='uang_mkn' name='uang_mkn' style='width:65px' onkeypress='return angka_doang(event)' value=0 /></td>
+						<td><input type='text' class='myinputtext' id='noba' name='noba' maxlength=30 style='width:160px'></td>
+						<td><img id='detail_add' title='Simpan' class=zImgBtn onclick=\"addDetail()\" src='images/save.png'/></td>
+					</tr>
                 ";
                 $table.="</tbody></table>";
                 echo $table;
@@ -417,26 +663,34 @@ $offset=$page*$limit;
                 case'getBasis':
                 $dtOrg=$_SESSION['empl']['lokasitugas'];
                 $optBasis="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
+                $optBasis2="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
                 $sBasis="select jamaktual from ".$dbname.".sdm_5lembur where kodeorg='".$dtOrg."' and tipelembur='".$tpLembur."'";
+				//exit('Warning: '.$sBasis);
                 $qBasis=mysql_query($sBasis) or die(mysql_error($conn));
                 while($rBasis=mysql_fetch_assoc($qBasis))
                 {
-                        $optBasis.="<option value=".$rBasis['jamaktual']." ".($rBasis['jamaktual']==$basisJam?'selected':'').">".$rBasis['jamaktual']."</option>";
+					$optBasis.="<option value=".$rBasis['jamaktual']." ".($rBasis['jamaktual']==$basisJam?'selected':'').">".$rBasis['jamaktual']."</option>";
+					$optBasis2.="<option value=".$rBasis['jamaktual']." ".($rBasis['jamaktual']==$basisJam2?'selected':'').">".$rBasis['jamaktual']."</option>";
                 }
-                echo $optBasis;
+                echo $optBasis.'###'.$optBasis2;
                 break;
                 
                 
                 
                 case'getUang':
-                    
-                    
-                  
+
                 $uangLembur='';
                 $kodeOrg=substr($kodeOrg,0,4);
-                $sPengali="select jamlembur from ".$dbname.".sdm_5lembur  where kodeorg='".$kodeOrg."' and tipelembur='".$tpLmbr."' and jamaktual='".$basisJam."' ";
+                $sPengali="select jamlembur from ".$dbname.".sdm_5lembur  where kodeorg='".$kodeOrg."' and tipelembur='".$tpLmbr."' and jamaktual='".($Jam+$Jam2)."' ";
+				//exit('Warning: '.$sPengali);
                 $qPengali=mysql_query($sPengali) or die(mysql_error());
                 $rPengali=mysql_fetch_assoc($qPengali);
+
+                $uangLbhJam='';
+                $sJam1="select jamlembur from ".$dbname.".sdm_5lembur  where kodeorg='".$kodeOrg."' and tipelembur='".$tpLmbr."' and jamaktual='".$Jam."' ";
+				//exit('Warning: '.$sJam1);
+                $qJam1=mysql_query($sJam1) or die(mysql_error());
+                $rJam1=mysql_fetch_assoc($qJam1);
 
                 $sGt="select sum(jumlah) as gapTun from ".$dbname.".sdm_5gajipokok where karyawanid='".$krywnId."' and idkomponen=1 and tahun=".$_POST['tahun'];
                 $qGt=mysql_query($sGt) or die(mysql_error($conn));
@@ -450,13 +704,13 @@ $offset=$page*$limit;
                 $ptKar=$pteKar[$krywnId];
                 
                 #rubah format lembur untuk CKS dan karyawan PHL
-              
-                
                 $uangLembur=($rGt['gapTun']*$rPengali['jamlembur'])/173;
+                $uangLbhJam=($rGt['gapTun']*$rJam1['jamlembur'])/173;
                 
-                echo intval($uangLembur);
+                echo intval($uangLembur).'###'.intval($uangLbhJam);
                 break;
-                default:
-                break;
+
+			default:
+				break;
         }
 ?>

@@ -65,6 +65,7 @@ if($optGaji['B']==0) exit('Warning: Proses Gaji Bulanan '.$param['periode']." be
 #---------------------------------------------------------------
 #ambil potongan HK
 #---------------------------------------------------------------
+/*
  $str="select sum(jumlah) as jumlah,idkomponen,karyawanid from ".$dbname.".sdm_gajidetail_vw 
        where kodeorg like '".$_SESSION['empl']['lokasitugas']."%' 
        and idkomponen in(37,41) and periodegaji='".$param['periode']."' group by idkomponen,karyawanid";
@@ -72,14 +73,16 @@ if($optGaji['B']==0) exit('Warning: Proses Gaji Bulanan '.$param['periode']." be
  $potx=Array();
  while($barx=mysql_fetch_object($resx))
  {
-     $potx[$barx->karyawanid]=$barx->jumlah;
+	$potx[$barx->karyawanid]=$barx->jumlah;
  }
+*/
+
 #---------------------------------------------------------------
 #ambil kontanan sudah dibayar
 #---------------------------------------------------------------
  $str="select sum(jumlah) as jumlah,idkomponen,karyawanid from ".$dbname.".sdm_gajidetail_vw 
        where kodeorg like '".$_SESSION['empl']['lokasitugas']."%' 
-       and idkomponen in(43) and periodegaji='".$param['periode']."' group by idkomponen,karyawanid";
+       and idkomponen in(34) and periodegaji='".$param['periode']."' group by idkomponen,karyawanid";
  $resx=  mysql_query($str);
  $potkon=Array();
  while($barx=mysql_fetch_object($resx))
@@ -95,11 +98,14 @@ if($optGaji['B']==0) exit('Warning: Proses Gaji Bulanan '.$param['periode']." be
        and plus=1 and periodegaji='".$param['periode']."' group by karyawanid";
  $res=  mysql_query($str);
  $gaji=Array();
+ $penalty=Array();
  while($bar=mysql_fetch_object($res))
  {
 	if(!isset($potx[$bar->karyawanid])) $potx[$bar->karyawanid]=0;
 	if(!isset($potkon[$bar->karyawanid])) $potkon[$bar->karyawanid]=0;
     $gaji[$bar->karyawanid]=$bar->jumlah-$potx[$bar->karyawanid]-$potkon[$bar->karyawanid];//kurangi potongan hk
+    $gajibrt[$bar->karyawanid]=$bar->jumlah;//kurangi potongan hk
+    $penalty[$bar->karyawanid]=$potx[$bar->karyawanid]+$potkon[$bar->karyawanid];
  }
  #2 Ambil subunit setiap karyawan
  $str="select subbagian,karyawanid,namakaryawan from ".$dbname.".datakaryawan 
@@ -125,7 +131,7 @@ if($optGaji['B']==0) exit('Warning: Proses Gaji Bulanan '.$param['periode']." be
 
   #==========================================================================================  
   #ambil daftar karyawan yang masuk dalam perawatan dan panen
-  $str="select karyawanid,(sum(umr)+sum(insentif)) as upah from ".$dbname.".kebun_kehadiran_vw
+  $str="select karyawanid,sum(umr+insentif-denda) as upah from ".$dbname.".kebun_kehadiran_vw
         where unit='".$_SESSION['empl']['lokasitugas']."' and tanggal between '".$tgmulai."' 
         and '".$tgsampai."' group by karyawanid";
  
@@ -139,40 +145,56 @@ if($optGaji['B']==0) exit('Warning: Proses Gaji Bulanan '.$param['periode']." be
 //  $str="select karyawanid,(sum(upahkerja)+sum(upahpremi)-sum(rupiahpenalty)) as upah from ".$dbname.".kebun_prestasi_vw
 //        where unit='".$_SESSION['empl']['lokasitugas']."' and tanggal between '".$tgmulai."' 
 //        and '".$tgsampai."' group by karyawanid";
+/*
   $str="select tanggal,karyawanid,(sum(upahkerja)+sum(upahpremi)+sum(premibasis)-sum(upahpenalty)-sum(rupiahpenalty)) as upah from ".$dbname.".kebun_prestasi_vw
-        where unit='".$_SESSION['empl']['lokasitugas']."' and tanggal between '".$tgmulai."' 
-        and '".$tgsampai."' group by tanggal,karyawanid";
+        where unit='".$_SESSION['empl']['lokasitugas']."' and tanggal between '".$tgmulai."' and '".$tgsampai."' 
+		and tanggal not in (select tanggal from ".$dbname.".sdm_5harilibur where tanggal between '".$tgmulai."' and '".$tgsampai."' 
+		and keterangan='libur'
+		and kebun in ('GLOBAL','".$_SESSION['empl']['lokasitugas']."'))
+		group by tanggal,karyawanid";
+
+  $str="select karyawanid,(sum(upahkerja)+sum(upahpremi)+sum(premibasis)-sum(upahpenalty)-sum(rupiahpenalty)) as upah from ".$dbname.".kebun_prestasi_vw
+        where unit='".$_SESSION['empl']['lokasitugas']."' and tanggal between '".$tgmulai."' and '".$tgsampai."' 
+		and tanggal not in (select tanggal from ".$dbname.".sdm_5harilibur where tanggal between '".$tgmulai."' and '".$tgsampai."' 
+		and keterangan='libur'
+		and kebun in ('GLOBAL','".$_SESSION['empl']['lokasitugas']."'))
+		group by karyawanid";
+*/ 
+  $str="select karyawanid,(sum(upahkerja)+sum(upahpremi)+sum(premibasis)-sum(upahpenalty)-sum(rupiahpenalty)) as upah from ".$dbname.".kebun_prestasi_vw
+        where unit='".$_SESSION['empl']['lokasitugas']."' and tanggal between '".$tgmulai."' and '".$tgsampai."' 
+		group by karyawanid";
  
   $res=mysql_query($str);
   $gjPanen=Array();
   while($bar=mysql_fetch_object($res))
   {
+		/*
 		// cari hari
 		$day = date('D', strtotime($bar->tanggal));
 		if($day=='Sun')$libur=true; else $libur=false;
 		// kamus hari libur
-		$strorg="select * from ".$dbname.".sdm_5harilibur where tanggal = '".$bar->tanggal."'";
+		$strorg="select * from ".$dbname.".sdm_5harilibur where tanggal = '".$bar->tanggal."' and kebun in ('GLOBAL','".$_SESSION['empl']['lokasitugas']."')";
 		$queorg=mysql_query($strorg) or die(mysql_error());
 		while($roworg=mysql_fetch_assoc($queorg))
 		{
 //                $libur=true;
 		if($roworg['keterangan']=='libur')$libur=true;
 		if($roworg['keterangan']=='masuk')$libur=false;
-		}        
-            
-            
+		}
         if($libur==false) {
 			if(!isset($gjPanen[$bar->karyawanid])) $gjPanen[$bar->karyawanid]=0;
 			$gjPanen[$bar->karyawanid]+=$bar->upah;
 		}else{// kalo hari libur dianggap kontanan? (masuk ke pengurang)
 			
 		}
+		*/
+		$gjPanen[$bar->karyawanid]+=$bar->upah;
   }
   #=================================================================
   #hapus karyawan tidaklangsung
   $masukkotak=Array();
   $gaji1=$gaji;
-  foreach($gaji as $karid=>$g){
+  foreach($gaji1 as $karid=>$g){
 	if(!isset($gjPanen[$karid])) $gjPanen[$karid]=0;
 	if(!isset($gjPerawatan[$karid])) $gjPerawatan[$karid]=0;
 	$gajiyangsudahdialokasi[$karid]=$gjPanen[$karid]+$gjPerawatan[$karid];
@@ -198,16 +220,22 @@ if($optGaji['B']==0) exit('Warning: Proses Gaji Bulanan '.$param['periode']." be
                   <table class=sortable cellspacing=1 border=0>
                   <thead>
                     <tr class=rowheader>
-                    <td>No</td>
-                    <td>".$_SESSION['lang']['dari']."</td>
-                    <td>".$_SESSION['lang']['sampai']."</td>
-                    <td>".$_SESSION['lang']['namakaryawan']."</td>
-                    <td>".$_SESSION['lang']['karyawanid']."</td>
-                    <td>".$_SESSION['lang']['subbagian']."</td>
-                    <td>".$_SESSION['lang']['tipe']."</td>
-                    <td>".$_SESSION['lang']['blmAlokasi']."</td>
-                    <td>".$_SESSION['lang']['gaji']."</td>
-                    <td>Allocated</td>
+                    <td rowspan=2 align=center>No</td>
+                    <td rowspan=2 align=center>".$_SESSION['lang']['dari']."</td>
+                    <td rowspan=2 align=center>".$_SESSION['lang']['sampai']."</td>
+                    <td rowspan=2 rowspan=2 align=center>".$_SESSION['lang']['namakaryawan']."</td>
+                    <td rowspan=2 rowspan=2 align=center>".$_SESSION['lang']['karyawanid']."</td>
+                    <td rowspan=2 align=center>".$_SESSION['lang']['subbagian']."</td>
+                    <td rowspan=2 align=center>".$_SESSION['lang']['tipe']."</td>
+                    <td colspan=3 align=center>Allocated</td>
+                    <td rowspan=2 align=center>".$_SESSION['lang']['gaji']."</td>
+                    <td rowspan=2 align=center>Penalty</td>
+                    <td rowspan=2 align=center>".$_SESSION['lang']['blmAlokasi']."</td>
+                    </tr>
+                    <tr class=rowheader>
+	                    <td align=center>".$_SESSION['lang']['perawatan']."</td>
+	                    <td align=center>".$_SESSION['lang']['panen']."</td>
+	                    <td align=center>".$_SESSION['lang']['total']."</td>
                     </tr>
                   </thead>
                   <tbody>";
@@ -222,18 +250,29 @@ if($optGaji['B']==0) exit('Warning: Proses Gaji Bulanan '.$param['periode']." be
                     <td>".$namakaryawan[$key]."</td>
                     <td>".$key."</td>    
                     <td>".$subunit[$key]."</td>
-                    <td>".$tipe[$subunit[$key]]."</td>                        
-                    <td align=right>".number_format($baris)."</td>
-                    <td align=right>".number_format($gaji1[$key])."</td>
+                    <td>".$tipe[$subunit[$key]]."</td>
+                    <td align=right>".number_format($gjPerawatan[$key])."</td>       
+                    <td align=right>".number_format($gjPanen[$key])."</td>       
                     <td align=right>".number_format($gajiyangsudahdialokasi[$key])."</td>       
+                    <td align=right>".number_format($gajibrt[$key])."</td>
+                    <td align=right>".number_format($penalty[$key])."</td>
+                    <td align=right>".number_format($baris)."</td>
                     </tr>";
                  $ttl+=$baris;
+                 $gj1+=$gajibrt[$key];
+                 $pnt+=$penalty[$key];
+                 $alk+=$gajiyangsudahdialokasi[$key];
+                 $apnn+=$gjPanen[$key];
+                 $arwt+=$gjPerawatan[$key];
              }
             echo"<tr class=rowcontent id='row".$no."'>
                     <td colspan=7>Total</td>
+                    <td align=right>".number_format($arwt)."</td>
+                    <td align=right>".number_format($apnn)."</td>
+                    <td align=right>".number_format($alk)."</td>
+                    <td align=right>".number_format($gj1)."</td>
+                    <td align=right>".number_format($pnt)."</td>
                     <td align=right>".number_format($ttl)."</td>
-                    <td></td>
-                    <td></td>
                     </tr>";
              echo"</tbody><tfoot></tfoot></table>";
                   $s=0;

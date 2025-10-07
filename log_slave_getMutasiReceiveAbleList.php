@@ -19,9 +19,10 @@ $page=0;
 //ambil jumlah baris dalam tahun ini
 $str="select count(*) as jlhbrs from ".$dbname.".log_transaksiht where tanggal like '".$tanggalDt[2]."%' and notransaksi in (
                 select a.notransaksi from ".$dbname.".log_transaksi_vw a left join ".$dbname.".log_transaksidt b on a.notransaksireferensi=b.notransaksi and a.`kodebarang`=b.`kodebarang`
-                where tipetransaksi=7 and gudangx='".$gudang."' and (a.jumlah-b.jumlah>0 or a.notransaksireferensi is null))
+                where tipetransaksi=7 and gudangx='".$gudang."' and ((a.jumlah-if(isnull(b.jumlah),0,b.jumlah)>0) or (a.notransaksireferensi='' or a.notransaksireferensi is null)))
 		".$add."		
-		and gudangx='".$gudang."' order by jlhbrs desc";
+		and gudangx='".$gudang."' 
+		order by notransaksi desc";
 $res=mysql_query($str);
 while($bar=mysql_fetch_object($res))
 {
@@ -42,7 +43,7 @@ while($bar=mysql_fetch_object($res))
 
   $str="select * from ".$dbname.".log_transaksiht where tanggal like '".$tanggalDt[2]."%' and notransaksi in (
                 select a.notransaksi from ".$dbname.".log_transaksi_vw a left join ".$dbname.".log_transaksidt b on a.notransaksireferensi=b.notransaksi and a.`kodebarang`=b.`kodebarang`
-                where tipetransaksi=7 and gudangx='".$gudang."' and (a.jumlah-b.jumlah>0 or (a.notransaksireferensi='' or a.notransaksireferensi is null)))
+                where tipetransaksi=7 and gudangx='".$gudang."' and ((a.jumlah-if(isnull(b.jumlah),0,b.jumlah)>0) or (a.notransaksireferensi='' or a.notransaksireferensi is null)))
 		".$add."		
 		and gudangx='".$gudang."'	
 		order by notransaksi desc limit ".$offset.",20";

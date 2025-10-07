@@ -6,6 +6,7 @@
     // ambil yang dilempar javascript
     $pt=$_POST['pt'];
     $unit=$_POST['unit'];
+    $divisi=$_POST['divisi'];
     $intiplasma=$_POST['intiplasma'];
     $tgl1=$_POST['tgl1'];
     $tgl2=$_POST['tgl2'];
@@ -27,8 +28,9 @@
     if($unit=='') // script copy-an dari kebun_laporanPanen.php
     {
         $str="select a.blok,a.tanggal,a.nospb,a.notiket,a.nokendaraan,a.jjg,a.kgwb,a.bjr,a.kgbjr,
-			  if(b.intiplasma='I','Inti','Plasma') as intiplasma 
+			  if(b.intiplasma='I','Inti','Plasma') as intiplasma,d.namaorganisasi
               from ".$dbname.".kebun_spb_vw a
+              left join ".$dbname.".organisasi d on a.blok = d.kodeorganisasi 
               left join ".$dbname.".organisasi c on substr(a.kodeorg,1,4)=c.kodeorganisasi
 			  left join ".$dbname.".setup_blok b on a.blok = b.kodeorg 
               where c.induk = '".$pt."'  and a.tanggal between '".tanggalsystem($tgl1)."' and '".tanggalsystem($tgl2)."' and b.intiplasma like '%".$intiplasma."%'
@@ -41,9 +43,13 @@
         if($unit != $_SESSION['empl']['lokasitugas']){                
             $where=" and a.posting=1";
         }
-        $str="select a.blok,a.tanggal,a.nospb,a.notiket,a.nokendaraan,a.jjg,a.kgwb,a.bjr,a.kgbjr,
-			  if(b.intiplasma='I','Inti','Plasma') as intiplasma 
+		if($divisi!=''){
+            $where.=" and a.blok like'".$divisi."%'";
+		}
+        $str="select a.blok,a.tanggal,a.nospb,a.notiket,a.nokendaraan,a.jjg,a.kgwb,a.bjr,a.kgbjr,a.keterangan,
+			  if(b.intiplasma='I','Inti','Plasma') as intiplasma,d.namaorganisasi
               from ".$dbname.".kebun_spb_vw a 
+              left join ".$dbname.".organisasi d on a.blok = d.kodeorganisasi 
 			  left join ".$dbname.".setup_blok b on a.blok = b.kodeorg 
               where a.blok like '".$unit."%'  and a.tanggal between '".tanggalsystem($tgl1)."' and '".tanggalsystem($tgl2)."' 
               ".$where." and b.intiplasma like '%".$intiplasma."%'
@@ -62,6 +68,7 @@
             <td align=center>".$_SESSION['lang']['nospb']."</td>
             <td align=center>".$_SESSION['lang']['noTiket']."</td>
             <td align=center>".$_SESSION['lang']['kendaraan']."</td>
+            <td align=center>".$_SESSION['lang']['keterangan']."</td>
             <td align=center>".$_SESSION['lang']['jjg']."</td>
             <td align=center>"."KG ".$_SESSION['lang']['kebun']."</td>    
             <td align=center>".$_SESSION['lang']['kgwb']."</td>
@@ -85,7 +92,7 @@
         echo"<tr class='rowcontent'>
             <td align=center>".$no."</td>
             <td align=left>".substr($bar->blok,0,6)."</td>
-            <td align=center>".$bar->blok."</td>
+            <td align=center>".$bar->namaorganisasi."</td>
             <td align=center>".$bar->intiplasma."</td>
             <td align=center>".$belok[$bar->blok]."</td>
             <td align=center>".$bar->tanggal."</td>
@@ -95,7 +102,8 @@
             echo"<td align=right>".$notiket."</td>";else{
                 echo"<td bgcolor=red title='Belum Masuk PKS' align=right>".$notiket."</td>";
             }
-            echo"<td align=center>".$bar->nokendaraan."</td>
+            echo"<td align=left>".$bar->nokendaraan."</td>
+				<td align=left>".$bar->keterangan."</td>
             <td align=right>".$bar->jjg."</td>";
             echo "<td align=right>".number_format($bar->kgbjr,2)."</td>";
             $kgwb=$bar->kgwb;
@@ -130,22 +138,23 @@
 //            else{
 //                echo"<td bgcolor=red title='Belum Masuk PKS' align=right>".$notiket."</td>";
 //            }
-            echo"<td align=center></td>
+            echo"<td align=center></td><td align=center></td>
             <td align=right>".number_format($totalbarjjg)."</td>";
             echo "<td align=right>".number_format($totalbarkgbjr,2)."</td>";
 //            $kgwb=$bar->kgwb;
-//            if($kgwb!=0){
+            if($totalbarkgwb!=0){
                 echo"<td align=right>".number_format($totalbarkgwb,2)."</td>";
                 $beda=$totalbarkgwb-$totalbarkgbjr;
                 @$persen=($beda/$totalbarkgbjr)*100;
-//            }
-//            else{
-//                echo"<td bgcolor=red title='SPB Belum Diinput' align=right>".number_format($kgwb,2)."</td>";
-//                $persen=0;
-//            }
+            }
+            else{
+                echo"<td bgcolor=red title='SPB Belum Diinput' align=right>".number_format($totalbarkgwb,2)."</td>";
+                $persen=0;
+            }
         @$aktual=$totalbarkgwb/$totalbarjjg;
+        @$kebun=$totalbarkgbjr/$totalbarjjg;
             echo"<td align=right>".number_format($aktual,2)."</td>
-            <td align=right></td>";
+				 <td align=right>".number_format($kebun,2)."</td>";
             echo"<td align=right>".number_format($persen,2)."</td>";
             echo "</tr>";        
     } 

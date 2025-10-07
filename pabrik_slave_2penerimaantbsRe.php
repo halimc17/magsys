@@ -27,10 +27,12 @@ if($proses!='getKodeorg'){
 //    else
 //      $listTGL.=",'".date('Y-m-d',$tm)."'";  
 //}
-for($x=7;$x>=0;$x--){
+$tgl1=intval(substr($tanggl,0,2))-1;
+//exit('Warning: '.$tgl1);
+for($x=$tgl1;$x>=0;$x--){
     $tm=mktime(0,0,0,$blnA,$tglA-$x,$thnA);
     $TGL[]=date('Y-m-d',$tm);
-    if($x==7)
+    if($x==$tgl1)
       $listTGL="'".date('Y-m-d',$tm)."'";
     else
       $listTGL.=",'".date('Y-m-d',$tm)."'";  
@@ -45,7 +47,7 @@ while($bar=mysql_fetch_object($res))
 
 
 #ambil  kebun internal;
-$str="select kodeorganisasi from ".$dbname.".organisasi where induk='".substr($ptPks,0,3)."' and tipe='KEBUN'";
+$str="select kodeorganisasi from ".$dbname.".organisasi where induk='".substr($ptPks,0,3)."' and tipe='KEBUN' and kodeorganisasi not like '%PE'";
 $res=mysql_query($str);
 while($bar=mysql_fetch_object($res))
 {
@@ -53,15 +55,20 @@ while($bar=mysql_fetch_object($res))
 }
 
 #ambil kebun afiliasi
-$str="select kodeorganisasi from ".$dbname.".organisasi where induk!='".substr($ptPks,0,3)."' and tipe='KEBUN'
-          and kodeorganisasi not in('CKPE','MEPE')";
+$str="select kodeorganisasi from ".$dbname.".organisasi where induk!='".substr($ptPks,0,3)."' and tipe='KEBUN'and kodeorganisasi not like '%PE'";
 $res=mysql_query($str);
 while($bar=mysql_fetch_object($res))
 {
     $kebunAffiliasi[]=$bar->kodeorganisasi;
 }
 #ambil kebun Plasma
-$kebunPlasma=Array('CKPE','MEPE');
+//$kebunPlasma=Array('CKPE','MEPE');
+$str="select kodeorganisasi from ".$dbname.".organisasi where induk='".substr($ptPks,0,3)."' and tipe='KEBUN' and kodeorganisasi like '%PE'";
+$res=mysql_query($str);
+while($bar=mysql_fetch_object($res))
+{
+    $kebunPlasma[]=$bar->kodeorganisasi;
+}
 #ambil curtommer
 $str="select distinct kodecustomer from ".$dbname.".pabrik_timbangan where (kodeorg is null or kodeorg='') 
            and left(tanggal,10) in (".$listTGL.") and kodebarang='40000003'";
@@ -104,25 +111,29 @@ while($bar=mysql_fetch_object($resInternal))
 //          from ".$dbname.".pabrik_timbangan where millcode like '%".$kdPabrik."%' and (kodeorg is null or kodeorg='') and
 //          left(tanggal,10) in (".$listTGL.") and kodebarang='40000003' group by  left(tanggal,10),kodecustomer
 //          order by left(tanggal,10),kodecustomer";
-$str2="select kodecustomer,left(tanggal,10) as tanggal, sum(beratbersih) as netto
-          from ".$dbname.".pabrik_timbangan where millcode like '%".$kdPabrik."%' and (kodeorg is null or kodeorg='') and
-          left(tanggal,10) between '".$thnA."-".$blnA."-01' and '".$thnA."-".$blnA."-".$tglA."' and kodebarang='40000003' group by  left(tanggal,10),kodecustomer
-          order by left(tanggal,10),kodecustomer";
+$str2 ="select kodecustomer,trpcode,left(tanggal,10) as tanggal, sum(beratbersih) as netto
+		from ".$dbname.".pabrik_timbangan 
+		where millcode like '%".$kdPabrik."%' and (kodeorg is null or kodeorg='') 
+		and left(tanggal,10) between '".$thnA."-".$blnA."-01' and '".$thnA."-".$blnA."-".$tglA."' and kodebarang='40000003' 
+		group by kodecustomer,trpcode,left(tanggal,10)
+		order by kodecustomer,trpcode,left(tanggal,10)";
 $resExternal=mysql_query($str2);
 while($bar=mysql_fetch_object($resExternal))
 {
-    $tbsExt[$bar->kodecustomer][$bar->tanggal]=$bar->netto;
+    $tbsExt[$bar->kodecustomer.$bar->trpcode][$bar->tanggal]=$bar->netto;
 }
 #ambil tbs external 2 (totalnya)
-$str2="select kodecustomer,left(tanggal,10) as tanggal, sum(beratbersih) as netto
-          from ".$dbname.".pabrik_timbangan where millcode like '%".$kdPabrik."%' and (kodeorg is null or kodeorg='') and
-          left(tanggal,10) between '".$thnA."-".$blnA."-01' and '".$thnA."-".$blnA."-".$tglA."' and kodebarang='40000003' group by  left(tanggal,10),kodecustomer
-          order by left(tanggal,10),kodecustomer";
+$str2 ="select kodecustomer,trpcode,left(tanggal,10) as tanggal, sum(beratbersih) as netto
+		from ".$dbname.".pabrik_timbangan 
+		where millcode like '%".$kdPabrik."%' and (kodeorg is null or kodeorg='') 
+		and left(tanggal,10) between '".$thnA."-".$blnA."-01' and '".$thnA."-".$blnA."-".$tglA."' and kodebarang='40000003' 
+		group by left(tanggal,10),kodecustomer,trpcode
+		order by left(tanggal,10),kodecustomer,trpcode";
 $resExternal=mysql_query($str2);
 while($bar=mysql_fetch_object($resExternal))
 {
-	setIt($tottbsExt[$bar->kodecustomer],0);
-    $tottbsExt[$bar->kodecustomer]+=$bar->netto;
+	setIt($tottbsExt[$bar->kodecustomer.$bar->trpcode],0);
+    $tottbsExt[$bar->kodecustomer.$bar->trpcode]+=$bar->netto;
 }
 #==================================create table
 if($proses=='preview')
@@ -151,14 +162,15 @@ $stream.="<td>".$_SESSION['lang']['total']."</td></tr>
                     </thead>
                   <tbody>";
 #inti=========================================================================================
-$stream.="<tr class=rowcontent style='font-weight:bolder;'><td colspan=2 bgcolor=#dedede>A.Internal</td><td colspan=10 bgcolor=#dedede></td></tr>";
-$stream.="<tr class=rowcontent style='font-weight:bolder;'><td bgcolor=#dedede></td><td  colspan=2 bgcolor=#dedede>A.1. Inti</td><td colspan=9 bgcolor=#dedede></td></tr>";
+$stream.="<tr class=rowcontent style='font-weight:bolder;'><td colspan=2 bgcolor=#dedede>A.Internal</td><td colspan=".(3+$tgl1)." bgcolor=#dedede></td></tr>";
+$stream.="<tr class=rowcontent style='font-weight:bolder;'><td bgcolor=#dedede></td><td  colspan=2 bgcolor=#dedede>A.1. Inti</td><td colspan=".(2+$tgl1)." bgcolor=#dedede></td></tr>";
+$ttinti=0;
 if(!empty($kebunInternal))foreach($kebunInternal as $key=>$kodekebun)
 {
         if(isset($ttang)) 
                 unset($ttang);
                 
-        $no=$ttinti=0;
+        $no=0;
         if(isset($tbsInt[$kodekebun])){
                 if(!empty($tbsInt[$kodekebun]))foreach($tbsInt[$kodekebun] as $afd=>$art){
                     $no+=1;
@@ -207,7 +219,7 @@ if(!empty($tinti))
     $ttinternal+=$ttinti;
 }
 #afiliasi====================================================================================
-$stream.="<tr class=rowcontent style='font-weight:bolder;'><td bgcolor=#dedede></td><td  colspan=2 bgcolor=#dedede>A.2. Afiliasi</td><td colspan=9 bgcolor=#dedede></td></tr>";
+$stream.="<tr class=rowcontent style='font-weight:bolder;'><td bgcolor=#dedede></td><td  colspan=2 bgcolor=#dedede>A.2. Afiliasi</td><td colspan=".(2+$tgl1)." bgcolor=#dedede></td></tr>";
 if(!empty($kebunAffiliasi))foreach($kebunAffiliasi as $key=>$kodekebun)
 {
         if(isset($ttang)) 
@@ -261,7 +273,7 @@ if(!empty($tafiliasi))
     $ttinternal+=$ttafiliasi;
 }
 #Plasma====================================================================================
-$stream.="<tr class=rowcontent style='font-weight:bolder;'><td bgcolor=#dedede></td><td  colspan=2 bgcolor=#dedede>A.3. Plasma</td><td colspan=9 bgcolor=#dedede></td></tr>";
+$stream.="<tr class=rowcontent style='font-weight:bolder;'><td bgcolor=#dedede></td><td  colspan=2 bgcolor=#dedede>A.3. Plasma</td><td colspan=".(2+$tgl1)." bgcolor=#dedede></td></tr>";
 if(!empty($kebunPlasma))foreach($kebunPlasma as $key=>$kodekebun)
 {
         if(isset($ttang)) 
@@ -309,13 +321,13 @@ if(!empty($tplasma))
     $stream.="<tr class=rowcontent style='font-weight:bolder;'><td></td><td colspan=2 bgcolor=#dedede>Total Plasma</td>";
         if(!empty($tplasma))foreach($tplasma as $keei=>$jum){
         $stream.="<td align=right bgcolor=#dedede>".number_format($jum)."</td>";
-        $ttplasma+=$jum;
+        //$ttplasma+=$jum;
     }
     $stream.="<td align=right bgcolor=#dedede>".number_format($ttplasma)."</td></tr>";
     $ttinternal+=$ttplasma;
 }
 #total internal
-    $stream.="<tr class=rowcontent style='font-weight:bolder;'><td colspan=3 bgcolor=#dedede>Total Internal (A)</td>";
+    $stream.="<tr class=rowcontent style='font-weight:bolder;'><td colspan=3 bgcolor=#dedede>Total Inti + Plasma (A)</td>";
         if(!empty($TGL))foreach($TGL as $key=>$tg){
         $stream.="<td align=right bgcolor=#dedede>".number_format($tinti[$tg]+$tafiliasi[$tg]+$tplasma[$tg])."</td>";
 		setIt($tinternal[$tg],0);
@@ -328,14 +340,14 @@ if(!empty($tplasma))
     
     
 #External========================================================================================
-$stream.="<tr class=rowcontent style='font-weight:bolder;'><td colspan=2 bgcolor=#dedede>B.External</td><td colspan=10 bgcolor=#dedede></td></tr>";
+$stream.="<tr class=rowcontent style='font-weight:bolder;'><td colspan=2 bgcolor=#dedede>B.External</td><td colspan=".(3+$tgl1)." bgcolor=#dedede></td></tr>";
 $no=$ttExt=0;
 if(!empty($tbsExt))
 {
 if(!empty($tbsExt))foreach($tbsExt as $suppid=>$art){
         $no+=1;
         $stream.="<tr class=rowcontent>";
-        $stream.="<td></td><td>".$no."</td><td>".$optSupp[$suppid]."</td>";
+        $stream.="<td></td><td>".$no."</td><td>".$optSupp[substr($suppid,0,10)]." ".substr($suppid,10,30)."</td>";
         $tt=0;
         if(!empty($TGL))foreach($TGL as $kei=>$tang){
 			setIt($art[$tang],0);
@@ -717,7 +729,8 @@ switch($proses)
         }
         else if($tipeIntex==0)
         {
-                $sOrg="SELECT namasupplier,`kodetimbangan` FROM ".$dbname.".log_5supplier WHERE (kodetimbangan!='' or  kodetimbangan!='NULL') and substring(kodekelompok,1,1)='S'  order by namasupplier asc";//echo "warning:".$sOrg;
+                $sOrg ="SELECT namasupplier,kodetimbangan FROM ".$dbname.".log_5supplier WHERE (kodetimbangan!='' and kodetimbangan!='NULL') and status='1' 
+						order by namasupplier asc";//echo "warning:".$sOrg;
         }
         else if($tipeIntex==2)
         {
@@ -732,11 +745,11 @@ switch($proses)
             {
                     if($tipeIntex!=0)
                     {
-                            $optorg.="<option value=".$rOrg['kodeorganisasi'].">".$rOrg['namaorganisasi']."</option>";
+                            $optorg.="<option value='".$rOrg['kodeorganisasi']."'>".$rOrg['namaorganisasi']."</option>";
                     }
                     else
                     {
-                            $optorg.="<option value=".$rOrg['kodetimbangan'].">".$rOrg['namasupplier']."</option>";
+                            $optorg.="<option value='".$rOrg['kodetimbangan']."'>".$rOrg['namasupplier']."</option>";
                     }
             }
         }

@@ -157,7 +157,7 @@ while($res=mysql_fetch_assoc($query))
 
 // ambil data
 $isidata=array();
-$str="select *, IF(t1.kodesupplier = '', '', (SELECT t2.namasupplier FROM ".$dbname.".log_5supplier t2 WHERE t2.supplierid = t1.kodesupplier)) as namasupplier, (SELECT t3.nocek FROM ".$dbname.".keu_kasbankht t3 WHERE t3.notransaksi = t1.noreferensi) as nocekgiro from ".$dbname.".keu_jurnaldt_vw t1 where t1.noakun != '".$clm."' and t1.tanggal >= '".$tanggal1."' and t1.tanggal <= '".$tanggal2."' and t1.noakun >= '".$akundari."' and t1.noakun <= '".$akunsampai."' ".$wheregudang." order by t1.noakun, t1.tanggal";
+$str="select t1.*, IF(t1.kodesupplier = '', '', (SELECT t2.namasupplier FROM ".$dbname.".log_5supplier t2 WHERE t2.supplierid = t1.kodesupplier)) as namasupplier, (SELECT t3.nocek FROM ".$dbname.".keu_kasbankht t3 WHERE t3.notransaksi = t1.noreferensi) as nocekgiro,IF(t1.kodeasset='','',(SELECT t4.nama FROM ".$dbname.".project t4 WHERE t4.kode=t1.kodeasset)) as namaasset from ".$dbname.".keu_jurnaldt_vw t1 where t1.noakun != '".$clm."' and t1.tanggal >= '".$tanggal1."' and t1.tanggal <= '".$tanggal2."' and t1.noakun >= '".$akundari."' and t1.noakun <= '".$akunsampai."' ".$wheregudang." order by t1.noakun, t1.tanggal";
             //echo $str;
 $res=mysql_query($str);
 while($bar= mysql_fetch_object($res))
@@ -176,6 +176,8 @@ while($bar= mysql_fetch_object($res))
     $isidata[$qwe]['debet']=$bar->debet;
     $isidata[$qwe]['kredi']=$bar->kredit;
     $isidata[$qwe]['kodeb']=$bar->kodeblok;
+    $isidata[$qwe]['kodeasset']=$bar->kodeasset;
+    $isidata[$qwe]['namaasset']=$bar->namaasset;
     $isidata[$qwe]['nik']=$bar->nik;
     if($bar->kodeblok=='')$org=$bar->kodeorg; else $org=substr($bar->kodeblok,0,6);
     $isidata[$qwe]['organ']=$org;
@@ -214,13 +216,12 @@ if(!empty($aqun))foreach($aqun as $akyun){
     
     $grandsalwal+=$subsalwal;
     echo"<tr class=rowcontent>";
-        echo"<td width=210px align=right colspan=3></td>";
+        echo"<td width=250px align=right colspan=3></td>";
         echo"<td width=80px>".$akyun."</td>";
-		echo"<td width=980px colspan=6>&nbsp;</td>";
+		echo"<td width=890px colspan=6>&nbsp;</td>";
         echo"<td width=500px colspan=3>".$namaakun[$akyun]."</td>";
         echo"<td width=150px align=right>".number_format($salwal,2)."</td>";
-        echo"<td width=160px colspan=2></td>";
-        echo"<td></td>";
+        echo"<td width=520px colspan=5></td>";
     echo"</tr>";
 	// tampilin jurnal daftar akun
 	if(!empty($isidata))foreach($isidata as $baris)
@@ -230,15 +231,21 @@ if(!empty($aqun))foreach($aqun as $akyun){
 			setIt($nmKar[$baris['nik']],'');
             echo"<tr class=rowcontent>";
             echo"<td width=30px>".$no."</td>";
-            echo"<td width=80px>".substr($baris['nojur'],14,8)."</td>";
-            echo"<td width=100px>".tanggalnormal($baris['tangg'])."</td>";
+            //echo"<td width=80px>".substr($baris['nojur'],14,8)."</td>";
+            echo"<td width=150px>".$baris['nojur']."</td>";
+            echo"<td width=70px>".tanggalnormal($baris['tangg'])."</td>";
             echo"<td width=80px>".$baris['noaku']."</td>";
-            echo"<td width=150px>".$nmKar[$baris['nik']]."</td>";
+            echo"<td width=150px>".($nmKar[$baris['nik']]=='' ? $baris['nik'] : $nmKar[$baris['nik']])."</td>";
+			//if($nmKar[$baris['nik']]==''){
+			//	echo"<td width=150px>".$baris['nik']."</td>";
+			//}else{
+		    //    echo"<td width=150px>".$nmKar[$baris['nik']]."</td>";
+			//}
 			echo"<td width=160px>".$baris['namacustomer']."</td>";
 			echo"<td width=160px>".$baris['namasupplier']."</td>";
 			echo"<td width=160px>".$baris['noreferensi']."</td>";
             echo"<td width=160px>".$baris['nodok']."</td>";
-            echo"<td width=160px>".$baris['nocekgiro']."</td>";
+            echo"<td width=100px>".$baris['nocekgiro']."</td>";
             echo"<td width=200px>".$baris['keter']."</td>";
 			echo"<td align=right width=150px>".number_format($baris['debet'],2)."</td>";
             $totaldebet+=$baris['debet'];
@@ -248,9 +255,11 @@ if(!empty($aqun))foreach($aqun as $akyun){
             $grandtotalkredit+=$baris['kredi'];
             $salwal=$salwal+($baris['debet'])-($baris['kredi']);
             echo"<td align=right width=150px>".number_format($salwal,2)."</td>";
-            echo"<td width=80px>".$baris['organ']."</td>";
+            echo"<td width=60px>".$baris['organ']."</td>";
             echo"<td width=80px>".$baris['kodeb']."</td>";
             echo"<td width=80px>".(isset($tahuntanam[$baris['kodeb']])? $tahuntanam[$baris['kodeb']]: '')."</td>";
+            echo"<td width=100px>".$baris['kodeasset']."</td>";
+            echo"<td width=200px>".$baris['namaasset']."</td>";
             echo"</tr>";
             $subsalak=$salwal;
         }
@@ -262,7 +271,7 @@ if(!empty($aqun))foreach($aqun as $akyun){
         echo"<td align=right>".number_format($totaldebet,2)."</td>";
         echo"<td align=right>".number_format($totalkredit,2)."</td>";
         echo"<td align=right>".number_format($subsalak,2)."</td>";
-        echo"<td colspan=3></td>";
+        echo"<td colspan=5></td>";
      echo"</tr>";
 }
 
@@ -274,5 +283,5 @@ if(!empty($aqun))foreach($aqun as $akyun){
         echo"<td align=right>".number_format($grandtotaldebet,2)."</td>";
         echo"<td align=right>".number_format($grandtotalkredit,2)."</td>";
         echo"<td align=right>".number_format($grandsalak,2)."</td>";
-        echo"<td colspan=3></td>";
+        echo"<td colspan=5></td>";
      echo"</tr>";

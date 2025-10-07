@@ -80,7 +80,9 @@ function loadNewData(){
 function cariBast(num){				
 				txtSearch=document.getElementById('txtnokntrk').value;
 				ptSch=document.getElementById('ptSch').value;
-				param='txtSearch='+txtSearch+'&ptSch='+ptSch+'&method=LoadNew'
+				ptKomoditi=document.getElementById('ptKomoditi').value;
+				ptCust=document.getElementById('ptCust').value;
+				param='txtSearch='+txtSearch+'&ptSch='+ptSch+'&ptKomoditi='+ptKomoditi+'&ptCust='+ptCust+'&method=LoadNew'
                 param+='&page='+num;
                 tujuan = 'pmn_kontrakjual_slave.php';
                 post_response_text(tujuan, param, respog);			
@@ -477,8 +479,10 @@ function cariNoKntrk()
 {
         txtSearch=document.getElementById('txtnokntrk').value;
         ptSch=document.getElementById('ptSch').value;
+        ptKomoditi=document.getElementById('ptKomoditi').value;
+        ptCust=document.getElementById('ptCust').value;
         //param='txtSearch='+txtSearch+'&method=cariNokntrk';
-        param='txtSearch='+txtSearch+'&ptSch='+ptSch+'&method=LoadNew';
+        param='txtSearch='+txtSearch+'&ptSch='+ptSch+'&ptKomoditi='+ptKomoditi+'&ptCust='+ptCust+'&method=LoadNew';
         
     //
         tujuan='pmn_kontrakjual_slave.php';

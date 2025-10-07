@@ -246,6 +246,25 @@ switch($proses) {
         {
             exit("Error: Silakan melengkapi data hutang.");
         }
+        else if($data['hutangunit']=='')
+        {
+            $data['hutangunit']=0;
+        }
+		
+        // Error Trap
+        $warning = "";
+        //if($data['notransaksi']=='') {$warning .= "Transaction number is obligatory\n";}
+        if($data['tanggal']=='') {$warning .= "Date is obligatory\n";}
+        if($warning!=''){echo "Warning :\n".$warning;exit;}
+
+		#mencegah input data dengan tanggal lebih kecil dari periode awal akuntansi
+        $sekarang=  tanggalsystem($data['tanggal']);
+        if($sekarang<$_SESSION['org']['period']['start']){
+        echo "Validation Error : Date out or range";
+        break;                        
+        }
+		#======================================================
+
 		if($data['hutangunit']=='') $data['hutangunit']=0;
         $where = "notransaksi='".$data['notransaksi']."' and kodeorg='".
 		$data['kodeorg']."' and noakun='".$data['oldNoakun']."' and tipetransaksi='".
@@ -287,16 +306,29 @@ switch($proses) {
         break;
 	case 'getUangMuka':
 		// Get Transaksi Keluar
+              /*
 		$where = "a.noakun='".$param['noakun']."' and a.notransaksi != '".
 			$param['notransaksi']."' and a.tipetransaksi='K' and b.posting=1";
 		if(!empty($param['nik'])) $where .= " and a.nik='".$param['nik']."'";
 		$query1 = "SELECT a.*,b.posting from ".$dbname.".keu_kasbankdt a
 			LEFT JOIN ".$dbname.".keu_kasbankht b on a.notransaksi=b.notransaksi
 			WHERE ".$where;
+              */
+		$where = "a.noakun='".$param['noakun']."' and a.kodeorg='".$_SESSION['empl']['lokasitugas']."' and a.notransaksi != '".
+			$param['notransaksi']."' and a.tipetransaksi='K' and b.posting=1";
+		$whereUM="d.noakun='".$param['noakun']."' and d.kodeorg='".$_SESSION['empl']['lokasitugas']."'";
+		if(!empty($param['nik'])){
+			$where .= " and a.nik='".$param['nik']."'";
+			$whereUM .= " and d.nik='".$param['nik']."'";
+              }
+		$query1 = "SELECT a.*,b.posting from ".$dbname.".keu_kasbankdt a
+			LEFT JOIN ".$dbname.".keu_kasbankht b on a.notransaksi=b.notransaksi
+			WHERE ".$where;
+		$query1 ="SELECT c.* FROM (".$query1.") c WHERE c.notransaksi not in (select d.nodok from ".$dbname.".keu_kasbankdt d where ".$whereUM.")";
 		$res1 = fetchData($query1);
 		
 		// Get Transaksi yang sudah dipertanggungjawabkan
-		$where2 = "nodok is not null and nodok <> '' and tipetransaksi='K'";
+		$where2 = "nodok is not null and nodok <> '' and nodok <> '0' and tipetransaksi='K'";
 		$res2 = makeOption($dbname,'keu_kasbankdt','notransaksi,notransaksi',$where2);
 		
 		// Filter
@@ -307,13 +339,14 @@ switch($proses) {
 			if(!in_array($row['notransaksi'],$res2)) {
 				$res3[] = $row;
 			}
+			//exit('Warning: no: '.$row['notransaksi'].' '.$res2);
 		}
 		
 		if(!empty($listKary)) {
-			$optKary = makeOption($dbname,'datakaryawan','karyawanid,namakaryawan',
+			$opt_Kary = makeOption($dbname,'datakaryawan','karyawanid,namakaryawan',
 								  "karyawanid in ('".implode("','",$listKary)."')");
 		} else {
-			$optKary = array();
+			$opt_Kary = array();
 		}
 		
 		$res = "<div style='max-height:300px;max-width:300px;overflow:auto'><table><thead>";
@@ -330,7 +363,7 @@ switch($proses) {
 				$res .= "<tr class=rowcontent onclick='setNodok(\"".$row['notransaksi']."\",\"".
 					$row['nik']."\",\"".number_format($row['jumlah'],2)."\")'>";
 				$res .= "<td>".$row['notransaksi']."</td>";
-				$res .= "<td>".$optKary[$row['nik']]."</td>";
+				$res .= "<td>".$opt_Kary[$row['nik']]."</td>";
 				$res .= "<td align=right>".number_format($row['jumlah'],2)."</td>";
 				$res .= "</tr>";
 			}
@@ -390,8 +423,15 @@ function formHeader($mode,$data) {
     $optCgt = getEnum($dbname,'keu_kasbankht','cgttu');
     $optYn = array(0=>$_SESSION['lang']['belumposting'],1=>$_SESSION['lang']['posting']);
     $wheredz = " kodeorganisasi != '".$_SESSION['empl']['lokasitugas']."' and length(kodeorganisasi)=4";
-    $wheredx = " (noakun like '211%' or noakun like '213%' or noakun like '212%') and length(noakun)=7";
-    $optPemilikHutang = makeOption($dbname,'organisasi','kodeorganisasi,kodeorganisasi',$wheredz);
+    //if($optTipe=='M'){
+	if($data['tipetransaksi']=='K'){
+		//$wheredx = " (noakun like '211%' or noakun like '212%' or noakun like '213%') and length(noakun)=7";
+		//$wheredx = " (noakun like '211%' or noakun like '212%' or noakun like '213%' or noakun like '225%' or noakun='7121000' or noakun='1210101') and length(noakun)=7";
+		$wheredx = " (noakun like '211%' or noakun like '212%' or noakun like '213%' or noakun like '225%' or noakun='7121000') and length(noakun)=7";
+	}else{
+		$wheredx = " (noakun like '211%' or noakun like '212%' or noakun like '213%' or noakun like '11301%' or noakun like '114%' or noakun like '122%' or noakun='7121000') and length(noakun)=7";
+	}
+	$optPemilikHutang = makeOption($dbname,'organisasi','kodeorganisasi,kodeorganisasi',$wheredz);
     $optNoakunHutang = makeOption($dbname,'keu_5akun','noakun,namaakun',$wheredx,'2');
     $optPemilikHutang['']=''; ksort($optPemilikHutang);
     $optNoakunHutang['']=''; ksort($optNoakunHutang);
@@ -442,7 +482,7 @@ function formHeader($mode,$data) {
     $els[] = array(
         makeElement('tipetransaksi','label',$_SESSION['lang']['tipetransaksi']),
         makeElement('tipetransaksi','select',$data['tipetransaksi'],
-            array('style'=>'width:150px',$disabled=>$disabled),$optTipe)
+            array('style'=>'width:150px',$disabled=>$disabled,'onchange'=>"getAkun()"),$optTipe)
     );
 	$els[] = array(
         makeElement('nocek','label','No. Bukti Bayar'),
@@ -479,24 +519,39 @@ function formHeader($mode,$data) {
 //        makeElement('noakunhutang','select',$data['noakunhutang'],
 //	    array('style'=>'width:100px',$dis=>$dis),$optNoakunHutang),
 //    );
-    $els[] = array(
-        makeElement('hutangunit','label',$_SESSION['lang']['hutangunit']),
-        makeElement('hutangunit','checkbox',$data['hutangunit'],
-                array('onclick'=>"pilihhutang()"))
-    );
-    $els[] = array(
-        makeElement('pemilikhutang','label',$_SESSION['lang']['pemilikhutang']),
-        makeElement('pemilikhutang','select',$data['pemilikhutang'],
+    if($mode=='edit') {
+		$els[] = array(
+			makeElement('lhutangunit','label',$_SESSION['lang']['hutangunit']),
+			makeElement('hutangunit','checkbox',$data['hutangunit'],
+			array('onclick'=>"pilihhutang()"))
+		);
+		$els[] = array(
+			makeElement('lpemilikhutang','label',$_SESSION['lang']['pemilikhutang']),
+			makeElement('pemilikhutang','select',$data['pemilikhutang'],
             array('style'=>'width:150px',$dis=>$dis),$optPemilikHutang)
-    );
-    
-    
-    $els[] = array(
-        makeElement('noakunhutang','label',$_SESSION['lang']['noakunhutang']),
-        makeElement('noakunhutang','select',$data['noakunhutang'],
+		);
+		$els[] = array(
+			makeElement('lnoakunhutang','label',$_SESSION['lang']['noakunhutang']),
+			makeElement('noakunhutang','select',$data['noakunhutang'],
             array('style'=>'width:150px',$dis=>$dis),$optNoakunHutang)
-    );
-    
+		);
+	}else{
+		$els[] = array(
+			"<label id='lhutangunit'>".$_SESSION['lang']['piutangunit']."</label>",
+			makeElement('hutangunit','checkbox',$data['hutangunit'],
+			array('onclick'=>"pilihhutang()"))
+		);
+		$els[] = array(
+			"<label id='lpemilikhutang'>".$_SESSION['lang']['pemilikpiutang']."</label>",
+			makeElement('pemilikhutang','select',$data['pemilikhutang'],
+            array('style'=>'width:150px',$dis=>$dis),$optPemilikHutang)
+		);
+		$els[] = array(
+			"<label id='lnoakunhutang'>".$_SESSION['lang']['noakunpiutang']."</label>",
+			makeElement('noakunhutang','select',$data['noakunhutang'],
+            array('style'=>'width:150px',$dis=>$dis),$optNoakunHutang)
+		);
+    }
     if($mode=='add') {
         $els['btn'] = array(
             makeElement('addHead','btn',$_SESSION['lang']['save'],

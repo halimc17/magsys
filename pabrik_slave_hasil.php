@@ -39,7 +39,7 @@ switch($proses) {
 	
 	# Content
 	$cols = "notransaksi,tanggal,kodeorg,kodetangki,kuantitas,kernelquantity";
-	$query = selectQuery($dbname,'pabrik_masukkeluartangki',$cols,$where,"",false,$param['shows'],$param['page']);
+	$query = selectQuery($dbname,'pabrik_masukkeluartangki',$cols,$where,"tanggal desc",false,$param['shows'],$param['page']);
 //	exit("error: ".$query);
         $data = fetchData($query);
 	$totalRow = getTotalRow($dbname,'pabrik_masukkeluartangki',$where);
@@ -204,7 +204,7 @@ function formHeader($mode,$data) {
     $els[] = array(
 	makeElement('kodetangki','label',$_SESSION['lang']['kodetangki']),
 	makeElement('kodetangki','select',$data['kodetangki'],
-	    array('style'=>'width:150px'),$optTangki)
+	    array('style'=>'width:150px','onchange'=>'getVol()'),$optTangki)
     );
     $els[] = array(
 	makeElement('suhu','label',$_SESSION['lang']['suhu']),

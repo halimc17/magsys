@@ -7,13 +7,13 @@ echo open_body();
 <?
 include('master_mainMenu.php');
 
-$str="select karyawanid,namakaryawan, lokasitugas from ".$dbname.".datakaryawan 
+$str="select karyawanid,namakaryawan,lokasitugas,nik from ".$dbname.".datakaryawan 
            where (tanggalkeluar>'".date('Y-m-d')."' or tanggalkeluar='0000-00-00') order by namakaryawan";
 $res=mysql_query($str);
    $opt='';
 while($bar=mysql_fetch_object($res))
 {
-	$opt.="<option value='".$bar->karyawanid."'>".$bar->namakaryawan."-".$bar->lokasitugas."</option>";
+	$opt.="<option value='".$bar->karyawanid."'>".$bar->namakaryawan."[".$bar->nik."]-".$bar->lokasitugas."</option>";
 }
 OPEN_BOX();
 echo OPEN_THEME($_SESSION['lang']['newuser'].':');

@@ -78,6 +78,14 @@ switch($proses) {
                 $_SESSION['lang']['nomor'],$_SESSION['lang']['organisasi'],$_SESSION['lang']['tanggal'],$_SESSION['lang']['nikmandor'],$_SESSION['lang']['nikmandor1'],$_SESSION['lang']['asisten'],$_SESSION['lang']['kerani'],'updateby'
             );            
         }   
+
+	# Posting --> Jabatan
+	if($param['tipe']=='PNN') {
+	    $app = 'panen';
+	} else {
+	    $app = 'rawatkebun';
+	}
+	$postJabatan = getPostingJabatan($app);
 	
 	# Content
 	if(is_null($where)) {
@@ -88,7 +96,11 @@ switch($proses) {
             }
             else
             {
-                 $where = "kodeorg='".$_SESSION['empl']['lokasitugas']."' and updateby='".$_SESSION['standard']['userid']."'";
+				if(in_array($_SESSION['empl']['kodejabatan'],$postJabatan)) {
+				   $where = "kodeorg='".$_SESSION['empl']['lokasitugas']."'";
+				}else{
+                   $where = "kodeorg='".$_SESSION['empl']['lokasitugas']."' and updateby='".$_SESSION['standard']['userid']."'";
+				}
             }
 	} else {
             //tambahan jamhari
@@ -98,7 +110,11 @@ switch($proses) {
             }
             else
             {
-                $where .= " and kodeorg='".$_SESSION['empl']['lokasitugas']."' and updateby='".$_SESSION['standard']['userid']."'";
+				if(in_array($_SESSION['empl']['kodejabatan'],$postJabatan)) {
+                   $where .= " and kodeorg='".$_SESSION['empl']['lokasitugas']."'";
+				}else{
+                   $where .= " and kodeorg='".$_SESSION['empl']['lokasitugas']."' and updateby='".$_SESSION['standard']['userid']."'";
+				}
             }
 	}
 	if(strlen($param['tipe'])==2) {
@@ -109,7 +125,7 @@ switch($proses) {
 	}
 	$cols = "notransaksi,kodeorg,tanggal,nikmandor,nikmandor1,nikasisten,keranimuat,jurnal,updateby";
 	$query = selectQuery($dbname,'kebun_aktifitas',$cols,$where,
-	    "tanggal desc, notransaksi desc",false,$param['shows'],$param['page']);
+	    "jurnal, tanggal desc, notransaksi desc",false,$param['shows'],$param['page']);
         //echo $query."__".$_SESSION['empl']['subbagian'];
 	$data = fetchData($query);
 	$totalRow = getTotalRow($dbname,'kebun_aktifitas',$where);
@@ -220,7 +236,7 @@ switch($proses) {
 	    isset($optKarRow[$row['keranimuat']]) ? $dataShow[$key]['keranimuat'] = $optKarRow[$row['keranimuat']]:null;
             isset($optKarRow[$row['updateby']]) ? $dataShow[$key]['updateby'] = $optKarRow[$row['updateby']]:null;
 	}
-	
+	/*
 	# Posting --> Jabatan
 	if($param['tipe']=='PNN') {
 	    $app = 'panen';
@@ -228,7 +244,7 @@ switch($proses) {
 	    $app = 'rawatkebun';
 	}
 	$postJabatan = getPostingJabatan($app);
-	
+	*/
 	# Make Table
 	$tHeader = new rTable('headTable','headTableBody',$header,$data,$dataShow);
 	#$tHeader->addAction('showDetail','Detail','images/'.$_SESSION['theme']."/detail.png");
@@ -236,34 +252,38 @@ switch($proses) {
 	$tHeader->_actions[0]->addAttr($param['tipe']);
 	$tHeader->addAction('deleteData','Delete','images/'.$_SESSION['theme']."/delete.png");
 	#$tHeader->addAction('approveData','Approve','images/'.$_SESSION['theme']."/approve.png");
-	$tHeader->addAction('postingData','Posting','images/'.$_SESSION['theme']."/posting.png");
-	$tHeader->_actions[2]->setAltImg('images/'.$_SESSION['theme']."/posted.png");
-	if(!in_array($_SESSION['empl']['kodejabatan'],$postJabatan)) {
-	    $tHeader->_actions[2]->_name='';
-	}
 	//if($param['tipe']!='PNN') {
 	    $tHeader->addAction('detailPDF','Print Data Detail','images/'.$_SESSION['theme']."/pdf.jpg");
-	    $tHeader->_actions[3]->addAttr('event');
-	    $tHeader->_actions[3]->addAttr($param['tipe']);
+	    $tHeader->_actions[2]->addAttr('event');
+	    $tHeader->_actions[2]->addAttr($param['tipe']);
 	    
             
-            $tHeader->addAction('detailData','Print Data Detail','images/'.$_SESSION['theme']."/zoom.png");
-	    $tHeader->_actions[4]->addAttr('event');
-	    $tHeader->_actions[4]->addAttr($param['tipe']);
+        $tHeader->addAction('detailData','Print Data Detail','images/'.$_SESSION['theme']."/zoom.png");
+	    $tHeader->_actions[3]->addAttr('event');
+	    $tHeader->_actions[3]->addAttr($param['tipe']);
             
-            if($param['tipe']=='PNN') {
+        if($param['tipe']=='PNN') {
             $tHeader->addAction('detailExcel','Print Data Detail','images/excel.jpg');
-            $tHeader->_actions[5]->addAttr('event');
-            $tHeader->_actions[5]->addAttr($tipeVal);
-            }
-            
-            $tHeader->_switchException = array('detailPDF','detailData','detailExcel');
+            $tHeader->_actions[4]->addAttr('event');
+            $tHeader->_actions[4]->addAttr($tipeVal);
+			$tHeader->addAction('postingData','Posting','images/'.$_SESSION['theme']."/posting.png");
+			$tHeader->_actions[5]->setAltImg('images/'.$_SESSION['theme']."/posted.png");
+			if(!in_array($_SESSION['empl']['kodejabatan'],$postJabatan)) {
+				$tHeader->_actions[5]->_name='';
+			}
+		}else{
+			$tHeader->addAction('postingData','Posting','images/'.$_SESSION['theme']."/posting.png");
+			$tHeader->_actions[4]->setAltImg('images/'.$_SESSION['theme']."/posted.png");
+			if(!in_array($_SESSION['empl']['kodejabatan'],$postJabatan)) {
+				$tHeader->_actions[4]->_name='';
+			}
+		}           
+			$tHeader->_switchException = array('detailPDF','detailData','detailExcel');
             //$tHeader->_switchException = array();
 	//}
 	$tHeader->pageSetting($param['page'],$totalRow,$param['shows']);
 	$tHeader->setWhere($arrWhere);
-	
-	
+		
 	# View
 	$tHeader->renderTable();
 	break;
@@ -297,6 +317,16 @@ switch($proses) {
 	    echo "Validation Error : Date must not empty";
 	    break;
 	}
+	#mencegah input data dengan tanggal lebih kecil dari periode awal akuntansi
+    $tglsekarang=tanggalsystem($data['tanggal']);
+    $sCek="select DISTINCT tanggalmulai,tanggalsampai,periode from ".$dbname.".sdm_5periodegaji where kodeorg='".$_SESSION['empl']['lokasitugas']."' and periode='".substr($tglsekarang,0,4)."-".substr($tglsekarang,4,2)."' and sudahproses=0 and tanggalmulai<='".$tglsekarang."' and tanggalsampai>='".$tglsekarang."'";
+    $qCek=mysql_query($sCek) or die(mysql_error());
+    $rCek=mysql_num_rows($qCek);
+    if($rCek<1){
+		echo"Warning: Date out of range";
+	    break;                        
+	}
+    #======================================================        
 	#mencegah input data dengan tanggal lebih kecil dari periode awal akuntansi
                     $sekarang=  tanggalsystem($data['tanggal']);
                     if($sekarang<$_SESSION['org']['period']['start']){
@@ -406,24 +436,40 @@ function formHeader($mode,$tipe,$data) {
 	
 	//mandor clerk asisten
     $iKary = "select a.karyawanid,a.namakaryawan,a.nik,b.namajabatan from ".$dbname.".datakaryawan a ".
-		"left join ".$dbname.".sdm_5jabatan b on a.kodejabatan=b.kodejabatan where (b.namajabatan like '%mandor%' or ".
-		"b.namajabatan like '%assistant%' or b.namajabatan like '%clerk%') and ".$whereKary.
-		" order by a.namakaryawan asc";
+		"left join ".$dbname.".sdm_5jabatan b on a.kodejabatan=b.kodejabatan 
+		where ((a.lokasitugas='".$_SESSION['empl']['lokasitugas']."' and (b.namajabatan like '%assistant%' or b.namajabatan like '%clerk%'))
+				or (a.lokasitugas like '%RO' and b.namajabatan like '%assistant%'))
+				and kodeorganisasi='".$_SESSION['empl']['induk']."' 
+				and (tanggalkeluar = '0000-00-00' or tanggalkeluar > ".$_SESSION['org']['period']['start'].") 
+		order by a.namakaryawan asc";
+	//exit('Warning'.$iKary);
     $optKary1 = array(''=>'');
+    $optKaryAss = array(''=>'');
     $nKary = fetchData($iKary);
     foreach($nKary as $row) {
-        $optKary1[$row['karyawanid']] = $row['namakaryawan']." [".$row['nik']."]  ".$row['namajabatan'];
-    }
+		//if($row['namajabatan']=='Field Assistant'){
+		if(strstr(strtoupper($row['namajabatan']),'ASSISTANT')){
+			$optKaryAss[$row['karyawanid']] = $row['namakaryawan']." [".$row['nik']."]  ".$row['namajabatan'];
+		}else{
+			$optKary1[$row['karyawanid']] = $row['namakaryawan']." [".$row['nik']."]  ".$row['namajabatan'];
+		}
+	}
 	
-	$qMandor = "select a.karyawanid,a.namakaryawan from ".$dbname.".datakaryawan a
-		left join ".$dbname.".sdm_5jabatan b on a.kodejabatan=b.kodejabatan
-		where a.lokasitugas='".$_SESSION['empl']['lokasitugas']."' and
-			(a.tanggalkeluar = '0000-00-00' or a.tanggalkeluar > ".$_SESSION['org']['period']['start'].") and
-			b.namajabatan like '%Mandor%'";
+	$qMandor = "select a.karyawanid,a.namakaryawan,a.nik,b.namajabatan from ".$dbname.".datakaryawan a
+		left join ".$dbname.".sdm_5jabatan b on a.kodejabatan=b.kodejabatan	where b.namajabatan like '%Mandor%'
+			and	(a.tanggalkeluar = '0000-00-00' or a.tanggalkeluar > ".$_SESSION['org']['period']['start'].") 
+			and a.lokasitugas='".$_SESSION['empl']['lokasitugas']."'
+			order by a.namakaryawan asc";
 	$resMandor = fetchData($qMandor);
-	$optMandor = array();
+	$optMandor = array(''=>'');
+	$optMandorI = array(''=>'');
 	foreach($resMandor as $row) {
-		$optMandor[$row['karyawanid']] = $row['namakaryawan'];
+		//if($row['namajabatan']=='Mandor I'){
+		if(strstr(strtoupper($row['namajabatan']),'MANDOR I')){
+			$optMandorI[$row['karyawanid']] = $row['namakaryawan']." [".$row['nik']."]  ".$row['namajabatan'];
+		}else{
+			$optMandor[$row['karyawanid']] = $row['namakaryawan']." [".$row['nik']."]  ".$row['namajabatan'];
+		}
 	}
     
     $els = array();
@@ -444,11 +490,11 @@ function formHeader($mode,$tipe,$data) {
     );
     $els[] = array(
 	makeElement('nikmandor','label',$_SESSION['lang']['nikmandor']),
-	makeElement('nikmandor','select',$data['nikmandor'],array('style'=>'width:150px'),$optKary1)
+	makeElement('nikmandor','select',$data['nikmandor'],array('style'=>'width:150px'),$optMandor)
     );
     $els[] = array(
 	makeElement('nikmandor1','label',$_SESSION['lang']['nikmandor1']),
-	makeElement('nikmandor1','select',$data['nikmandor1'],array('style'=>'width:150px'),$optKary1)
+	makeElement('nikmandor1','select',$data['nikmandor1'],array('style'=>'width:150px'),$optMandorI)
     );
 
     if($param['tipe']=='PNN') {
@@ -463,7 +509,7 @@ function formHeader($mode,$tipe,$data) {
     } else {
         $els[] = array(
             makeElement('nikasisten','label',$_SESSION['lang']['nikasisten']),
-            makeElement('nikasisten','select',$data['nikasisten'],array('style'=>'width:150px'),$optKary1)
+            makeElement('nikasisten','select',$data['nikasisten'],array('style'=>'width:150px'),$optKaryAss)
             );        
 	$els[] = array(
 	    makeElement('keranimuat','label',$_SESSION['lang']['keraniafdeling']),

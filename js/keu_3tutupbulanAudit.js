@@ -35,7 +35,7 @@ function tutupBuku(maxRow,kdorg,currentRw,periode) {
         var dtprd="";
         nourutdt+=1;
         isiPrd=periode.split("-");
-        if(currentRw<10){
+        if(nourutdt<10){
             dtprd=(parseInt(isiPrd[0])+1)+"-"+"0"+nourutdt;
         }else{
             dtprd=(parseInt(isiPrd[0])+1)+"-"+nourutdt;

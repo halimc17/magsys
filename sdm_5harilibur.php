@@ -12,7 +12,9 @@ $arr="##kebun##tanggal##keterangan##catatan";
 
 $optKebun="";
 $optKebun.="<option value='GLOBAL'>GLOBAL</option>";
-$strKebun="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi where tipe='KEBUN'";
+$optKebun.="<option value='HOLDING'>HOLDING</option>";
+//$strKebun="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi where tipe='KEBUN'";
+$strKebun="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi where tipe in ('KEBUN','KANWIL','PABRIK')";
 $resKebun=mysql_query($strKebun) or die(mysql_error());
 while($barKebun=mysql_fetch_object($resKebun))
 {
@@ -33,7 +35,7 @@ echo"<fieldset>
      <legend>".$_SESSION['lang']['harilibur']."</legend>
 	 <table>
 	 <tr>
-	   <td>".$_SESSION['lang']['kebun']."</td>
+	   <td>".$_SESSION['lang']['organisasi']."</td>
 	   <td><select id=\"kebun\" name=\"kebun\" style=\"width:150px\">".$optKebun."</select></td>
 	 </tr>
 	 <tr>
@@ -63,7 +65,7 @@ echo"<fieldset><legend>".$_SESSION['lang']['list']."</legend><table class=sortab
      <thead>
 	  <tr class=rowheader>
 	   <td>No</td>
-	   <td>".$_SESSION['lang']['kebun']."</td>
+	   <td>".$_SESSION['lang']['organisasi']."</td>
 	   <td>".$_SESSION['lang']['tanggal']."</td>
 	   <td>".$_SESSION['lang']['keterangan']."</td>
 	   <td>".$_SESSION['lang']['catatan']."</td>

@@ -1578,7 +1578,8 @@ if($proses=='excel')
             @$totAfd[$listAfd]=$totManAfd[$listAfd]>0?$grKaryLang[$listAfd]/$totManAfd[$listAfd]:0;
             $tab.="<td align=right>".($AfdLak[$listAfd]>0?number_format($AfdLak[$listAfd],0):0)."</td>";
             $tab.="<td align=right>".($AfdPer[$listAfd]>0?number_format($AfdPer[$listAfd],0):0)."</td>";
-            $tab.="<td align=right>".($totAfd>0?number_format($totAfd,0):0)."</td>";
+            //$tab.="<td align=right>".($totAfd>0?number_format($totAfd,0):0)."</td>";
+            $tab.="<td align=right>".($totAfd[$listAfd]>0?number_format($totAfd[$listAfd],0):0)."</td>";
         }
         @$kanBesLak=$totKaryLangKanBes[$kdUnit][L]/$totManKanBesLak;
         @$kanBesPer=$totKaryLangKanBes[$kdUnit][P]/$totManKanBesPer;

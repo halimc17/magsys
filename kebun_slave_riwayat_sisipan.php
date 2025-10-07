@@ -47,19 +47,23 @@ if($proses!='update')
         $tab.="<td>Action</td>";
         }
         $tab.="</tr></thead><tbody>";
-//       
-        $sDatab="select distinct b.kodeorg,b.notransaksi,a.tanggal from ".$dbname.".kebun_prestasi b left join ".$dbname.".kebun_aktifitas a
-            on b.notransaksi=a.notransaksi where kodekegiatan='126120101' and 
-            substr(b.kodeorg,1,4)='".$kdUnit."' and a.tanggal between '".$tgl1."' and '".$tgl2."'";
+/*       
+        $sDatab="select x.*,y.namaorganisasi from (select distinct b.kodeorg,b.notransaksi,a.tanggal from ".$dbname.".kebun_prestasi b 
+				left join ".$dbname.".kebun_aktifitas a on b.notransaksi=a.notransaksi 
+				where kodekegiatan in ('126110205','126110207','126110208','621050305') and substr(b.kodeorg,1,4)='".$kdUnit."' and a.tanggal between '".$tgl1."' and '".$tgl2."') x 
+				left join ".$dbname.".organisasi y on x.kodeorg=y.kodeorganisasi order by x.notransaksi";
         $qDataB=mysql_query($sDatab) or die(mysql_error($conn));
         while($rDataB=mysql_fetch_assoc($qDataB))
         {
             $dtNotrans[$rDataB['notransaksi']]=$rDataB['notransaksi'];
             $dtKdorg[$rDataB['notransaksi']]=$rDataB['kodeorg'];
             $dtTgl[$rDataB['notransaksi']]=$rDataB['tanggal'];
+            $dtNmorg[$rDataB['notransaksi']]=$rDataB['namaorganisasi'];
         }
-         $sData="select distinct * from ".$dbname.".kebun_sisip 
-         where substr(kodeorg,1,4)='".$kdUnit."' and tanggal between '".$tgl1."' and '".$tgl2."'";
+*/
+         $sData="select x.*,y.namaorganisasi from (select distinct * from ".$dbname.".kebun_sisip 
+         where substr(kodeorg,1,4)='".$kdUnit."' and tanggal between '".$tgl1."' and '".$tgl2."') x 
+				left join ".$dbname.".organisasi y on x.kodeorg=y.kodeorganisasi order by x.notransaksi";
         $qData=mysql_query($sData) or die(mysql_error($sData));
         $jmlhRow=mysql_num_rows($qData);
         while($rData=mysql_fetch_assoc($qData))
@@ -69,6 +73,7 @@ if($proses!='update')
             $dtTgl[$rData['notransaksi']]=$rData['tanggal'];
             $dtJumlah[$rData['notransaksi']]=$rData['jumlah'];
             $dtPenyebab[$rData['notransaksi']]=$rData['penyebab'];
+            $dtNmorg[$rData['notransaksi']]=$rData['namaorganisasi'];
         }
         $jmlhRow=count($dtNotrans);
         if($jmlhRow!=0)
@@ -79,7 +84,7 @@ if($proses!='update')
                 $tab.="<tr class=rowcontent>";
                 $tab.="<td>".$lstNotrans."</td>";
                 $tab.="<td id=tgl_".$no.">".tanggalnormal($dtTgl[$lstNotrans])."</td>";
-                $tab.="<td id=kdOrg_".$no.">".$dtKdorg[$lstNotrans]."</td>";
+                $tab.="<td id=kdOrg_".$no.">".$dtNmorg[$lstNotrans]."</td>";
 				setIt($dtJumlah[$lstNotrans],0);
 				setIt($dtPenyebab[$lstNotrans],'');
                 if($proses!='excel')
@@ -175,8 +180,9 @@ switch($proses)
 
                 $this->Cell(80,$height,$_SESSION['lang']['notransaksi'],1,0,'C',1);
                 $this->Cell(50,$height,$_SESSION['lang']['tanggal'],1,0,'C',1);
+                $this->Cell(50,$height,$_SESSION['lang']['blok'],1,0,'C',1);
                 $this->Cell(45,$height,$_SESSION['lang']['pokok'],1,0,'C',1);
-                $this->Cell(320,$height,"Description",1,1,'C',1);
+                $this->Cell(270,$height,"Description",1,1,'C',1);
                
 
           }
@@ -197,8 +203,9 @@ switch($proses)
             $pdf->AddPage();
             $pdf->SetFillColor(255,255,255);
             $pdf->SetFont('Arial','',6);
-            $sData="select distinct * from ".$dbname.".kebun_sisip 
-            where substr(kodeorg,1,4)='".$kdUnit."' and tanggal between '".$tgl1."' and '".$tgl2."'";
+			$sData="select x.*,y.namaorganisasi from (select distinct * from ".$dbname.".kebun_sisip 
+					where substr(kodeorg,1,4)='".$kdUnit."' and tanggal between '".$tgl1."' and '".$tgl2."') x 
+					left join ".$dbname.".organisasi y on x.kodeorg=y.kodeorganisasi order by x.notransaksi";
             $qData=mysql_query($sData) or die(mysql_error($sData));
             $jmlhRow=mysql_num_rows($qData);
             if($jmlhRow!=0)
@@ -207,11 +214,11 @@ switch($proses)
                 {
                 $pdf->Cell(80,$height,$rData['notransaksi'],1,0,'L',1);
                 $pdf->Cell(50,$height,tanggalnormal($rData['tanggal']),1,0,'C',1);
+                $pdf->Cell(50,$height,tanggalnormal($rData['kodeorg']),1,0,'C',1);
                 $pdf->Cell(45,$height,number_format($rData['jumlah'],0),1,0,'R',1);
-                $pdf->MultiCell(320,$height,$rData['penyebab'],1,1,'J',1);
+                $pdf->MultiCell(270,$height,$rData['penyebab'],1,1,'J',1);
                 }
             }
-
            
             $pdf->Output();
             break;

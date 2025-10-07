@@ -132,8 +132,16 @@ while($bar=mysql_fetch_object($res))
         $years = floor($diff / (365*60*60*24)); 
         $months = floor(($diff - $years * 365*60*60*24) / (30*60*60*24)); 
         $days = floor(($diff - $years * 365*60*60*24 - $months*30*60*60*24)/ (60*60*24)); 
-        
-        $lamaKerja=" ".$years." Tahun ".$months." Bulan ".$days." Hari ";        
+
+	$tdate=strtotime($date2);
+	$dob=strtotime($date1);
+	$bllalu=date('Y-m-d',strtotime('-1 month',$dob));
+	$years=(date('Y',$tdate)-date('Y',$dob))-(date('m',$tdate)<date('m',$dob) || (date('m',$tdate)==date('m',$dob) && date('d',$tdate)<date('d',$dob)) ?1 :0);
+	//$months=(substr($date2,5,5)<substr($date1,5,5) ? 12 : 0)+(date('m',$tdate)-date('m',$dob))-(date('d',$tdate)<date('d',$dob) ? 1 : 0);
+	$months=(date('m',$tdate)<date('m',$dob) || (date('m',$tdate)==date('m',$dob) && date('d',$tdate)<date('d',$dob)) ? 12 : 0)+(date('m',$tdate)-date('m',$dob))-(date('d',$tdate)<date('d',$dob) ? 1 : 0);
+	$days=(date('d',$tdate)<date('d',$dob) ? date('t',strtotime($bllalu)) : 0)+date('d',$tdate)-date('d',$dob);
+
+		$lamaKerja=" ".$years." Tahun ".$months." Bulan ".$days." Hari ";        
                 
                 
 //=============pdf
@@ -238,7 +246,7 @@ while($bar=mysql_fetch_object($res))
 				
 	$pdf->Cell(32,5,$_SESSION['lang']['npwp'],0,0,'L');
                 $pdf->Cell(60,5,': '.$npwp,0,0,'L');	
-    $pdf->Cell(32,5,$_SESSION['lang']['bpjs'],0,0,'L');
+    $pdf->Cell(32,5,$_SESSION['lang']['bpjs'].' '.$_SESSION['lang']['kesehatan'],0,0,'L');
                 $pdf->Cell(70,5,': '.$bpjs,0,1,'L');
 
     $pdf->Cell(32,5,$_SESSION['lang']['lokasipenerimaan'],0,0,'L');

@@ -99,7 +99,7 @@ if($proses=='getkebun'||$proses=='getafdeling'){
 
     // noakun pemeliharaan tm 1
     $str="SELECT noakun, namaakun FROM ".$dbname.".keu_5akun
-        WHERE length( noakun ) = 5 and noakun between '62101' and '62102' order by noakun";
+        WHERE length( noakun ) = 5 and noakun between '62101' and '62190' and noakun<>'62108' order by noakun";
     $query=mysql_query($str) or die(mysql_error($conn));
     while($res=mysql_fetch_assoc($query))
     {
@@ -108,20 +108,20 @@ if($proses=='getkebun'||$proses=='getafdeling'){
         $namaakun[$res['noakun']]=$res['namaakun'];
     }
     
-    // noakun pemeliharaan tm 2
-    $str="SELECT noakun, namaakun FROM ".$dbname.".keu_5akun
-        WHERE length( noakun ) = 5 and noakun between '62104' and '62111' order by noakun";
-    $query=mysql_query($str) or die(mysql_error($conn));
-    while($res=mysql_fetch_assoc($query))
-    {
-        $akuntm[$res['noakun']]=$res['noakun'];
-        $akunpml[$res['noakun']]=$res['noakun'];
-        $namaakun[$res['noakun']]=$res['namaakun'];
-    }
+//    // noakun pemeliharaan tm 2
+//    $str="SELECT noakun, namaakun FROM ".$dbname.".keu_5akun
+//        WHERE length( noakun ) = 5 and noakun between '62104' and '62111' order by noakun";
+//    $query=mysql_query($str) or die(mysql_error($conn));
+//    while($res=mysql_fetch_assoc($query))
+//    {
+//        $akuntm[$res['noakun']]=$res['noakun'];
+//        $akunpml[$res['noakun']]=$res['noakun'];
+//        $namaakun[$res['noakun']]=$res['namaakun'];
+//    }
     
     // noakun pemupukan
     $str="SELECT noakun, namaakun FROM ".$dbname.".keu_5akun
-        WHERE length( noakun ) = 5 and noakun between '62103' and '62103' order by noakun";
+        WHERE length( noakun ) = 5 and noakun between '62108' and '62108' order by noakun";
     $query=mysql_query($str) or die(mysql_error($conn));
     while($res=mysql_fetch_assoc($query))
     {
@@ -259,7 +259,7 @@ if($proses=='getkebun'||$proses=='getafdeling'){
 
     // luas budget
     $str="SELECT kodeblok, intiplasma, (hathnini) as luas FROM ".$dbname.".bgt_blok
-        WHERE ".$kode_blk." and statusblok='TM'";
+        WHERE ".$kode_blk." and tahunbudget = '".$tahun."' and statusblok='TM'";
     $query=mysql_query($str) or die(mysql_error($conn));
     while($res=mysql_fetch_assoc($query))
     {
@@ -269,7 +269,7 @@ if($proses=='getkebun'||$proses=='getafdeling'){
     }    
 
     //produksi budget bulan ini
-    $str="SELECT kodeblok, intiplasma, (kg".$bulan.") as luas FROM ".$dbname.".bgt_produksi_kbn_kg_vw
+    $str="SELECT distinct(kodeblok), intiplasma, (kg".$bulan.") as luas FROM ".$dbname.".bgt_produksi_kbn_kg_vw
         WHERE ".$kode_blk." and tahunbudget = '".$tahun."'";
     $query=mysql_query($str) or die(mysql_error($conn));
     while($res=mysql_fetch_assoc($query))
@@ -290,7 +290,7 @@ if($proses=='getkebun'||$proses=='getafdeling'){
     $addstr.=")";
     
     //produksi budget sd bulan ini
-    $str="SELECT kodeblok, intiplasma, ".$addstr." as luas FROM ".$dbname.".bgt_produksi_kbn_kg_vw
+    $str="SELECT distinct(kodeblok), intiplasma, ".$addstr." as luas FROM ".$dbname.".bgt_produksi_kbn_kg_vw
         WHERE ".$kode_blk." and tahunbudget = '".$tahun."'"; 
     $query=mysql_query($str) or die(mysql_error($conn));
     while($res=mysql_fetch_assoc($query))
@@ -311,7 +311,7 @@ if($proses=='getkebun'||$proses=='getafdeling'){
     $addstr.=")";
     
     //produksi budget setahun
-    $str="SELECT kodeblok, intiplasma, ".$addstr." as luas FROM ".$dbname.".bgt_produksi_kbn_kg_vw
+    $str="SELECT distinct(kodeblok), intiplasma, ".$addstr." as luas FROM ".$dbname.".bgt_produksi_kbn_kg_vw
         WHERE ".$kode_blk." and tahunbudget = '".$tahun."'";
     $query=mysql_query($str) or die(mysql_error($conn));
     while($res=mysql_fetch_assoc($query))
@@ -1814,7 +1814,7 @@ $str="select ".$addstr." as rp,substr(noakun,1,5) as noakun,rupiah as rupiah fro
             $tab.="</tr>";                  
         }        
         if($akun=='62101'){
-            // Biaya Panen  ====================================================
+            // Biaya Rawat  ====================================================
             $tab.="<tr class=rowtitle>
             <td align=left colspan=3 ".$bg.">Pemeliharaan TM</td>";
             $pmtal=0;
@@ -2035,7 +2035,7 @@ $str="select ".$addstr." as rp,substr(noakun,1,5) as noakun,rupiah as rupiah fro
                 ";
             $tab.="</tr>";                  
         }                
-        if($akun=='62103'){
+        if($akun=='62108'){
             // Biaya Pemupukan =================================================
             $tab.="<tr class=rowtitle>
             <td align=left colspan=3 ".$bg.">Pemupukan TM</td>";
@@ -2258,7 +2258,7 @@ $str="select ".$addstr." as rp,substr(noakun,1,5) as noakun,rupiah as rupiah fro
             $tab.="</tr>";                  
         }                        
         $tab.="<tr class=rowcontent>
-        <td align=right colspan=2>".$akun."XX</td>
+        <td align=left colspan=2>".$akun."XX</td>
         <td align=left colspan=1>".$namaakun[$akun]."</td>";
         $total=0;
         // inti bulan ini per

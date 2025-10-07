@@ -34,7 +34,7 @@ $c=mysql_fetch_assoc($b);
 	$tgl_2=$c['tanggalsampai'];
 
 
-function dates_inbetween($date1, $date2){
+function dates_inbetwee($date1, $date2){
 
     $day = 60*60*24;
 
@@ -97,7 +97,8 @@ switch($proses)
 		$tgl2=$tgl_2;
 	}
 	
-	$test = dates_inbetween($tgl1, $tgl2);
+	//$test = dates_inbetwee($tgl1, $tgl2);
+	$test = rangeTanggal($tgl1, $tgl2);
 	if(($tgl2=="")&&($tgl1==""))
 	{
 		echo"warning: Tanggal Mulai dan Tanggal Sampai tidak boleh kosong";
@@ -161,8 +162,9 @@ switch($proses)
         
 			
 			
-			$sPrestasi="select a.upahkerja,b.tanggal,a.jumlahhk,a.nik from ".$dbname.".kebun_prestasi a left join ".$dbname.".kebun_aktifitas b on a.notransaksi=b.notransaksi 
-                            where b.notransaksi like '%PNN%' and substr(b.kodeorg,1,4)='".substr($kodeOrg,0,4)."' and b.tanggal between '".$tgl1."' and '".$tgl2."' and a.nik=".$idKry."";
+			$sPrestasi="select a.upahkerja,b.tanggal,a.jumlahhk,a.nik from ".$dbname.".kebun_prestasi a 
+			left join ".$dbname.".kebun_aktifitas b on a.notransaksi=b.notransaksi 
+			where (b.notransaksi like '%PNN%' or b.notransaksi like '%/BM/%') and substr(b.kodeorg,1,4)='".substr($kodeOrg,0,4)."' and b.tanggal between '".$tgl1."' and '".$tgl2."' and a.nik=".$idKry."";
 			//exit("Error".$sPrestasi);
 			$rPrestasi=fetchData($sPrestasi);
 			foreach ($rPrestasi as $presBrs =>$resPres)
@@ -198,7 +200,7 @@ switch($proses)
                         
                         
                         $sKehadiran="select jhk,absensi,tanggal,karyawanid from ".$dbname.".kebun_kehadiran_vw 
-                            where tanggal between  '".$tgl1."' and '".$tgl2."' and karyawanid=".$idKry." and unit='".substr($kdOrg,0,4)."'";
+                            where tanggal between  '".$tgl1."' and '".$tgl2."' and karyawanid=".$idKry." and unit='".substr($kdOrg,0,4)."' order by karyawanid,jhk desc";
 		
                         //exit("Error".$sKehadiran);
 			$rkehadiran=fetchData($sKehadiran);
@@ -405,7 +407,8 @@ while($dzbar=mysql_fetch_object($dzres))
 		$tgl2=$tgl_2;
 	}
 	
-	$test = dates_inbetween($tgl1, $tgl2);
+	//$test = dates_inbetwee($tgl1, $tgl2);
+	$test = rangeTanggal($tgl1, $tgl2);
 	if(($tgl2=="")&&($tgl1==""))
 	{
 		echo"warning: Tanggal Mulai dan Tanggal Sampai tidak boleh kosong";
@@ -574,7 +577,9 @@ class PDF extends FPDF
 			
 			
 			
-			$sPrestasi="select a.upahkerja,b.tanggal,a.jumlahhk,a.nik from ".$dbname.".kebun_prestasi a left join ".$dbname.".kebun_aktifitas b on a.notransaksi=b.notransaksi where b.notransaksi like '%PNN%' and substr(b.kodeorg,1,4)='".substr($kodeOrg,0,4)."' and b.tanggal between '".$tgl1."' and '".$tgl2."' and  a.nik=".$idKry."";
+			$sPrestasi="select a.upahkerja,b.tanggal,a.jumlahhk,a.nik from ".$dbname.".kebun_prestasi a 
+				left join ".$dbname.".kebun_aktifitas b on a.notransaksi=b.notransaksi 
+				where (b.notransaksi like '%PNN%' or b.notransaksi like '%/BM/%') and substr(b.kodeorg,1,4)='".substr($kodeOrg,0,4)."' and b.tanggal between '".$tgl1."' and '".$tgl2."' and  a.nik=".$idKry."";
 			//exit("Error".$sPrestasi);
 			$rPrestasi=fetchData($sPrestasi);
 			foreach ($rPrestasi as $presBrs =>$resPres)
@@ -611,7 +616,7 @@ class PDF extends FPDF
                         
                         
                         $sKehadiran="select jhk,absensi,tanggal,karyawanid from ".$dbname.".kebun_kehadiran_vw 
-                            where tanggal between  '".$tgl1."' and '".$tgl2."' and  karyawanid=".$idKry." and unit='".substr($kdOrg,0,4)."'";
+                            where tanggal between  '".$tgl1."' and '".$tgl2."' and  karyawanid=".$idKry." and unit='".substr($kdOrg,0,4)."' order by karyawanid,jhk desc";
 			//exit("Error".$sKehadiran);
 			$rkehadiran=fetchData($sKehadiran);
 			foreach ($rkehadiran as $khdrnBrs =>$resKhdrn)
@@ -773,7 +778,8 @@ $sAbsn="select absensi,tanggal,karyawanid from ".$dbname.".sdm_absensidt
 		$tgl2=$tgl_2;
 	}
 	
-	$test = dates_inbetween($tgl1, $tgl2);
+	//$test = dates_inbetwee($tgl1, $tgl2);
+	$test = rangeTanggal($tgl1, $tgl2);
 	if(($tgl2=="")&&($tgl1==""))
 	{
 		echo"warning: Tanggal Mulai dan Tanggal Sampai tidak boleh kosong";
@@ -846,7 +852,9 @@ $sAbsn="select absensi,tanggal,karyawanid from ".$dbname.".sdm_absensidt
 			}
 			
 			
-			$sPrestasi="select a.upahkerja,b.tanggal,a.jumlahhk,a.nik from ".$dbname.".kebun_prestasi a left join ".$dbname.".kebun_aktifitas b on a.notransaksi=b.notransaksi where b.notransaksi like '%PNN%' and substr(b.kodeorg,1,4)='".substr($kodeOrg,0,4)."' and b.tanggal between '".$tgl1."' and '".$tgl2."' and a.nik=".$idKry."";
+			$sPrestasi="select a.upahkerja,b.tanggal,a.jumlahhk,a.nik from ".$dbname.".kebun_prestasi a 
+				left join ".$dbname.".kebun_aktifitas b on a.notransaksi=b.notransaksi 
+				where (b.notransaksi like '%PNN%' or b.notransaksi like '%/BM/%') and substr(b.kodeorg,1,4)='".substr($kodeOrg,0,4)."' and b.tanggal between '".$tgl1."' and '".$tgl2."' and a.nik=".$idKry."";
 			//exit("Error".$sPrestasi);
 			$rPrestasi=fetchData($sPrestasi);
 			foreach ($rPrestasi as $presBrs =>$resPres)
@@ -877,7 +885,7 @@ $sAbsn="select absensi,tanggal,karyawanid from ".$dbname.".sdm_absensidt
 			}
                         
                         $sKehadiran="select jhk,absensi,tanggal,karyawanid from ".$dbname.".kebun_kehadiran_vw 
-                            where tanggal between  '".$tgl1."' and '".$tgl2."'and karyawanid=".$idKry." and unit='".substr($kdOrg,0,4)."'";
+                            where tanggal between  '".$tgl1."' and '".$tgl2."'and karyawanid=".$idKry." and unit='".substr($kdOrg,0,4)."' order by karyawanid,jhk desc";
 			//exit("Error".$sKehadiran);
 			$rkehadiran=fetchData($sKehadiran);
 			foreach ($rkehadiran as $khdrnBrs =>$resKhdrn)

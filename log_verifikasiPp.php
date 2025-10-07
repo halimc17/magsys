@@ -15,8 +15,7 @@ OPEN_BOX('',"<b>".$_SESSION['lang']['verifikasi']."</b>"); //1 O
 <div id="action_list">
 <?php
 $optPur="<option value=''>".$_SESSION['lang']['all']."</option>";
-$sPur="select karyawanid,namakaryawan from ".$dbname.".datakaryawan 
-    where (bagian='PUR'or kodejabatan='17') and kodejabatan!='5' and (tanggalkeluar>'".date('Y-m-d')."' or tanggalkeluar='0000-00-00')  order by namakaryawan asc";
+$sPur="select karyawanid,namakaryawan from ".$dbname.".datakaryawan where bagian='PRO' and (tanggalkeluar>'".date('Y-m-d')."' or tanggalkeluar='0000-00-00') order by namakaryawan asc";
 $qPur=fetchData($sPur);
 foreach($qPur as $brsKary)
 {
@@ -42,6 +41,14 @@ $sPeriodeCari="select distinct substr(tanggal,1,7) as periode from ".$dbname.".l
 $qPeriodeCari=mysql_query($sPeriodeCari) or die(mysql_error());
 while($rPeriodeCari=mysql_fetch_assoc($qPeriodeCari))
 {
+	$no+=1;
+	if($no==1){
+       $optPeriodeCari.="<option value='".substr($rPeriodeCari['periode'],0,4)."'>".substr($rPeriodeCari['periode'],0,4)."</option>";
+	}else
+    if(substr($rPeriodeCari['periode'],5,2)=='12')
+    {
+       $optPeriodeCari.="<option value='".substr($rPeriodeCari['periode'],0,4)."'>".substr($rPeriodeCari['periode'],0,4)."</option>";
+    }
 	$optPeriodeCari.="<option value='".$rPeriodeCari['periode']."'>".$rPeriodeCari['periode']."</option>";
 }
 $optStatusPP="<option value='2'>".$_SESSION['lang']['pilihdata']."</option>";

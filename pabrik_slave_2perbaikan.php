@@ -5,41 +5,31 @@ require_once('lib/nangkoelib.php');
 require_once('lib/zLib.php');
 require_once('lib/fpdf.php');
 
-
-
-
 //$proses=$_GET['proses'];
-
 $proses = checkPostGet('proses','');
 $pabrik = checkPostGet('pabrik','');
 $station = checkPostGet('station','');
+$machine = checkPostGet('mesin','');
 $tgl1 = tanggalsystemn(checkPostGet('tgl1',''));
 $tgl2 = tanggalsystemn(checkPostGet('tgl2',''));
+$perbaikantipe = checkPostGet('tipeperbaikan','');
+$stsketuntasan = checkPostGet('statusketuntasan','');
 
 $nmOrg=makeOption($dbname,'organisasi','kodeorganisasi,namaorganisasi');
 $nmBrg=makeOption($dbname,'log_5masterbarang','kodebarang,namabarang');
 $stBrg=makeOption($dbname,'log_5masterbarang','kodebarang,satuan');
 $arrPost=array("0"=>"Not Posted","1"=>"Posting");
 
-
-
-if($tgl1=='--')
-{
+if($tgl1=='--'){
     $tgl1='';
 }
-if($tgl2=='--')
-{
+if($tgl2=='--'){
     $tgl2='';
 }
 
-
-
-if($proses=='excel')
-{
+if($proses=='excel'){
     $border="border=1";
-}
-else
-{
+}else{
     $border="border=0";
 }
 
@@ -47,7 +37,6 @@ else
 
   $stream="<table cellspacing='1' $border class='sortable'>";
       $stream.="<thead><tr class=rowheader>
-       
             <td align=center>No</td>
             <td align=center>".$_SESSION['lang']['notransaksi']."</td>
             <td align=center>".$_SESSION['lang']['tanggal']."</td>
@@ -58,16 +47,18 @@ else
             <td align=center>Nama ".$_SESSION['lang']['mesin']."</td>    
             <td align=center>Jam Mulai</td> 
             <td align=center>Jam Selesai</td> 
+            <td align=center>Jam Perbaikan</td> 
             <td align=center>".$_SESSION['lang']['kodebarang']."</td> 
             <td align=center>Barang Yang Diganti</td> 
             <td align=center>Satuan</td> 
             <td align=center>Jumlah</td>
+            <td align=center>Harga</td>
+            <td align=center>Jumlah Harga</td>
             <td align=center>Mekanik</td>
             <td align=center>Tipe Perbaikan</td>
             <td align=center>Status Ketuntasan</td>
             <td align=center>Hasil Kerja</td>";
-    if($proses!='excel')
-    {
+    if($proses!='excel'){
         $stream.="  
                 <td align=center>*</td>";
     }
@@ -76,18 +67,23 @@ else
       <tbody>";
 //kgpotsortasi,kodecustomer,beratbersih as netto,substr(tanggal,1,10) as tanggal,(beratbersih/(jumlahtandan1+jumlahtandan2+jumlahtandan3)) as bjr
 
-
-      
-      
-      
-if($station!='')
-{
-    $stationTambah="and statasiun='".$station."'";
+$stationTambah='';
+if($station!=''){
+    $stationTambah.=" and statasiun='".$station."'";
+}
+if($machine!=''){
+    $stationTambah.=" and mesin='".$machine."'";
+}
+if($perbaikantipe!=''){
+    $stationTambah.=" and tipeperbaikan='".$perbaikantipe."'";
+}
+if($stsketuntasan!=''){
+    $stationTambah.=" and statusketuntasan='".$stsketuntasan."'";
 }
       
-      
-$iList="SELECT * FROM ".$dbname.".pabrik_rawatmesinht where tanggal between '".$tgl1."' and '".$tgl2."' and"
-        . " pabrik='".$pabrik."' ".$stationTambah." ";
+$iList="SELECT *,round(TIMESTAMPDIFF(MINUTE,jammulai,jamselesai)/60,2) as jamjalan 
+		FROM ".$dbname.".pabrik_rawatmesinht where tanggal between '".$tgl1."' and '".$tgl2."' and"
+        . " pabrik='".$pabrik."' ".$stationTambah." order by pabrik,tanggal,notransaksi,statasiun,mesin ";
 $nList=mysql_query($iList) or die (mysql_error($conn));	
 while($dList=mysql_fetch_assoc($nList))
 {
@@ -99,7 +95,7 @@ while($dList=mysql_fetch_assoc($nList))
     $kegiatan[$dList['notransaksi']]=$dList['kegiatan'];
     $jammulai[$dList['notransaksi']]=$dList['jammulai'];
     $jamselesai[$dList['notransaksi']]=$dList['jamselesai'];
-    $jamselesai[$dList['notransaksi']]=$dList['jamselesai'];
+    $jamjalan[$dList['notransaksi']]=$dList['jamjalan'];
     $statusketuntasan[$dList['notransaksi']]=$dList['statusketuntasan'];
     $tipeperbaikan[$dList['notransaksi']]=$dList['tipeperbaikan'];
     $hasilkerja[$dList['notransaksi']]=$dList['hasilkerja'];
@@ -116,6 +112,7 @@ while($dBarang=  mysql_fetch_assoc($nBarang))
     $barang[$dBarang['notransaksi']][]=$dBarang['kodebarang'];
     $satuanbarang[$dBarang['notransaksi']][]=$dBarang['satuan'];
     $jumlahbarang[$dBarang['notransaksi']][]=$dBarang['jumlah'];
+    $hargabarang[$dBarang['notransaksi']][]=$dBarang['harga'];
 }
 
 #karyawan
@@ -131,7 +128,6 @@ while($dKar=  mysql_fetch_assoc($nKar))
     $kar[$dKar['notransaksi']][]=$dKar['karyawanid'];
 }
 
-
 $nmBrg=makeOption($dbname,'log_5masterbarang','kodebarang,namabarang');
 $nmKar=  makeOption($dbname, 'datakaryawan', 'karyawanid,namakaryawan');
 $nikKar=  makeOption($dbname, 'datakaryawan', 'karyawanid,nik');
@@ -144,7 +140,6 @@ $noList=0;
 if(isset($notransaksi)){
 	foreach ($notransaksi as $notran)
 	{
-		
 		$rowspanbarang=count($barang[$notran]);
 		$rowspankar=count($kar[$notran]);
 		
@@ -156,9 +151,7 @@ if(isset($notransaksi)){
 		{
 			$rowspan=$rowspankar;
 		}
-		
-		
-		
+		$rowspan=$rowspan==0 ? 1 : $rowspan;
 		
 		$noList+=1;
 		$stream.="<tr class=rowcontent>";
@@ -170,14 +163,14 @@ if(isset($notransaksi)){
 			$stream.="<td valign=top rowspan=".$rowspan.">".$statasiun[$notran]."</td>";
 			$stream.="<td valign=top rowspan=".$rowspan.">".$mesin[$notran]."</td>";
 			$stream.="<td valign=top rowspan=".$rowspan.">".$nmOrg[$mesin[$notran]]."</td>";
-			
 			$stream.="<td valign=top rowspan=".$rowspan.">".$jammulai[$notran]."</td>";
 			$stream.="<td valign=top rowspan=".$rowspan.">".$jamselesai[$notran]."</td>";
-			
+			$stream.="<td align=right valign=top rowspan=".$rowspan.">".$jamjalan[$notran]."</td>";
 	  
-		  
 			if(empty($barang[$notran]) and empty($kar[$notran]))
 			{
+				$stream.="<td valign=top  rowspan=".$rowspan."></td>";
+				$stream.="<td valign=top  rowspan=".$rowspan."></td>";
 				$stream.="<td valign=top  rowspan=".$rowspan."></td>";
 				$stream.="<td valign=top  rowspan=".$rowspan."></td>";
 				$stream.="<td valign=top  rowspan=".$rowspan."></td>";
@@ -204,19 +197,25 @@ if(isset($notransaksi)){
 					{
 						$stream.="<tr class=rowcontent>";
 					}
+					$jmlharga=$jumlahbarang[$notran][$i]*$hargabarang[$notran][$i];
 					$stream.="<td valign=top align=right>".$barang[$notran][$i]."</td>";
 					$stream.="<td valign=top align=left>".$nmBrg[$barang[$notran][$i]]."</td>";
-					$stream.="<td valign=top  align=left>".$satuanbarang[$notran][$i]."</td>";
-					$stream.="<td valign=top  align=right>".$jumlahbarang[$notran][$i]."</td>";
-					$stream.="<td valign=top  align=left>".$nmKar[$kar[$notran][$i]]."</td>";
-					
-					
+					$stream.="<td valign=top align=left>".$satuanbarang[$notran][$i]."</td>";
+					$stream.="<td valign=top align=right>".$jumlahbarang[$notran][$i]."</td>";
+					if(!empty($barang[$notran][$i])){
+						$stream.="<td valign=top align=right>".number_format($hargabarang[$notran][$i],2)."</td>";
+						$stream.="<td valign=top align=right>".number_format($jmlharga,2)."</td>";
+					}else{
+						$stream.="<td valign=top align=right></td>";
+						$stream.="<td valign=top align=right></td>";
+					}
+					$stream.="<td valign=top align=left>".$nmKar[$kar[$notran][$i]]."</td>";
 					
 					if($i==0)
 					{
 						$stream.="<td valign=top  rowspan=".$rowspan.">".$arrTipePerbaikan[$tipeperbaikan[$notran]]."</td>";
 						$stream.="<td valign=top  rowspan=".$rowspan.">".$statusketuntasan[$notran]."</td>";
-						 $stream.="<td valign=top  rowspan=".$rowspan.">".$hasilkerja[$notran]."</td>";
+						$stream.="<td valign=top  rowspan=".$rowspan.">".$hasilkerja[$notran]."</td>";
 						if($proses!='excel')
 						{
 							$stream.="<td valign=top rowspan=".$rowspan.">
@@ -227,23 +226,12 @@ if(isset($notransaksi)){
 						}
 					}
 				}
-				
-				 
 			} 
 		$stream.="</tr>";
 	}
 }
 
-
-
-   		
-	
 $stream.="</tbody></table>";
-
-
-
-  
-
 
 #######################################################################
 ############PANGGGGGGGGGGGGGGGGGGILLLLLLLLLLLLLLLLLLLLLLLLLL###########   
@@ -251,7 +239,6 @@ $stream.="</tbody></table>";
   
 switch($proses)
 {
-    
     case'getListBarangLaporan':
         
         $isi="<table cellspacing='1' class='sortable'><thead class=rowheader>
@@ -280,12 +267,11 @@ switch($proses)
                 <td align=right>".number_format($dBrg['jumlah']*$dBrg['harga'],2)."</td>"; 
         }
         echo $isi;
-        
     break;
     
     case'getStation':
-     
         $optStation="<option value=''>".$_SESSION['lang']['all']."</option>";
+		if($pabrik!=''){
         $iStation="select kodeorganisasi, namaorganisasi from ".$dbname.".organisasi where induk='".$pabrik."' ";     
       
         $nStation=mysql_query($iStation) or die(mysql_error($conn));
@@ -293,10 +279,9 @@ switch($proses)
         {
             $optStation.="<option value=".$dStation['kodeorganisasi'].">[".$dStation['kodeorganisasi']."] ".$dStation['namaorganisasi']."</option>";
         }  
-        echo $optStation;
+		}
+		echo $optStation;
     break;
-    
-    
     
 ######HTML
 	case 'preview':
@@ -311,12 +296,10 @@ switch($proses)
 
 ######EXCEL	
 	case 'excel':
-            
                 if($tgl1=='' || $tgl2=='' || $pabrik=='')
                 {
                     exit("Please Complate the form");
                 }
-            
 		$stream.="Print Time : ".date('H:i:s, d/m/Y')."<br>By : ".$_SESSION['empl']['name'];	
 		$tglSkrg=date("Ymd");
 		$nop_="LAPORAN_PERAWATAN_MESIN_".$tglSkrg;
@@ -348,10 +331,7 @@ switch($proses)
 		}           
 		break;
 	
-	
-	
 	default:
 	break;
 }
-
 ?>

@@ -9,7 +9,15 @@ $notransaksi=$_GET['notransaksi'];
 //=============
 
 $namadept=  makeOption($dbname, 'sdm_5departemen', 'kode,nama');
-
+$str="select a.kodeorganisasi,a.namaorganisasi from ".$dbname.".organisasi a where a.kodeorganisasi in (select b.induk from ".$dbname.".sdm_pjdinasht c left join ".$dbname.".organisasi b on c.kodeorg=b.kodeorganisasi where c.notransaksi='".$notransaksi."')";	
+$res=mysql_query($str);
+while($bar=mysql_fetch_object($res))
+{
+  $namaorganisasi=$bar->namaorganisasi;
+  $kodeorganisasi=$bar->kodeorganisasi;
+  $_SESSION['empl']['ptpdf']=$bar->namaorganisasi;
+}
+//exit('Warning: '.$str.' - '.$kodeorganisasi.' - '.$namaorganisasi);
 //create Header
 class PDF extends FPDF
 {
@@ -21,9 +29,10 @@ class PDF extends FPDF
                 $this->SetFont('Arial','B',10);
                 $this->SetFillColor(255,255,255);	
                 $this->SetXY(23,22); 
-		//	print_r($_SESSION['org']);
-				
-			$this->Cell(177,5,$_SESSION['org']['namaorganisasi'],0,1,'R');	 
+			//print_r($_SESSION['org']);
+			//$this->Cell(177,5,$_SESSION['org']['namaorganisasi'],0,1,'R');	 
+			$this->Cell(177,5,$_SESSION['empl']['ptpdf'],0,1,'R');	 
+			//$this->Cell(177,5,$namaorganisasi,0,1,'R');	 
                 $this->SetFont('Arial','',15);
             $this->Cell(190,5,'',0,1,'C');
                 $this->SetFont('Arial','',6); 
@@ -139,7 +148,7 @@ class PDF extends FPDF
   }
   
   //Get Lokasi Tugas
-  $strLTgs="select namaorganisasi from ".$dbname.".organisasi where kodeorganisasi='".$tujuan1."'";
+  $strLTgs="select namaorganisasi from ".$dbname.".organisasi where kodeorganisasi='".$kodeorg."'";
   $resLTgs=mysql_query($strLTgs);
   while($barLTgs=mysql_fetch_object($resLTgs)){
 	$LTgs=$barLTgs->namaorganisasi;
@@ -267,7 +276,7 @@ class PDF extends FPDF
         $pdf->SetX(10);  
 		$pdf->Cell(60,5,$_SESSION['lang']['dibuat'].",",'',0,'C');
 		$pdf->Cell(60,5,$_SESSION['lang']['diketahuioleh'].",",'',0,'C');			
-		$pdf->Cell(60,5,$_SESSION['lang']['diketahuioleh'].",",'',0,'C');
+		$pdf->Cell(60,5,$_SESSION['lang']['dstujui_oleh'].",",'',0,'C');
    $pdf->Ln();	
    $pdf->Ln();	
    $pdf->Ln();	
@@ -280,7 +289,11 @@ class PDF extends FPDF
 		$pdf->SetX(10);  
 		$pdf->Cell(60,5,'','',0,'C');
 		$pdf->Cell(60,5,$_SESSION['lang']['atasan'],'',0,'C');			
-		$pdf->Cell(60,5,$_SESSION['lang']['direktur'],'',0,'C');
+		if($_SESSION['empl']['tipelokasitugas']=='HOLDING') {
+			$pdf->Cell(60,5,$_SESSION['lang']['direktur'],'',0,'C');
+		}else{
+			$pdf->Cell(60,5,'GM','',0,'C');
+		}
 //footer================================
     $pdf->Ln();		
         $pdf->Output();

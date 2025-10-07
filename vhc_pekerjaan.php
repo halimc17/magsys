@@ -40,7 +40,8 @@ while($rjvch=mysql_fetch_assoc($qjvch))
 	$optJnsvhc.="<option value=".$rjvch['jenisvhc'].">".$rjvch['jenisvhc']."-".$rjvch['namajenisvhc']."</option>";
 }
 
-$strak="select kodeorganisasi, namaorganisasi from ".$dbname.".organisasi where tipe = 'TRAKSI' order by namaorganisasi ";
+$strak="select kodeorganisasi, namaorganisasi from ".$dbname.".organisasi where tipe = 'TRAKSI' 
+		and kodeorganisasi like '".substr($_SESSION['empl']['lokasitugas'],0,4)."%' order by namaorganisasi ";
 $qtrak=mysql_query($strak) or die(mysql_error());
 $optTraksi='';
 while($rtrak=mysql_fetch_assoc($qtrak))
@@ -152,13 +153,16 @@ $frm[0].="</tbody></table></fieldset>";
 $sjnskrj="select * from ".$dbname.".vhc_kegiatan order by noakun asc";
 $qjnskrj=mysql_query($sjnskrj) or die(mysql_error());
 $optJnsKerja='';
+//$optJnsKerja="<option value=".$_SESSION['org']['induk']."</option>";
 while($rjnskrj=mysql_fetch_assoc($qjnskrj))
 {
 	$optJnsKerja.="<option value=".$rjnskrj['kodekegiatan'].">".$rjnskrj['noakun']." - ".$rjnskrj['namakegiatan']."</option>";
 }
 
-$slokTgs="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi where `tipe` NOT
-IN ('PT', 'BLOK', 'STATION', 'STENGINE','AFDELING')";
+//$slokTgs="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi where `tipe` NOT
+//IN ('PT', 'BLOK', 'STATION', 'STENGINE','AFDELING') and induk='".$_SESSION['empl']['kodeorganisasi']."'";
+$slokTgs="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi where `tipe` NOT IN ('PT', 'BLOK', 'STATION', 'STENGINE','AFDELING') 
+			and kodeorganisasi in (select kodeunit from ".$dbname.".bgt_regional_assignment where regional='".$_SESSION['empl']['regional']."')";
 //IN ('PT', 'BLOK', 'HOLDING', 'STATION', 'STENGINE','AFDELING')";
 $qlokTgs=mysql_query($slokTgs) or die(mysql_error());
 $optLokTugas='';

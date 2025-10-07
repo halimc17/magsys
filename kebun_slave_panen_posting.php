@@ -22,7 +22,25 @@ if($_SESSION['org']['period']['start']>$tgl)
 $queryD = selectQuery($dbname,'kebun_prestasi',"*","notransaksi='".
     $param['notransaksi']."'");
 $dataD = fetchData($queryD);
+$allnik='';
+if(!empty($dataD)) {
+    foreach($dataD as $rowD) {
+		$nik[$rowD['nik']]=$rowD['nik'];
+		$allnik.=$rowD['nik'].',';
+    }
+}
+if($allnik!=''){
+	$allnik=substr($allnik,0,strlen($allnik)-1);
+}
 
+#=== Cek Fingerprint ===
+$sAbs = selectQuery($dbname,'sdm_absensidt','DISTINCT(karyawanid)',"tanggal='".$dataH[0]['tanggal']."' and fingerprint='1' and karyawanid in (".$allnik.")");
+//exit('Warning: '.$sAbs);
+$qAbs = fetchData($sAbs);
+//exit('Warning: '.count($dataD).' = '.count($qAbs).' = '.count($nik).' '.$sAbs);
+if(count($nik)!=count($qAbs)){
+	exit('Warning: Ada yang tidak punya fingerprint');
+}
 #=== Cek if posted ===
 $error0 = "";
 if($dataH[0]['jurnal']==1) {
@@ -71,7 +89,7 @@ $nojurnal = $tmpNoJurnal[0]."/".$tmpNoJurnal[1]."/".$kodeJurnal."/".$konter;
     $day = date('D', strtotime($dataH[0]['tanggal']));
     if($day=='Sun')$libur=true; else $libur=false;
     // kamus hari libur
-    $strorg="select * from ".$dbname.".sdm_5harilibur where tanggal = '".$dataH[0]['tanggal']."'";
+    $strorg="select * from ".$dbname.".sdm_5harilibur where tanggal = '".$dataH[0]['tanggal']."' and kebun in ('GLOBAL','".$_SESSION['empl']['lokasitugas']."')";
     $queorg=mysql_query($strorg) or die(mysql_error());
     while($roworg=mysql_fetch_assoc($queorg))
     {
@@ -125,7 +143,7 @@ foreach($dataD as $row) {
         'kodekegiatan'=>$kodekegiatan,
         'kodeasset'=>'',
         'kodebarang'=>'',
-        'nik'=>'',
+        'nik'=>$row['nik'],
         'kodecustomer'=>'',
         'kodesupplier'=>'',
         'noreferensi'=>$row['notransaksi'],
@@ -200,7 +218,7 @@ if($errorDB=='') {
 		if($isJ[0]['jurnal']==1) {
 			$errorDB .= "Data posted by another user";
 		} else {
-			$queryToJ = updateQuery($dbname,'kebun_aktifitas',array('jurnal'=>1),
+			$queryToJ = updateQuery($dbname,'kebun_aktifitas',array('jurnal'=>1,'lastupdate'=>date('Y-m-d H:i:s')),
 				"notransaksi='".$dataH[0]['notransaksi']."'");
 			if(!mysql_query($queryToJ)) {
 				$errorDB .= "Posting Mark Error :".mysql_error()."\n";

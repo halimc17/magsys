@@ -42,7 +42,7 @@ if($regional != ''){
 //ambil mutasi-----------------------
 if($gudang=='' and $pt=='')
 {
-    $str="select a.kodesupplier,a.nojurnal,a.jumlah,a.keterangan,a.tanggal,a.noreferensi,a.kodevhc,a.nik,a.kodeblok,b.namapenerima,c.namakaryawan 
+    $str="select a.kodesupplier,a.nojurnal,a.jumlah,a.keterangan,a.tanggal,a.noreferensi,a.kodevhc,a.nik,a.kodeblok,b.namapenerima,c.namakaryawan,a.kodeasset,IF(a.kodeasset='','',(SELECT t4.nama FROM ".$dbname.".project t4 WHERE t4.kode=a.kodeasset)) as namaasset
         from ".$dbname.".keu_jurnaldt_vw a
         left join ".$dbname.".log_transaksiht b on a.noreferensi = b.notransaksi
         left join ".$dbname.".datakaryawan c on b.namapenerima = c.karyawanid
@@ -50,7 +50,7 @@ if($gudang=='' and $pt=='')
 }
 else if($gudang=='' and $pt!='')
 {
-    $str="select a.kodesupplier,a.nojurnal,a.jumlah,a.keterangan,a.tanggal,a.noreferensi,a.kodevhc,a.nik,a.kodeblok,b.namapenerima,c.namakaryawan
+    $str="select a.kodesupplier,a.nojurnal,a.jumlah,a.keterangan,a.tanggal,a.noreferensi,a.kodevhc,a.nik,a.kodeblok,b.namapenerima,c.namakaryawan,a.kodeasset,IF(a.kodeasset='','',(SELECT t4.nama FROM ".$dbname.".project t4 WHERE t4.kode=a.kodeasset)) as namaasset
         from ".$dbname.".keu_jurnaldt_vw a
         left join ".$dbname.".log_transaksiht b on a.noreferensi = b.notransaksi
         left join ".$dbname.".datakaryawan c on b.namapenerima = c.karyawanid
@@ -60,7 +60,7 @@ else if($gudang=='' and $pt!='')
 }
 else
 {
-    $str="select a.kodesupplier,a.nojurnal,a.jumlah,a.keterangan,a.tanggal,a.noreferensi,a.kodevhc,a.nik,a.kodeblok,b.namapenerima,c.namakaryawan
+    $str="select a.kodesupplier,a.nojurnal,a.jumlah,a.keterangan,a.tanggal,a.noreferensi,a.kodevhc,a.nik,a.kodeblok,b.namapenerima,c.namakaryawan,a.kodeasset,IF(a.kodeasset='','',(SELECT t4.nama FROM ".$dbname.".project t4 WHERE t4.kode=a.kodeasset)) as namaasset
         from ".$dbname.".keu_jurnaldt_vw a
         left join ".$dbname.".log_transaksiht b on a.noreferensi = b.notransaksi
         left join ".$dbname.".datakaryawan c on b.namapenerima = c.karyawanid
@@ -88,6 +88,8 @@ $stream="<table class=sortable border=".$border." cellspacing=1>
         <td>Supplier</td>
         <td>Mesin</td>
         <td>Blok</td>
+        <td>Project</td>
+        <td>Project</td>
     </tr>
     </thead>
     <tbody>";
@@ -122,9 +124,11 @@ if(isset($_GET['type']) and $_GET['type']=='excel')$tampiltanggal=$bar->tanggal;
            <td align=right>".number_format($debet,2)."</td>
            <td align=right>".number_format($kredit,2)."</td>  
            <td>".$penerima."</td>
-                <td>".$nmSup[$bar->kodesupplier]."</td>
+           <td>".$nmSup[$bar->kodesupplier]."</td>
            <td>".$bar->kodevhc."</td>
-           <td>".$bar->kodeblok."</td>  
+           <td>".$bar->kodeblok."</td>
+           <td>".$bar->kodeasset."</td>
+           <td>".$bar->namaasset."</td>
         </tr>";
     $tdebet+=$debet;
     $tkredit+=$kredit;    

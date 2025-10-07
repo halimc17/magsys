@@ -14,7 +14,8 @@ $tanggalselesai=checkPostGet('tanggalselesai','');
 // $trainingthnselesai=checkPostGet('trainingthnselesai','');
 $sertifikat=checkPostGet('sertifikat','');
 $biaya=checkPostGet('biaya','');
-
+$berlakudari=checkPostGet('berlakudari','');
+$berlakusampai=checkPostGet('berlakusampai','');
 $karyawanid=checkPostGet('karyawanid','');
 $nomor=checkPostGet('nomor','');
 
@@ -34,6 +35,15 @@ else
 {
 // $trainingblnmulai=$trainingblnmulai."-".$trainingthnmulai;
 // $trainingblnselesai=$trainingblnselesai."-".$trainingthnselesai;
+	$skarytr="select nomor from ".$dbname.".sdm_karyawantraining where karyawanid='".$karyawanid."' and penyelenggara='".$penyelenggara."' and tanggalmulai='".tanggalsystem($tanggalmulai)."'";
+	$qkarytr=mysql_query($skarytr);
+	$rkarytr=mysql_num_rows($qkarytr);
+if($rkarytr>0){
+	$str="update ".$dbname.".sdm_karyawantraining set jenistraining='".$jenistraining."', tanggalselesai='".tanggalsystem($tanggalselesai)."', 
+	judultraining='".$judultraining."', sertifikat=".$sertifikat." , biaya=".$biaya." 
+	,berlakudari='".tanggalsystem($berlakudari)."', berlakusampai='".tanggalsystem($berlakusampai)."'
+	where karyawanid='".$karyawanid."' and penyelenggara='".$penyelenggara."' and tanggalmulai='".tanggalsystem($tanggalmulai)."'";
+}else{
 	$str="insert into ".$dbname.".sdm_karyawantraining
 	     (	`karyawanid`,
 			`jenistraining`,
@@ -42,7 +52,9 @@ else
 			`judultraining`,
 			`penyelenggara`,
 			`sertifikat`,
-                        `biaya`
+			`berlakudari`,
+			`berlakusampai`,
+			`biaya`
 		  )
 		  values(".$karyawanid.",
 		  '".$jenistraining."',
@@ -51,8 +63,11 @@ else
 		  '".$judultraining."',
 		  '".$penyelenggara."',
 		  ".$sertifikat.",
-                  ".$biaya."
+		  ".tanggalsystem($berlakudari).",
+		  ".tanggalsystem($berlakusampai).",
+		  ".$biaya."
 		  )";
+}
 }
 if(mysql_query($str))
    {
@@ -66,17 +81,34 @@ if(mysql_query($str))
 	 $no=0;
 	 while($bar=mysql_fetch_object($res))
 	 {
-	 $no+=1;	
-	 echo"	  <tr class=rowcontent>
-			  <td class=firsttd>".$no."</td>
+	 $no+=1;
+	if($bar->sertifikat=='1'){
+		$ketsertifikat=($_SESSION['language']=='EN'?'Attendance Certificate':'Sertifikat Kehadiran');
+	}elseif($bar->sertifikat=='2'){
+		$ketsertifikat=($_SESSION['language']=='EN'?'Competency Certificate':'Sertifikat Kompetensi');
+	}else{
+		$ketsertifikat=($_SESSION['language']=='EN'?'No Certificate':'Tidak Ada Sertifikat');
+	}
+ 
+	 echo "<tr class=rowcontent>
+			  <td align=center class=firsttd>".$no."</td>
 			  <td>".$bar->jnstraining."</td>			  
 			  <td>".$bar->judultraining."</td>
 			  <td>".$bar->penyelenggara."</td>			  
-			  <td>".tanggalnormal($bar->tanggalmulai)."</td>			  
-			  <td>".tanggalnormal($bar->tanggalselesai)."</td>
-			  <td>".$bar->bersertifikat."</td>
-                          <td align=right>".$bar->biaya."</td>
-			  <td style='text-align:center;'><img src=images/skyblue/delete.png class=resicon  title='Delete' onclick=\"delTraining('".$karyawanid."','".$bar->nomor."');\"></td>
+			  <td align=center>".tanggalnormal($bar->tanggalmulai)."</td>			  
+			  <td align=center>".tanggalnormal($bar->tanggalselesai)."</td>
+			  <td>".$ketsertifikat."</td>
+              <td align=right>".$bar->biaya."</td>
+			  <td style='text-align:center;'><img src=images/skyblue/edit.png class=resicon  title='Edit' onclick=\"EditFormTraining('".$bar->jenistraining."','".$bar->judultraining."','".$bar->biaya."','".$bar->penyelenggara."','".tanggalnormal($bar->tanggalmulai)."','".tanggalnormal($bar->tanggalselesai)."','".$bar->sertifikat."','".tanggalnormal($bar->berlakudari)."','".tanggalnormal($bar->berlakusampai)."');\">&nbsp;
+			  <img src=images/skyblue/delete.png class=resicon  title='Delete' onclick=\"delTraining('".$karyawanid."','".$bar->nomor."');\"></td>";
+	echo "<td>";
+		if($bar->sertifikat==2){
+			echo	"<img class=resicon src='images/skyblue/plus.png' title='Edit Scan' onclick=\"editscan('".$bar->nomor."',event);\">&nbsp";
+		}
+		if($bar->scansertifikat!=''){
+			echo	"<img class=resicon src='images/skyblue/zoom.png' title='View Scan' onclick=\"viewscan('".$bar->nomor."','".$bar->scansertifikat."',event);\">";
+		}
+	echo"	</td>
 			</tr>";	 	
 	 }
     }

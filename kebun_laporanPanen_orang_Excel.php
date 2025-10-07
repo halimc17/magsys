@@ -79,11 +79,12 @@ if(!empty($blok))foreach($blok as $blk){
     }
         
     // kamus karyawan --- ga dibatesin, batesin untuk optimize (kalo dah yakin)
-    $sdakar="select karyawanid, namakaryawan, tipekaryawan, subbagian from ".$dbname.".datakaryawan";
+    $sdakar="select karyawanid, nik, namakaryawan, tipekaryawan, subbagian from ".$dbname.".datakaryawan";
     $qdakar=mysql_query($sdakar) or die(mysql_error($conn));
     while($rdakar=  mysql_fetch_assoc($qdakar))
     {
         $dakar[$rdakar['karyawanid']]['karyawanid']=$rdakar['karyawanid'];
+        $dakar[$rdakar['karyawanid']]['nik']=$rdakar['nik'];
         $dakar[$rdakar['karyawanid']]['namakaryawan']=$rdakar['namakaryawan'];
         $dakar[$rdakar['karyawanid']]['tipekaryawan']=$rdakar['tipekaryawan'];
         $dakar[$rdakar['karyawanid']]['subbagian']=$rdakar['subbagian'];
@@ -101,8 +102,9 @@ if(!empty($blok))foreach($blok as $blk){
         $str="select z.nikmandor, a.tanggal,GROUP_CONCAT(a.tahuntanam SEPARATOR ' ') as tahuntanam,a.unit,
               GROUP_CONCAT(a.kodeorg SEPARATOR ' ') as kodeorg,sum(a.hasilkerja) as jjg,
               sum(a.hasilkerjakg) as berat,sum(a.upahkerja) as upah,sum(a.upahpremi) as premi,
-              sum(a.rupiahpenalty) as penalty,sum(a.luaspanen) as luaspanen, a.karyawanid  
+              sum(a.rupiahpenalty) as penalty,sum(a.luaspanen) as luaspanen, a.karyawanid,d.namaorganisasi  
               from ".$dbname.".kebun_prestasi_vw a
+              left join ".$dbname.".organisasi d on a.kodeorg=d.kodeorganisasi 
               left join ".$dbname.".organisasi c on substr(a.kodeorg,1,4)=c.kodeorganisasi
               left join ".$dbname.".kebun_aktifitas z on a.notransaksi=z.notransaksi 
 			  left join ".$dbname.".setup_blok b on a.kodeorg = b.kodeorg 
@@ -119,8 +121,9 @@ if(!empty($blok))foreach($blok as $blk){
         $str="select z.nikmandor, a.tanggal,GROUP_CONCAT(a.tahuntanam SEPARATOR ' ') as tahuntanam,a.unit,
               GROUP_CONCAT(a.kodeorg SEPARATOR ' ') as kodeorg,sum(a.hasilkerja) as jjg,
               sum(a.hasilkerjakg) as berat,sum(a.upahkerja) as upah,sum(a.upahpremi) as premi,
-              sum(a.rupiahpenalty) as penalty,sum(a.luaspanen) as luaspanen, a.karyawanid  
+              sum(a.rupiahpenalty) as penalty,sum(a.luaspanen) as luaspanen, a.karyawanid,d.namaorganisasi  
               from ".$dbname.".kebun_prestasi_vw a
+              left join ".$dbname.".organisasi d on a.kodeorg=d.kodeorganisasi 
               left join ".$dbname.".kebun_aktifitas z on a.notransaksi=z.notransaksi
 			  left join ".$dbname.".setup_blok b on a.kodeorg = b.kodeorg 
               where unit = '".$unit."'  and a.tanggal between ".tanggalsystem($tgl1)." and ".tanggalsystem($tgl2)." and b.intiplasma like '%".$intiplasma."%' 
@@ -145,6 +148,7 @@ if(!empty($blok))foreach($blok as $blk){
             $dzArr[$bar->karyawanid][$bar->tanggal.'k']=$bar->berat;
             $dzArr[$bar->karyawanid][$bar->tanggal.'h']=$bar->luaspanen;
             $dzArr[$bar->karyawanid][$bar->tanggal.'b']=$bar->kodeorg;
+            $dzArr[$bar->karyawanid][$bar->tanggal.'n']=$bar->namaorganisasi;
             $dzArr[$bar->karyawanid][$bar->tanggal.'t']=$bar->tahuntanam;
 			setIt($dzArr[$bar->karyawanid]['mandor'],'');
             if($dzArr[$bar->karyawanid]['mandor']!=$bar->nikmandor)$dzArr[$bar->karyawanid]['mandor'].=$bar->nikmandor;
@@ -164,6 +168,7 @@ if(!empty($blok))foreach($blok as $blk){
     $stream.="<thead>
         <tr>
             <td bgcolor=#DEDEDE rowspan=2 align=center>No.</td>
+            <td bgcolor=#DEDEDE rowspan=2 align=center>".$_SESSION['lang']['nik']."</td>
             <td bgcolor=#DEDEDE rowspan=2 align=center>".$_SESSION['lang']['namakaryawan']."</td>
             <td bgcolor=#DEDEDE rowspan=2 align=center>".$_SESSION['lang']['subbagian']."</td>
             <td bgcolor=#DEDEDE rowspan=2 align=center>".$_SESSION['lang']['mandor']."</td>
@@ -177,7 +182,7 @@ if(!empty($blok))foreach($blok as $blk){
         if($qwe=='Sun')$stream.="<font color=red>".$ting[2]."</font>"; else $stream.= $ting[2]; 
         $stream.="</td>";
     }
-    if($pil=='fisik')$stream.="<td bgcolor=#DEDEDE colspan=3 align=center>Total</td><td bgcolor=#DEDEDE align=center>Rata2</td>";  
+    if($pil=='fisik')$stream.="<td bgcolor=#DEDEDE colspan=5 align=center>Total</td><td bgcolor=#DEDEDE align=center>Rata2</td>";  
     $stream.="</tr><tr>";
     foreach($tanggal as $tang){
         if($pil=='fisik'){
@@ -193,7 +198,10 @@ if(!empty($blok))foreach($blok as $blk){
     if($pil=='fisik'){
     $stream.="<td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['jjg']."</td>
         <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['kg']."</td>
-        <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['ha']."</td><td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['jjg']."</td>";
+        <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['ha']."</td>
+        <td bgcolor=#DEDEDE align=center>HK</td>
+        <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['kg']."/HK</td>
+		<td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['jjg']."</td>";
     }else{
         
     }
@@ -206,6 +214,7 @@ if(!empty($blok))foreach($blok as $blk){
         $no+=1;
         $stream.="<tr class='rowcontent'>
             <td align=center>".$no."</td>
+            <td align=left>".$dakar[$arey['karyawanid']]['nik']."</td>
             <td align=left>".$dakar[$arey['karyawanid']]['namakaryawan']."</td>
             <td align=left>".$dakar[$arey['karyawanid']]['subbagian']."</td>
             <td align=left>".$dakar[$arey['mandor']]['namakaryawan']."</td>
@@ -229,7 +238,7 @@ if(!empty($blok))foreach($blok as $blk){
                     $stream.="<td align=right><font color=red>".number_format($arey[$tang.'k'])."</font></td>";    
                     $stream.="<td align=right><font color=red>".number_format($arey[$tang.'h'])."</font></td>";    
                 }else{
-                    $stream.="<td align=left><font color=red>".$arey[$tang.'b']."</font></td>";    
+                    $stream.="<td align=left><font color=red>".$arey[$tang.'n']."</font></td>";    
                     $stream.="<td align=left><font color=red>".$arey[$tang.'t']."</font></td>";    
                     $tampil=number_format($bjrlalu[$arey[$tang.'b']],2);
                     if($tampil==0)$tampil='';
@@ -241,7 +250,7 @@ if(!empty($blok))foreach($blok as $blk){
                     $stream.="<td align=right>".number_format($arey[$tang.'k'])."</td>";    
                     $stream.="<td align=right>".number_format($arey[$tang.'h'])."</td>";    
                 }else{
-                    $stream.="<td align=left>".$arey[$tang.'b']."</td>";    
+                    $stream.="<td align=left>".$arey[$tang.'n']."</td>";    
                     $stream.="<td align=left>".$arey[$tang.'t']."</td>";    
                     $tampil=number_format($bjrlalu[$arey[$tang.'b']],2);
                     if($tampil==0)$tampil='';
@@ -273,13 +282,17 @@ if(!empty($blok))foreach($blok as $blk){
         @$rataj=$totaltanpanol/$jumlahtanpanol;
         if($pil=='fisik')$stream.="<td align=right>".number_format($totalj)."</td>
             <td align=right>".number_format($totalk)."</td>
-            <td align=right>".number_format($totalh)."</td><td align=right>".number_format($rataj)."</td>";
+            <td align=right>".number_format($totalh)."</td>
+            <td align=right>".number_format($jumlahtanpanol)."</td>
+            <td align=right>".number_format($totalk/$jumlahtanpanol,0)."</td>
+			<td align=right>".number_format($rataj)."</td>";
         $stream.="</tr>";
+		$gthk+=$jumlahtanpanol;
     }
     if($pil=='fisik'){
     // tampilin total
     $stream.="<tr class='rowcontent'>
-        <td colspan=5 align=center>Total</td>";
+        <td colspan=6 align=center>Total</td>";
     $totalj=0;
     $totalk=0;
     $totalh=0;
@@ -293,7 +306,11 @@ if(!empty($blok))foreach($blok as $blk){
     }
     $stream.="<td align=right>".number_format($totalj)."</td>
         <td align=right>".number_format($totalk)."</td>
-        <td align=right>".number_format($totalh)."</td><td></td></tr>";
+        <td align=right>".number_format($totalh)."</td>
+        <td align=right>".number_format($gthk)."</td>
+        <td align=right>".number_format($totalk/$gthk,0)."</td>
+        <td align=right>".number_format($totalj/$gthk,0)."</td>
+		</tr>";
     }
     $stream.="</tbody>
         <tfoot>

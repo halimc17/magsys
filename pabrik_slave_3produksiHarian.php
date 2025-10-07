@@ -193,7 +193,7 @@ if(strlen($periode)==4)
 		   <td align=right>".$olah[$bar->perio]."</td>
                      
 		   <td align=right>".number_format($bar->tbsmasuk+$tbskemarin,0,'.',',')."</td>
-		   <td align=right>".number_format($bar->tbsdiolah,0,'.',',.')."</td>
+		   <td align=right>".number_format($bar->tbsdiolah,0,'.',',')."</td>
 		   <td align=right>".number_format($bar->tbsmasuk+$tbskemarin-$bar->tbsdiolah,0,'.',',')."</td>	
                    
                     

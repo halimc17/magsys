@@ -45,7 +45,7 @@ if($jenis=='LANGSUNG'){
 
     //tambahan jamhari, untuk biaya langsung luasan disesuaikan per noakun atau kegiatan
     $str="select sum(hathnini) as luas,thntnm from ".$dbname.".bgt_blok where 
-      kodeblok like '".$kodeorg."%' and statusblok in ('TBM','TB')";
+      kodeblok like '".$kodeorg."%' and statusblok like 'TB%'";
 $res=mysql_query($str);
 while($bar=mysql_fetch_object($res))
 {

@@ -23,10 +23,10 @@ while($bar=mysql_fetch_object($res))
 	<td><?echo $_SESSION['lang']['npwp'];?></td><td><input type=text class=myinputtext id=npwp onkeypress="return tanpa_kutip(event)" size=25 maxlength=30></td>
 	</tr>
 	<tr>		
-	<td><?echo $_SESSION['lang']['alamatnpwp'];?></td><td><input type=text class=myinputtext id=alamatnpwp onkeypress="return tanpa_kutip(event)" size=45 maxlength=100></td>
+	<td><?echo $_SESSION['lang']['alamatnpwp'];?></td><td><input type=text class=myinputtext id=alamatnpwp onkeypress="return tanpa_kutip(event)" size=45 maxlength=150></td>
 	</tr>	
 	<tr>		
-	<td><?echo $_SESSION['lang']['domisili'];?></td><td><input type=text class=myinputtext id=alamatdomisili onkeypress="return tanpa_kutip(event)" size=45 maxlength=100></td>
+	<td><?echo $_SESSION['lang']['domisili'];?></td><td><input type=text class=myinputtext id=alamatdomisili onkeypress="return tanpa_kutip(event)" size=45 maxlength=150></td>
 	</tr>
 	</table>
 	<button class=mybutton onclick=savenpwp()><?echo $_SESSION['lang']['save'];?></button>

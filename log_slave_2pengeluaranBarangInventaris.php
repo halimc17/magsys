@@ -8,6 +8,7 @@ $proses=$_REQUEST['proses'];
 $kodebarang=$_REQUEST['kodebarang'];
 $nopo=$_REQUEST['nopo'];
 $periode=$_REQUEST['periode'];
+$unit=$_REQUEST['unit'];
 
 ### begin get nama barang ###
 $str2="select namabarang,kodebarang from ".$dbname.".log_5masterbarang";
@@ -42,7 +43,8 @@ $str="select * from ".$dbname.".log_transaksi_vw where
 		kodebarang like '%".$kodebarang."%' and
 		left(kodebarang,1) = '9' and
 		nopo like '%".$nopo."%' and
-		tanggal like '%".$periode."%'
+		tanggal like '%".$periode."%' and
+		kodegudang like '%".$unit."%'
 	order by tanggal desc";
 	
 	// print_r($str);

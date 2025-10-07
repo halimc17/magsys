@@ -59,10 +59,11 @@ function loadField(kode)
 }
 
 function proses(){ 
+	unit = getValue('unit');
 	kodebarang = getValue('kodebarang');
 	nopo = getValue('nopo');
 	periode = getValue('periode');
-	param='kodebarang='+kodebarang+'&nopo='+nopo+'&periode='+periode+'&proses=showdata';
+	param='unit='+unit+'&kodebarang='+kodebarang+'&nopo='+nopo+'&periode='+periode+'&proses=showdata';
 	tujuan='log_slave_2pengeluaranBarangInventaris.php';
 	post_response_text(tujuan, param, respog);
 	

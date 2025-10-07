@@ -12,7 +12,7 @@ OPEN_BOX('',$_SESSION['lang']['pertanggungjawabandinas']);
   $str="select * from ".$dbname.".sdm_pjdinasht 
         where
         karyawanid=".$_SESSION['standard']['userid']."
-		and lunas=0 and statuspertanggungjawaban=0";
+		and statuspertanggungjawaban=0";
   $res=mysql_query($str);
   $optNo='';
   while($bar=mysql_fetch_object($res))
@@ -49,7 +49,7 @@ $frm[1]="<fieldset>
 			<td><input type=text id=keterangan size=30 maxlength=45 class=myinputtext onkeypress=\"return tanpa_kutip(event);\">
 		    </td>
 			<td>".$_SESSION['lang']['jumlah']."</td>
-			<td><input type=text id=jumlah size=12 maxlength=15 class=myinputtextnumber onkeypress=\"return angka_doang(event);\" onblur=change_number(this)>
+			<td><input type=text id=jumlah size=12 maxlength=15 class=myinputtextnumber onblur=change_number(this)>
 			</td>
 			<td>
 			  <button class=mybutton onclick=savePPJD()>".$_SESSION['lang']['save']."</button>
@@ -92,7 +92,7 @@ $frm[2]="<fieldset>
 	   <legend>".$_SESSION['lang']['list']."</legend>
 	  <fieldset><legend></legend>
 	  ".$_SESSION['lang']['cari_transaksi']."
-	  <input type=text id=txtbabp size=25 class=myinputtext onkeypress=\"return tanpa_kutip(event);\" maxlength=9>
+	  <input type=text id=txtbabp size=25 class=myinputtext onkeypress=\"return tanpa_kutip(event);\" maxlength=13>
 	  <button class=mybutton onclick=cariPJD(0)>".$_SESSION['lang']['find']."</button>
 	  </fieldset>
 	  <table class=sortable cellspacing=1 border=0>
@@ -103,10 +103,13 @@ $frm[2]="<fieldset>
 	  <td>".$_SESSION['lang']['karyawan']."</td>
 	  <td>".$_SESSION['lang']['tanggalsurat']."</td>
 	  <td>".$_SESSION['lang']['tujuan']."</td>
-	  <td>".$_SESSION['lang']['uangmuka']."</td>
-	  <td>".$_SESSION['lang']['digunakan']."</td>	  
-	  <td>".$_SESSION['lang']['approval_status']."</td>	  
-	  <td></td>
+	  <td>".$_SESSION['lang']['digunakan']."</td>
+	  <td>".$_SESSION['lang']['dibayar']."</td>	  
+	  <td>".$_SESSION['lang']['approval_status']."</td>";
+	if(substr($_SESSION['empl']['lokasitugas'],2,2)=='HO'){
+	  $frm[2].="<td>".$_SESSION['lang']['pembayaran']."</td>";
+	}
+	$frm[2].="<td></td>
 	  </tr>
 	  </head>
 	   <tbody id=containerlist>";
@@ -174,26 +177,49 @@ while($bar=mysql_fetch_object($res))
    else 
     $stpersetujuan=$_SESSION['lang']['wait_approve'];	  
    
-   $str1="select sum(jumlah) as jumlah from ".$dbname.".sdm_pjdinasdt
+   $str1="select sum(jumlah) as jumlah,sum(jumlahdibayar) as jumlahdibayar from ".$dbname.".sdm_pjdinasdt
          where notransaksi='".$bar->notransaksi."'";
    $res1=mysql_query($str1);
 
    $usage=0;
+   $jumlahdibayar=0;
    while($bar1=mysql_fetch_object($res1))
    {
    	 $usage=$bar1->jumlah;
+   	 $jumlahdibayar=$bar1->jumlahdibayar;
    }	 	 
-	  
+
+  $tujuan=$bar->tujuan1;
+  if($bar->tujuan2!=''){
+	$tujuan=$bar->tujuan2;
+  }elseif($bar->tujuan3!=''){
+	$tujuan=$bar->tujuan3;
+  }elseif($bar->tujuanlain!=''){
+	$tujuan=$bar->tujuanlain;
+  }
+
+	if($usage==0 and $jumlahdibayar==0){
+		$dibayar='';
+	}else if($jumlahdibayar>0){
+		$dibayar='Sudah dibayar';
+	}else{
+		$dibayar='Belum dibayar';
+	}
+
 	$frm[2].="<tr class=rowcontent>
 	  <td>".$no."</td>
 	  <td>".$bar->notransaksi."</td>
 	  <td>".$namakaryawan."</td>
 	  <td>".tanggalnormal($bar->tanggalbuat)."</td>
-	  <td>".$bar->tujuan1."</td>
-	  <td align=right>".number_format($bar->dibayar,2,'.',',')."</td>
+	  <td>".$tujuan."</td>
 	  <td align=right>".number_format($usage,2,'.',',')."</td>
-	  <td>".$stpersetujuan."</td>
-	  <td align=center>
+	  <td align=right>".number_format($jumlahdibayar,2,'.',',')."</td>
+	  <td>".$stpersetujuan."</td>";
+	//if(substr($bar->notransaksi,2,2)=='HO'){
+	if($_SESSION['empl']['tipelokasitugas']=='HOLDING'){
+	  $frm[2].="<td>".$dibayar."</td>";
+	}
+	$frm[2].="<td align=center>
 	     <img src=images/pdf.jpg class=resicon  title='".$_SESSION['lang']['pdf']." (Cost)' onclick=\"previewPJD('".$bar->notransaksi."',event);\"> 
 		 <img src=images/pdf.jpg class=resicon  title='".$_SESSION['lang']['pdf']." (Task Result Description)' onclick=\"previewPJDUraian('".$bar->notransaksi."',event);\"> 
        ".$add."

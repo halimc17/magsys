@@ -125,7 +125,7 @@ switch($param['proses']) {
 			<td>";
 			$whr="nospb='".$rData['nospb']."'";
 			$optStat=makeOption($dbname,'kebun_spbht','nospb,posting',$whr);
-				if(($_SESSION['standard']['userid']==$rData['updateby'])||($optStat[$rData['nospb']]=='0')){
+				if(($_SESSION['standard']['username']==$rData['username'])||($optStat[$rData['nospb']]=='0')){
 					echo"<img src=images/application/application_edit.png class=resicon  title='Edit' onclick=\"fillField('".$rData['notransaksi']."','".$rData['jammasuk']."','".$rData['jamkeluar']."','".$rData['nokendaraan']."','".$rData['supir']."','".$rData['jumlahtandan1']."','".$rData['beratmasuk']."','".$rData['beratkeluar']."','".$rData['beratbersih']."','".$rData['jjgsortasi']."','".$rData['kgpotsortasi']."','".$rData['nospb']."','".tanggalnormal(substr($rData['tanggal'],0,10))."');\">&nbsp";
 					echo"<img src=images/application/application_delete.png class=resicon  title='Delete' onclick=\"deleteData('".$rData['notransaksi']."');\">&nbsp";
 					echo"<img src=images/pdf.jpg class=resicon  title='Print' onclick=\"masterPDF('pabrik_timbangan','".$rData['notransaksi']."','','pabrik_timbanganPdf',event)\">";

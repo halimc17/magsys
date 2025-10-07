@@ -121,6 +121,11 @@ $ktTermin.="".$nmdt[0].".".ucwords(strtolower($nmdt[1]))."<br>";
 $ktTermin.=$rTrmn2['namabank']."<br>Rek : ".$rTrmn2['rekening'];
 $nilKontrak=$bar['hargasatuan']*$bar['kuantitaskontrak'];
 
+if($bar['tanggalkontrak']<='2022-03-31'){
+    $angkaPpn=" ";
+}else{
+	$angkaPpn=" 11%";
+}
 
 $tglTtd=explode("-",$tlgKontrk);
         
@@ -196,7 +201,7 @@ switch($proses)
         <tr>
             <td colspan=2><b>Harga Satuan</b></td>
             <td>:</td>
-            <td  colspan=5>".$optMtSim[$bar['matauang']]." ".number_format($bar['hargasatuan'],2)." (".$arrStatPPn[$bar['ppn']]." PPn)</td>
+            <td  colspan=5>".$optMtSim[$bar['matauang']]." ".number_format($bar['hargasatuan'],2)." (".$arrStatPPn[$bar['ppn']]." PPn".$angkaPpn.")</td>
         </tr>
         <tr>
             <td colspan=3></td>
@@ -277,7 +282,7 @@ switch($proses)
         <tr>
             <td colspan=2><b>Nilai Kontrak</b></td>
             <td>:</td>
-            <td colspan=5>".$optMtSim[$bar['matauang']]." ".number_format($nilKontrak,0)." (".$arrStatPPn[$bar['ppn']]." PPn)</td>
+            <td colspan=5>".$optMtSim[$bar['matauang']]." ".number_format($nilKontrak,0)." (".$arrStatPPn[$bar['ppn']]." PPn".$angkaPpn.")</td>
         </tr>
         <tr>
             <td  colspan=3></td>

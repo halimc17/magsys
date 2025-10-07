@@ -52,7 +52,7 @@ function save_header()
 					/*aset(kode_org,normh,blok);
 					penghuni(kode_org,normh,blok);*/
 					load_data();
-					clear_save_form();			
+					clear_save_form(0);			
 					/*document.getElementById('save_kepala').disabled=true;
 					document.getElementById('cancel_kepala').disabled=true;*/
 				
@@ -81,8 +81,10 @@ function save_asset()
 	normh_asset=document.getElementById('no_rmh_asset').value;
 	kodeorg_asset=document.getElementById('kode_org_asset').value;
 	kode_asset=document.getElementById('kode_asset').value;
+	jmlbarang=document.getElementById('jmlbarang').value;
+	keterangan=document.getElementById('keterangan').value;
 	param='blok='+blok_asset+'&no_rmh='+normh_asset+'&kd_org='+kodeorg_asset;
-	param+='&method='+met+'&kd_asset='+kode_asset;
+	param+='&method='+met+'&kd_asset='+kode_asset+'&jmlbarang='+jmlbarang+'&keterangan='+keterangan;
 	tujuan='log_slave_sdm_perumahan.php';
 	//alert(param);
 	if(confirm("Are You Sure Want Save This Data"))
@@ -101,7 +103,7 @@ function save_asset()
 						alert('ERROR TRANSACTION,\n' + con.responseText);
 					}
 					else {
-						clear_save_form_asset();
+						clear_save_form_asset(0);
 						load_data_asset();
 					}
 				}
@@ -151,7 +153,7 @@ function save_penghuni()
 						alert('ERROR TRANSACTION,\n' + con.responseText);
 					}
 					else {
-						clear_save_form_penghuni();
+						clear_save_form_penghuni(0);
 						load_data_penghuni();
 					}
 				}
@@ -284,7 +286,7 @@ function fillField(kodeOrg,blokHeadher,normhHeadher)
         }	
 	
 }
-function fillFieldAsset(kodeOrg,blokHeadher,normhHeadher,asset)
+function fillFieldAsset(kodeOrg,blokHeadher,normhHeadher,asset,jmlbarang,keterangan)
 {
 	get_normh(blokHeadher,normhHeadher,kodeOrg);
 	document.getElementById('kode_org_asset').disabled=true;
@@ -294,7 +296,8 @@ function fillFieldAsset(kodeOrg,blokHeadher,normhHeadher,asset)
 	document.getElementById('blok_rmh_asset').value=blokHeadher;
 	//document.getElementById('no_rmh_asset').value=normhHeadher;
 	document.getElementById('kode_asset').value=asset;
-
+	document.getElementById('jmlbarang').value=jmlbarang;
+	document.getElementById('keterangan').value=keterangan;
 }
 
 function fillFieldPenghuni(kodeOrg,blokHeadher,normhHeadher,penghuni)
@@ -582,7 +585,7 @@ function get_normh_penghuni(blok_rmh,no_rmh,kode_org)
 }
 
 
-function clear_save_form()
+function clear_save_form(sts)
 {
 	document.getElementById('blok_rmh').value='';
 	document.getElementById('no_rmh').value='';
@@ -592,18 +595,28 @@ function clear_save_form()
 	document.getElementById('blok_rmh').disabled=false;
 	document.getElementById('no_rmh').disabled=false;
 	document.getElementById('kode_org').disabled=false;
-        document.getElementById('nm_kompleks').disabled=false;
+    document.getElementById('nm_kompleks').disabled=false;
+	if(sts==1){
+		document.getElementById('contain').innerHTML='';
+		document.getElementById('kode_org').value='';
+	}
 }
-function clear_save_form_asset()
+function clear_save_form_asset(sts)
 {
 	document.getElementById('blok_rmh_asset').value='';
 	document.getElementById('no_rmh_asset').value='';
 	document.getElementById('kode_asset').value='';
+	document.getElementById('jmlbarang').value=0;
+	document.getElementById('keterangan').value='';
 	document.getElementById('blok_rmh_asset').disabled=false;
 	document.getElementById('no_rmh_asset').disabled=false;
 	document.getElementById('kode_org_asset').disabled=false;
+	if(sts==1){
+		document.getElementById('containasset').innerHTML='';
+		document.getElementById('kode_org_asset').value='';
+	}
 }
-function clear_save_form_penghuni()
+function clear_save_form_penghuni(sts)
 {
 	document.getElementById('blok_rmh_penghuni').value='';
 	document.getElementById('no_rmh_penghuni').value='';
@@ -611,8 +624,12 @@ function clear_save_form_penghuni()
 	document.getElementById('blok_rmh_penghuni').disabled=false;
 	document.getElementById('no_rmh_penghuni').disabled=false;
 	document.getElementById('kode_org_penghuni').disabled=false;
+	if(sts==1){
+		document.getElementById('containpenghuni').innerHTML='';
+		document.getElementById('kode_org_penghuni').value='';
+	}
 }
-function delHeader(kode_org,blok_rmh,no_rmh)
+function delHeader2(kode_org,blok_rmh,no_rmh)
 {
 	kdorg=kode_org;
 	hblok=blok_rmh;

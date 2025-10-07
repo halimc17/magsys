@@ -248,6 +248,13 @@ function printPDF(ev) {
 }
 function getVol(){
 	kdTangki=document.getElementById('kodetangki');
+	kodeTangki=document.getElementById('kodetangki').value;
+	if (kodeTangki.substring(0,4)=='SLST'){
+		document.getElementById('kuantitas').removeAttribute('disabled');
+	}else{
+		document.getElementById('kuantitas').setAttribute('disabled','disabled');
+	}
+	
 	kdTangki=kdTangki.options[kdTangki.selectedIndex].value;
 	kdPabrik=document.getElementById('kodeorg');
 	kdPabrik=kdPabrik.options[kdPabrik.selectedIndex].value;
@@ -271,6 +278,4 @@ function getVol(){
             }
         }
     }
-    
-    
 }

@@ -177,7 +177,7 @@ while($bar=mysql_fetch_object($res))
         <td align=center>%</td>
             <td  align=center>".$_SESSION['lang']['ditanam']."</td>
             <td  align=center>".$_SESSION['lang']['sisip']."</td>
-            <td  align=center>".$_SESSION['lang']['dijual']."</td>
+            <td  align=center>".$_SESSION['lang']['keluar']."</td>
             <td  align=center>".$_SESSION['lang']['afiliasi']."</td>
         </tr>
     </thead><tbody id=containdata>";
@@ -194,14 +194,14 @@ while($bar=mysql_fetch_object($res))
 		setIt($datac[$rData['tanggal']]['TMB'],0);
 		setIt($datac[$rData['tanggal']]['Ditanam'],0);
 		setIt($datac[$rData['tanggal']]['disisip'],0);
-		setIt($datac[$rData['tanggal']]['dijual'],0);
+		setIt($datac[$rData['tanggal']]['keluar'],0);
 		setIt($datac[$rData['tanggal']]['afiliasi'],0);
 		setIt($datac[$rData['tanggal']]['lokasi'],'');
 		setIt($datac[$rData['tanggal']]['kodeorg'],'');
         $datac[$rData['tanggal']]['tanggal']=$rData['tanggal'];
 		if($rData['intex']==1) $datac[$rData['tanggal']]['Ditanam']+= $rData['jumlah'];
 		if($rData['intex']==2) $datac[$rData['tanggal']]['Disisip']+= $rData['jumlah'];
-		if($rData['intex']==3) $datac[$rData['tanggal']]['dijual']+= $rData['jumlah'];
+		if($rData['intex']==3) $datac[$rData['tanggal']]['keluar']+= $rData['jumlah'];
 		if($rData['intex']==4) $datac[$rData['tanggal']]['afiliasi']+= $rData['jumlah'];
         if($rData['kodetransaksi']=='TPB')
             $datac[$rData['tanggal']]['TPB']+=$rData['jumlah'];
@@ -231,7 +231,7 @@ while($bar=mysql_fetch_object($res))
             $tab.="<td>".number_format($persen,2)."</td>";
                 $tab.="<td align=right>".number_format(abs($data['Ditanam']))."</td>";
                 $tab.="<td align=right>".number_format(abs($data['Disisip']))."</td>";
-                $tab.="<td align=right>".number_format(abs($data['dijual']))."</td>";
+                $tab.="<td align=right>".number_format(abs($data['keluar']))."</td>";
                 $tab.="<td align=right>".number_format(abs($data['afiliasi']))."</td>";
             $tab.="<td align=right>".number_format($saldo)."</td>";
             $tab.="<td>".$data['lokasi']."</td>";

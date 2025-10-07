@@ -59,12 +59,19 @@ while($bar=mysql_fetch_object($res))
         $date2=date('Y-m-d');
         
         $diff = abs(strtotime($date2) - strtotime($date1)); 
-                
         $years = floor($diff / (365*60*60*24)); 
         $months = floor(($diff - $years * 365*60*60*24) / (30*60*60*24)); 
         $days = floor(($diff - $years * 365*60*60*24 - $months*30*60*60*24)/ (60*60*24)); 
-        
-        $lamaKerja=" ".$years." Tahun ".$months." Bulan ".$days." Hari ";
+
+	$tdate=strtotime($date2);
+	$dob=strtotime($date1);
+	$bllalu=date('Y-m-d',strtotime('-1 month',$dob));
+	$years=(date('Y',$tdate)-date('Y',$dob))-(date('m',$tdate)<date('m',$dob) || (date('m',$tdate)==date('m',$dob) && date('d',$tdate)<date('d',$dob)) ?1 :0);
+	//$months=(substr($date2,5,5)<substr($date1,5,5) ? 12 : 0)+(date('m',$tdate)-date('m',$dob))-(date('d',$tdate)<date('d',$dob) ? 1 : 0);
+	$months=(date('m',$tdate)<date('m',$dob) || (date('m',$tdate)==date('m',$dob) && date('d',$tdate)<date('d',$dob)) ? 12 : 0)+(date('m',$tdate)-date('m',$dob))-(date('d',$tdate)<date('d',$dob) ? 1 : 0);
+	$days=(date('d',$tdate)<date('d',$dob) ? date('t',strtotime($bllalu)) : 0)+date('d',$tdate)-date('d',$dob);
+		
+		$lamaKerja=" ".$years." Tahun ".$months." Bulan ".$days." Hari ";
         //printf("%d years, %d months, %d days\n", $years, $months, $days);
         
         //echo $years._.$months._.$days;
@@ -139,7 +146,7 @@ while($bar=mysql_fetch_object($res))
 					<td align=right>".$_SESSION['lang']['npwp']."</td><td align=left bgcolor=#EDEDED><b>".$bar->npwp."</b></td>
                  </tr>		 
                  <tr class=rowcontent>
-					<td align=right>".$_SESSION['lang']['bpjs']."</td><td align=left bgcolor=#EDEDED><b>".$bar->bpjs."</b></td>
+					<td align=right>".$_SESSION['lang']['bpjs'].' '.$_SESSION['lang']['kesehatan']."</td><td align=left bgcolor=#EDEDED><b>".$bar->bpjs."</b></td>
 					<td align=right>".$_SESSION['lang']['lokasipenerimaan']."</td><td align=left bgcolor=#EDEDED><b>".$bar->lokasipenerimaan."</b></td>
                  </tr>	
                  <tr class=rowcontent>

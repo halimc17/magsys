@@ -64,7 +64,7 @@ if($cerk>12){
         if($sistemGaji=='Bulanan')$wherez=" and sistemgaji = 'Bulanan'";        
         if($sistemGaji=='Harian')$wherez=" and sistemgaji = 'Harian'";        
 
-$sGetKary="select a.karyawanid,b.namajabatan,a.namakaryawan,c.nama,d.tipe from ".$dbname.".datakaryawan a 
+$sGetKary="select a.karyawanid,b.namajabatan,a.namakaryawan,c.nama,d.tipe,a.nik from ".$dbname.".datakaryawan a 
            left join ".$dbname.".sdm_5jabatan b on a.kodejabatan=b.kodejabatan
            left join ".$dbname.".sdm_5departemen c on a.bagian=c.kode
            left join ".$dbname.".sdm_5tipekaryawan d on a.tipekaryawan=d.id
@@ -78,6 +78,7 @@ foreach($rGetkary as $row => $kar)
     $nmJabatan[$kar['karyawanid']]=$kar['namajabatan'];
     $nmBagian[$kar['karyawanid']]=$kar['nama'];
     $nmTipe[$kar['karyawanid']]=$kar['tipe'];
+   $nikkar[$kar['karyawanid']]=$kar['nik'];
 }  
 $bln1=explode("-",$tgl1);
 $bln2=explode("-",$tgl2);
@@ -127,7 +128,7 @@ $bln2=explode("-",$tgl2);
                         $sPrestasi="select left(c.tanggal,7) as periode,a.jumlahhk,a.nik from ".$dbname.".kebun_prestasi a 
                                     left join ".$dbname.".kebun_aktifitas c on a.notransaksi=c.notransaksi 
                                     left join ".$dbname.".datakaryawan b on a.nik=b.karyawanid
-                                    where c.notransaksi like '%PNN%' and a.nik!=''   ".$whrd."
+                                    where (c.notransaksi like '%PNN%' or c.notransaksi like '%/BM/%') and a.nik!=''   ".$whrd."
                                     and substr(c.kodeorg,1,4)='".$kdOrg."' and substr(c.tanggal,1,7) between '".$tgl1."' and '".$tgl2."'";
                        // exit("Error".$sPrestasi);
                         $rPrestasi=fetchData($sPrestasi);
@@ -193,6 +194,7 @@ if($proses=='excel'){
         <thead class=rowheader>
         <tr ".$bgc.">
         <td rowspan=2>No</td>
+        <td rowspan=2>".$_SESSION['lang']['nik']."</td>
         <td rowspan=2>".$_SESSION['lang']['nama']."</td>
         <td rowspan=2>".$_SESSION['lang']['tipekaryawan']."</td>
         <td rowspan=2>".$_SESSION['lang']['bagian']."</td>
@@ -216,6 +218,7 @@ if($proses=='excel'){
            if($hslAkhir[0]!=''){
                 $not++;
                 $tab.="<tr class=rowcontent><td>".$not."</td>
+                <td>".$nikkar[$hslAkhir[0]]."</td>
                 <td>".$namakar[$hslAkhir[0]]."</td>
                 <td>".$nmTipe[$hslAkhir[0]]."</td>
                 <td>".$nmBagian[$hslAkhir[0]]."</td>

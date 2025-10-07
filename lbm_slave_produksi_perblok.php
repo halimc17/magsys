@@ -118,12 +118,14 @@ while($rJjg=  mysql_fetch_assoc($qJjg))
 //echo "</pre>";
 //exit;
 
-$sLuas="select distinct luasareaproduktif,jumlahpokok,kodeorg from ".$dbname.".kebun_interval_panen_vw where
-        kodeorg like '".$unit."%' and left(tanggal,7) between '".$tahun."-01' and '".$periode."' order by kodeorg asc";
+$sLuas="select a.*,d.namaorganisasi from (select distinct luasareaproduktif,jumlahpokok,kodeorg from ".$dbname.".kebun_interval_panen_vw where
+        kodeorg like '".$unit."%' and left(tanggal,7) between '".$tahun."-01' and '".$periode."' order by kodeorg asc) a
+		left join ".$dbname.".organisasi d on a.kodeorg=d.kodeorganisasi";
 if($afdId!='')
 {
-    $sLuas="select distinct luasareaproduktif,jumlahpokok,kodeorg from ".$dbname.".kebun_interval_panen_vw where
-        kodeorg like '".$afdId."%' and left(tanggal,7) between '".$tahun."-01' and '".$periode."' order by kodeorg asc";
+    $sLuas="select a.*,d.namaorganisasi from (select distinct luasareaproduktif,jumlahpokok,kodeorg from ".$dbname.".kebun_interval_panen_vw where
+        kodeorg like '".$afdId."%' and left(tanggal,7) between '".$tahun."-01' and '".$periode."' order by kodeorg asc) a
+		left join ".$dbname.".organisasi d on a.kodeorg=d.kodeorganisasi";
 }
 $qLuas=mysql_query($sLuas) or die(mysql_error($conn));
 while($rLuas=mysql_fetch_assoc($qLuas))
@@ -131,6 +133,7 @@ while($rLuas=mysql_fetch_assoc($qLuas))
     $dtLuas[$rLuas['kodeorg']]=$rLuas['luasareaproduktif'];
     $dtPkk[$rLuas['kodeorg']]=$rLuas['jumlahpokok'];
     $dtKdOrg[$rLuas['kodeorg']]=$rLuas['kodeorg'];
+    $dtNmOrg[$rLuas['kodeorg']]=$rLuas['namaorganisasi'];
 }
 $sProdBgt="select distinct sum".$addstr2." as kgbgt,kgsetahun,kodeblok from ".$dbname.".bgt_produksi_kbn_kg_vw
            where tahunbudget='".$tahun."' and kodeblok like '".$unit."%' group by kodeblok order by kodeblok asc";
@@ -165,17 +168,54 @@ while($rJjg=  mysql_fetch_assoc($qJjg))
 //$bjrSen[$lsBlok]
 #bjr sensus#
 $strbjr="select kodeorg,bjr,tahunproduksi from ".$dbname.".kebun_5bjr
-    where tahunproduksi = '".$tahun."' and kodeorg like '".$unit."%'  order by kodeorg asc";
-if($afdId!='')
-{
-    $strbjr="select kodeorg,bjr,tahunproduksi from ".$dbname.".kebun_5bjr
-        where tahunproduksi = '".$tahun."' and kodeorg like '".$afdId."%'  order by kodeorg asc";
+		where tahunproduksi = '".$tahun."' and kodeorg like '".$unit."%'  order by kodeorg asc";
+if($afdId!=''){
+	$strbjr="select kodeorg,bjr,tahunproduksi from ".$dbname.".kebun_5bjr
+			where tahunproduksi = '".$tahun."' and kodeorg like '".$afdId."%'  order by kodeorg asc";
 }
 $query=mysql_query($strbjr) or die(mysql_error($conn));
-while($res=mysql_fetch_assoc($query))
-{
-    $bjrSen[$res['kodeorg']]=$res['bjr'];
-}   
+while($res=mysql_fetch_assoc($query)){
+	$bjrSen[$res['kodeorg']]=$res['bjr'];
+}
+#bjr sensus#
+if(substr($periode,5,2)=='01'){
+	$bllalu=12;
+	$thlalu=substr($periode,0,4)-1;
+	$periodelalu=sprintf("%04d",substr($periode,0,4)-1).'-12';
+}else{
+	$bllalu=substr($periode,5,2)-1;
+	$thlalu=substr($periode,0,4);
+	$periodelalu=sprintf("%04d",substr($periode,0,4)).'-'.sprintf("%02d",substr($periode,5,2)-1);
+}
+$wherebjr="";
+if($afdId!=''){
+	$wherebjr=" and a.kodeorg like '".$afdId."%'";
+}
+/*
+$strbjr="select a.kodeorg,sum(b.kgwb)/sum(b.jjg) as bjrlalu from ".$dbname.".setup_blok a 
+		LEFT JOIN ".$dbname.".kebun_spb_vw b on b.blok=a.kodeorg
+		where a.statusblok='TM' and a.kodeorg like '".$unit."%' ".$wherebjr." and b.tanggal like '".$periodelalu."%' 
+		GROUP BY a.kodeorg
+		ORDER BY a.kodeorg";
+*/
+$sblok="select a.kodeorg from ".$dbname.".setup_blok a where a.statusblok='TM' and a.kodeorg like '".$unit."%' ".$wherebjr." ORDER BY a.kodeorg";
+$qblok=mysql_query($sblok) or die(mysql_error($conn));
+while($rblok=mysql_fetch_assoc($qblok)){
+	for ($i=$bllalu; $i>0; $i--) {
+		$periodelalu=sprintf("%04d",$thlalu).'-'.sprintf("%02d",$i);
+		$sbjr="select blok,sum(kgwb)/sum(jjg) as bjrlalu from ".$dbname.".kebun_spb_vw
+				where blok='".$rblok['kodeorg']."' and tanggal like '".$periodelalu."%' 
+				GROUP BY blok";
+		$qbjr=mysql_query($sbjr) or die(mysql_error($conn));
+		$numbjr=mysql_num_rows($qbjr);
+		if($numbjr>0){
+			while($rbjr=mysql_fetch_assoc($qbjr)){
+				$bjrSen[$rbjr['blok']]=$rbjr['bjrlalu'];
+			}
+			break;
+		}
+	}
+}
 
 #rotasi#
 // data panen sd bulan ini
@@ -309,7 +349,7 @@ if($preview=='excel')
         $aerd=substr($lsBlok,0,6);
         $tab.="<tr class=rowcontent>";
         $tab.="<td>".$aerd."</td>";
-        $tab.="<td>".$lsBlok."</td>";
+        $tab.="<td>".$dtNmOrg[$lsBlok]."</td>";
         $tab.="<td align=right>".$optThn[$lsBlok]."</td>";
         $tab.="<td align=right>".number_format($dtLuas[$lsBlok],2)."</td>";
         $tab.="<td align=right>".number_format($dtPkk[$lsBlok],0)."</td>";

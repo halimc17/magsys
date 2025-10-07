@@ -34,9 +34,9 @@ switch($proses) {
         $res=mysql_query($str);
         $datr=mysql_fetch_assoc($res);
         #=        
-        $str1="select * from ".$dbname.".sdm_absensidt a
+        $str1="select a.* from ".$dbname.".sdm_absensidt a
 			LEFT JOIN ".$dbname.".datakaryawan b ON a.karyawanid = b.karyawanid
-			where a.tanggal=".$tanggal." and b.tipekaryawan = 4
+			where a.tanggal=".$tanggal." and b.tipekaryawan = 4 and fingerprint<>1
             and a.karyawanid=".$param['nik'];
         $res1=mysql_query($str1);
 		
@@ -58,7 +58,7 @@ switch($proses) {
         }
         else
         {#jika belum ada maka aman
-            $cols = array('nourut','nik','absensi','jhk','umr','insentif','notransaksi');
+            $cols = array('nourut','nik','absensi','jhk','umr','insentif','denda','notransaksi');
             $data = $param;
             $data['nourut'] = $maxNoUrut;
             unset($data['numRow']);
@@ -81,21 +81,53 @@ switch($proses) {
     case 'edit':
 		cekHK();
 		
-		$data = $param;
-		unset($data['notransaksi']);
-		unset($data['nourut']);
-		foreach($data as $key=>$cont) {
-			if(substr($key,0,5)=='cond_') {
-			unset($data[$key]);
+		#==============periksa apakah sudah ada kehadiran pada hari yang sama
+        $tanggal=substr($param['notransaksi'],0,8);
+        $str="select sum(jhk) as jum from ".$dbname.".kebun_kehadiran_vw where tanggal=".$tanggal."
+              and karyawanid='".$param['nik']."'and notransaksi<>'".$param['notransaksi']."' group by karyawanid";
+        $res=mysql_query($str);
+        $datr=mysql_fetch_assoc($res);
+        #=        
+        $str1="select a.* from ".$dbname.".sdm_absensidt a
+			LEFT JOIN ".$dbname.".datakaryawan b ON a.karyawanid = b.karyawanid
+			where a.tanggal=".$tanggal." and b.tipekaryawan = 4 and fingerprint<>1
+            and a.karyawanid=".$param['nik'];
+        $res1=mysql_query($str1);
+		
+        if(($datr['jum']+$param['jhk'])>1)
+        {
+            $not='';
+            $str="select * from ".$dbname.".kebun_kehadiran_vw where tanggal=".$tanggal."
+                  and karyawanid='".$param['nik']."'";
+            $res=mysql_query($str);
+            while($bar=mysql_fetch_object($res))
+            {
+                $not.="\n".$bar->notransaksi;
+            }
+            exit("Error: Karyawan tersebut sudah memiliki absen lebih dari satu HK (".$not.")__".$datr['jum']);
+        }
+        if(mysql_num_rows($res1)>0)#cek dari sdm_absensi
+        {
+            exit("Error: Karyawan tersebut sudah memiliki absen pada daftar absen untuk hari yang sama");
+        }
+        else
+        {#jika belum ada maka aman
+			$data = $param;
+			unset($data['notransaksi']);
+			unset($data['nourut']);
+			foreach($data as $key=>$cont) {
+				if(substr($key,0,5)=='cond_') {
+					unset($data[$key]);
+				}
 			}
+			$where = "notransaksi='".$param['notransaksi']."' and nourut='".$param['cond_nourut']."'";
+			$query = updateQuery($dbname,'kebun_kehadiran',$data,$where);
+			if(!mysql_query($query)) {
+				echo "DB Error : ".mysql_error();
+				exit;
+			}
+			echo json_encode($param);
 		}
-		$where = "notransaksi='".$param['notransaksi']."' and nourut='".$param['cond_nourut']."'";
-		$query = updateQuery($dbname,'kebun_kehadiran',$data,$where);
-		if(!mysql_query($query)) {
-			echo "DB Error : ".mysql_error();
-			exit;
-		}
-		echo json_encode($param);
 		break;
     case 'delete':
 		$where = "notransaksi='".$param['notransaksi']."' and nourut='".$param['nourut']."'";

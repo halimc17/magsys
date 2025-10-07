@@ -55,7 +55,7 @@ switch($method)
 		<tbody>";
 		
 		
-		$limit=10;
+		$limit=100;
 		$page=0;
 		if(isset($_POST['page']))
 		{

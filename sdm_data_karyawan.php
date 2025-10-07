@@ -82,7 +82,7 @@ else if(trim($_SESSION['org']['induk']!=''))//user unit hanya dapat menempatkan 
     }
         $optsubbagian="<option value='0'></option>";
 		$optAll="";
-        $stdy="select namaorganisasi,kodeorganisasi from ".$dbname.".organisasi where tipe in('AFDELING','TRAKSI','GUDANG','WORKSHOP','BIBITAN','STATION','SIPIL','MAINTENANCE') and kodeorganisasi like '".$_SESSION['empl']['lokasitugas']."%'";
+        $stdy="select namaorganisasi,kodeorganisasi from ".$dbname.".organisasi where tipe in('AFDELING','TRAKSI','GUDANG','WORKSHOP','BIBITAN','STATION','SIPIL','MAINTENANCE','SECURITY','MESS','') and kodeorganisasi like '".$_SESSION['empl']['lokasitugas']."%'";
         $redy=mysql_query($stdy);
         while($bardy=mysql_fetch_object($redy))
         {
@@ -527,49 +527,55 @@ foreach($rJnsTraining as $val)
 	$optJnsTraining.="<option value='".$val['kodetraining']."'>".$val['jenistraining']."</option>";
 } 	
 $frm[3]="<fieldset><legend>".$_SESSION['lang']['traininginternal']."</legend>
-         <table border=0 cellspacing=1>
-                 <tr>
-                    <td align=right>".$_SESSION['lang']['jeniskursus']."</td><td><select id=jenistraining style='width:170px;'>".$optJnsTraining."</select></td>
-                    <td align=right>".$_SESSION['lang']['legend']."</td><td><input type=text class=myinputtext id=judultraining size=30 maxlength=45 onkeypress=\"return tanpa_kutip(event);\"><img src=images/obl.png title='Obligatory'></td>
-                    <td align=right>".$_SESSION['lang']['biaya']."</td><td>Rp.<input type=text class=myinputtextnumber id=biaya value=0 size=12 maxlength=15 onkeypress=\"return angka_doang(event);\"></td>
-                 </tr>
-                 <tr>
-                    <td align=right>".$_SESSION['lang']['tanggalmulai']."</td><td><input type=text class=myinputtext id=tanggalmulai size=30 onmousemove=setCalendar(this.id) size=10 maxlength=10 onkeypress=\"return false;\"></td>
-                    <td align=right>".$_SESSION['lang']['tanggalselesai']."</td><td><input type=text class=myinputtext id=tanggalselesai size=30 onmousemove=setCalendar(this.id) size=10 maxlength=10 onkeypress=\"return false;\"></td>
-                    <td></td><td></td>
-                 </tr>
-                 <tr>
-                        <td align=right>".$_SESSION['lang']['penyelenggara']."</td><td><input type=text class=myinputtext id=penyelenggara size=30 maxlength=45 onkeypress=\"return tanpa_kutip(event);\"><img src=images/obl.png title='Obligatory'></td>
-                        <td align=right>".$_SESSION['lang']['sertifikat']."</td><td><select id=sertifikat style='width:170px;'><option value=0>".$_SESSION['lang']['no']."</option><option value=1>".$_SESSION['lang']['yes']."</option></select></td>	 
-                        <td></td><td></td>
-                 </tr> 
-                 </table>
-                 </fieldset>
-                 <button id=btntraining disabled class=mybutton onclick=simpanTraining()>".$_SESSION['lang']['save']."</button>
-                <br>
-                <br>
-                <div style='width:100%;height:250px;overflow:scroll;'>
-                <table class=sortable border=0 cellspacing=1 width=100%>
-                        <thead>
-                        <tr class=rowheader>
-                          <td>No.</td>
-                          <td>".$_SESSION['lang']['jeniskursus']."</td>			  
-                          <td>".$_SESSION['lang']['legend']."</td>
-                          <td>".$_SESSION['lang']['penyelenggara']."</td>			  
-                          <td>".$_SESSION['lang']['tanggalmulai']."</td>			  
-                          <td>".$_SESSION['lang']['tanggalselesai']."</td>
-                          <td>".$_SESSION['lang']['sertifikat']."</td>
-                          <td>".$_SESSION['lang']['biaya']."</td>    
-                          <td style='text-align:center;'>".$_SESSION['lang']['action']."</td>
-                        </tr>
-                        </thead>
-                        <tbody id=containertraining>
-                        </tbody>
-                        <tfoot>
-                        </tfoot>
-                </table>
-                </div>		
-                ";
+			<table border=0 cellspacing=1>
+				<tr>
+					<td align=right>".$_SESSION['lang']['jeniskursus']."</td><td><select id=jenistraining style='width:210px;'>".$optJnsTraining."</select></td>
+					<td align=right>".$_SESSION['lang']['legend']."</td><td><input type=text class=myinputtext id=judultraining size=32 maxlength=45 onkeypress=\"return tanpa_kutip(event);\"><img src=images/obl.png title='Obligatory'></td>
+					<td align=right>".$_SESSION['lang']['biaya'].' Rp. '."</td><td><input type=text class=myinputtextnumber id=biaya value=0 size=12 maxlength=15 onkeypress=\"return angka_doang(event);\"></td>
+				</tr>
+				<tr>
+					<td align=right>".$_SESSION['lang']['penyelenggara']."</td>
+					<td><input type=text class=myinputtext id=penyelenggara size=32 maxlength=45 onkeypress=\"return tanpa_kutip(event);\"><img src=images/obl.png title='Obligatory'></td>
+					<td align=right>".$_SESSION['lang']['tanggalmulai']."</td><td><input type=text class=myinputtext id=tanggalmulai size=32 onmousemove=setCalendar(this.id) size=10 maxlength=10 onkeypress=\"return false;\"></td>
+					<td align=right>".$_SESSION['lang']['tanggalselesai']."</td><td><input type=text class=myinputtext id=tanggalselesai size=12 onmousemove=setCalendar(this.id) size=10 maxlength=10 onkeypress=\"return false;\"></td>
+				</tr>
+				<tr>
+					<td align=right>".$_SESSION['lang']['sertifikat']."</td><td>
+						<select id=sertifikat name=sertifikat style='width:210px;' onchange='getBerlaku()'>
+							<option value=0>".($_SESSION['language']=='EN'?'No Certificate':'Tidak Ada Sertifikat')."</option>
+							<option value=1>".($_SESSION['language']=='EN'?'Attendance Certificate':'Sertifikat Kehadiran')."</option>
+							<option value=2>".($_SESSION['language']=='EN'?'Competency Certificate':'Sertifikat Kompetensi')."</option>
+						</select>
+					</td>
+					<td align=right>".$_SESSION['lang']['tglberlaku']."</td><td><input type=text class=myinputtext id=berlakudari size=32 disabled  onmousemove=setCalendar(this.id) size=10 maxlength=10 onkeypress=\"return false;\"></td>
+					<td align=right>".$_SESSION['lang']['sampai']."</td><td><input type=text class=myinputtext id=berlakusampai size=12 disabled  onmousemove=setCalendar(this.id) size=10 maxlength=10 onkeypress=\"return false;\"></td>
+				</tr> 
+			</table>
+		</fieldset>
+		<button id=btntraining disabled class=mybutton onclick=simpanTraining()>".$_SESSION['lang']['save']."</button>
+		<br>
+		<br>
+		<div style='width:100%;height:250px;overflow:scroll;'>
+			<table class=sortable border=0 cellspacing=1 width=100%>
+				<thead>
+					<tr class=rowheader>
+						<td>No.</td>
+						<td>".$_SESSION['lang']['jeniskursus']."</td>			  
+						<td>".$_SESSION['lang']['legend']."</td>
+						<td>".$_SESSION['lang']['penyelenggara']."</td>			  
+						<td>".$_SESSION['lang']['tanggalmulai']."</td>			  
+						<td>".$_SESSION['lang']['tanggalselesai']."</td>
+						<td>".$_SESSION['lang']['sertifikat']."</td>
+						<td>".$_SESSION['lang']['biaya']."</td>    
+						<td style='text-align:center;'>".$_SESSION['lang']['action']."</td>
+						<td style='text-align:center;'>Scan</td>
+					</tr>
+				</thead>
+				<tbody id=containertraining></tbody>
+				<tfoot></tfoot>
+			</table>
+		</div>		
+		";
 //Tab Keluarga================================ 
 //get enum untuk hub keluarga
 $opthubk='';

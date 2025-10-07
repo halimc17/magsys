@@ -757,6 +757,240 @@ function simpanData($x,$jenisdata){
        
       break;
         #  ====================================================END PO=====================================
+		
+	
+	#==================================================== START DATA KARYAWAN =============================
+	
+	case 'DATAKARYAWAN':
+		
+		$data = $x;
+		
+		//validai kosong
+		if(empty($data)){
+			exit("Isi file kosong");
+		} else {
+			//echo "Upload data karyawan_";
+			
+			if(isset($_POST['jenisdata'])){
+				//echo "data disimpan";
+				$filename=$_FILES["filex"]["name"]; 
+				
+				//==================================================================================
+				//echo $filename;
+				// $row = 1;
+				// if (($handle = fopen("tempExcel/220703.csv", "r")) !== FALSE) {
+					// while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+						// $num = count($data);
+						// echo "<p> $num fields in line $row: <br /></p>\n";
+						// $row++;
+						// for ($c=0; $c < $num; $c++) {
+							// echo $data[$c] . "<br />\n";
+						// }
+					// }
+					// fclose($handle);
+				// }
+				
+				//==================================================================================
+				
+				// $File = 'tempExcel/'.date('ymd').'.csv';
+
+				// $arrResult  = array();
+				// $handle     = fopen($File, "r");
+				// if(empty($handle) === false) {
+					// while(($data = fgetcsv($handle, 1000, ",")) !== FALSE){
+						// $arrResult[] = $data;
+					// }
+					// fclose($handle);
+				// }
+				// print_r($arrResult);
+				
+				//==================================================================================
+				
+				$csv = array_map('str_getcsv', file('tempExcel/'.date('ymd').'.csv'));
+				//print_r($csv[2]);
+				$length = count($csv)-1;
+				
+				for($a=1;$a<=$length;$a++){
+					
+					$data = implode($csv[$a]);
+					$key = explode(";", $data);
+					
+					$nik = $key[0];
+					$namakaryawan = $key[1];
+					$tempatlahir = $key[2];
+					$tanggallahir = $key[3];
+					$warganegara = $key[4];
+					$jeniskelamin = $key[5];
+					$statusperkawinan = $key[6];
+					$tanggalmenikah = $key[7];
+					$agama = $key[8];
+					$golongandarah = $key[9];
+					$levelpendidikan = $key[10];
+					$alamataktif = $key[11];
+					$provinsi = $key[12];
+					$kota = $key[13];
+					$kodepos = $key[14];
+					$noteleponrumah = $key[15];
+					$nohp = $key[16];
+					$norekeningbank = $key[17];
+					$namabank = $key[18];
+					$sistemgaji = $key[19];
+					$nopaspor = $key[20];
+					$no_keluarga = $key[21];
+					$noktp = $key[22];
+					$notelepondarurat = $key[23];
+					$tanggalmasuk = $key[24];
+					$tanggalpengangkatan = $key[25];
+					$tanggalkeluar = $key[26];
+					$tipekaryawan = $key[27];
+					$jumlahanak = $key[28];
+					$jumlahtanggungan = $key[29];
+					$statuspajak = $key[30];
+					$npwp = $key[31];
+					$bpjs = $key[32];
+					$lokasipenerimaan = $key[33];
+					$kodeorganisasi = $key[34];
+					$bagian = $key[35];
+					$kodejabatan = $key[36];
+					$kodegolongan = $key[37];
+					$lokasitugas = $key[38];
+					$photo = $key[39];
+					$email = $key[40];
+					$alokasi = $key[41];
+					$subbagian= $key[42];
+					$jms = $key[43];
+					$kodecatu = $key[44];
+					$statpremi = $key[45];
+					$statusakad = $key[46];
+					
+					$query = "insert into ".$dbname.".datakaryawan (nik,
+													namakaryawan,
+													tempatlahir,
+													tanggallahir,
+													warganegara,
+													jeniskelamin,
+													statusperkawinan,
+													tanggalmenikah,
+													agama,
+													golongandarah,
+													levelpendidikan,
+													alamataktif,
+													provinsi,
+													kota,
+													kodepos,
+													noteleponrumah,
+													nohp,
+													norekeningbank,
+													namabank,
+													sistemgaji,
+													nopaspor,
+													no_keluarga,
+													noktp,
+													notelepondarurat,
+													tanggalmasuk,
+													tanggalpengangkatan,
+													tanggalkeluar,
+													tipekaryawan,
+													jumlahanak,
+													jumlahtanggungan,
+													statuspajak,
+													npwp,
+													bpjs,
+													lokasipenerimaan,
+													kodeorganisasi,
+													bagian,
+													kodejabatan,
+													kodegolongan,
+													lokasitugas,
+													photo,
+													email,
+													alokasi,
+													subbagian,
+													jms,
+													kodecatu,
+													statpremi,
+													statusakad
+													) values ('".$nik."',
+															  '".$namakaryawan."',
+															  '".$tempatlahir."',
+																'".$tanggallahir."',
+																'".$warganegara."',
+																'".$jeniskelamin."',
+																'".$statusperkawinan."',
+																'".$tanggalmenikah."',
+																'".$agama."',
+																'".$golongandarah."',
+																".$levelpendidikan.",
+																'".$alamataktif."',
+																'".$provinsi."',
+																'".$kota."',
+																'".$kodepos."',
+																'".$noteleponrumah."',
+																'".$nohp."',
+																'".$norekeningbank."',
+																'".$namabank."',
+																'".$sistemgaji."',
+																'".$nopaspor."',
+																'".$no_keluarga."',
+																'".$noktp."',
+																'".$notelepondarurat."',
+																'".$tanggalmasuk."',
+																'".$tanggalpengangkatan."',
+																'".$tanggalkeluar."',
+																".$tipekaryawan.",
+																".$jumlahanak.",
+																".$jumlahtanggungan.",
+																'".$statuspajak."',
+																'".$npwp."',
+																'".$bpjs."',
+																'".$lokasipenerimaan."',
+																'".$kodeorganisasi."',
+																'".$bagian."',
+																'".$kodejabatan."',
+																'".$kodegolongan."',
+																'".$lokasitugas."',
+																'".$photo."',
+																'".$email."',
+																'".$alokasi."',
+																'".$subbagian."',
+																'".$jms."',
+																'".$kodecatu."',
+																".$statpremi.",
+																".$statusakad.")";
+					
+					if(mysql_query($query)){
+					   echo "Uploaded";
+				   }
+				   else{
+					   echo mysql_error($conn).$query."<br /><br />";
+				   }
+					//echo $query;
+					//echo "<br /><br /><br />";	
+				}
+				//echo "Data berhasil diupload";
+				
+				
+				//==================================================================================
+				
+				
+							
+				
+				
+				
+				
+				
+			}
+		}
+		
+		
+		
+	
+	break;
+	
+	#==================================================== END DATA KARYAWAN ===============================
+		
+		
+		
     #====================================================START ABSENSI================================================ 
     case 'ABSENSI': 
 		$data = $x;
@@ -824,9 +1058,12 @@ function simpanData($x,$jenisdata){
 							  "karyawanid in ('".implode("','",$dataKaryId)."')");
 		
 		// Cek Periode Aktif
-		$scek="select distinct kodeorg,periode from ".$dbname.".setup_periodeakuntansi where
+		//$scek="select distinct kodeorg,periode from ".$dbname.".setup_periodeakuntansi where
+		//	kodeorg in ('".implode("','",$listLokasi)."') and
+		//	tutupbuku=0 order by periode asc";
+		$scek="select distinct kodeorg,periode from ".$dbname.".sdm_5periodegaji where
 			kodeorg in ('".implode("','",$listLokasi)."') and
-			tutupbuku=0 order by periode asc";
+			sudahproses=0 order by periode asc";
 		$resCek = fetchData($scek);
 		
 		// Cek Periode tidak sama
@@ -935,7 +1172,7 @@ function simpanData($x,$jenisdata){
 						}
 					}
 				}
-				
+				/*
 				$cekAbs = false;
 				if($optTipe[ $dataKaryId[trim($row[1])] ] == 4) { // Jika PHL, cek BKM
 					// Cek BKM Rawat
@@ -944,6 +1181,7 @@ function simpanData($x,$jenisdata){
 										  tanggal = '".trim($row[0])."'");
 					$resRawat = fetchData($qRawat);
 					if(!empty($resRawat)) {
+						exit("Warning : ada di Rawat, karyawanid = ".$dataKaryId[trim($row[1])]);
 						$cekAbs = true;
 						break;
 					}
@@ -954,11 +1192,12 @@ function simpanData($x,$jenisdata){
 										  tanggal = '".trim($row[0])."'");
 					$resPnn = fetchData($qPnn);
 					if(!empty($resPnn)) {
+						exit("Warning : ada di Panen, karyawanid = ".$dataKaryId[trim($row[1])]);
 						$cekAbs = true;
 						break;
 					}
 				}
-				
+				*/
 				// Pool Detail
 				if(!$cekAbs) { // Jika Belum ada di BKM
 					$org = (isset($dataSubbagian[$row[1]]))? $dataSubbagian[$row[1]]: $dataLokasi[$row[1]];

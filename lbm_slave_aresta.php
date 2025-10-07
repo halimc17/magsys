@@ -63,8 +63,8 @@ while($res=mysql_fetch_assoc($query))
 $qwery="SELECT luasareaproduktif,jumlahpokok,statusblok,substr(kodeorg,1,6) as kodeorg,tahuntanam,
         cadangan, okupasi, rendahan, sungai, rumah, kantor, pabrik, jalan, kolam, umum, lc
     FROM ".$dbname.".setup_blok 
-    WHERE kodeorg like '".$unit."%'  and kodeorg like '".$afdId."%'";
-//print_r($qwery);	
+    WHERE kodeorg in (select kodeorganisasi from ".$dbname.".organisasi where detail='1' and kodeorganisasi like '".$unit."%'  and kodeorganisasi like '".$afdId."%')";
+//exit("Warning: ".$qwery."   ".$unit."   ".$afdId);	
 //print_r('<br/><br/>');	
 $query=mysql_query($qwery) or die(mysql_error($conn));
 while($res=mysql_fetch_assoc($query))
@@ -74,7 +74,7 @@ while($res=mysql_fetch_assoc($query))
         $luastm[$res['kodeorg']][$res['tahuntanam']]+=$res['luasareaproduktif'];
         $pokoktm[$res['kodeorg']][$res['tahuntanam']]+=$res['jumlahpokok'];
     }    
-    if($res['statusblok']=='TBM'){
+    if(substr($res['statusblok'],0,3)=='TBM'){
         $tttbm[$res['tahuntanam']]=$res['tahuntanam'];
         $luastbm[$res['kodeorg']][$res['tahuntanam']]+=$res['luasareaproduktif'];
         $pokoktbm[$res['kodeorg']][$res['tahuntanam']]+=$res['jumlahpokok'];

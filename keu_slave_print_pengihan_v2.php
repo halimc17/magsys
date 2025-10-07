@@ -11,6 +11,9 @@ $table = $_GET['table'];
 $column = $_GET['column'];
 $where = $_GET['cond'];
 $tglInv = "";
+
+
+	
 $optnmcust=makeOption($dbname, 'pmn_4customer', 'kodecustomer,namacustomer');
 $optnmakun=makeOption($dbname, 'keu_5akun', 'noakun,namaakun');
 
@@ -65,27 +68,28 @@ class PDF extends FPDF {
 		//$qBrg=mysql_query($sBrg) or die(mysql_error());
 		//$rBrg=mysql_fetch_assoc($qBrg);
 		
-                if($pt=='CKS')
-                {
-                    $path='images/logo_cks.jpg';  
-                }
-                else if($pt=='MHS')
-                {
-                    $path='images/logo_mhs.jpg';     
-                }
-                else if($pt=='SMA')
-                {
-                    $path='images/logo_sma.jpg';     
-                }
-				else if($pt=='MEA')
-                {
-                    $path='images/logo_mea.jpg';     
-                }
-                else
-                {
-                    $path='images/logo.jpg';  
-                }
-		
+				if($pt=='AMP'){
+					$path='images/logo_amp.jpg';
+				}else if($pt=='CKS'){
+					$path='images/logo_cks.jpg';
+				}else if($pt=='KAA'){
+					$path='images/logo_kaa.jpg';
+				}else if($pt=='KAL'){
+					$path='images/logo_kal.jpg';
+				}else if($pt=='LKA'){
+					$path='images/logo_lka.jpg';
+				}else if($pt=='MPA'){
+					$path='images/logo_mpa.jpg';
+				}else if($pt=='MHS'){
+					$path='images/logo_mhs.jpg';
+				}else if($pt=='MEA'){
+					$path='images/logo_mea.jpg';
+				}else if($pt=='SMA'){
+					$path='images/logo_sma.jpg';
+				}else{
+					$path='images/logo.jpg';
+				}
+
                 $this->Image($path,15,5,20);
                 
                 $path2='images/Quality_ISO_9001.jpg';
@@ -216,7 +220,12 @@ if($dKontrak['ppn']==0)
 }
 else
 { 
-    $dKontrak['hargasatuan']=$dKontrak['hargasatuan']/1.1;
+//	if($dKontrak['tanggalkontrak']<='2022-03-31'){
+	if($tglInv<='2022-03-31'){
+	    $dKontrak['hargasatuan']=$dKontrak['hargasatuan']/1.10;
+	}else{
+	    $dKontrak['hargasatuan']=$dKontrak['hargasatuan']/1.11;
+	}
 }
 
 
@@ -226,11 +235,21 @@ if($dCust['statusberikat']==0)
 {
     
     $rpPpn=$bar->nilaippn;
-    $isiPpn="     PPN 10%";
+//	if($dKontrak['tanggalkontrak']<='2022-03-31'){
+	if($tglInv<='2022-03-31'){
+	    $isiPpn="     PPN 10%";
+	}else{
+	    $isiPpn="     PPN 11%";
+	}
 }
 else
 {
-    $isiPpn="     PPN 10%";
+//	if($dKontrak['tanggalkontrak']<='2022-03-31'){
+	if($tglInv<='2022-03-31'){
+	    $isiPpn="     PPN 10%";
+	}else{
+	    $isiPpn="     PPN 11%";
+	}
     $rpPpn="0";
     $isiBerikat="     ".$dCust['keteranganberikat'];
 }
@@ -312,7 +331,8 @@ $pdf->Cell(10,$height,'',R,1,'R');
 
 
 $pdf->Cell(15,$height,'',RL,0,'C'); 
-$pdf->Cell(125,$height,$isiBerikat,RL,0,'L'); 
+//$pdf->Cell(125,$height,$isiBerikat,RL,0,'L'); 
+$pdf->vcell(125,15,25,$isiBerikat,87); 
 $pdf->Cell(40,$height,'',L,0,'L'); 
 $pdf->Cell(10,$height,'',R,1,'R');
 
@@ -396,16 +416,24 @@ for($i=1;$i<=7;$i++)
         {
             if($i<=6)
             {
-				$pdf->Cell(15,$height,'',RL,0,'C'); 
-                $pdf->Cell(125,$height,'     Klaim mutu '.$bar->$keterangan.' di atas standar',RL,0,'L'); 
-                $pdf->Cell(40,$height,"(".number_format($bar->$rupiah).")",L,0,'R'); 
-                $pdf->Cell(10,$height,'',R,1,'R');
+				if($i==6){
+				    $pdf->Cell(15,$height,'',RL,0,'C'); 
+					$pdf->Cell(125,$height,'     Klaim '.$bar->$keterangan,RL,0,'L'); 
+					$pdf->Cell(40,$height,"(".number_format($bar->$rupiah).")",L,0,'R'); 
+					$pdf->Cell(10,$height,'',R,1,'R');
+
+				}else{
+					$pdf->Cell(15,$height,'',RL,0,'C'); 
+					$pdf->Cell(125,$height,'     Klaim mutu '.$bar->$keterangan.' di atas standar',RL,0,'L'); 
+					$pdf->Cell(40,$height,"(".number_format($bar->$rupiah).")",L,0,'R'); 
+					$pdf->Cell(10,$height,'',R,1,'R');
+				}
             }
             else
             {
                 $pdf->Cell(15,$height,'',RL,0,'C'); 
                 $pdf->Cell(125,$height,'     Klaim kesusutan antara timbangan pabrik dengan sounding kapal',RL,0,'L'); 
-                $pdf->Cell(40,$height,number_format($bar->$rupiah),L,0,'R'); 
+                $pdf->Cell(40,$height,"(".number_format($bar->$rupiah).")",L,0,'R'); 
                 $pdf->Cell(10,$height,'',R,1,'R');
             }
     }
@@ -415,14 +443,25 @@ for($i=1;$i<=7;$i++)
 //echo $totalKlaim;
 if($absKlaim!=0)
 {
-$pdf->Cell(15,$height,'',RL,0,'C'); 
-$pdf->Cell(125,$height,'     Klaim kelebihan timbangan',RL,0,'L'); 
-$pdf->Cell(40,$height,number_format($bar->rupiah8),L,0,'R'); 
-$pdf->Cell(10,$height,'',R,1,'R');
+ if($bar->rupiah8!=0)
+ {
+	$pdf->Cell(15,$height,'',RL,0,'C'); 
+	$pdf->Cell(125,$height,'     Klaim kelebihan timbangan',RL,0,'L'); 
+	$pdf->Cell(40,$height,number_format($bar->rupiah8),L,0,'R'); 
+	$pdf->Cell(10,$height,'',R,1,'R');
+  }
 }
 $totalKlaim=$totalKlaimPengurang-$bar->rupiah8;
+$angkappn='(11%)';
 if($dKontrak['ppn']!=0){
-    $ppnKlaim=10/100*$totalKlaim;
+	//if($dKontrak['tanggalkontrak']<='2022-03-31'){
+	if($tglInv<='2022-03-31'){
+		$ppnKlaim=10/100*$totalKlaim;
+		$angkappn='(10%)';
+	}else{
+		$ppnKlaim=11/100*$totalKlaim;
+		$angkappn='(11%)';
+	}
 }
 if($absKlaim!=0)
 {
@@ -439,7 +478,7 @@ if($absKlaim!=0)
 $txtPpn = ($ppnKlaim<0)? number_format($ppnKlaim*(-1)): "(".number_format($ppnKlaim).")";
 $pdf->SetFont('Arial','B',8); 
 $pdf->Cell(15,$height,'',RL,0,'C'); 
-$pdf->Cell(125,$height,'                    PPN Klaim(10%) :     ',LR,0,'L'); 
+$pdf->Cell(125,$height,'                    PPN Klaim '.$angkappn.' :     ',LR,0,'L'); 
 $pdf->Cell(40,$height,  $txtPpn,B,0,'R'); 
 $pdf->Cell(10,$height,'',RB,1,'R');
 }
@@ -502,7 +541,8 @@ $pdf->Cell(50,2*$height,$nmPt[$bar->kodept],0,1,'C');
 
 //$pdf->SetFont('Arial','',8); 
 
-$iAkunBank=" select * from ".$dbname.".keu_5akunbank where pemilik='".$bar->kodept."' ";
+$iAkunBank=" select * from ".$dbname.".keu_5akunbank where pemilik='".$bar->kodept."' and noakun = '".$dKontrak['rekening']."' ";
+
 $nAkunBank=  mysql_query($iAkunBank) or die (mysql_error($conn));
 $dAkunBank=  mysql_fetch_assoc($nAkunBank);
 
@@ -524,6 +564,7 @@ $pdf->Cell(90,1.5*$height,$dAkunBank['namabank'],1,1,'C');
 
 $jbTtd=  makeOption($dbname, 'pmn_5ttd', 'nama,jabatan');
 
+$pdf->Ln();
 $pdf->Ln();
 $pdf->SetX(150);
 $pdf->Cell(50,$height,$bar->ttd,0,1,'C'); 

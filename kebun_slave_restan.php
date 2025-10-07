@@ -1,4 +1,4 @@
-<?php 
+<?php
 session_start();
 require_once('master_validation.php');
 require_once('config/connection.php');
@@ -282,7 +282,7 @@ switch($proses)
         $tab.="<td rowspan=2>".$_SESSION['lang']['tanggal']."</td>";
         $tab.="<td rowspan=2>".$_SESSION['lang']['blok']."</td>";
         $tab.="<td colspan=2 align=center>Panen</td>";
-        $tab.="<td colspan=2 align=center>Kirim</td>";
+        $tab.="<td colspan=2 align=center>Afkir</td>";
         $tab.="<td colspan=2 align=center>Restan</td>";
         $tab.="</tr><tr><td>Janjang</td><td>Kg</td><td>Janjang</td><td>Kg</td><td>Janjang</td><td>Kg</td>";
         $tab.="</tr></thead><tbody>";
@@ -344,16 +344,17 @@ switch($proses)
             $brdr=1;
             $tab.="
             <table>
-            <tr><td colspan=5 align=left><b>LAPORAN RESTAN</b></td><td colspan=7 align=right><b>".$_SESSION['lang']['bulan']." : ".substr(tanggalnormal($periode),1,7)."</b></td></tr>
-            <tr><td colspan=5 align=left>".$_SESSION['lang']['unit']." : ".$optNm[$kdUnit]." </td></tr>
-            <tr><td colspan=5 align=left>&nbsp;</td></tr>
+            <tr><td colspan=8 align=center><b>LAPORAN RESTAN</b></td></tr>
+			<tr><td colspan=8 align=left><b>".$_SESSION['lang']['periode']." : ".substr(tanggalnormal($periodeId),1,7)."</b></td></tr>
+            <tr><td colspan=8 align=left>".$_SESSION['lang']['unit']." : ".$optNm[$kdUnit]." </td></tr>
+            <tr><td colspan=8 align=left>&nbsp;</td></tr>
             </table>";
         $tab.="<table cellpadding=1 cellspacing=1 border=1 class=sortable>";
         $tab.="<thead><tr>";
         $tab.="<td rowspan=2 ".$bgcoloraja.">".$_SESSION['lang']['tanggal']."</td>";
         $tab.="<td rowspan=2 ".$bgcoloraja.">".$_SESSION['lang']['blok']."</td>";
         $tab.="<td colspan=2 align=center  ".$bgcoloraja.">Panen</td>";
-        $tab.="<td colspan=2 align=center  ".$bgcoloraja.">Kirim</td>";
+        $tab.="<td colspan=2 align=center  ".$bgcoloraja.">Afkir</td>";
         $tab.="<td colspan=2 align=center  ".$bgcoloraja.">Restan</td>";
         $tab.="</tr><tr><td  ".$bgcoloraja.">Janjang</td><td  ".$bgcoloraja.">Kg</td><td  ".$bgcoloraja.">Janjang</td><td  ".$bgcoloraja.">Kg</td><td  ".$bgcoloraja.">Janjang</td><td  ".$bgcoloraja.">Kg</td>";
         $tab.="</tr></thead><tbody>";
@@ -415,8 +416,8 @@ switch($proses)
             $height = 20;
             
                 $this->SetFont('Arial','B',8);
-                $this->Cell(250,$height,strtoupper("LAPORAN RESTAN"),0,0,'L');
-                $this->Cell(270,$height,$_SESSION['lang']['bulan'].' : '.substr(tanggalnormal($periodeId),1,7),0,1,'R');
+                $this->Cell(460,$height,strtoupper("LAPORAN RESTAN"),0,1,'L');
+                $this->Cell(250,$height,$_SESSION['lang']['bulan'].' : '.substr(tanggalnormal($periodeId),1,7),0,1,'L');
                 $tinggiAkr=$this->GetY();
                 $ksamping=$this->GetX();
                 $this->SetY($tinggiAkr);
@@ -427,7 +428,7 @@ switch($proses)
                 $this->Cell(55,$height,"Tanggal",TLR,0,'C',1);
                 $this->Cell(55,$height,$_SESSION['lang']['blok'],TLR,0,'C',1);
                 $this->Cell(90,$height,"Panen",TLR,0,'C',1);
-                $this->Cell(90,$height,"Kirim",TLR,0,'C',1);
+                $this->Cell(90,$height,"Afkir",TLR,0,'C',1);
                 $this->Cell(90,$height,"Restan",TLR,1,'C',1);
                 
                 $this->Cell(55,$height," ",BLR,0,'C',1);

@@ -18,10 +18,15 @@ switch($proses)
         $table .= "<tr>";
         $table .= "<td>".$_SESSION['lang']['namakaryawan']."</td>";
         $table .= "<td>".$_SESSION['lang']['tipelembur']."</td>";
-        $table .= "<td>".$_SESSION['lang']['jamaktual']."</td>";
-        $table .= "<td>".$_SESSION['lang']['uangmakan']."</td>";
+        $table .= "<td>".$_SESSION['lang']['jamaktual'].' 1'."</td>";
+        $table .= "<td>".$_SESSION['lang']['uangkelebihanjam'].' 1'."</td>";
+        $table .= "<td>".$_SESSION['lang']['jamaktual'].' 2'."</td>";
+        $table .= "<td>".$_SESSION['lang']['uangkelebihanjam'].' 2'."</td>";
+        $table .= "<td>".$_SESSION['lang']['beban'].' '.$_SESSION['lang']['jamaktual'].' 2'."</td>";
+        $table .= "<td>".$_SESSION['lang']['total'].' '.$_SESSION['lang']['uangkelebihanjam']."</td>";
         $table .= "<td>".$_SESSION['lang']['penggantiantransport']."</td>";
-        $table .= "<td>".$_SESSION['lang']['uangkelebihanjam']."</td>";
+        $table .= "<td>".$_SESSION['lang']['uangmakan']."</td>";
+        $table .= "<td>No. BA</td>";
         $table .= "<td>Action</td>";
         $table .= "</tr>";
         $table .= "</thead>";
@@ -44,8 +49,8 @@ switch($proses)
         {
                 $where=" lokasitugas='".$idAbn[0]."'"; //echo"warning:".$where;exit();
         }
-        $optKry=makeOption('owl','datakaryawan','karyawanid,namakaryawan',$where,0);
-        $optAbsen=makeOption('owl','sdm_5absensi','kodeabsen,keterangan') ;
+        $optKry=makeOption($dbname,'datakaryawan','karyawanid,namakaryawan',$where,0);
+        $optAbsen=makeOption($dbname,'sdm_5absensi','kodeabsen,keterangan') ;
         for($t=0;$t<24;)
         {
                 if(strlen($t)<2)
@@ -64,20 +69,40 @@ switch($proses)
                 $mnt.="<option value=".$y." ".($y==00?'selected':'').">".$y."</option>";
                 $y++;
         }
-
-
-
+		$optbeban="<option value=''></option>";
+		//exit('Warning: 1='.$_SESSION['empl']['lokasitugas'].' '.substr($_SESSION['empl']['lokasitugas'],3,1));
+		if(substr($_SESSION['empl']['lokasitugas'],3,1)=='M'){
+	        $sBeban1="select noakundebet,keterangan from ".$dbname.".keu_5parameterjurnal where kodeaplikasi='PKS' and jurnalid='PKS09'";
+		    $qBeban1=mysql_query($sBeban1) or die(mysql_error());
+	        while($rBeban1=mysql_fetch_assoc($qBeban1)){
+				$optbeban.="<option value='Loading_CPO'>".$rBeban1['keterangan']."</option>";
+			}
+	        $sBeban2="select a.kode,b.akunak,a.nama from ".$dbname.".project a
+						LEFT JOIN ".$dbname.".sdm_5tipeasset b on b.kodetipe=substr(a.kode,4,2)
+						where kodeorg='".$_SESSION['empl']['lokasitugas']."' and posting=0";
+		    $qBeban2=mysql_query($sBeban2) or die(mysql_error());
+	        while($rBeban2=mysql_fetch_assoc($qBeban2)){
+				$optbeban.="<option value=".$rBeban2['kode'].">Project - ".$rBeban2['nama']."</option>";
+			}
+		}
         $table .= "<tr id='detail_tr' class='rowcontent'>";
         $table .= "<td>".makeElement("krywnId",'select','',
         array('style'=>'width:150px'),$optKry)."</td>";
         $table .= "<td><select id=tpLmbr>".$optLmbr2."</select></td>";
         $table .= "<td><select id=jmId name=jmId >".$jm."</select>:<select id=mntId name=mntId >".$mnt."</select></td>";
-        $table .= "<td>".makeElement("uang_mkn",'textnum',0,
-        array('style'=>'width:100px','onkeypress'=>'return angka_doang(event)','maxlength'=>'10','onblur'=>"chngeFormat()",'onfocus'=>"normal_number_1()"))."</td>";
-        $table .= "<td>".makeElement("uang_trnsprt",'textnum',0,
-        array('style'=>'width:100px','onkeypress'=>'return angka_doang(event)','maxlength'=>'10','onblur'=>"chngeFormat()",'onfocus'=>"normal_number_2()"))."</td>";
         $table .= "<td>".makeElement("uang_lbhjm",'textnum',0,
         array('style'=>'width:100px','onkeypress'=>'return angka_doang(event)','maxlength'=>'10','onblur'=>"chngeFormat()",'onfocus'=>"normal_number_3()"))."</td>";
+        $table .= "<td><select id=jmId2 name=jmId2 >".$jm."</select>:<select id=mntId2 name=mntId2 >".$mnt."</select></td>";
+        $table .= "<td>".makeElement("uang_lbhjm2",'textnum',0,
+        array('style'=>'width:100px','onkeypress'=>'return angka_doang(event)','maxlength'=>'10','onblur'=>"chngeFormat()",'onfocus'=>"normal_number_4()"))."</td>";
+        $table .= "<td><select id=beban>".$optbeban."</select></td>";
+        $table .= "<td>".makeElement("uanglembur",'textnum',0,
+        array('style'=>'width:100px','onkeypress'=>'return angka_doang(event)','maxlength'=>'10','onblur'=>"chngeFormat()",'onfocus'=>"normal_number_5()"))."</td>";
+        $table .= "<td>".makeElement("uang_trnsprt",'textnum',0,
+        array('style'=>'width:100px','onkeypress'=>'return angka_doang(event)','maxlength'=>'10','onblur'=>"chngeFormat()",'onfocus'=>"normal_number_2()"))."</td>";
+        $table .= "<td>".makeElement("uang_mkn",'textnum',0,
+        array('style'=>'width:100px','onkeypress'=>'return angka_doang(event)','maxlength'=>'10','onblur'=>"chngeFormat()",'onfocus'=>"normal_number_1()"))."</td>";
+        $table .= "<td>".makeElement("noba",'text','',array('style'=>'width:180px','maxlength'=>'30'))."</td>";
 
     # Add, Container Delete
     $table .= "<td><img id='detail_add' title='Simpan' class=zImgBtn onclick=\"addDetail()\" src='images/save.png'/>";
@@ -103,24 +128,36 @@ switch($proses)
                 <td>".$no."</td>
                 <td>".$rNm['namakaryawan']."</td>
                 <td>".$arrTipeLembur[$rDet['tipelembur']]."</td>
-                <td>".$rDet['jamaktual']."</td>
-                <td align=right>".number_format($rDet['uangmakan'],2)."</td>
-                <td align=right>".number_format($rDet['uangtransport'],2)."</td>
+                <td align=right>".$rDet['jamaktual']."</td>
                 <td align=right>".number_format($rDet['uangkelebihanjam'],2)."</td>
-                <td><img src=images/application/application_edit.png class=resicon  title='Edit' onclick=\"editDetail('".$rDet['karyawanid']."','".$rDet['tipelembur']."','".$rDet['jamaktual']."','".$rDet['uangmakan']."','".$rDet['uangtransport']."','".$rDet['uangkelebihanjam']."');\">
+                <td align=right>".$rDet['jamaktual2']."</td>
+                <td align=right>".number_format($rDet['uanglembur2'],2)."</td>
+                <td>".$rDet['beban']."</td>
+                <td align=right>".number_format($rDet['uangkelebihanjam']+$rDet['uanglembur2'],2)."</td>
+                <td align=right>".number_format($rDet['uangtransport'],2)."</td>
+                <td align=right>".number_format($rDet['uangmakan'],2)."</td>
+                <td>".$rDet['noba']."</td>
+                <td><img src=images/application/application_edit.png class=resicon  title='Edit' onclick=\"editDetail('".$rDet['karyawanid']."','".$rDet['tipelembur']."','".$rDet['jamaktual']."','".$rDet['jamaktual2']."','".$rDet['uangmakan']."','".$rDet['uangtransport']."','".$rDet['uangkelebihanjam']."','".$rDet['uanglembur2']."','".$rDet['noba']."','".$rDet['beban']."');\">
                         <img src=images/application/application_delete.png class=resicon  title='Delete' onclick=\"delDetail('".$rDet['kodeorg']."','".tanggalnormal($rDet['tanggal'])."','".$rDet['karyawanid']."');\" ></td>
                 </tr>
                 ";
 				$totum+=$rDet['uangmakan'];
                 $totut+=$rDet['uangtransport'];
-                $totle+=$rDet['uangkelebihanjam'];
+                $totle1+=$rDet['uangkelebihanjam'];
+                $totle2+=$rDet['uanglembur2'];
+                $totle+=$rDet['uangkelebihanjam']+$rDet['uanglembur2'];
         }
                 echo"
                 <tr class=rowcontent>
                 <td colspan=4>Total</td>
-                <td align=right>".number_format($totum,2)."</td>
-                <td align=right>".number_format($totut,2)."</td>
+                <td align=right>".number_format($totle1,2)."</td>
+                <td colspan=1></td>
+                <td align=right>".number_format($totle2,2)."</td>
+                <td colspan=1></td>
                 <td align=right>".number_format($totle,2)."</td>
+                <td align=right>".number_format($totut,2)."</td>
+                <td align=right>".number_format($totum,2)."</td>
+                <td></td>
                 <td></td>
                 </tr>
                 ";

@@ -32,6 +32,18 @@ if($method=='update')
 }
 if($method=='finish')
 {
+  $strhrd="select sum(jumlah) as jumlah,sum(jumlahhrd) as jumlahhrd from ".$dbname.".sdm_pjdinasdt where  notransaksi='".$notransaksi."'"; 
+  $reshrd=mysql_query($strhrd);
+  $jmlahhrd=0;
+  while($barhrd=mysql_fetch_object($reshrd))
+  {
+  	$jumlah=$bar->jumlah;
+  	$jumlahhrd=$barhrd->jumlahhrd;
+  }
+
+  if($jumlah>0 and $jumlahhrd==0){
+   	 exit("Warning: Nilai belum terisi...!");
+  }else{
 	$str="update ".$dbname.".sdm_pjdinasht
 	       set statuspertanggungjawaban=1
 	      where  notransaksi='".$notransaksi."'"; 
@@ -41,7 +53,8 @@ if($method=='finish')
    		{
    			echo " Gagal:".addslashes(mysql_error($conn));	 
 		 exit(0);
-		}	
+		}
+  }
 }
 
 $str="select a.*,b.keterangan as jns,b.id as bid from ".$dbname.".sdm_pjdinasdt a

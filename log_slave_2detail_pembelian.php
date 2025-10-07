@@ -51,6 +51,7 @@ switch($proses)
 		if($kdUnit!='')
 		{
 			$where.=" and substring(b.nopp,16,4)='".$kdUnit."'";
+			//$where.=" and a.nopo like '%/".$kdUnit."%'";
 		}
 		if($kdSup!="")
 		{
@@ -62,7 +63,7 @@ switch($proses)
 		}
                 if($lokBeli!='')
                 {
-                    $where.=" and lokalpusat='".$lokBeli."'";
+                    $where.=" and a.lokalpusat='".$lokBeli."'";
                 }
 	}
 	echo"<table cellspacing=1 border=0 class=sortable>
@@ -85,7 +86,7 @@ switch($proses)
 	<tbody>";
 	$data=array();
 	$sData="select a.kodesupplier from ".$dbname.".log_poht a left join ".$dbname.".log_podt b on a.nopo=b.nopo where a.statuspo>1 ".$where." group by kodesupplier order by a.tanggal asc";
-        //echo $sData;
+    //exit('Warning: '.$sData);
 	$qData=mysql_query($sData) or die(mysql_error());
 	
 	while($rData=mysql_fetch_assoc($qData))
@@ -104,12 +105,14 @@ switch($proses)
 		$no+=1;
 		
 		$afdC=false;$blankC=false;
-		$sList="select distinct a.tanggal,a.matauang,b.kodebarang,b.satuan,b.nopo,b.jumlahpesan,b.nopp,b.hargasatuan from ".$dbname.".log_poht a left join ".$dbname.".log_podt b on a.nopo=b.nopo where a.kodesupplier='".$dt['kodesupplier']."' and b.nopo!='NULL' and a.tanggal between '".$tglDr."' and '".tanggalsystem($_POST['tanggalSampai'])."' ";
+		//$sList="select distinct a.tanggal,a.matauang,b.kodebarang,b.satuan,b.nopo,b.jumlahpesan,b.nopp,b.hargasatuan from ".$dbname.".log_poht a left join ".$dbname.".log_podt b on a.nopo=b.nopo where a.kodesupplier='".$dt['kodesupplier']."' and b.nopo!='NULL' and a.tanggal between '".$tglDr."' and '".tanggalsystem($_POST['tanggalSampai'])."' ";
+		$sList="select distinct a.tanggal,a.matauang,b.kodebarang,b.satuan,b.nopo,b.jumlahpesan,b.nopp,b.hargasatuan from ".$dbname.".log_poht a left join ".$dbname.".log_podt b on a.nopo=b.nopo where a.kodesupplier='".$dt['kodesupplier']."' and b.nopo!='NULL' and a.statuspo>1 ".$where."";
 		$qList=mysql_query($sList) or die(mysql_error());
 		$grandTot=array('total'=>0);
 		while($rList=mysql_fetch_assoc($qList))
 		{
-			$sRow="select a.nopo from ".$dbname.".log_podt a inner join ".$dbname.".log_poht b on a.nopo=b.nopo where b.kodesupplier='".$dt['kodesupplier']."' and b.nopo!='NULL'  and b.tanggal between '".$tglDr."' and '".tanggalsystem($_POST['tanggalSampai'])."'";	
+			//$sRow="select a.nopo from ".$dbname.".log_podt a inner join ".$dbname.".log_poht b on a.nopo=b.nopo where b.kodesupplier='".$dt['kodesupplier']."' and b.nopo!='NULL'  and b.tanggal between '".$tglDr."' and '".tanggalsystem($_POST['tanggalSampai'])."'";	
+			$sRow="select b.nopo from ".$dbname.".log_podt b inner join ".$dbname.".log_poht a on a.nopo=b.nopo where a.kodesupplier='".$dt['kodesupplier']."' and a.nopo!='NULL' and a.statuspo>1 ".$where."";	
 			$qRow=mysql_query($sRow) or die(mysql_error());
 			$rRow=mysql_num_rows($qRow);
 			
@@ -251,6 +254,7 @@ switch($proses)
 		if($kdUnit!='')
 		{
 			$where.=" and substring(b.nopp,16,4)='".$kdUnit."'";
+			//$where.=" and a.nopo like '%/".$kdUnit."%'";
 		}
 		if($kdSup!="")
 		{
@@ -262,7 +266,7 @@ switch($proses)
 		}
 		if($lokBeli!='')
 		{
-			$where.=" and lokalpusat='".$lokBeli."'";
+			$where.=" and a.lokalpusat='".$lokBeli."'";
 		}
 	}
 	
@@ -375,7 +379,8 @@ switch($proses)
 			$pdf->Cell(15/100*$width,$height,$rNm['namasupplier'],'TLR',0,'C',1);	
 		}
 		
-		$sList="select distinct a.tanggal,a.matauang,b.kodebarang,b.satuan,b.nopo,b.jumlahpesan,b.nopp,b.hargasatuan from ".$dbname.".log_poht a left join ".$dbname.".log_podt b on a.nopo=b.nopo where a.kodesupplier='".$dt['kodesupplier']."' and b.nopo!='NULL' and a.tanggal between '".$tglDari."' and '".$tanggalSampai."'";
+		//$sList="select distinct a.tanggal,a.matauang,b.kodebarang,b.satuan,b.nopo,b.jumlahpesan,b.nopp,b.hargasatuan from ".$dbname.".log_poht a left join ".$dbname.".log_podt b on a.nopo=b.nopo where a.kodesupplier='".$dt['kodesupplier']."' and b.nopo!='NULL' and a.tanggal between '".$tglDari."' and '".$tanggalSampai."'";
+		$sList="select distinct a.tanggal,a.matauang,b.kodebarang,b.satuan,b.nopo,b.jumlahpesan,b.nopp,b.hargasatuan from ".$dbname.".log_poht a left join ".$dbname.".log_podt b on a.nopo=b.nopo where a.kodesupplier='".$dt['kodesupplier']."' and b.nopo!='NULL' and a.statuspo>1 ".$where."";
 		$qList=mysql_query($sList) or die(mysql_error());
 		$grandTot=array('total'=>0);
 		
@@ -520,6 +525,7 @@ switch($proses)
 		if($kdUnit!='')
 		{
 			$where.=" and substring(b.nopp,16,4)='".$kdUnit."'";
+			//$where.=" and a.nopo like '%/".$kdUnit."%'";
 		}
 		if($kdSup!="")
 		{
@@ -531,7 +537,7 @@ switch($proses)
 		}
                   if($lokBeli!='')
                     {
-                        $where.=" and lokalpusat='".$lokBeli."'";
+                        $where.=" and a.lokalpusat='".$lokBeli."'";
                     }
 	}
 	$tab="
@@ -576,13 +582,14 @@ switch($proses)
 		$no+=1;
 		
 		$afdC=false;$blankC=false;
-		$sList="select distinct a.tanggal,a.matauang,b.kodebarang,b.satuan,b.nopo,b.jumlahpesan,b.nopp,b.hargasatuan,a.ppn from ".$dbname.".log_poht a left join ".$dbname.".log_podt b on a.nopo=b.nopo where a.kodesupplier='".$dt['kodesupplier']."' and b.nopo!='NULL' and (a.tanggal between '".$tglDr."' and '".tanggalsystem($_GET['tanggalSampai'])."') ";
+		//$sList="select distinct a.tanggal,a.matauang,b.kodebarang,b.satuan,b.nopo,b.jumlahpesan,b.nopp,b.hargasatuan,a.ppn from ".$dbname.".log_poht a left join ".$dbname.".log_podt b on a.nopo=b.nopo where a.kodesupplier='".$dt['kodesupplier']."' and b.nopo!='NULL' and (a.tanggal between '".$tglDr."' and '".tanggalsystem($_GET['tanggalSampai'])."') ";
+		$sList="select distinct a.tanggal,a.matauang,b.kodebarang,b.satuan,b.nopo,b.jumlahpesan,b.nopp,b.hargasatuan,a.ppn from ".$dbname.".log_poht a left join ".$dbname.".log_podt b on a.nopo=b.nopo where a.kodesupplier='".$dt['kodesupplier']."' and b.nopo!='NULL' and a.statuspo>1 ".$where."";
 		//echo $sList;
 		$qList=mysql_query($sList) or die(mysql_error());
 		$grandTot=array('total'=>0);
 		while($rList=mysql_fetch_assoc($qList))
 		{
-			$sRow="select a.nopo from ".$dbname.".log_podt a inner join ".$dbname.".log_poht b on a.nopo=b.nopo where b.kodesupplier='".$dt['kodesupplier']."' and b.nopo!='NULL'  and (b.tanggal between '".$tglDr."' and '".tanggalsystem($_GET['tanggalSampai'])."')";	
+			$sRow="select b.nopo from ".$dbname.".log_podt b inner join ".$dbname.".log_poht a on a.nopo=b.nopo where a.kodesupplier='".$dt['kodesupplier']."' and a.nopo!='NULL' and a.statuspo>1 ".$where."";	
 			$qRow=mysql_query($sRow) or die(mysql_error());
 			$rRow=mysql_num_rows($qRow);
 			

@@ -38,9 +38,9 @@ $header = array(
 
 # Content
 $cols = "notransaksi,tanggal,kodeorg,kodetangki,kuantitas,kernelquantity";
-$query = selectQuery($dbname,'pabrik_masukkeluartangki',$cols,"kodeorg='".$_SESSION['empl']['lokasitugas']."'","",false,10,1);
+$query = selectQuery($dbname,'pabrik_masukkeluartangki',$cols,"kodeorg='".$_SESSION['empl']['lokasitugas']."'","tanggal desc",false,10,1);
 $data = fetchData($query);
-$totalRow = getTotalRow($dbname,'pabrik_masukkeluartangki');
+$totalRow = getTotalRow($dbname,'pabrik_masukkeluartangki',"kodeorg='".$_SESSION['empl']['lokasitugas']."'");
 foreach($data as $key=>$row) {
     $data[$key]['tanggal'] = tanggalnormal($row['tanggal']);
 }

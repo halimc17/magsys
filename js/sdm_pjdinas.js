@@ -89,13 +89,20 @@ function parseDong(tex)
                                 jk.options[x].selected=true;
                         }
                 }
-        jk=document.getElementById('kodeorg');
+		jk=document.getElementById('kodeorg');
                 for(x=0;x<jk.length;x++)
                 {
                         if(jk.options[x].value==kodeorg)
                         {
                                 jk.options[x].selected=true;
+								document.getElementById('kodeorg').value=kodeorg;
+								getTujuan();
+                                //jk.options[x].disabled=true;
                         }
+						else
+						{
+                                jk.options[x].disabled=true;
+						}
                 }
         jk=document.getElementById('persetujuan');
                 for(x=0;x<jk.length;x++)
@@ -121,7 +128,6 @@ function parseDong(tex)
                                 jk.options[x].selected=true;
                         }
                 }
-
         jk=document.getElementById('tujuan2');
                 for(x=0;x<jk.length;x++)
                 {
@@ -138,7 +144,6 @@ function parseDong(tex)
                                 jk.options[x].selected=true;
                         }
                 }
-
         if(parseInt(pesawat)==1)
                 document.getElementById('pesawat').checked=true;
         else
@@ -223,6 +228,8 @@ function simpanPJD()
 
                 if (karyawanid == '' || kodeorg == '' || hrd == '' || tujuan1 == '' || tanggalperjalanan=='') {
                         alert(' Employee, Org.Code, Traveling date, Approval, first destination are obligatory');
+                }else if((tujuan2=='') && (tujuan3=='') && (tujuanlain=='')){
+                         alert('Tujuan harus diisi...!');
                 }else if((tujuan2!='' && trim(tugas2)=='') || (tujuan3!='' && trim(tugas3)=='') || (tujuanlain!='' && trim(tugaslain)=='')){
                          alert('Uraian tugas harus diisi');
                      }        
@@ -413,4 +420,34 @@ function ganti(keuser,kolom,notransaksi){
                                 }
                         }
                 }	
+}
+
+//get unit
+function getTujuan()
+{
+    kodeorg=document.getElementById('kodeorg').value;
+    param='proses=getTujuan'+'&kodeorg='+kodeorg;
+    
+    //alert(param);
+    tujuan='sdm_slave_2pjdinas_option.php';
+    post_response_text(tujuan, param, respog);    
+    function respog()
+    {
+		if(con.readyState==4)
+		{
+			if (con.status == 200) {
+				busy_off();
+				if (!isSaveResponse(con.responseText)) {
+					alert('ERROR TRANSACTION,\n' + con.responseText);
+				} else {
+					document.getElementById('tujuan2').innerHTML=con.responseText;  
+					document.getElementById('tujuan3').innerHTML=con.responseText;  
+				}
+			} else {
+				busy_off();
+				error_catch(con.status);
+				
+			}
+		}	
+    } 
 }

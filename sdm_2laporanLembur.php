@@ -43,8 +43,28 @@ while($rOrg=mysql_fetch_assoc($qOrg))
 {
 	$optOrg.="<option value=".$rOrg['kodeorganisasi'].">".$rOrg['namaorganisasi']."</option>";
 }
-$arr="##kdOrg##periode##tgl1##tgl2##pilihan##pilihan2##pilihan3";
-$arrDat="##kdeOrg##period##pilihan_2##pilihan_3##tgl_1##tgl_2";
+
+//$optbeban="<option value=''>".$_SESSION['lang']['all']."</option>";
+$optbeban="";
+$optbeban.="<option value='Normal'>Normal</option>";
+//exit('Warning: 1='.$_SESSION['empl']['lokasitugas'].' '.substr($_SESSION['empl']['lokasitugas'],3,1));
+if(substr($_SESSION['empl']['lokasitugas'],3,1)=='M'){
+	$sBeban1="select noakundebet,keterangan from ".$dbname.".keu_5parameterjurnal where kodeaplikasi='PKS' and jurnalid='PKS09'";
+	$qBeban1=mysql_query($sBeban1) or die(mysql_error());
+	while($rBeban1=mysql_fetch_assoc($qBeban1)){
+		$optbeban.="<option value='Loading_CPO'>".$rBeban1['keterangan']."</option>";
+	}
+	$sBeban2="select a.kode,b.akunak,a.nama from ".$dbname.".project a
+				LEFT JOIN ".$dbname.".sdm_5tipeasset b on b.kodetipe=substr(a.kode,4,2)
+				where kodeorg='".$_SESSION['empl']['lokasitugas']."'";
+	$qBeban2=mysql_query($sBeban2) or die(mysql_error());
+	while($rBeban2=mysql_fetch_assoc($qBeban2)){
+		$optbeban.="<option value=".$rBeban2['kode'].">Project - ".$rBeban2['nama']."</option>";
+	}
+}
+
+$arr="##kdOrg##periode##tgl1##tgl2##pilihan##pilihan2##pilihan3##beban1";
+$arrDat="##kdeOrg##period##pilihan_2##pilihan_3##tgl_1##tgl_2##beban2";
 
 ?>
 <script language=javascript src=js/zTools.js></script>
@@ -71,13 +91,15 @@ $arrDat="##kdeOrg##period##pilihan_2##pilihan_3##tgl_1##tgl_2";
     <tr><td><label><?php echo $_SESSION['lang']['periode']?></label></td><td><select id="periode" name="periode" style="width:150px" onchange="getTgl()"><?php echo $optPeriode?></select></td></tr>    
 <?php }?>
 
-<tr><td><label><?php echo $_SESSION['lang']['sistemgaji']?></label></td><td><select id="pilihan2" name="pilihan2" style="width:150px" onchange="getTgl()"><option value="semua"><?echo $_SESSION['lang']['all'];?></option><option value="bulanan"><?echo $_SESSION['lang']['bulanan'];?></option><option value="harian"><?echo $_SESSION['lang']['harian'];?></option></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['sistemgaji']?></label></td><td><select id="pilihan2" name="pilihan2" style="width:150px" onchange="getTgl()"><option value=""><?echo $_SESSION['lang']['all'];?></option><option value="bulanan"><?echo $_SESSION['lang']['bulanan'];?></option><option value="harian"><?echo $_SESSION['lang']['harian'];?></option></select></td></tr>
 
 <tr><td><label><?php echo $_SESSION['lang']['tanggalmulai']?></label></td><td><input disabled type="text" class="myinputtext" id="tgl1" name="tgl1" onmousemove="setCalendar(this.id);" onkeypress="return false;"  maxlength="10" style="width:150px;" /></td></tr>
 <tr><td><label><?php echo $_SESSION['lang']['tanggalsampai']?></label></td><td><input disabled type="text" class="myinputtext" id="tgl2" name="tgl2" onmousemove="setCalendar(this.id);" onkeypress="return false;"  maxlength="10" style="width:150px;" /></td></tr>
 <tr><td><label><?php echo $_SESSION['lang']['options']?></label></td><td><select id="pilihan" name="pilihan" style="width:150px"><option value="rupiah">Dalam rupiah/In Rupiahs</option><option value="jam_aktual">Dalam jam aktual/Actual Hour</option><option value="jam_lembur">Dalam jam lembur/Beyond actual hour</option></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['bagian']?></label></td><td><select id="pilihan3" name="pilihan3" style="width:150px"><option value=""><?echo $_SESSION['lang']['all'];?></option><?php echo $optBagian?></select></td></tr>
 
-<tr><td><label><?php echo $_SESSION['lang']['bagian']?></label></td><td><select id="pilihan3" name="pilihan3" style="width:150px"><option value="semua"><?echo $_SESSION['lang']['all'];?></option><?php echo $optBagian?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['beban']?></label></td><td><select id="beban1" name="beban1" style="width:200px"><option value=""><?echo $_SESSION['lang']['all'];?></option><?php echo $optbeban?></select></td></tr>
+
 <tr height="20"><td colspan="2">&nbsp;</td></tr>
 <tr><td colspan="2"><button onclick="zPreview('sdm_slave_2laporanLembur','<?php echo $arr?>','printContainer')" class="mybutton" name="preview" id="preview">Preview</button><button onclick="zPdf('sdm_slave_2laporanLembur','<?php echo $arr?>','printContainer')" class="mybutton" name="preview" id="preview">PDF</button><button onclick="zExcel(event,'sdm_slave_2laporanLembur.php','<?php echo $arr?>')" class="mybutton" name="preview" id="preview">Excel</button><button onclick="Clear1()" class="mybutton" name="btnBatal" id="btnBatal"><?php echo $_SESSION['lang']['cancel']?></button></td></tr>
 
@@ -103,16 +125,17 @@ $arrDat="##kdeOrg##period##pilihan_2##pilihan_3##tgl_1##tgl_2";
     <tr><td><label><?php echo $_SESSION['lang']['periode']?></label></td><td><select id="period" name="period" style="width:150px" onchange="getTgl2()"><?php echo $optPeriode?></select></td></tr>    
 <?php }?>
 
-<tr><td><label><?php echo $_SESSION['lang']['sistemgaji']?></label></td><td><select id="pilihan_2" name="pilihan_2" style="width:150px" onchange="getTgl2()"><option value="semua"><?echo $_SESSION['lang']['all'];?></option><option value="bulanan"><?echo $_SESSION['lang']['bulanan'];?></option><option value="harian"><?echo $_SESSION['lang']['harian'];?></option></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['sistemgaji']?></label></td><td><select id="pilihan_2" name="pilihan_2" style="width:150px" onchange="getTgl2()"><option value=""><?echo $_SESSION['lang']['all'];?></option><option value="bulanan"><?echo $_SESSION['lang']['bulanan'];?></option><option value="harian"><?echo $_SESSION['lang']['harian'];?></option></select></td></tr>
 
 <tr><td><label><?php echo $_SESSION['lang']['tanggalmulai']?></label></td><td><input disabled type="text" class="myinputtext" id="tgl_1" name="tgl_1" onmousemove="setCalendar(this.id);" onkeypress="return false;"  maxlength="10" style="width:150px;" /></td></tr>
 <tr><td><label><?php echo $_SESSION['lang']['tanggalsampai']?></label></td><td><input disabled type="text" class="myinputtext" id="tgl_2" name="tgl_2" onmousemove="setCalendar(this.id);" onkeypress="return false;"  maxlength="10" style="width:150px;" /></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['bagian']?></label></td><td><select id="pilihan_3" name="pilihan_3" style="width:150px"><option value=""><?echo $_SESSION['lang']['all'];?></option><?php echo $optBagian?></select></td></tr>
 
+<tr><td><label><?php echo $_SESSION['lang']['beban']?></label></td><td><select id="beban2" name="beban2" style="width:200px"><option value=""><?echo $_SESSION['lang']['all'];?></option><?php echo $optbeban?></select></td></tr>
 
-<tr><td><label><?php echo $_SESSION['lang']['bagian']?></label></td><td><select id="pilihan_3" name="pilihan_3" style="width:150px"><option value="semua"><?echo $_SESSION['lang']['all'];?></option><?php echo $optBagian?></select></td></tr>
 <tr><td colspan="2">&nbsp;</td></tr>
-<tr height="25"><td colspan="2">&nbsp;</td></tr>
-<tr><td colspan="2"><button onclick="zPreview('sdm_slave_2laporanLembur_rekap','<?php echo $arrDat?>','printContainer')" class="mybutton" name="preview" id="preview">Preview</button><button onclick="zPdf('sdm_slave_2laporanLembur_rekap','<?php echo $arrDat?>','printContainer')" class="mybutton" name="preview" id="preview">PDF</button><button onclick="zExcel(event,'sdm_slave_2laporanLembur_rekap.php','<?php echo $arrDat?>')" class="mybutton" name="preview" id="preview">Excel</button><button onclick="Clear1()" class="mybutton" name="btnBatal" id="btnBatal"><?php echo $_SESSION['lang']['cancel']?></button></td></tr>
+<tr height="23"><td colspan="2">&nbsp;</td></tr>
+<tr><td colspan="2"><button onclick="zPreview('sdm_slave_2laporanLembur_rekap','<?php echo $arrDat?>','printContainer')" class="mybutton" name="preview" id="preview">Preview</button><button onclick="zPdf('sdm_slave_2laporanLembur_rekap','<?php echo $arrDat?>','printContainer')" class="mybutton" name="preview" id="preview">PDF</button><button onclick="zExcel(event,'sdm_slave_2laporanLembur_rekap.php','<?php echo $arrDat?>')" class="mybutton" name="preview" id="preview">Excel</button><button onclick="Clear2()" class="mybutton" name="btnBatal" id="btnBatal"><?php echo $_SESSION['lang']['cancel']?></button></td></tr>
 
 </table>
 </fieldset>
@@ -125,31 +148,7 @@ $arrDat="##kdeOrg##period##pilihan_2##pilihan_3##tgl_1##tgl_2";
 
 </div></fieldset>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <?php
-
 CLOSE_BOX();
 echo close_body();
 ?>

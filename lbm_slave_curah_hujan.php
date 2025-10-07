@@ -260,7 +260,7 @@ if($proses=='excel')
         $tab.="</tr>"; 
         $tab.="</thead>
 	<tbody>";
-         $arrBulan=array("1"=>"JANUARI","2"=>"PEBRUARI","3"=>"MARET","4"=>"APRIL","5"=>"MEI"
+         $arrBulan=array("1"=>"JANUARI","2"=>"FEBRUARI","3"=>"MARET","4"=>"APRIL","5"=>"MEI"
                         ,"6"=>"JUNI","7"=>"JULI","8"=>"AGUSTUS","9"=>"SEPTEMBER","10"=>"OKTOBER"
                         ,"11"=>"NOVEMBER","12"=>"DESEMBER");
          //januari
@@ -288,7 +288,7 @@ if($proses=='excel')
            $totMmsd[$dtThn8]+=$dtMm[$dtThn8][1];
          }
          $tab.="</tr>";
-         //pebruari
+         //Februari
          $tab.="<tr class=rowcontent>";
          $tab.="<td>".$arrBulan[2]."</td>";
          $dtThn8=$thn[0]-4;
@@ -809,7 +809,7 @@ switch($proses)
             $ksamping=$pdf->GetX();
             $pdf->SetY($tinggiAkr);
             $pdf->SetX($ksamping-($jumRow+222));
-            $pdf->Cell(60,10,"PEBRUARI",TBLR,0,'L',1);
+            $pdf->Cell(60,10,"FEBRUARI",TBLR,0,'L',1);
             $dtThn8=$thn[0]-4;
             $jumRow=$thn[0]-($thn[0]-4);
             $jumRow=$jumRow*80;
@@ -830,7 +830,7 @@ switch($proses)
             $ksamping=$pdf->GetX();
             $pdf->SetY($tinggiAkr);
             $pdf->SetX($ksamping-($jumRow+222));
-            $pdf->Cell(60,10,"s.d PEBRUARI",TBLR,0,'L',1);
+            $pdf->Cell(60,10,"s.d FEBRUARI",TBLR,0,'L',1);
             $dtThn8=$thn[0]-4;
             $jumRow=$thn[0]-($thn[0]-4);
             $jumRow=$jumRow*80;

@@ -203,6 +203,12 @@ switch($method)
                                     . " kodegudang like '%".$pabrik."%' and periode like '%".substr($tglOrder,0,7)."%' ";
                             $nHarga=  mysql_query($iHarga) or die (mysql_error($conn));
                             $dHarga=  mysql_fetch_assoc($nHarga);
+							if($dHarga['hargarata']<=0){
+								$iHarga="select hargalastout as hargarata from ".$dbname.".log_5masterbarangdt "
+										. " where kodebarang='".$d['kodebarang']."' and kodegudang like '%".$pabrik."%' ";
+								$nHarga=  mysql_query($iHarga) or die (mysql_error($conn));
+								$dHarga=  mysql_fetch_assoc($nHarga);
+							}
                             
                             $whBrg="kodebarang='".$d['kodebarang']."'";
                             $no+=1;

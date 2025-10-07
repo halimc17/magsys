@@ -637,7 +637,7 @@ while($dzbar=mysql_fetch_object($dzres))
     if($dzbar->kelompok=='0')$artidakdibayar[]=$dzbar->kodeabsen;
 }
 
-function dates_inbetween($date1, $date2){
+function dates_inbetwee($date1, $date2){
     $day = 60*60*24;
     $date1 = strtotime($date1);
     $date2 = strtotime($date2);
@@ -661,7 +661,8 @@ $sTgl="select distinct tanggalmulai,tanggalsampai from ".$dbname.".sdm_5periodeg
 $qTgl=mysql_query($sTgl) or die(mysql_error($conn));
 $rTgl=mysql_fetch_assoc($qTgl);
 
-$tanggalperiode = dates_inbetween($rTgl['tanggalmulai'], $rTgl['tanggalsampai']);
+//$tanggalperiode = dates_inbetwee($rTgl['tanggalmulai'], $rTgl['tanggalsampai']);
+$tanggalperiode = rangeTanggal($rTgl['tanggalmulai'], $rTgl['tanggalsampai']);
 
 // itung2...
 if(!empty($dzkaryawanid))foreach($dzkaryawanid as $karyawanid){

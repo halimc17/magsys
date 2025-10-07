@@ -17,8 +17,9 @@ if($_SESSION['empl']['tipelokasitugas']=='HOLDING')
 else
 {
     $sBatch="select distinct periode from ".$dbname.".setup_periodeakuntansi where kodeorg like '%".$_SESSION['empl']['lokasitugas']."%' order by periode desc";
-    $sKodeorg="select distinct kodeorganisasi,namaorganisasi from ".$dbname.".organisasi where tipe='TRAKSI' and kodeorganisasi like '%".$_SESSION['empl']['lokasitugas']."%' order by namaorganisasi asc";
+    $sKodeorg="select distinct kodeorganisasi,namaorganisasi from ".$dbname.".organisasi where tipe='TRAKSI' and alokasi='".$_SESSION['empl']['induk']."' order by namaorganisasi asc";
 }
+//exit('Warning :'.$sKodeorg);
 $qBatch=mysql_query($sBatch) or die(mysql_error());
 while($rBatch=mysql_fetch_assoc($qBatch))
 {

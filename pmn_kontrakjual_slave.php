@@ -8,6 +8,8 @@ $lokasiTugas=substr($_SESSION['empl']['lokasitugas'],0,4);
 $txtSearch=$_POST['txtSearch'];
 $kurs=$_POST['kurs'];
 $ptSch=$_POST['ptSch'];
+$ptKomoditi=$_POST['ptKomoditi'];
+$ptCust=$_POST['ptCust'];
 
 $arrBulan=array("01"=>"I","02"=>"II","03"=>"III","04"=>"IV","05"=>"V","06"=>"VI","07"=>"VII","08"=>"VIII","09"=>"IX","10"=>"X","11"=>"XI","12"=>"XII");
         switch($param['method']){
@@ -21,9 +23,19 @@ $arrBulan=array("01"=>"I","02"=>"II","03"=>"III","04"=>"IV","05"=>"V","06"=>"VI"
                     {
                         $sort.=" and kodept like '%".$ptSch."%' ";
                     }
+                    
+                    if($ptKomoditi!='')
+                    {
+                        $sort.=" and kodebarang like '%".$ptKomoditi."%' ";
+                    }
+                    
+                    if($ptCust!='')
+                    {
+                        $sort.=" and koderekanan like '%".$ptCust."%' ";
+                    }
                    // exit("Error:$sort");
                     
-                $limit=10;
+                $limit=15;
                 $page=0;
                 if(isset($_POST['page']))
                 {
@@ -63,23 +75,27 @@ $arrBulan=array("01"=>"I","02"=>"II","03"=>"III","04"=>"IV","05"=>"V","06"=>"VI"
                         <td>".$res['nokontrak']."</td>
                         <td>".$rOrg['namaorganisasi']."</td>
                         <td>".$rCust['namacustomer']."</td>
-                        <td>".tanggalnormal($res['tanggalkontrak'])."</td>
-                        <td>".$res['kodebarang']."</td>
+                        <td align='center'>".tanggalnormal($res['tanggalkontrak'])."</td>
                         <td>".$rBrg['namabarang']."</td>
-                        <td>".$res['tanggalkirim']."</td>";
-                echo"<td>";
+                        <td align='right'>".number_format($res['hargasatuan'],2)."</td>
+                        <td align='center'>".($res['ppn']=='0' ? 'Exclude' : 'Include')."</td>
+                        <td align='center'>".tanggalnormal($res['tanggalkirim'])."</td>";
+                echo"<td width='8%'>";
                 #cek apakah sudah terjurnal atau belum
                 // $sSum="select distinct noreferensi from ".$dbname.".keu_jurnaldt 
                 //        where noreferensi in (select distinct notransaksi from ".$dbname.".pabrik_timbangan where nokontrak='".$res['nokontrak']."') limit 1";
                 // $qSum=  mysql_query($sSum) or die(mysql_error($conn));
                 // $rSum= mysql_num_rows($qSum);
                 // if($rSum==0){
-                echo"<img src=images/application/application_edit.png class=resicon  title='Edit' onclick=\"fillField('".$res['nokontrak']."');\">
-                     <img src=images/application/application_delete.png class=resicon  title='Delete' onclick=\"delData('".$res['nokontrak']."');\" >";
+                echo"<img src=images/application/application_edit.png class=resicon  title='Edit' onclick=\"fillField('".$res['nokontrak']."');\">&nbsp
+                     <img src=images/application/application_delete.png class=resicon  title='Delete' onclick=\"delData('".$res['nokontrak']."');\" >&nbsp&nbsp";
                 //}    
-                echo"<img src=images/pdf.jpg class=resicon  title='Print' onclick=\"masterPDF('pmn_kontrakjual','".$res['nokontrak']."','','pmn_kontakjual_pdf',event)\">
-                     <img onclick=dataKeExcel(event,'pmn_slave_kontrakjual_excel.php','".$res['nokontrak']."') src=images/excel.jpg class=resicon title='MS.Excel'> "; 
-                if($res['koderekanan']=='API'){
+                echo"<img src=images/pdf.jpg class=resicon  title='Print' onclick=\"masterPDF('pmn_kontrakjual','".$res['nokontrak']."','','pmn_kontakjual_pdf',event)\">&nbsp
+                     <img onclick=dataKeExcel(event,'pmn_slave_kontrakjual_excel.php','".$res['nokontrak']."') src=images/excel.jpg class=resicon title='MS.Excel'> ";
+				$strpt="select kodeorganisasi from ".$dbname.".organisasi where tipe='PT' and detail='1' and kodeorganisasi='".$res['koderekanan']."'";
+				$respt=mysql_query($strpt);
+				//if(mysql_num_rows($respt)>0 or ){
+                if($res['koderekanan']=='API' or mysql_num_rows($respt)>0){
                     echo"<img src=images/plus.png class=resicon title='Add ".$_SESSION['lang']['nokontrakinduk']." ".$_SESSION['lang']['dari']." ".$res['nokontrak']."' onclick=addDetail('".$res['nokontrak']."','".$res['kuantitaskontrak']."','".$res['kodebarang']."',event) />";
                 }
 
@@ -166,6 +182,10 @@ $arrBulan=array("01"=>"I","02"=>"II","03"=>"III","04"=>"IV","05"=>"V","06"=>"VI"
                     $tgl=explode("-",$param['tlgKntrk']);
                     $whr="kodebarang='".$param['kdBrg']."'";
                     $optKd=makeOption($dbname,'pmn_4komoditi','kodebarang,kodekomoditi',$whr);
+					if($optKd[$param['kdBrg']]=='')
+					{
+						exit("warning : Kode komoditi belum ada, silahkan hubungi admin.");
+					}
                     $sCek="select max(nokontrak) as nokontrak from ".$dbname.".pmn_kontrakjual where kodept='".$param['kdPt']."' and left(tanggalkontrak,4)='".$tgl[2]."'";
                     $qCek=mysql_query($sCek) or die(mysql_error($conn));
                     $rCek=mysql_fetch_assoc($qCek);
@@ -288,7 +308,8 @@ $arrBulan=array("01"=>"I","02"=>"II","03"=>"III","04"=>"IV","05"=>"V","06"=>"VI"
                 case'getFormDet':
                         $optData="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
                         $sData="select kuantitaskontrak,nokontrak from ".$dbname.".pmn_kontrakjual"
-                             . " where kodept='AMP' and kodebarang='".$_POST['komoditi']."' order by nokontrak";
+                             . " where kodept in (select kodeorganisasi from ".$dbname.".organisasi where tipe='PT' and detail='1')
+								 and kodebarang='".$_POST['komoditi']."' order by nokontrak";
                         $qData=mysql_query($sData) or die(mysql_error($conn));
                         while($rData=mysql_fetch_assoc($qData)){
                                 $sSum="select sum(beratbersih) as jmlh from ".$dbname.".pabrik_timbangan where nokontrak='".$rData['nokontrak']."'";

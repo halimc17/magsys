@@ -5,8 +5,7 @@ require_once('config/connection.php');
 include_once('lib/nangkoelib.php');
 include_once('lib/zLib.php');
 
-
-
+$param = $_POST;
 $proses=checkPostGet('proses','');
 $tglijin=tanggalsystem(checkPostGet('tglijin',''));
 $jnsIjin=checkPostGet('jnsIjin','');
@@ -23,9 +22,12 @@ $jamDr1=$tgl1." ".$jamDr;
 $jamSmp1=$tgl2." ".$jamSmp;
 $arrNmkary=makeOption($dbname, 'datakaryawan', 'karyawanid,namakaryawan');
 $arrKeputusan=array("0"=>$_SESSION['lang']['diajukan'],"1"=>$_SESSION['lang']['disetujui'],"2"=>$_SESSION['lang']['ditolak']);
-$where=" tanggal='".$tglijin."' and karyawanid='".$_SESSION['standard']['userid']."'";
+$darijam=checkPostGet('darijam','');
+$where=" tanggal='".$tglijin."' and karyawanid='".$_SESSION['standard']['userid']."' and jenisijin='".$jnsIjin."' and darijam='".$darijam."'";
+$where2=" (tanggal='".$tglijin."' and karyawanid='".$_SESSION['standard']['userid']."' and jenisijin='".$jnsIjin."' and '".$jamDr1."'>=darijam and '".$jamDr1."'<=sampaijam) or (tanggal='".$tglijin."' and karyawanid='".$_SESSION['standard']['userid']."' and jenisijin='".$jnsIjin."' and '".$jamSmp1."'>=darijam and '".$jamSmp1."'<=sampaijam)";
 $atsSblm=checkPostGet('atsSblm','');
 $hk=checkPostGet('jumlahhk','');
+$sisacuti=checkPostGet('sisacuti','');
 $hrd=checkPostGet('hrd','');
 $periodec=checkPostGet('periodec','');
 
@@ -151,8 +153,8 @@ if(($proses=='update' or $proses=='insert') and $jnsIjin=='CUTI'){
 					exit("Gagal : Periksa kembali periode tanggal cuti. Tanggal Awal lebih besar dari tanggal sampai.");
 				}
 				
-				if(getRangeTanggal($_POST['tglAwal'],$_POST['tglEnd']) != $hk){
-					exit("Gagal : Periksa kembali periode tanggal cuti, tidak sesuai dengan jumlah HK yang diambil.");
+				if(getRangeTanggal($_POST['tglAwal'],$_POST['tglEnd']) < $hk){
+					exit("Gagal : Periksa kembali periode tanggal cuti, tidak sesuai dengan jumlah HK yang diambil. ".strtotime($_POST['tglAwal'])." - ".strtotime($_POST['tglEnd']));
 				}
 				
 				$strf="select sisa from ".$dbname.".sdm_cutiht where karyawanid=".$_SESSION['standard']['userid']." 
@@ -168,7 +170,9 @@ if(($proses=='update' or $proses=='insert') and $jnsIjin=='CUTI'){
 					$sisa=0;
 				
 				if($hk > $sisa){
-					exit("Gagal : Jumlah HK(Hari) melebihi jumlah sisa cuti untuk periode ".$periodec.".");
+                    $potgaji=$hk - $sisa;
+					//echo("Warning: Jumlah HK(Hari) melebihi jumlah sisa cuti untuk periode ".$periodec.". Apakah bersedia dipotong ".$potgaji." hari gaji?");
+                    //exit("Warning: Jumlah HK(Hari) melebihi jumlah sisa cuti untuk periode ".$periodec.". Apakah bersedia dipotong ".$potgaji." hari gaji?");
 				}
 }
 
@@ -177,12 +181,50 @@ if(($proses=='update' or $proses=='insert') and $jnsIjin=='CUTI'){
         switch($proses)
         {
 
-                case'insert':
+                case'jumlahhari':
+
+					$total_days=$param['total_days'];
+					if($param['tglAwal']==''){
+					   $tglAwal=tanggalsystem($param['tglEnd']);
+					}else{
+					   $tglAwal=tanggalsystem($param['tglAwal']);
+					}
+					if($param['tglEnd']==''){
+					   $tglEnd=tanggalsystem($param['tglAwal']);
+					}else{
+					   $tglEnd=tanggalsystem($param['tglEnd']);
+					}
+					if($_SESSION['empl']['tipelokasitugas']=='HOLDING'){
+					   $strlibur="select count(*) as jumlahlibur from ".$dbname.".sdm_5harilibur where kebun in ('HOLDING','GLOBAL') and keterangan='libur' and (tanggal>=$tglAwal and tanggal<=$tglEnd)";
+					}else{
+					   $strlibur="select count(*) as jumlahlibur from ".$dbname.".sdm_5harilibur where kebun in ('".substr($_SESSION['empl']['lokasitugas'],0,4)."','GLOBAL') and keterangan='libur' and (tanggal>=$tglAwal and tanggal<=$tglEnd)";
+					}
+					$reslibur=mysql_query($strlibur);
+					$jmlhrlibur=0;
+					while($barlibur=mysql_fetch_object($reslibur))
+					{ 
+						$jmlhrlibur=$barlibur->jumlahlibur;
+					}
+					$jumlahcuti=0;
+					if($param['jnsIjin']=='CUTI' or $param['jnsIjin']=='MELAHIRKAN' or $param['jnsIjin']=='PERJALANAN' or $param['jnsIjin']=='SKRIPSI_TESIS' or $param['jnsIjin']=='ALASANPENTING'){
+					   $jumlahcuti=$total_days-$jmlhrlibur;
+                    }
+					$res = array('jumlahhk' => $jumlahcuti);
+					//echo json_encode($res);
+					echo $res['jumlahhk'];
+					break;
                          
+                case'insert':
                   //  exit("Error:masuk");
                 if(($tglijin=='')||($jnsIjin=='')||($jamDr1=='')||($jamSmp1=='')||($keperluan=='')||($atasan==''))
                 {
-                        echo"warning:Please Complete The Form";
+                        echo"Warning: Please Complete The Form";
+                        exit();
+                }
+                //exit("Warning: ".$sisacuti." - ".$hk." = ".($sisacuti-$hk));
+                if(($sisacuti-$hk)<-2)
+                {
+                        echo"Warning: Jumlah cuti lebih dari minus 2 ";
                         exit();
                 }
 				
@@ -210,11 +252,20 @@ if(($proses=='update' or $proses=='insert') and $jnsIjin=='CUTI'){
 				  #keluarkan disini jika sudah lebih dari 1.5 tahun
 				     exit("Error: Maaf, Cuti atas masa bakti tahun ".$periodec." berakhir pada ".date('d-m-Y',$dudu));
 				  }
+				  $swcuti="select * from ".$dbname.".sdm_ijin where karyawanid='".$_SESSION['standard']['userid']."'
+															   and jenisijin='CUTI' 
+															   and YEAR(darijam) = YEAR(now())
+															   and darijam < NOW()
+															   and stpersetujuan1='0'";
+				  $qwcuti=mysql_query($swcuti);
+                  if(mysql_num_rows($qwcuti)>0){
+					  exit('Warning : Masih ada cuti yang belum diapprove!');
+				  }
 				}
 				#==== end satu setengah tahun
 				
                 $wktu="0000-00-00 00:00:00";
-                $sCek="select tanggal from ".$dbname.".sdm_ijin where  ".$where.""; //echo "warning:".$sCek;
+                $sCek="select tanggal from ".$dbname.".sdm_ijin where  ".$where2.""; //echo "warning:".$sCek;
                 $qCek=mysql_query($sCek) or die(mysql_error());
                 $rCek=mysql_fetch_row($qCek);
                 if($rCek<1)
@@ -232,22 +283,23 @@ if(($proses=='update' or $proses=='insert') and $jnsIjin=='CUTI'){
                             {
                                 #send an email to incharge person
                                     $to=getUserEmail($atasan);
+                                    //$to='';
                                             $namakaryawan=getNamaKaryawan($_SESSION['standard']['userid']);
-                                            $subject="[Notifikasi]Persetujuan Ijin Keluar Kantor a/n ".$namakaryawan;
+                                            $subject="[Notifikasi]Persetujuan Ijin ".$jnsIjin." a/n ".$namakaryawan;
                                             $body="<html>
                                                      <head>
                                                      <body>
                                                        <dd>Dengan Hormat,</dd><br>
                                                        <br>
-                                                       Pada hari ini, tanggal ".date('d-m-Y')." karyawan a/n  ".$namakaryawan." mengajukan Ijin/".$jnsIjin." (".$keperluan.")
+                                                       Pada hari ini, tanggal ".date('d-m-Y')." karyawan a/n  ".$namakaryawan." mengajukan Ijin ".$jnsIjin." (".$keperluan.")
                                                        kepada bapak/ibu. Untuk menindak-lanjuti, silahkan ikuti link dibawah.
                                                        <br>
                                                        <br>
-                                                       Note: Sisa cuti ybs periode ".$periodec.":".$sisa." Hari
+                                                       Note: Sisa cuti ybs periode ".$periodec." : ".$sisa." Hari
                                                        <br>
                                                        <br>
                                                        Regards,<br>
-                                                       Owl-Plantation System.
+                                                       Medco Agro System.
                                                      </body>
                                                      </head>
                                                    </html>
@@ -267,25 +319,25 @@ if(($proses=='update' or $proses=='insert') and $jnsIjin=='CUTI'){
                                   $nRoa=  mysql_query($iRoa) or die (mysql_error($conn));
                                   $dRoa=  mysql_fetch_assoc($nRoa);
                                     $roa=$dRoa['karyawanid'];
-                                    
-                                    
-                                  $toroa=getUserEmail($roa);
+
+                                  //$toroa=getUserEmail($roa);
+                                  $toroa='';
                                                 $namakaryawan=getNamaKaryawan($_SESSION['standard']['userid']);
-                                                $subject="[Notifikasi]Persetujuan Ijin Keluar Kantor a/n ".$namakaryawan;
+                                                $subject="[Notifikasi]Persetujuan Ijin ".$jnsIjin." a/n ".$namakaryawan;
                                                 $body="<html>
                                                          <head>
                                                          <body>
                                                            <dd>Dengan Hormat,</dd><br>
                                                            <br>
-                                                           Pada hari ini, tanggal ".date('d-m-Y')." karyawan a/n  ".$namakaryawan." mengajukan Ijin/".$jnsIjin." (".$keperluan.")
+                                                           Pada hari ini, tanggal ".date('d-m-Y')." karyawan a/n  ".$namakaryawan." mengajukan Ijin ".$jnsIjin." (".$keperluan.")
                                                            kepada bapak/ibu. Untuk menindak-lanjuti, silahkan ikuti link dibawah.
                                                            <br>
                                                            <br>
-                                                           Note: Sisa cuti ybs periode ".$periodec.":".$sisa." Hari
+                                                           Note: Sisa cuti ybs periode ".$periodec." : ".$sisa." Hari
                                                            <br>
                                                            <br>
                                                            Regards,<br>
-                                                           Owl-Plantation System.
+                                                           Medco Agro System.
                                                          </body>
                                                          </head>
                                                        </html>
@@ -307,7 +359,7 @@ if(($proses=='update' or $proses=='insert') and $jnsIjin=='CUTI'){
                 }
                 else
                 {
-                    exit("Error:Data Pada Tanggal ".$_POST['tglijin']." Sudah ada");
+                    exit("Error:Data Pada Tanggal ".$_POST['tglijin']." dan tanggal cuti Sudah ada");
                 }
                 break;
 
@@ -328,7 +380,7 @@ if(($proses=='update' or $proses=='insert') and $jnsIjin=='CUTI'){
                 $jlhbrs= $jsl->jmlhrow;
                 }
 
-                $slvhc="select * from ".$dbname.".sdm_ijin where karyawanid='".$_SESSION['standard']['userid']."'   order by `tanggal` desc limit ".$offset.",".$limit." ";
+                $slvhc="select * from ".$dbname.".sdm_ijin where karyawanid='".$_SESSION['standard']['userid']."' and jenisijin='CUTI' order by `tanggal` desc limit ".$offset.",".$limit." ";
                 $qlvhc=mysql_query($slvhc) or die(mysql_error());
                 $user_online=$_SESSION['standard']['userid'];
                 while($rlvhc=mysql_fetch_assoc($qlvhc))
@@ -344,17 +396,22 @@ if(($proses=='update' or $proses=='insert') and $jnsIjin=='CUTI'){
                 <td>".$arrNmkary[$rlvhc['persetujuan1']]."</td>
                 <td>".$arrKeputusan[$rlvhc['stpersetujuan1']]."</td>
                 <td>".tanggalnormald($rlvhc['darijam'])."</td>
-                <td>".tanggalnormald($rlvhc['sampaijam'])."</td>";
+                <td>".tanggalnormald($rlvhc['sampaijam'])."</td>
+                <td align='center'>".$rlvhc['jumlahhari']."</td>";
                 if($rlvhc['stpersetujuan1']==0 and empty($rlvhc['stpersetujuanrd']))
                 {
-                echo"<td><img src=images/application/application_edit.png class=resicon  title='Edit' onclick=\"fillField('".$rlvhc['keperluan']."','".tanggalnormal($rlvhc['tanggal'])."','".$rlvhc['jenisijin']."','".$rlvhc['persetujuan1']."','".$rlvhc['stpersetujuan1']."','".$rlvhc['darijam']."','".$rlvhc['sampaijam']."','".$rlvhc['hrd']."','".$rlvhc['jumlahhari']."','".$rlvhc['periodecuti']."');\">
-                    <img src=images/application/application_delete.png class=resicon  title='Delete' onclick=\"delData('".tanggalnormal($rlvhc['tanggal'])."');\" ></td>";
-                    //<img src=images/pdf.jpg class=resicon  title='Print' onclick=\"masterPDF('sdm_ijin','".$rlvhc['tanggal'].",".$rlvhc['karyawanid']."','','sdm_slave_ijin_meninggalkan_kantor',event)\"></td>";
+					if($rlvhc['darijam']>=date('Y-m-d')){
+					  echo"<td><img src=images/application/application_edit.png class=resicon  title='Edit' onclick=\"fillField('".$rlvhc['keperluan']."','".tanggalnormal($rlvhc['tanggal'])."','".$rlvhc['jenisijin']."','".$rlvhc['persetujuan1']."','".$rlvhc['stpersetujuan1']."','".$rlvhc['darijam']."','".$rlvhc['sampaijam']."','".$rlvhc['hrd']."','".$rlvhc['jumlahhari']."','".$rlvhc['periodecuti']."');\">
+                      <img src=images/application/application_delete.png class=resicon  title='Delete' onclick=\"delData('".tanggalnormal($rlvhc['tanggal'])."','".$rlvhc['jenisijin']."','".$rlvhc['darijam']."');\">
+                      <img src=images/pdf.jpg class=resicon  title='Print' onclick=\"masterPDF('".tanggalnormal($rlvhc['tanggal'])."','".$rlvhc['karyawanid']."','".$rlvhc['jenisijin']."','".$rlvhc['darijam']."',event)\"></td>";
+					}else{
+					  echo"<td><img src=images/pdf.jpg class=resicon  title='Print' onclick=\"masterPDF('".tanggalnormal($rlvhc['tanggal'])."','".$rlvhc['karyawanid']."','".$rlvhc['jenisijin']."','".$rlvhc['darijam']."',event)\"></td>"; 
+					}
                 }
                 else
                 {
                     echo "<td>".$arrKeputusan[$rlvhc['stpersetujuan1']]."</td>";
-                   // echo"<td> <img src=images/pdf.jpg class=resicon  title='Print' onclick=\"masterPDF('sdm_ijin','".$rlvhc['tanggal'].",".$rlvhc['karyawanid']."','','sdm_slave_ijin_meninggalkan_kantor',event)\"></td>";
+                    //"<img src=images/pdf.jpg class=resicon  title='Print' onclick=\"masterPDF('".tanggalnormal($rlvhc['tanggal'])."','".$rlvhc['karyawanid']."',event)\"></td>";
                 }//end if updateby
 
         }//end while
@@ -376,6 +433,7 @@ if(($proses=='update' or $proses=='insert') and $jnsIjin=='CUTI'){
 
                 case'deleteData':
                 $sket="select distinct stpersetujuan1 from ".$dbname.".sdm_ijin where ".$where."";
+				//exit('Warning: '.$sket);
                 $qKet=mysql_query($sket) or die(mysql_error($conn));
                 $rKet=mysql_fetch_assoc($qKet); 
                 if($rKet['stpersetujuan1']==0)
@@ -424,21 +482,21 @@ if(($proses=='update' or $proses=='insert') and $jnsIjin=='CUTI'){
                                #send an email to incharge person
                                     $to=getUserEmail($atasan);
                                             $namakaryawan=getNamaKaryawan($_SESSION['standard']['userid']);
-                                            $subject="[Notifikasi]Persetujuan Ijin Keluar Kantor a/n ".$namakaryawan;
+                                            $subject="[Notifikasi]Persetujuan Ijin ".$jnsIjin." a/n ".$namakaryawan;
                                             $body="<html>
                                                      <head>
                                                      <body>
                                                        <dd>Dengan Hormat,</dd><br>
                                                        <br>
-                                                       Pada hari ini, tanggal ".date('d-m-Y')." karyawan a/n  ".$namakaryawan." mengajukan Ijin/".$jnsIjin." (".$keperluan.")
+                                                       Pada hari ini, tanggal ".date('d-m-Y')." karyawan a/n  ".$namakaryawan." mengajukan Ijin ".$jnsIjin." (".$keperluan.")
                                                        kepada bapak/ibu. Untuk menindak-lanjuti, silahkan ikuti link dibawah.
                                                        <br>
                                                        <br>
-                                                       Note: Sisa cuti ybs periode ".$periodec.":".$sisa." Hari
+                                                       Note: Sisa cuti ybs periode ".$periodec." : ".$sisa." Hari
                                                        <br>
                                                        <br>
                                                        Regards,<br>
-                                                       Owl-Plantation System.
+                                                       Medco Agro System.
                                                      </body>
                                                      </head>
                                                    </html>
@@ -456,21 +514,21 @@ if(($proses=='update' or $proses=='insert') and $jnsIjin=='CUTI'){
                 {
                                     $to=getUserEmail($atsSblm);
                                             $namakaryawan=getNamaKaryawan($_SESSION['standard']['userid']);
-                                            $subject="[Notifikasi]Pembatalan Persetujuan Ijin Keluar Kantor a/n ".$namakaryawan;
+                                            $subject="[Notifikasi]Pembatalan Persetujuan Ijin ".$jnsIjin." a/n ".$namakaryawan;
                                             $body="<html>
                                                      <head>
                                                      <body>
                                                        <dd>Dengan Hormat,</dd><br>
                                                        <br>
-                                                       Pada hari ini, tanggal ".date('d-m-Y')." karyawan a/n  ".$namakaryawan." mengajukan Ijin/".$jnsIjin." (".$keperluan.")
+                                                       Pada hari ini, tanggal ".date('d-m-Y')." karyawan a/n  ".$namakaryawan." mengajukan Ijin ".$jnsIjin." (".$keperluan.")
                                                        kepada bapak/ibu. Untuk menindak-lanjuti, silahkan ikuti link dibawah.
                                                        <br>
                                                        <br>
-                                                       Note: Sisa cuti ybs periode ".$periodec.":".$sisa." Hari
+                                                       Note: Sisa cuti ybs periode ".$periodec." : ".$sisa." Hari
                                                        <br>
                                                        <br>
                                                        Regards,<br>
-                                                       Owl-Plantation System.
+                                                       Medco Agro System.
                                                      </body>
                                                      </head>
                                                    </html>

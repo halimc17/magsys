@@ -23,7 +23,7 @@ $queryD = selectQuery($dbname,'kebun_prestasi',"*","notransaksi='".
 $dataD = fetchData($queryD);
 
 # Absensi
-$queryAbs = selectQuery($dbname,'kebun_kehadiran','jhk,umr,insentif',"notransaksi='".$param['notransaksi']."'");
+$queryAbs = selectQuery($dbname,'kebun_kehadiran','jhk,umr,(insentif-denda) as insentif,nik',"notransaksi='".$param['notransaksi']."'");
 $dataAbs = fetchData($queryAbs);
 
 #=== Cek if posted ===
@@ -58,12 +58,18 @@ $segment = $dataD[0]['kodesegment'];
 #=== Hitung Cost dari Absensi (Perawatan) ===
 $costRawat = 0;
 $totalHk = 0;
+$allnik='';
 if(!empty($dataAbs)) {
     foreach($dataAbs as $row) {
        // $costRawat += ($row['jhk']*$row['umr']) + $row['insentif'];
-         $costRawat += $row['umr'] + $row['insentif'];
+        $costRawat += $row['umr'] + $row['insentif'];
         $totalHk += $row['jhk'];
+		$nik[$row['nik']]=$row['nik'];
+		$allnik.=$row['nik'].',';
     }
+}
+if($allnik!=''){
+	$allnik=substr($allnik,0,strlen($allnik)-1);
 }
 
 #=== Cek if HK belum sama ===
@@ -75,6 +81,28 @@ if(empty($dataAbs) or ($totalHk!=$dataD[0]['jumlahhk'])) {
     echo 'Warning : HK Prestasi belum teralokasi dengan lengkap '.$qwe.'.';
     exit;
 }
+
+//exit('Warning: '.$dataH[0]['tanggal'].' '.$allnik);
+$sAbs = selectQuery($dbname,'sdm_absensidt','karyawanid',"tanggal='".$dataH[0]['tanggal']."' and fingerprint='1' and karyawanid in (".$allnik.")");
+$qAbs = fetchData($sAbs);
+/*
+if(!empty($qAbs)){
+	if(count($nik)!=count($qAbs)){
+		exit('Warning: Ada yang tidak punya fingerprint');
+	}
+    foreach($qAbs as $rAbs){
+		if($nik[$row['karyawanid']]!=$row['karyawanid']){
+			exit('Warning: Tidak ada fingerprint '.$row['karyawanid']);
+		}
+    }
+}else{
+	exit('Warning: Tidak ada fingerprint yang diupload');
+}
+*/
+if(count($nik)!=count($qAbs)){
+	exit('Warning: Ada yang tidak punya fingerprint');
+}
+//exit('Warning: '.count($nik).' '.count($qAbs));
 
 #======================== Nomor Jurnal =============================
 $kodeJurnal = 'M0';
@@ -250,7 +278,7 @@ if($errorDB=='') {
     if($isJ[0]['jurnal']==1) {
         $errorDB .= "Data posted by another user";
     } else {
-        $queryToJ = updateQuery($dbname,'kebun_aktifitas',array('jurnal'=>1),
+        $queryToJ = updateQuery($dbname,'kebun_aktifitas',array('jurnal'=>1,'lastupdate'=>date('Y-m-d H:i:s')),
             "notransaksi='".$dataH[0]['notransaksi']."'");
         if(!mysql_query($queryToJ)) {
             $errorDB .= "Posting Mark Error :".mysql_error()."\n";

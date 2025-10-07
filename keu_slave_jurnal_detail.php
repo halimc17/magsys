@@ -18,7 +18,13 @@ switch($proses) {
 	
 	# Options
 	$whereAsset = "kodeorg='".$_SESSION['empl']['lokasitugas']."' and posting=0";
-	$whereKary = "lokasitugas='".$_SESSION['empl']['lokasitugas']."'";
+	if($_SESSION['empl']['tipelokasitugas']=='HOLDING'){
+		//$whereKary = "lokasitugas='".$_SESSION['empl']['lokasitugas']."'";
+		$whereKary = "lokasitugas like '%HO' and tipekaryawan in ('0','1','2','3','6','7','8','9')";
+	}else{
+		//$whereKary = "lokasitugas='".$_SESSION['empl']['lokasitugas']."'";
+		$whereKary = "kodeorganisasi='".$_SESSION['empl']['kodeorganisasi']."' and tipekaryawan in ('0','1','2','3','6','7','8','9')";
+	}
     $whereJam=" detail=1 and (pemilik='".$_SESSION['empl']['tipelokasitugas']."' or pemilik='GLOBAL' or pemilik='".$_SESSION['empl']['lokasitugas']."')";
 	$optCashFlow = makeOption($dbname,'keu_5mesinlaporandt','nourut,keterangandisplay',
 	    "tipe='Detail' and namalaporan='CASH FLOW DIRECT'",'2',true);
@@ -36,7 +42,7 @@ switch($proses) {
 	}
 	$optVhc = makeOption($dbname,'vhc_5master','kodevhc,kodeorg','','2',true);
 	if($_SESSION['empl']['tipelokasitugas']=='KEBUN') {
-		$optBlok = makeOption($dbname,'organisasi','kodeorganisasi,namaorganisasi',"kodeorganisasi like '".$_SESSION['empl']['lokasitugas']."%' and tipe = 'blok' or tipe = 'bibitan'",'',true);
+		$optBlok = makeOption($dbname,'organisasi','kodeorganisasi,namaorganisasi',"kodeorganisasi like '".$_SESSION['empl']['lokasitugas']."%' and detail=1 and (tipe = 'BLOK' or tipe = 'BIBITAN')",'',true);
 	} else if($_SESSION['empl']['tipelokasitugas']=='HOLDING') {
 		$optBlok = makeOption($dbname,'setup_blok','kodeorg,statusblok','','2',true);   
 	} else if($_SESSION['empl']['tipelokasitugas']=='KANWIL') {

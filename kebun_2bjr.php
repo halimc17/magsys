@@ -21,7 +21,7 @@ while($dOrg=mysql_fetch_assoc($nOrg))
 }
 
 $iPer="select distinct substr(tanggal,1,7) as periode from ".$dbname.".kebun_spbht
-      where substr(tanggal,1,7)!='0000-00' order by substr(tanggal,1,7) asc limit 12";
+      where substr(tanggal,1,7)!='0000-00' order by substr(tanggal,1,7) desc";
 $nPer=mysql_query($iPer) or die(mysql_error($conn));
 while($dPer=mysql_fetch_assoc($nPer))
 {

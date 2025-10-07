@@ -889,81 +889,98 @@ function cancelHead()
     document.getElementById('tglOrder').disabled=false;
     document.getElementById('jmOrder').disabled=false;
     document.getElementById('mnOrder').disabled=false;
+	document.getElementById('containListBarang').innerHTML='';
+    document.getElementById('nomor').value='';
+    document.getElementById('rincian').value='';
+	document.getElementById('containListPekerjaan').innerHTML='';
+	document.getElementById('containListKaryawan').innerHTML='';
     document.getElementById('detailEntry').style.display='none';
     
 }
 
-
-
-
-function getStation()
-{
+function getStation(){
     pabrik=document.getElementById('pabrik').value; 
     param='pabrik='+pabrik;
     param+='&proses=getStation';
-    tujuan='pabrik_slave_2perbaikan.php';
- 
+	//tujuan='pabrik_slave_2perbaikan.php';
+	tujuan='master_getdata.php';
     post_response_text(tujuan, param, respog);
-    function respog()
-    {
-        if(con.readyState==4)
-        {
-            if (con.status == 200) 
-            {
+    function respog(){
+        if(con.readyState==4){
+            if (con.status == 200) {
                 busy_off();
                 if (!isSaveResponse(con.responseText)) {
                         alert('ERROR TRANSACTION,\n' + con.responseText);
-                }
-                else {
+                }else {
                     //alert(con.responseText);
                     document.getElementById('station').innerHTML=con.responseText;
-                    
+					if(pabrik==''){
+						document.getElementById('mesin').innerHTML=con.responseText;
+					}
                 }
-            }
-            else {
+            }else {
                 busy_off();
                 error_catch(con.status);
             }
         }	
-     }  	
+	}  	
 }
 
-
-
-
-function getStationv()
-{
-    pabrikv=document.getElementById('pabrikv').value; 
-    param='pabrikv='+pabrikv;
-    param+='&proses=getStationv';
-    tujuan='pabrik_slave_2perbaikan_v2.php';
- 
+function getStationv(){
+    pabrik=document.getElementById('pabrikv').value; 
+    param='pabrik='+pabrik;
+    param+='&proses=getStation';
+    //tujuan='pabrik_slave_2perbaikan_v2.php';
+    tujuan='master_getdata.php';
     post_response_text(tujuan, param, respog);
-    function respog()
-    {
-        if(con.readyState==4)
-        {
-            if (con.status == 200) 
-            {
+    function respog(){
+        if(con.readyState==4){
+            if (con.status == 200) {
                 busy_off();
                 if (!isSaveResponse(con.responseText)) {
                         alert('ERROR TRANSACTION,\n' + con.responseText);
-                }
-                else {
+                }else {
                     //alert(con.responseText);
                     document.getElementById('stationv').innerHTML=con.responseText;
-                    
+					if(pabrik==''){
+						document.getElementById('mesinv').innerHTML=con.responseText;
+					}
                 }
-            }
-            else {
+            }else {
                 busy_off();
                 error_catch(con.status);
             }
         }	
-     }  	
+	}  	
 }
 
-
+function getStation2(){
+    pabrik=document.getElementById('pabrik2').value; 
+    param='pabrik='+pabrik;
+    param+='&proses=getStation';
+    //tujuan='pabrik_slave_2perbaikan_v2.php';
+    tujuan='master_getdata.php';
+    post_response_text(tujuan, param, respog);
+    function respog(){
+        if(con.readyState==4){
+            if (con.status == 200) {
+                busy_off();
+                if (!isSaveResponse(con.responseText)) {
+                        alert('ERROR TRANSACTION,\n' + con.responseText);
+                }else {
+                    //alert(con.responseText);
+                    document.getElementById('station2').innerHTML=con.responseText;
+					if(pabrik==''){
+						document.getElementById('mesin2').innerHTML=con.responseText;
+					}
+                }
+            }else {
+                busy_off();
+                error_catch(con.status);
+            }
+        }	
+	}  	
+}
 
 function detailBarang(nodok,ev)
 {
@@ -1003,11 +1020,162 @@ function getListBarangLaporan(nodok)
 		
 }
 
-function batalLaporan()
-	{
+function batalLaporan(num){
+	if(num==2){
+		document.getElementById('pabrik2').value='';
+		document.getElementById('station2').value='';
+		document.getElementById('mesin2').value='';
+		document.getElementById('tahn2').value='';
+		document.getElementById('printContainer2').innerHTML='';
+	}else if(num==1){
+		document.getElementById('pabrikv').value='';
+		document.getElementById('stationv').value='';
+		document.getElementById('mesinv').value='';
+		document.getElementById('tgl1v').value='';
+		document.getElementById('tgl2v').value='';	
+		document.getElementById('printContainerv').innerHTML='';
+	}else{
 		document.getElementById('pabrik').value='';
-                document.getElementById('station').value='';
-		document.getElementById('tgl2').value='';	
+		document.getElementById('station').value='';
+		document.getElementById('mesin').value='';
 		document.getElementById('tgl1').value='';
-		document.getElementById('printContainer').innerHTML='';	
+		document.getElementById('tgl2').value='';	
+		document.getElementById('printContainer').innerHTML='';
 	}
+}
+
+function getMachine(){
+    station=document.getElementById('station').value; 
+    param='station='+station;
+    param+='&proses=getMesin';
+    tujuan='master_getdata.php';
+	post_response_text(tujuan, param, respog);
+    function respog(){
+        if(con.readyState==4){
+            if (con.status == 200) {
+                busy_off();
+                if (!isSaveResponse(con.responseText)){
+					alert('ERROR TRANSACTION,\n' + con.responseText);
+                }else{
+                    document.getElementById('mesin').innerHTML=con.responseText;
+                }
+            }else{
+                busy_off();
+                error_catch(con.status);
+            }
+        }	
+	}  	
+}
+
+function getMachinev(){
+    station=document.getElementById('stationv').value; 
+    param='station='+station;
+    param+='&proses=getMesin';
+    tujuan='master_getdata.php';
+	post_response_text(tujuan, param, respog);
+    function respog(){
+        if(con.readyState==4){
+            if (con.status == 200) {
+                busy_off();
+                if (!isSaveResponse(con.responseText)){
+					alert('ERROR TRANSACTION,\n' + con.responseText);
+                }else{
+                    document.getElementById('mesinv').innerHTML=con.responseText;
+                }
+            }else{
+                busy_off();
+                error_catch(con.status);
+            }
+        }	
+	}  	
+}
+
+function getMachine2(){
+    station=document.getElementById('station2').value; 
+    param='station='+station;
+    param+='&proses=getMesin';
+    tujuan='master_getdata.php';
+	post_response_text(tujuan, param, respog);
+    function respog(){
+        if(con.readyState==4){
+            if (con.status == 200) {
+                busy_off();
+                if (!isSaveResponse(con.responseText)){
+					alert('ERROR TRANSACTION,\n' + con.responseText);
+                }else{
+                    document.getElementById('mesin2').innerHTML=con.responseText;
+                }
+            }else{
+                busy_off();
+                error_catch(con.status);
+            }
+        }	
+	}  	
+}
+
+function getJam(num){
+    tglMulai=document.getElementById('tglMulai').value;
+    jmMulai=document.getElementById('jmMulai').value;
+    mnMulai=document.getElementById('mnMulai').value;
+    tglSelesai=document.getElementById('tglSelesai').value;
+    jmSelesai=document.getElementById('jmSelesai').value;
+    mnSelesai=document.getElementById('mnSelesai').value;
+    param='proses=getJam'+'&num='+num;
+    param+='&tglMulai='+tglMulai+'&jmMulai='+jmMulai+'&mnMulai='+mnMulai;
+    param+='&tglSelesai='+tglSelesai+'&jmSelesai='+jmSelesai+'&mnSelesai='+mnSelesai;
+	tujuan='master_getdata.php';
+	//alert(param);
+	post_response_text(tujuan, param, respog);
+    function respog(){
+        if(con.readyState==4){
+            if (con.status == 200) {
+                busy_off();
+                if (!isSaveResponse(con.responseText)){
+					alert('ERROR TRANSACTION,\n' + con.responseText);
+                }else{
+                    //document.getElementById('jumlahJamPerbaikan').innerHTML=con.responseText;
+                    document.getElementById('jumlahJamPerbaikan').value=con.responseText;
+                }
+            }else{
+                busy_off();
+                error_catch(con.status);
+            }
+        }	
+	}  	
+}
+
+function getPrev(){
+	tipePerbaikan=document.getElementById('tipePerbaikan').value;
+	nomor=document.getElementById('nomor').value;
+	if (nomor < 0 || nomor > 20){
+		return false;
+	}
+	//alert(tipePerbaikan);
+	if(tipePerbaikan=='prev'){
+		station=document.getElementById('station').value;
+		mesin=document.getElementById('mesin').value;
+	    param='proses=getPrev'+'&station='+station+'&mesin='+mesin+'&nomor='+nomor+'&tipePerbaikan='+tipePerbaikan;
+		tujuan='master_getdata.php';
+		//alert(param);
+		post_response_text(tujuan, param, respog);
+		function respog(){
+			if(con.readyState==4){
+				if (con.status == 200) {
+					busy_off();
+					if (!isSaveResponse(con.responseText)){
+						alert('ERROR TRANSACTION,\n' + con.responseText);
+					}else{
+						//document.getElementById('rincian').innerHTML=con.responseText;
+						document.getElementById('rincian').value=con.responseText;
+						if(document.getElementById('rincian').value!=''){
+							document.getElementById('rincian').focus();
+						}
+					}
+	            }else{
+		            busy_off();
+			        error_catch(con.status);
+				}
+	        }
+		}
+	}  	
+}

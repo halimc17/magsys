@@ -1,8 +1,9 @@
 function zPreviewd(){
 	periode=document.getElementById('periode').options[document.getElementById('periode').selectedIndex].value;
+	periode2=document.getElementById('periode2').options[document.getElementById('periode2').selectedIndex].value;
 	lokasitugas=document.getElementById('lokasitugas').options[document.getElementById('lokasitugas').selectedIndex].value;
 	namakaryawan=document.getElementById('namakaryawan').value;
-    param='periode='+periode+'&lokasitugas='+lokasitugas+'&namakaryawan='+namakaryawan+'&proses=preview';
+    param='periode='+periode+'&periode2='+periode2+'&lokasitugas='+lokasitugas+'&namakaryawan='+namakaryawan+'&proses=preview';
 	tujuan='sdm_slave_2rekapperjalanandinas.php';
 	post_response_text(tujuan, param, respon);
 	

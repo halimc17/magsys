@@ -138,7 +138,7 @@ echo"<fieldset style='width:500px;'>
 //$qwe=addZero('qwe',5);
 //echo "qwe:".$qwe;
 
-echo "<div id=dataDisimpan><fieldset style=width:800px;><legend>".$_SESSION['lang']['datatersimpan']."</legend><div style='height:350px;width:1200px;overflow:scroll;'>
+echo "<div id=dataDisimpan><fieldset style=width:800px;><legend>".$_SESSION['lang']['datatersimpan']."</legend><div style='height:350px;width:1220px;overflow:scroll;'>
       <table class=sortable border=0 cellspacing=1>
 	  <thead>
 	  <tr>

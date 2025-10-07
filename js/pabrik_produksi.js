@@ -47,7 +47,7 @@ function getData()
                                             else {
                                                     //alert(con.responseText);
                                                     arr=con.responseText.split("###");
-                                                    document.getElementById('sisatbskemarin').value=arr[0];
+													document.getElementById('sisatbskemarin').value=arr[0];
                                                     document.getElementById('tbsmasuk').value=arr[1];
                                                     getCpo();
                                                     //document.getElementById('sisatbskemarin').value=con.responseText;
@@ -171,6 +171,15 @@ function simpanProduksi()
         
         hydrocyclone=document.getElementById('hydrocyclone').value;
 
+        dobicpo=document.getElementById('dobicpo').value;
+        kernelpecah=document.getElementById('kernelpecah').value;
+        kerneljamolah=document.getElementById('kerneljamolah').value;
+        kernelkapasitasolah=document.getElementById('kernelkapasitasolah').value;
+        limbah=document.getElementById('limbah').value;
+        jampompa=document.getElementById('jampompa').value;
+        landaplikasi=document.getElementById('landaplikasi').value;
+        kapasitasvs=document.getElementById('kapasitasvs').value;
+
         if(kodeorg=='' ||  tanggal==''  || sisahariini=='' || sisahariini==null || sisatbskemarin=='' || sisatbskemarin==null || tbsmasuk=='' ||tbsmasuk==null || tbsdiolah=='' ||tbsdiolah==null || oer=='' ||oer==null || kadarair=='' ||kadarair==null || ffa==''  ||ffa==null  || dirt==''  ||dirt==null  || oerpk=='' ||oerpk==null || kadarairpk=='' ||kadarairpk==null || ffa==''  ||ffa==null  || dirtpk==''||dirtpk==null)
         {
                 alert('All fields are required');
@@ -198,6 +207,9 @@ function simpanProduksi()
                 param+='&ltds='+ltds+'&claybath='+claybath;
                 param+='&usbcpo='+usbcpo+'&usbpk='+usbpk+'&hydrocyclone='+hydrocyclone;
 
+                param+='&dobicpo='+dobicpo+'&kernelpecah='+kernelpecah+'&kerneljamolah='+kerneljamolah+'&kernelkapasitasolah='+kernelkapasitasolah;
+                param+='&limbah='+limbah+'&jampompa='+jampompa+'&landaplikasi='+landaplikasi+'&kapasitasvs='+kapasitasvs;
+
                 tujuan='pabrik_slave_save_produksi.php';
                 post_response_text(tujuan, param, respog);		
         }
@@ -222,6 +234,57 @@ function simpanProduksi()
                                         }
                       }	
          } 		
+}
+
+function fillfield(kodeorg,tanggal,sisatbskemarin,tbsmasuk,tbsdiolah,sisa,oercpo,dirtcpo,kadaraircpo,ffacpo,oerpk,dirtpk,kadarairpk,ffapk,usbbefore,usbafter,
+		oildiluted,oilin,oilinheavy,caco,fruitineb,ebstalk,fibre,nut,effluent,soliddecanter,fruitinebker,cyclone,ltds,claybath,usbcpo,usbpk,hydrocyclone,
+		dobicpo,kernelpecah,kerneljamolah,kernelkapasitasolah,limbah,jampompa,landaplikasi,kapasitasvs){
+        document.getElementById('kodeorg').value=kodeorg;
+        document.getElementById('tanggal').value=tanggal;
+        document.getElementById('sisatbskemarin').value=sisatbskemarin;
+        document.getElementById('tbsmasuk').value=tbsmasuk;
+        document.getElementById('tbsdiolah').value=tbsdiolah;
+        document.getElementById('sisa').value=sisa;
+
+        document.getElementById('oercpo').value=oercpo;
+        document.getElementById('dirtcpo').value=dirtcpo;
+        document.getElementById('kadaraircpo').value=kadaraircpo;
+        document.getElementById('ffacpo').value=ffacpo;
+        document.getElementById('oerpk').value=oerpk;
+        document.getElementById('dirtpk').value=dirtpk;
+        document.getElementById('kadarairpk').value=kadarairpk;
+        document.getElementById('ffapk').value=ffapk;
+        document.getElementById('usbbefore').value=usbbefore;
+        document.getElementById('usbafter').value=usbafter;
+        document.getElementById('oildiluted').value=oildiluted;
+        document.getElementById('oilin').value=oilin;
+        document.getElementById('oilinheavy').value=oilinheavy;
+        document.getElementById('caco').value=caco;
+
+        //cpo loses
+        document.getElementById('fruitineb').value=fruitineb;
+        document.getElementById('ebstalk').value=ebstalk;
+        document.getElementById('fibre').value=fibre;
+        document.getElementById('nut').value=nut;
+        document.getElementById('effluent').value=effluent;
+        document.getElementById('soliddecanter').value=soliddecanter;
+
+        //kernel loses
+        document.getElementById('fruitinebker').value=fruitinebker;
+        document.getElementById('cyclone').value=cyclone;
+        document.getElementById('ltds').value=ltds;
+        document.getElementById('claybath').value=claybath;
+        document.getElementById('usbcpo').value=usbcpo;
+        document.getElementById('usbpk').value=usbpk;
+        document.getElementById('hydrocyclone').value=hydrocyclone;
+        document.getElementById('dobicpo').value=dobicpo;
+        document.getElementById('kernelpecah').value=kernelpecah;
+        document.getElementById('kerneljamolah').value=kerneljamolah;
+        document.getElementById('kernelkapasitasolah').value=kernelkapasitasolah;
+        document.getElementById('limbah').value=limbah;
+        document.getElementById('jampompa').value=jampompa;
+        document.getElementById('landaplikasi').value=landaplikasi;
+        document.getElementById('kapasitasvs').value=kapasitasvs;
 }
 
 function bersihkanForm()
@@ -262,6 +325,15 @@ function bersihkanForm()
         document.getElementById('claybath').value='0';
         document.getElementById('usbcpo').value='0';
         document.getElementById('usbpk').value='0';
+        document.getElementById('hydrocyclone').value='0';
+        document.getElementById('dobicpo').value='0';
+        document.getElementById('kernelpecah').value='0';
+        document.getElementById('kerneljamolah').value='0';
+        document.getElementById('kernelkapasitasolah').value='0';
+        document.getElementById('limbah').value='0';
+        document.getElementById('jampompa').value='0';
+        document.getElementById('landaplikasi').value='0';
+        document.getElementById('kapasitasvs').value='0';
 }
 
 function delProduksi(kodeorg,tanggal)

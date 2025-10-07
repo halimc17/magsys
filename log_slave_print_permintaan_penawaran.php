@@ -39,8 +39,14 @@ class PDF extends FPDF
                 $res=mysql_query($str);
                 $barHt=mysql_fetch_object($res);
 
+                $str2="select * from ".$dbname.".log_permintaanhargadt where nomor='".$isi[0]."' limit 1";
+                $res2=mysql_query($str2);
+                $barDt=mysql_fetch_object($res2);
+				$kdPt=makeOption($dbname,'log_prapoht','nopp,kodeorg');
+				$kodept=$kdPt[$barDt->nopp];
                         //ambil nama pt
-                           $str1="select namaorganisasi,alamat,wilayahkota,telepon from ".$dbname.".organisasi where kodeorganisasi='".$_SESSION['org']['kodeorganisasi']."'"; 
+                           $str1="select namaorganisasi,alamat,wilayahkota,telepon from ".$dbname.".organisasi where kodeorganisasi='".$kodept."'"; 
+						   //where kodeorganisasi='".$_SESSION['org']['kodeorganisasi']."'"; 
                            $res1=mysql_query($str1);
                            while($bar1=mysql_fetch_object($res1))
                            {
@@ -52,25 +58,47 @@ class PDF extends FPDF
            $query=mysql_query($sql) or die(mysql_error());
            $res=mysql_fetch_object($query);
 
-            $sNpwp="select npwp,alamatnpwp from ".$dbname.".setup_org_npwp where kodeorg='".$_SESSION['org']['kodeorganisasi']."'";
+            $sNpwp="select npwp,alamatnpwp from ".$dbname.".setup_org_npwp where kodeorg='".$kodept."'";
             // echo"<pre>";print_r($_SESSION);echo"</pre>";echo $sNpwp;exit();
             $qNpwp=mysql_query($sNpwp) or die(mysql_error());
             $rNpwp=mysql_fetch_assoc($qNpwp);
             $this->SetMargins(15,10,0);
-                $path='images/logo.jpg';
+				if($kodept=='AMP'){
+					$path='images/logo_amp.jpg';
+				}else if($kodept=='CKS'){
+					$path='images/logo_cks.jpg';
+				}else if($kodept=='KAA'){
+					$path='images/logo_kaa.jpg';
+				}else if($kodept=='KAL'){
+					$path='images/logo_kal.jpg';
+				}else if($kodept=='LKA'){
+					$path='images/logo_lka.jpg';
+				}else if($kodept=='MPA'){
+					$path='images/logo_mpa.jpg';
+				}else if($kodept=='MHS'){
+					$path='images/logo_mhs.jpg';
+				}else if($kodept=='MEA'){
+					$path='images/logo_mea.jpg';
+				}else if($kodept=='SMA'){
+					$path='images/logo_sma.jpg';
+				}else{
+					$path='images/logo.jpg';
+				}
                 $this->Image($path,15,5,25);	
-                $this->SetFont('Arial','B',9);
+                $this->SetFont('Arial','B',10);
                 $this->SetFillColor(255,255,255);	
-                $this->SetX(55);   
+                $this->SetX(45);   
                 $this->Cell(60,5,$namapt,0,1,'L');	 
-                $this->SetX(55); 		
+                $this->SetX(45); 		
+                $this->SetFont('Arial','B',8);
                 $this->Cell(60,5,$alamatpt,0,1,'L');	
-                $this->SetX(55); 			
+                $this->SetX(45); 			
                 $this->Cell(60,5,"Tel: ".$telp,0,1,'L');	
                 $this->SetFont('Arial','B',7);
-                $this->SetX(55); 			
+                $this->SetX(45); 			
                 $this->Cell(60,5,"NPWP: ".$rNpwp['npwp'],0,1,'L');	
-                $this->SetX(55); 			
+                $this->SetX(45); 			
+                $this->SetFont('Arial','B',6);
                 $this->Cell(60,5,$_SESSION['lang']['alamat']." NPWP: ".$rNpwp['alamatnpwp'],0,1,'L');	
 
                 $this->Ln();
@@ -82,7 +110,7 @@ class PDF extends FPDF
                 $this->SetX(163);
                 $this->Cell(30,10,'PRINT TIME : '.date('d-m-Y H:i:s'),0,1,'L');		
                 //$this->Line(10,27,200,27);	
-                $this->Line(15,35,205,35);
+                $this->Line(15,35,200,35);
                 $this->SetY(50);
                 $this->SetFont('Arial','',9);
                 if($_SESSION['language']=='EN'){

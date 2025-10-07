@@ -13,7 +13,7 @@ echo"<fieldset>
 	   <legend>".$_SESSION['lang']['list']."</legend>
 	  <fieldset><legend></legend>
 	  ".$_SESSION['lang']['cari_transaksi']."
-	  <input type=text id=txtbabp size=25 class=myinputtext onkeypress=\"return tanpa_kutip(event);\" maxlength=9>
+	  <input type=text id=txtbabp size=25 class=myinputtext onkeypress=\"return tanpa_kutip(event);\" maxlength=13>
 	  <button class=mybutton onclick=cariPJD(0)>".$_SESSION['lang']['find']."</button>
 	  </fieldset>
 	  <table class=sortable cellspacing=1 border=0>
@@ -26,10 +26,22 @@ echo"<fieldset>
 	  <td>".$_SESSION['lang']['tujuan']."</td>
 	  <td>".$_SESSION['lang']['approval_status']."</td>
 	  <td>".$_SESSION['lang']['hrd']."</td>
-	  <td></td>
+	  <td align='center'>".$_SESSION['lang']['action']."</td>
 	  </tr>
 	  </head>
 	   <tbody id=containerlist>";
+
+$str="select * from ".$dbname.".setup_posting order by kodeaplikasi";
+$res=mysql_query($str);
+$postJabatansdm =array();
+$whereJabatansdm='0';
+while($row=mysql_fetch_assoc($res)) {
+   if($row['kodeaplikasi']=='sdm'){
+	  $whereJabatansdm='1';
+      $postJabatansdm[$row['jabatan']] = $row['jabatan'];
+   }
+}
+
 $limit=20;
 $page=0;
 //========================
@@ -38,11 +50,20 @@ $page=0;
   {
   	$notransaksi.=$_POST['tex'];
   }
-$str="select count(*) as jlhbrs from ".$dbname.".sdm_pjdinasht 
-        where
-		persetujuan=".$_SESSION['standard']['userid']."
-		or hrd=".$_SESSION['standard']['userid']."
-		order by jlhbrs desc";
+if($whereJabatansdm=='1'){
+	if($_SESSION['empl']['tipelokasitugas']=='HOLDING'){
+		$str="select count(*) as jlhbrs from ".$dbname.".sdm_pjdinasht where kodeorg like '%HO' order by jlhbrs desc";
+	}else{
+		$str="select count(*) as jlhbrs from ".$dbname.".sdm_pjdinasht where kodeorg not like '%HO' and kodeorg in (select kodeorganisasi from ".$dbname.".organisasi where induk='".$_SESSION['org']['kodeorganisasi']."') order by jlhbrs desc";
+	}
+}else{
+	if($_SESSION['empl']['tipelokasitugas']=='HOLDING'){
+		$str="select count(*) as jlhbrs from ".$dbname.".sdm_pjdinasht where kodeorg like '%HO' and persetujuan=".$_SESSION['standard']['userid']." or hrd=".$_SESSION['standard']['userid']."  order by jlhbrs desc";
+	}else{
+		$str="select count(*) as jlhbrs from ".$dbname.".sdm_pjdinasht where kodeorg not like '%HO' and kodeorg in (select kodeorganisasi from ".$dbname.".organisasi where induk='".$_SESSION['org']['kodeorganisasi']."') and persetujuan=".$_SESSION['standard']['userid']." or hrd=".$_SESSION['standard']['userid']."  order by jlhbrs desc";
+	}
+}
+//exit($_SESSION['empl']['tipelokasitugas']." - ".$str);
 $res=mysql_query($str);
 while($bar=mysql_fetch_object($res))
 {
@@ -59,13 +80,21 @@ while($bar=mysql_fetch_object($res))
 	 
   
   $offset=$page*$limit;
-  
-
-  $str="select * from ".$dbname.".sdm_pjdinasht 
-        where
-        persetujuan=".$_SESSION['standard']['userid']."
-		or hrd=".$_SESSION['standard']['userid']."
-		order by tanggalbuat desc  limit ".$offset.",20";	
+if($whereJabatansdm=='1'){
+	//$str="select * from ".$dbname.".sdm_pjdinasht order by tanggalbuat desc  limit ".$offset.",20";
+	if($_SESSION['empl']['tipelokasitugas']=='HOLDING'){
+		$str="select * from ".$dbname.".sdm_pjdinasht where kodeorg like '%HO' order by tanggalbuat desc limit ".$offset.",20";
+	}else{
+		$str="select * from ".$dbname.".sdm_pjdinasht where kodeorg not like '%HO' and kodeorg in (select kodeorganisasi from ".$dbname.".organisasi where induk='".$_SESSION['org']['kodeorganisasi']."') order by tanggalbuat desc limit ".$offset.",20";
+	}
+}else{
+    //$str="select * from ".$dbname.".sdm_pjdinasht where persetujuan=".$_SESSION['standard']['userid']." or hrd=".$_SESSION['standard']['userid']." order by tanggalbuat desc  limit ".$offset.",20";
+	if($_SESSION['empl']['tipelokasitugas']=='HOLDING'){
+		$str="select * from ".$dbname.".sdm_pjdinasht where kodeorg like '%HO' and persetujuan=".$_SESSION['standard']['userid']." or hrd=".$_SESSION['standard']['userid']." order by tanggalbuat desc limit ".$offset.",20";
+	}else{
+		$str="select * from ".$dbname.".sdm_pjdinasht where kodeorg not like '%HO' and kodeorg in (select kodeorganisasi from ".$dbname.".organisasi where induk='".$_SESSION['org']['kodeorganisasi']."') and persetujuan=".$_SESSION['standard']['userid']." or hrd=".$_SESSION['standard']['userid']." order by tanggalbuat desc  limit ".$offset.",20";
+	}
+}
   $res=mysql_query($str);
   $no=$page*$limit;
   while($bar=mysql_fetch_object($res))
@@ -91,16 +120,22 @@ while($bar=mysql_fetch_object($res))
 	  $add='';
 	  if($bar->statuspersetujuan==0 && $per=='persetujuan')
 	  {
-	  	$add.="&nbsp <img src=images/onebit_34.png class=resicon  title='".$_SESSION['lang']['disetujui']."' onclick=\"approvePJD('".$bar->notransaksi."','".$bar->karyawanid."',1,'".$per."');\">
-		       &nbsp <img src=images/onebit_33.png class=resicon  title='".$_SESSION['lang']['ditolak']."' onclick=\"approvePJD('".$bar->notransaksi."','".$bar->karyawanid."',2,'".$per."');\">
+	  	$add.="&nbsp <img src=images/onebit_34.png class=resicon title='".$_SESSION['lang']['disetujui']."' onclick=\"approvePJD('".$bar->notransaksi."','".$bar->karyawanid."',1,'".$per."');\">
+		       &nbsp <img src=images/onebit_33.png class=resicon title='".$_SESSION['lang']['ditolak']."' onclick=\"approvePJD('".$bar->notransaksi."','".$bar->karyawanid."',2,'".$per."');\">
          ";
 	  }
 	  if($bar->statushrd==0 && $per=='hrd')
 	  {
-	  	$add.="&nbsp <img src=images/onebit_34.png class=resicon  title='".$_SESSION['lang']['disetujui']."' onclick=\"approvePJD('".$bar->notransaksi."','".$bar->karyawanid."',1,'".$per."');\">
-		       &nbsp <img src=images/onebit_33.png class=resicon  title='".$_SESSION['lang']['ditolak']."' onclick=\"approvePJD('".$bar->notransaksi."','".$bar->karyawanid."',2,'".$per."');\">
+		if(in_array($_SESSION['empl']['kodejabatan'],$postJabatansdm)){
+	  	$add.="&nbsp <img src=images/onebit_34.png class=resicon title='".$_SESSION['lang']['disetujui']."' 		onclick=\"approvePJD('".$bar->notransaksi."','".$bar->karyawanid."',1,'".$per."');\">
+		       &nbsp <img src=images/onebit_33.png class=resicon title='".$_SESSION['lang']['ditolak']."' onclick=\"approvePJD('".$bar->notransaksi."','".$bar->karyawanid."',2,'".$per."');\">
          ";
-	  }	
+		}else{
+	  	$add.="&nbsp <img src=images/onebit_34.png class=resicon title='".$_SESSION['lang']['disetujui']."'>
+		       &nbsp <img src=images/onebit_33.png class=resicon title='".$_SESSION['lang']['ditolak']."'>
+         ";
+		}
+	  }
   if($bar->statuspersetujuan==2)
      $stpersetujuan=$_SESSION['lang']['ditolak'];
    else if($bar->statuspersetujuan==1)
@@ -114,13 +149,26 @@ while($bar=mysql_fetch_object($res))
      $sthrd=$_SESSION['lang']['disetujui'];
   else
      $sthrd=$_SESSION['lang']['wait_approve'];
-	 
+
+
+  $tujuan=$bar->tujuan1;
+  if($bar->tujuan2!=''){
+	$tujuan=$bar->tujuan2;
+  }elseif($bar->tujuan3!=''){
+	$tujuan=$bar->tujuan3;
+  }elseif($bar->tujuanlain!=''){
+	$tujuan=$bar->tujuanlain;
+  }
+  $pukpdf='';
+  //if($bar->statushrd=='1'){
+	$pukpdf="&nbsp &nbsp <img src=images/pdf.jpg class=resicon  title='".$_SESSION['lang']['pdf']."' onclick=\"previewPUKPJDPDF('".$bar->notransaksi."',event);\">";
+  //}
 	echo"<tr class=rowcontent>
 	  <td>".$no."</td>
 	  <td>".$bar->notransaksi."</td>
 	  <td>".$namakaryawan."</td>
 	  <td>".tanggalnormal($bar->tanggalbuat)."</td>
-	  <td>".$bar->tujuan2."</td>
+	  <td>".$tujuan."</td>
 	  <td>".$stpersetujuan."</td>
 	  <td>".$sthrd."</td>	
 	  <td align=center>
@@ -128,7 +176,7 @@ while($bar=mysql_fetch_object($res))
        ".$add."
 	  &nbsp &nbsp
 	   <img src=images/pdf.jpg class=resicon  title='".$_SESSION['lang']['pdf']."' onclick=\"previewPJDPDF('".$bar->notransaksi."',event);\"> 
-	  </td>	  
+	  ".$pukpdf."</td>	  
 	  </tr>";
   }
 echo"<tr><td colspan=11 align=center>

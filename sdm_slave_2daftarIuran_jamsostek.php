@@ -15,9 +15,11 @@ $_POST['kdOrg']==''?$kdOrg=$_GET['kdOrg']:$kdOrg=$_POST['kdOrg'];
 $_POST['periode']==''?$periodeGaji=$_GET['periode']:$periodeGaji=$_POST['periode'];
 $thn=explode("-",$periodeGaji);
 $_POST['tipeKary']==''?$tipeKary=$_GET['tipeKary']:$tipeKary=$_POST['tipeKary'];
+$_POST['jabatan']==''?$jabatan=$_GET['jabatan']:$jabatan=$_POST['jabatan'];
 $_GET['sistemGaji']==''?$sistemGaji=$_POST['sistemGaji']: $sistemGaji=$_GET['sistemGaji'];
 $namakar=makeOption($dbname, 'datakaryawan', 'karyawanid,namakaryawan');
 $nmTipe=makeOption($dbname, 'sdm_5tipekaryawan', 'id,tipe');
+$nmJab=makeOption($dbname, 'sdm_5jabatan', 'kodejabatan,namajabatan');
 $tglLahir=makeOption($dbname, 'datakaryawan', 'karyawanid,tanggallahir');
 $dNik=makeOption($dbname, 'datakaryawan', 'karyawanid,nik');
 $dJamsos=makeOption($dbname, 'datakaryawan', 'karyawanid,jms');
@@ -46,10 +48,11 @@ else
 }
     
     
-    $iKerja="select * from ".$dbname.".sdm_5bpjs where lokasibpjs='".$bpjsOrg."' and jenisbpjs='ketanagakerjaan' ";
+    $iKerja="select * from ".$dbname.".sdm_5bpjs where lokasibpjs='".$bpjsOrg."' and jenisbpjs='ketenagakerjaan' ";
     $nKerja=  mysql_query($iKerja) or die (mysql_error($conn));
     $dKerja=  mysql_fetch_assoc($nKerja);
         $bpjsKerja=$dKerja['bebanperusahaan'];
+        $bpjsKerja_lanjut=$dKerja['bebanperusahaan']-2;
 
         
 if($kdOrg=='')$kdOrg=$lksiTgs;
@@ -60,13 +63,17 @@ if($kdOrg=='')$kdOrg=$lksiTgs;
         }
         else
         {
-             $where.=" and tipekaryawan NOT IN ('5','6')";
+             $where.=" and tipekaryawan NOT IN ('5')";
         }
         if($sistemGaji!='')
         {
             $where.=" and sistemgaji='".$sistemGaji."'";
             $addTmbh=" and sistemgaji='".$sistemGaji."'";
         }
+
+	if($jabatan!=''){
+		$where.=" and kodejabatan='".$jabatan."'";
+	}
 
 $sGapok="select sum(jumlah) as gapok,karyawanid from ".$dbname.".sdm_5gajipokok 
          WHERE  idkomponen in (1,2,30,31) and tahun='".$thn[0]."' group by karyawanid order by karyawanid asc";
@@ -76,16 +83,18 @@ while($rGapok=mysql_fetch_assoc($qGapok))
     $dtGapok[$rGapok['karyawanid']]=$rGapok['gapok'];
     
 }
-$sJams="select distinct a.karyawanid,jumlah, b.lokasitugas from ".$dbname.".sdm_gaji a 
+$sJams="select distinct a.karyawanid,jumlah, b.lokasitugas,b.kodejabatan,b.tipekaryawan from ".$dbname.".sdm_gaji a 
         left join ".$dbname.".datakaryawan b on a.karyawanid=b.karyawanid
         where a.idkomponen='3' and a.kodeorg like '%".$kdOrg."%' and periodegaji='".$periodeGaji."'  ".$where."";
- //exit("Error:".$sJams);
+//exit("Warning:".$sJams);
 $qJams=mysql_query($sJams) or die(mysql_error($conn));
 while($rJams=mysql_fetch_assoc($qJams))
 {
     $dtJams[$rJams['karyawanid']]=$rJams['jumlah'];
     $data[$rJams['karyawanid']]=$rJams['karyawanid'];
     $datalok[$rJams['karyawanid']]=$rJams['lokasitugas'];
+    $namajab[$rJams['karyawanid']]=$rJams['kodejabatan'];
+    $tipekary[$rJams['karyawanid']]=$rJams['tipekaryawan'];
 }
  $cekDt=count($data);
 if($cekDt==0)
@@ -104,40 +113,45 @@ switch($proses)
 	$tab.="<table cellspacing='1' border='0' class='sortable'>
 	<thead class=rowheader>
 	<tr>
-	<td>No</td>
-	<td>".$_SESSION['lang']['nama']."</td>
-	<td>".$_SESSION['lang']['lokasitugas']."</td>
-	<td>".$_SESSION['lang']['tanggallahir']."</td>
-        <td>".$_SESSION['lang']['tipekaryawan']."</td>
-        <td>".$_SESSION['lang']['nik']."</td>
-        <td>".$_SESSION['lang']['nokpj']."</td>
-        <td>".$_SESSION['lang']['gaji']."</td>
-        <td>".$_SESSION['lang']['potongan']." ".$_SESSION['lang']['karyawan']."</td>
-        <td>".$_SESSION['lang']['perusahaan']."</td></tr></thead>
+		<td align=center>No</td>
+		<td align=center>".$_SESSION['lang']['unit']."</td>
+		<td align=center>".$_SESSION['lang']['nik']."</td>
+		<td align=center>".$_SESSION['lang']['nama']."</td>
+		<td align=center>".$_SESSION['lang']['tanggallahir']."</td>
+		<td align=center>".$_SESSION['lang']['jabatan']."</td>
+		<td align=center>".$_SESSION['lang']['tipekaryawan']."</td>
+        <td align=center>".$_SESSION['lang']['nokpj']."</td>
+        <td align=center>".$_SESSION['lang']['gaji']."</td>
+        <td align=center>".$_SESSION['lang']['potongan']." ".$_SESSION['lang']['karyawan']."</td>
+        <td align=center>".$_SESSION['lang']['perusahaan']."</td></tr></thead>
 	<tbody>";
-        
-        
-        
         
 	foreach($data as $brsData)
         {
             $no+=1;
            
-                $sDtip="select distinct tipekaryawan from ".$dbname.".datakaryawan where karyawanid='".$brsData."'";
-                $qDtip=mysql_query($sDtip) or die(mysql_error($conn));
-                $rDtip=mysql_fetch_assoc($qDtip);
+            //    $sDtip="select distinct tipekaryawan from ".$dbname.".datakaryawan where karyawanid='".$brsData."'";
+            //    $qDtip=mysql_query($sDtip) or die(mysql_error($conn));
+            //    $rDtip=mysql_fetch_assoc($qDtip);
+			if($tipekary[$brsData]==6){
+				$bpjsKerjaPT=($dtGapok[$brsData]*$bpjsKerja_lanjut)/100;
+			}else{
+				$bpjsKerjaPT=($dtGapok[$brsData]*$bpjsKerja)/100;
+			}
             $tab.="<tr class=rowcontent>
-            <td>".$no."</td>
+            <td align=center>".$no."</td>
+            <td align=center>".$datalok[$brsData]."</td>
+            <td align=center>".$dNik[$brsData]."</td>
             <td>".$namakar[$brsData]."</td>
-            <td>".$datalok[$brsData]."</td>
-            <td>".$tglLahir[$brsData]."</td>  
-            <td>".$nmTipe[$rDtip['tipekaryawan']]."</td>
-            <td>".$dNik[$brsData]."</td>
-            <td>".$dJamsos[$brsData]."</td>
+            <td align=center>".$tglLahir[$brsData]."</td>
+            <td>".$nmJab[$namajab[$brsData]]."</td>
+            <td>".$nmTipe[$tipekary[$brsData]]."</td>
+            <td align=left>".$dJamsos[$brsData]."</td>
             <td align=right>".number_format($dtGapok[$brsData],2)."</td>
             <td align=right>".number_format($dtJams[$brsData],2)."</td>
-            <td align=right>".number_format(($dtGapok[$brsData]*$bpjsKerja)/100,2)."</td>
+            <td align=right>".number_format($bpjsKerjaPT,2)."</td>
             </tr>";
+            //<td>".$nmTipe[$rDtip['tipekaryawan']]."</td>
             
         }
         
@@ -232,14 +246,14 @@ class PDF extends FPDF
                 $this->Cell($width-100,$height,$orgData[0]['alamat'],0,1,'L');	
                 $this->SetX(100); 			
                 $this->Cell($width-100,$height,"Tel: ".$orgData[0]['telepon'],0,1,'L');	
-                $this->Line($this->lMargin,$this->tMargin+($height*4),
-                $this->lMargin+$width,$this->tMargin+($height*4));
+                $this->Line($this->lMargin,$this->tMargin+($height*3),
+                $this->lMargin+$width,$this->tMargin+($height*3));
                 $this->Ln();
                 
                 $this->SetFont('Arial','B',10);
-				$this->Cell((20/100*$width)-5,$height,$_SESSION['lang']['dafJams']." ".$sistemGaji,'',0,'L');
-				$this->Ln();
-				$this->Ln();
+				//$this->Cell((20/100*$width)-5,$height,$_SESSION['lang']['dafJams']." ".$sistemGaji,'',0,'L');
+				//$this->Ln();
+				//$this->Ln();
 				
 				$this->Cell($width,$height,strtoupper($_SESSION['lang']['dafJams']),'',0,'C');
 				$this->Ln();
@@ -249,14 +263,15 @@ class PDF extends FPDF
               	$this->SetFont('Arial','B',7);
                 $this->SetFillColor(220,220,220);
 				$this->Cell(3/100*$width,$height,'No',1,0,'C',1);
-			        $this->Cell(20/100*$width,$height,$_SESSION['lang']['namakaryawan'],1,0,'C',1);	
-                                $this->Cell(10/100*$width,$height,$_SESSION['lang']['tanggallahir'],1,0,'C',1);	
-                                $this->Cell(10/100*$width,$height,$_SESSION['lang']['tipekaryawan'],1,0,'C',1);	
-				$this->Cell(8/100*$width,$height,$_SESSION['lang']['nik'],1,0,'C',1);	
-                                $this->Cell(15/100*$width,$height,$_SESSION['lang']['nokpj'],1,0,'C',1);	
-                                $this->Cell(10/100*$width,$height,$_SESSION['lang']['gaji'],1,0,'C',1);	
-                                $this->Cell(15/100*$width,$height,$_SESSION['lang']['potongan']." ".$_SESSION['lang']['karyawan'],1,0,'C',1);	
-                                $this->Cell(10/100*$width,$height,$_SESSION['lang']['perusahaan'],1,1,'C',1);
+		        $this->Cell(5/100*$width,$height,$_SESSION['lang']['unit'],1,0,'C',1);	
+				$this->Cell(7/100*$width,$height,'NIK',1,0,'C',1);	
+		        $this->Cell(29/100*$width,$height,$_SESSION['lang']['namakaryawan'],1,0,'C',1);	
+				$this->Cell(9/100*$width,$height,$_SESSION['lang']['tanggallahir'],1,0,'C',1);	
+				$this->Cell(7/100*$width,$height,$_SESSION['lang']['level'],1,0,'C',1);	
+				$this->Cell(10/100*$width,$height,$_SESSION['lang']['nokpj'],1,0,'C',1);	
+				$this->Cell(10/100*$width,$height,$_SESSION['lang']['gaji'],1,0,'C',1);	
+				$this->Cell(10/100*$width,$height,$_SESSION['lang']['karyawan'],1,0,'C',1);	
+				$this->Cell(10/100*$width,$height,$_SESSION['lang']['perusahaan'],1,1,'C',1);
             }
                 
             function Footer()
@@ -277,20 +292,24 @@ class PDF extends FPDF
                 foreach($data as $brsData)
                 {
                     $no+=1;
-                    
+					if($tipekary[$brsData]==6){
+						$bpjsKerjaPT=($dtGapok[$brsData]*$bpjsKerja_lanjut)/100;
+					}else{
+						$bpjsKerjaPT=($dtGapok[$brsData]*$bpjsKerja)/100;
+					}
                         $sDtip="select distinct tipekaryawan from ".$dbname.".datakaryawan where karyawanid='".$brsData."'";
                         $qDtip=mysql_query($sDtip) or die(mysql_error($conn));
                         $rDtip=mysql_fetch_assoc($qDtip);
-                        $pdf->Cell(3/100*$width,$height,$no,1,0,'L',1);
-                        $pdf->Cell(20/100*$width,$height,$namakar[$brsData],1,0,'L',1);	
-                        $pdf->Cell(10/100*$width,$height,tanggalnormal($tglLahir[$brsData]),1,0,'C',1);	
-                        $pdf->Cell(10/100*$width,$height,$nmTipe[$brsData],1,0,'L',1);	
-                        $pdf->Cell(8/100*$width,$height,$dNik[$brsData],1,0,'L',1);	
-                        $pdf->Cell(15/100*$width,$height,$dJamsos[$brsData],1,0,'L',1);	
+                        $pdf->Cell(3/100*$width,$height,$no,1,0,'C',1);
+                        $pdf->Cell(5/100*$width,$height,$datalok[$brsData],1,0,'L',1);	
+                        $pdf->Cell(7/100*$width,$height,$dNik[$brsData],1,0,'L',1);	
+                        $pdf->Cell(29/100*$width,$height,$namakar[$brsData],1,0,'L',1);	
+                        $pdf->Cell(9/100*$width,$height,tanggalnormal($tglLahir[$brsData]),1,0,'C',1);	
+                        $pdf->Cell(7/100*$width,$height,$nmTipe[$tipekary[$brsData]],1,0,'L',1);	
+                        $pdf->Cell(10/100*$width,$height,$dJamsos[$brsData],1,0,'L',1);	
                         $pdf->Cell(10/100*$width,$height,number_format($dtGapok[$brsData],2),1,0,'R',1);	
-                        $pdf->Cell(15/100*$width,$height,number_format($dtJams[$brsData],2),1,0,'R',1);	
-                        $pdf->Cell(10/100*$width,$height,number_format(($dtGapok[$brsData]*$bpjsKerja)/100,2),1,1,'R',1);
-                    
+                        $pdf->Cell(10/100*$width,$height,number_format($dtJams[$brsData],2),1,0,'R',1);	
+                        $pdf->Cell(10/100*$width,$height,number_format($bpjsKerjaPT,2),1,1,'R',1);
                 }
 
 		
@@ -310,11 +329,13 @@ class PDF extends FPDF
 	$tab.="<table cellspacing='1' border='1' class='sortable'>
 	<thead class=rowheader>
 	<tr>
-	<td bgcolor=#DEDEDE align=center>No</td>
-	<td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['nama']."</td>
-	<td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['tanggallahir']."</td>
-        <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['tipekaryawan']."</td>
+		<td bgcolor=#DEDEDE align=center>No</td>
+		<td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['unit']."</td>
         <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['nik']."</td>
+		<td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['nama']."</td>
+		<td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['tanggallahir']."</td>
+        <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['jabatan']."</td>
+        <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['tipekaryawan']."</td>
         <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['nokpj']."</td>
         <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['gaji']."</td>
         <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['potongan']." ".$_SESSION['lang']['karyawan']."</td>
@@ -323,21 +344,24 @@ class PDF extends FPDF
 	foreach($data as $brsData)
         {
             $no+=1;
-                $sDtip="select distinct tipekaryawan from ".$dbname.".datakaryawan where karyawanid='".$brsData."'";
-                $qDtip=mysql_query($sDtip) or die(mysql_error($conn));
-                $rDtip=mysql_fetch_assoc($qDtip);
+			if($tipekary[$brsData]==6){
+				$bpjsKerjaPT=($dtGapok[$brsData]*$bpjsKerja_lanjut)/100;
+			}else{
+				$bpjsKerjaPT=($dtGapok[$brsData]*$bpjsKerja)/100;
+			}
             $tab.="<tr class=rowcontent>
-            <td>".$no."</td>
+            <td align=center>".$no."</td>
+            <td align=center>".$datalok[$brsData]."</td>
+            <td align=center>".$dNik[$brsData]."</td>
             <td>".$namakar[$brsData]."</td>
-            <td>".$tglLahir[$brsData]."</td>  
-            <td>".$nmTipe[$rDtip['tipekaryawan']]."</td>
-            <td>".$dNik[$brsData]."</td>
-            <td>".$dJamsos[$brsData]."</td>
+            <td align=center>".$tglLahir[$brsData]."</td>
+            <td>".$nmJab[$namajab[$brsData]]."</td>
+            <td>".$nmTipe[$tipekary[$brsData]]."</td>
+            <td align=left>".$dJamsos[$brsData]."</td>
             <td align=right>".number_format($dtGapok[$brsData],2)."</td>
             <td align=right>".number_format($dtJams[$brsData],2)."</td>
-            <td align=right>".number_format(($dtGapok[$brsData]*$bpjsKerja)/100,2)."</td>
+            <td align=right>".number_format($bpjsKerjaPT,2)."</td>
             </tr>";
-            
         }
         
 	

@@ -97,7 +97,7 @@ if($proses=='getkebun'||$proses=='getafdeling'){
 
     // noakun 62
     $str="SELECT noakun, namaakun FROM ".$dbname.".keu_5akun
-        WHERE length(noakun)=5 and noakun between '62101' and '62102' order by noakun";
+        WHERE length(noakun)=5 and noakun between '62101' and '62190' and noakun<>'62108' order by noakun";
     $query=mysql_query($str) or die(mysql_error($conn));
     while($res=mysql_fetch_assoc($query))
     {
@@ -106,18 +106,18 @@ if($proses=='getkebun'||$proses=='getafdeling'){
     }
     
     // noakun 62
-    $str="SELECT noakun, namaakun FROM ".$dbname.".keu_5akun
-        WHERE length(noakun)=5 and noakun between '62104' and '62111' order by noakun";
-    $query=mysql_query($str) or die(mysql_error($conn));
-    while($res=mysql_fetch_assoc($query))
-    {
-        $akun62[$res['noakun']]=$res['noakun'];
-        $namaakun[$res['noakun']]=$res['namaakun'];
-    }
+ //   $str="SELECT noakun, namaakun FROM ".$dbname.".keu_5akun
+ //       WHERE length(noakun)=5 and noakun between '62104' and '62111' order by noakun";
+ //   $query=mysql_query($str) or die(mysql_error($conn));
+ //  while($res=mysql_fetch_assoc($query))
+ //   {
+ //       $akun62[$res['noakun']]=$res['noakun'];
+ //       $namaakun[$res['noakun']]=$res['namaakun'];
+ //   }
     
     // noakun 623
     $str="SELECT noakun, namaakun FROM ".$dbname.".keu_5akun
-        WHERE length(noakun)=5 and noakun between '62103' and '62103' order by noakun";
+        WHERE length(noakun)=5 and noakun between '62108' and '62108' order by noakun";
     $query=mysql_query($str) or die(mysql_error($conn));
     while($res=mysql_fetch_assoc($query))
     {
@@ -355,7 +355,7 @@ if($proses=='getkebun'||$proses=='getafdeling'){
     
     // tampil total akun 62
     $tab.="<tr class=rowtitle>
-    <td align=right ".$bg.">612XXXX</td>
+    <td align=right ".$bg.">621XXXX</td>
     <td align=left ".$bg.">Pemeliharaan TM</td>";
     if(!empty($listpt))foreach($listpt as $list){
         @$bipt62perluas=$bipt62[$list]/$luaspt[$list];
@@ -393,7 +393,7 @@ if($proses=='getkebun'||$proses=='getafdeling'){
     
     // tampil total 623
     $tab.="<tr class=rowtitle>
-    <td align=right ".$bg.">61203XX</td>
+    <td align=right ".$bg.">62108XX</td>
     <td align=left ".$bg.">Pemupukan TM</td>";
     if(!empty($listpt))foreach($listpt as $list){
         @$bipt623perluas=$bipt62[$list]/$luaspt[$list];

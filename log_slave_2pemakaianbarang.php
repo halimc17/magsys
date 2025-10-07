@@ -45,6 +45,7 @@ if($tgl2=='--')
             <td align=center>".$_SESSION['lang']['tanggal']."</td>
                 
             <td align=center>".$_SESSION['lang']['gudang']."</td>
+            <td align=center>".$_SESSION['lang']['kode']."</td>
             <td align=center>".$_SESSION['lang']['alokasi']."</td>
             <td align=center>".$_SESSION['lang']['kendaraan']."</td> 
             <td align=center>".$_SESSION['lang']['kodebarang']."</td>
@@ -72,12 +73,12 @@ while($dList=mysql_fetch_assoc($nList))
     $stream.="
         <td align=center>".$no."</td>
         <td align=left>".$dList['notransaksi']."</td>
-        <td align=left>".tanggalnormal($dList['tanggal'])."</td>    
-        
-        <td align=right>".$dList['kodegudang']."</td>    
-        <td align=right>".$dList['kodeblok']."</td>        
+        <td align=center>".tanggalnormal($dList['tanggal'])."</td>    
+        <td align=center>".$dList['kodegudang']."</td>
+        <td align=left>".$dList['kodeblok']."</td>        
+        <td align=left>".$nmOrg[$dList['kodeblok']]."</td>        
         <td align=left>".$dList['kodemesin']."</td>         
-        <td align=right>".$dList['kodebarang']."</td>     
+        <td align=center>".$dList['kodebarang']."</td>     
         <td align=left>".$nmBrg[$dList['kodebarang']]."</td>    
         <td align=right>".number_format($dList['jumlah'],2)."</td> 
         </tr>";			

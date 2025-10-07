@@ -166,7 +166,7 @@ switch($method){
 			$sCek="select bagian from ".$dbname.".datakaryawan where karyawanid='".$_SESSION['standard']['userid']."'";
 			$qCek=mysql_query($sCek) or die(mysql_error($conn));
 			$rCek=mysql_fetch_assoc($qCek);
-			if($rCek['bagian']=='PUR'||$rCek['bagian']=='AGR') {
+			if($rCek['bagian']=='PUR'||$rCek['bagian']=='OMIS') {
 				$sql="select count(*) jmlhrow from ".$dbname.".log_prapoht order by tanggal desc";
 				$str="select * from ".$dbname.".log_prapoht order by tanggal desc limit ".$offset.",".$limit." ";
 			} else {
@@ -222,12 +222,12 @@ switch($method){
 					<td>".$bas['namaorganisasi']."</td>
 					<td>".$rkry['namakaryawan']."</td>
 					<td>".$b."</td>";
-				if($bar['dibuat']==$_SESSION['standard']['userid']) {
-					echo"<td><img src=images/application/application_edit.png class=resicon  title='Edit' onclick=\"fillField('".$bar['nopp']."','".tanggalnormal($bar['tanggal'])."','".$ed_kd_org."','".$bar['close']."','".$stTgl."');\" >
-					<img src=images/application/application_delete.png class=resicon  title='Delete' onclick=\"delPp('".$bar['nopp']."','".$bar['close']."','".$stTgl."');\" >";
-					echo"<img onclick=\"previewDetail('".$bar['nopp']."',event);\" title=\"Detail PP\" class=\"resicon\" src=\"images/zoom.png\"><img src=images/pdf.jpg class=resicon  title='Print' onclick=\"masterPDF('log_prapoht','".$bar['nopp']."','','log_slave_print_log_pp',event);\"></td>";
+				if($bar['dibuat']==$_SESSION['standard']['userid'] and $bar['hasilpersetujuan1']=='0') {
+					echo"<td><img src=images/application/application_edit.png class=resicon  title='Edit' onclick=\"fillField('".$bar['nopp']."','".tanggalnormal($bar['tanggal'])."','".$ed_kd_org."','".$bar['close']."','".$stTgl."');\" >&nbsp
+					<img src=images/application/application_delete.png class=resicon  title='Delete' onclick=\"delPp('".$bar['nopp']."','".$bar['close']."','".$stTgl."');\" >&nbsp";
+					echo"<img onclick=\"previewDetail('".$bar['nopp']."',event);\" title=\"Detail PP\" class=\"resicon\" src=\"images/zoom.png\">&nbsp<img src=images/pdf.jpg class=resicon  title='Print' onclick=\"masterPDF('log_prapoht','".$bar['nopp']."','','log_slave_print_log_pp',event);\"></td>";
 				} else {
-					echo"<td><img onclick=\"previewDetail('".$bar['nopp']."',event);\" title=\"Detail PP\" class=\"resicon\" src=\"images/zoom.png\">
+					echo"<td><img onclick=\"previewDetail('".$bar['nopp']."',event);\" title=\"Detail PP\" class=\"resicon\" src=\"images/zoom.png\">&nbsp
 					<img src=images/pdf.jpg class=resicon  title='Print' onclick=\"masterPDF('log_prapoht','".$bar['nopp']."','','log_slave_print_log_pp',event);\"></td>";
 				}
 			}
@@ -612,9 +612,12 @@ switch($method){
                               where karyawanid!='".$_SESSION['standard']['userid']."' and (tanggalkeluar = '0000-00-00' or tanggalkeluar > '".date("Y-m-d")."') and tipekaryawan in ('0','7','8')
                               and lokasitugas!='' order by namakaryawan asc";
                     }*/
+                    //$str="select distinct a.karyawanid,b.namakaryawan,b.lokasitugas from ".$dbname.".setup_approval a 
+					//		left join ".$dbname.".datakaryawan b on a.karyawanid=b.karyawanid 
+					//		where a.karyawanid!='".$_SESSION['standard']['userid']."' and a.applikasi='PP1' and a.kodeunit='".$unit."' order by b.namakaryawan asc";
                     $str="select distinct a.karyawanid,b.namakaryawan,b.lokasitugas from ".$dbname.".setup_approval a 
-                              left join ".$dbname.".datakaryawan b on a.karyawanid=b.karyawanid where 
-                              a.karyawanid!='".$_SESSION['standard']['userid']."' and a.applikasi='PP1' and a.kodeunit='".$unit."'  order by b.namakaryawan asc";
+							left join ".$dbname.".datakaryawan b on a.karyawanid=b.karyawanid 
+							where a.applikasi='PP1' and a.kodeunit='".$unit."' order by b.namakaryawan asc";
                     $qry=mysql_query($str) or die(mysql_error($conn));
 					$optKry="";
                     while($rkry=mysql_fetch_assoc($qry))

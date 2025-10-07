@@ -34,6 +34,14 @@ if($statuspo!='')
 	{
 		$wherePo = " and (b.lokalpusat = '0' or b.lokalpusat is null)";
 	}
+
+  if($supkontran=='K'){
+    if($statuspo==1){
+      $wherePo = " and right(unitkontrak,2)!='HO'";
+    }else{
+      $wherePo = " and right(unitkontrak,2)='HO'";
+    }
+  }
 }
 else
 {
@@ -54,7 +62,6 @@ $str = "select a.*,b.lokalpusat from ".$dbname.".aging_sch_vw a
 		on a.nopo = b.nopo
                 where a.posting=1 and a.tanggal <= '".$tanggalv."' and (a.nilaiinvoice > dibayar or a.dibayar is NULL) "
         . " ".$whereGudang." ".$wherePt." ".$wherePo." ".$wheresupkontran." ";
-	
 		
 	//where a.tanggal > '2011-12-31' and (a.nilaiinvoice > dibayar or a.dibayar is NULL) ".$whereGudang." ".$wherePt." ".$wherePo."";
 

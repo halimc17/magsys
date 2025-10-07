@@ -79,6 +79,7 @@ function uploadData()
 	jmMasuk=document.getElementById('jmMasuk').innerHTML;	
 	jmKeluar=document.getElementById('jmKeluar').innerHTML;	
 	brtBrsih=document.getElementById('brtBrsih').innerHTML;	
+	tf=document.getElementById('tf').innerHTML;
 	brtMsk=document.getElementById('brtMsk').innerHTML;	
 	brtOut=document.getElementById('brtOut').innerHTML;	
 	usrNm=document.getElementById('usrNm').innerHTML;	
@@ -98,15 +99,16 @@ function uploadData()
 	mentah=document.getElementById('mentah').innerHTML;	
 	tkpanjang=document.getElementById('tkpanjang').innerHTML;
 	tigakilo=document.getElementById('tigakilo').innerHTML;
+	divisi=document.getElementById('divisi').innerHTML;
 	
 	param='proses=uploadData';
 	param+='&idTimbangan='+idTimbangan+'&tglData='+tglData+'&custData='+custData+'&kbn='+kbn+'&pabrik='+pabrik;
 	param+='&kdBrg='+kdBrg+'&spbno='+spbno+'&sibno='+sibno+'&thnTnm='+thnTnm+'&thnTnm2='+thnTnm2+'&thnTnm3='+thnTnm3;
 	param+='&jmlhjjg='+jmlhjjg+'&jmlhjjg2='+jmlhjjg2+'&jmlhjjg3='+jmlhjjg3+'&brndln='+brndln+'&kdVhc='+kdVhc+'&spir='+spir;
 	param+='&jmMasuk='+jmMasuk+'&jmKeluar='+jmKeluar+'&brtBrsih='+brtBrsih+'&brtMsk='+brtMsk+'&brtOut='+brtOut+'&usrNm='+usrNm;
-	param+='&kntrkNo='+kntrkNo+'&potsortasi='+potsortasi+'&nodo='+nodo;
+	param+='&kntrkNo='+kntrkNo+'&potsortasi='+potsortasi+'&tf='+tf+'&nodo='+nodo;
 	param+='&buahbusuk='+buahbusuk+'&buahkrgmatang='+buahkrgmatang+'&buahsakit='+buahsakit+'&janjangkosong='+janjangkosong+'&lwtmatang='+lwtmatang;
-	param+='&mentah='+mentah+'&tkpanjang='+tkpanjang+'&tigakilo='+tigakilo+'&sloc='+sloc;
+	param+='&mentah='+mentah+'&tkpanjang='+tkpanjang+'&tigakilo='+tigakilo+'&sloc='+sloc+'&divisi='+divisi;
 	//	alert(param);
 	tujuan = 'show_data.php';
 	pesanerror='';

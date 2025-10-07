@@ -45,14 +45,24 @@ else
 	left join ".$dbname.".log_5supplier b on a.koderekanan=b.supplierid
 	where ".$cond."='".$dataH['nopo']."'";
 }    
-
+if($dataH['tipeinvoice']=='t'){
+    $qSupp="select b.namacustomer as namasupplier,a.matauang from ".$dbname.".pmn_traderht a
+			left join ".$dbname.".pmn_4customer b on a.kodecustomer=b.kodecustomer
+			where nokontrakext='".$dataH['nopo']."'";    
+}
 //exit("Error:$qSupp");
 
 $resSupp = fetchData($qSupp);
 if($resSupp[0]['namasupplier']=='' || !isset($resSupp[0]['namasupplier'])){
-    $str="select   b.namasupplier from ".$dbname.".keu_tagihanht a left join ".$dbname.".log_5supplier b
+	if($dataH['tipeinvoice']=='t'){
+		$str="select b.namacustomer as namasupplier from ".$dbname.".keu_tagihanht a 
+			  left join ".$dbname.".pmn_4customer b on a.kodecustomer=b.kodecustomer 
+			  where a.noinvoice='".$param['noinvoice']."'";
+	}else{
+		$str="select b.namasupplier from ".$dbname.".keu_tagihanht a left join ".$dbname.".log_5supplier b
               on a.kodesupplier=b.supplierid where a.noinvoice='".$param['noinvoice']."'";
-    $res=mysql_query($str);
+	}
+	$res=mysql_query($str);
     while($bar=mysql_fetch_object($res)){
 		$resSupp[0]['namasupplier']=$bar->namasupplier;
 	}
@@ -78,6 +88,15 @@ switch($proses) {
 				break;
 			case 'k':
 				$tipe = 'SPK';
+				break;
+			case 's':
+				$tipe = 'SJ';
+				break;
+			case 'b':
+				$tipe = 'BK';
+				break;
+			case 't':
+				$tipe = 'Kontrak Ext.';
 				break;
 		}
 		
@@ -114,20 +133,23 @@ switch($proses) {
                 
                 $pdf->Cell(85,$height,$_SESSION['lang']['nilaiinvoice'],0,0,'L');
                 $pdf->Cell(10,$height,':',0,0,'L');
+		if($dataH['nilaiinvoice']==0 or $dataH['nilaiinvoice']==''){
+                $pdf->Cell(25,$height,number_format($dataH['uangmuka'],2),0,1,'L');
+		}else{
                 $pdf->Cell(25,$height,number_format($dataH['nilaiinvoice'],2),0,1,'L');
-                
+		}                
                 
                 //sisi kanan
                 
                 $pdf->SetXY(290,$startY);
                 $awalx=$pdf->GetX();
                 $setpanjang=275;
-                $pdf->Cell($setpanjang,$height,$_SESSION['lang']['po'],1,1,'L');
+                $pdf->Cell($setpanjang,$height,$tipe,1,1,'L');
                 
 		
                 $pdf->SetX(290);   
                 
-                $pdf->Cell(85,$height,$_SESSION['lang']['nopo'],0,0,'L');
+                $pdf->Cell(85,$height,'No. '.$tipe,0,0,'L');
 		$pdf->Cell(10,$height,':',0,0,'L');
                 $pdf->Cell(25,$height,$dataH['nopo'],0,1,'L');
                 

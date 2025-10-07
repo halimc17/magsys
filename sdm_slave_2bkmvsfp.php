@@ -5,23 +5,37 @@ require_once('lib/nangkoelib.php');
 require_once('lib/zLib.php');
 require_once('lib/fpdf.php');
 
-
-
-
 //$proses=$_GET['proses'];
 
 $proses = checkPostGet('proses','');
 $unit = checkPostGet('unit','');
+$divisi = checkPostGet('divisi','');
 $tgl1 = tanggalsystemn(checkPostGet('tgl1',''));
 $tgl2 = tanggalsystemn(checkPostGet('tgl2',''));
 
+if($proses=='getDivisi'){
+    $optDivisi="<option value=''>".$_SESSION['lang']['all']."</option>";
+    $sDivisi="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi where tipe not like 'GUDANG%' and (induk='".$unit."' or kodeorganisasi='".$unit."')";
+    $qDivisi=mysql_query($sDivisi) or die(mysql_error($conn));
+    while($rDivisi=  mysql_fetch_assoc($qDivisi)){
+		$optDivisi.="<option value=".$rDivisi['kodeorganisasi'].">".$rDivisi['namaorganisasi']."</option>";
+    }
+    echo $optDivisi;
+	exit;
+}
 $nmOrg=makeOption($dbname,'organisasi','kodeorganisasi,namaorganisasi');
 $nmBrg=makeOption($dbname,'log_5masterbarang','kodebarang,namabarang');
 $stBrg=makeOption($dbname,'log_5masterbarang','kodebarang,satuan');
 $arrPost=array("0"=>"Not Posted","1"=>"Posting");
 
-
-
+$whr='';
+if($divisi!=''){
+	if(strlen($divisi)==4){
+		$whr=" and (a.subbagian='".$divisi."' or a.subbagian='')";
+	}else{
+		$whr=" and a.subbagian='".$divisi."' ";
+	}
+}
 if($tgl1=='--')
 {
     $tgl1='';
@@ -31,20 +45,17 @@ if($tgl2=='--')
     $tgl2='';
 }
 
-
 $golkar=makeOption($dbname,'datakaryawan','karyawanid','kodegolongan');
 $namagol=makeOption($dbname,'sdm_5golongan','kodegolongan','namagolongan');
 $namatipe=makeOption($dbname,'sdm_5tipekaryawan','id,tipe');
 
-
-
-
-$sGetKary="select sum(c.jumlah) as jumlah,a.kodegolongan,a.karyawanid,a.nik,b.namajabatan,a.namakaryawan,a.tipekaryawan,
-           subbagian from ".$dbname.".datakaryawan a 
+$sGetKary="select sum(c.jumlah) as jumlah,a.kodegolongan,a.karyawanid,a.nik,b.namajabatan,a.namakaryawan,a.tipekaryawan,d.tipe,a.subbagian,a.lokasitugas
+           from ".$dbname.".datakaryawan a 
            left join ".$dbname.".sdm_5jabatan b on a.kodejabatan=b.kodejabatan 
            left join ".$dbname.".sdm_5gajipokok c on a.karyawanid=c.karyawanid
-           where (tanggalkeluar>'".$tgl1."' or tanggalkeluar='0000-00-00') and lokasitugas='$unit' and 
-           a.tipekaryawan in ('1','2','3','4')  group by a.karyawanid order by namakaryawan asc";  
+           left join ".$dbname.".sdm_5tipekaryawan d on a.tipekaryawan=d.id
+           where (a.tanggalkeluar>'".$tgl1."' or a.tanggalkeluar='0000-00-00') and a.lokasitugas='$unit' ".$whr." and
+           a.tipekaryawan in ('1','2','3','4','6')  group by a.karyawanid order by a.subbagian,a.tipekaryawan,a.kodejabatan,a.namakaryawan asc";  
  
  //echo $sGetKary;
  //$sGetKar="";
@@ -52,21 +63,17 @@ $sGetKary="select sum(c.jumlah) as jumlah,a.kodegolongan,a.karyawanid,a.nik,b.na
 $rGetkary=fetchData($sGetKary);
 foreach($rGetkary as $row => $kar)
 {
-        $resData[$kar['karyawanid']][]=$kar['karyawanid'];
-   	
+	$resData[$kar['karyawanid']][]=$kar['karyawanid'];
 	//$karyawanid[$kar['karyawanid']]=$kar['karyawanid'];
 	$jumlahUmr[$kar['karyawanid']]=$kar['jumlah'];
-        $namakar[$kar['karyawanid']]=$kar['namakaryawan'];
-        $nikkar[$kar['karyawanid']]=$kar['nik'];
-        $nmJabatan[$kar['karyawanid']]=$kar['namajabatan'];
-        $sbgnb[$kar['karyawanid']]=$kar['subbagian'];
+	$namakar[$kar['karyawanid']]=$kar['namakaryawan'];
+	$nikkar[$kar['karyawanid']]=$kar['nik'];
+	$nmJabatan[$kar['karyawanid']]=$kar['namajabatan'];
+	$subbagian[$kar['karyawanid']]=$kar['subbagian'];
 	$tipekaryawan[$kar['karyawanid']]=$kar['tipekaryawan'];
+	$tipekary[$kar['karyawanid']]=$kar['tipe'];
 	$golongankar[$kar['karyawanid']]=$kar['kodegolongan'];
 }  
-
-
-		
-		
        
         $test = rangeTanggal($tgl1, $tgl2);
 
@@ -78,8 +85,6 @@ foreach($rGetkary as $row => $kar)
 		echo"warning:Range tanggal tidak valid";
 		exit();
 	}
-        
-
         
 	$sAbsen="select kodeabsen from ".$dbname.".sdm_5absensi order by kodeabsen";
 	$qAbsen=mysql_query($sAbsen) or die(mysql_error());
@@ -101,6 +106,9 @@ foreach($rGetkary as $row => $kar)
               <td rowspan=3>No</td>
                 <td rowspan=3 align=center>".$_SESSION['lang']['namakaryawan']."</td>
                 <td rowspan=3  align=center>".$_SESSION['lang']['nik']."</td>
+                <td rowspan=3  align=center>".$_SESSION['lang']['subbagian']."</td>
+                <td rowspan=3  align=center>".$_SESSION['lang']['jabatan']."</td>
+                <td rowspan=3  align=center>".$_SESSION['lang']['tipe']."</td>
                 <td colspan=".$colspanTgl."  align=center>".$_SESSION['lang']['tanggal']."</td>
               </tr>";
              $ind.="<tr>";
@@ -166,7 +174,7 @@ foreach($rGetkary as $row => $kar)
        
 
         $sPrestasi="select a.upahkerja,b.tanggal,a.jumlahhk,a.nik,a.notransaksi from ".$dbname.".kebun_prestasi a left join ".$dbname.".kebun_aktifitas b on a.notransaksi=b.notransaksi 
-            where b.notransaksi like '%PNN%' and b.kodeorg like '%".$unit."%' and b.tanggal between '".$tgl1."' and '".$tgl2."'";
+            where (b.notransaksi like '%PNN%' or b.notransaksi like '%/BM/%') and b.kodeorg like '%".$unit."%' and b.tanggal between '".$tgl1."' and '".$tgl2."'";
          //exit("Error".$sPrestasi);
         $rPrestasi=fetchData($sPrestasi);
         foreach ($rPrestasi as $presBrs =>$resPres)
@@ -299,12 +307,25 @@ function removeduplicate($notransaksi) // buat ngilangin nomor transaksi yang do
                 $ind.="<tr class=rowcontent id=row".$no."><td>".$no."</td>";
                 $ind.="
                 <td>".$namakar[$hslAkhir[0]]."</td>
-                <td>'".$nikkar[$hslAkhir[0]]."</td>
+                <td>".$nikkar[$hslAkhir[0]]."</td>
+                <td>".$subbagian[$hslAkhir[0]]."</td>
+                <td>".$nmJabatan[$hslAkhir[0]]."</td>
+                <td>".$tipekary[$hslAkhir[0]]."</td>
                 ";
                 foreach($test as $barisTgl =>$isiTgl)
                 {
-                    $ind.="<td  align=right>".$hasilAbsn[$hslAkhir[0]][$isiTgl][0]['absensi']."</td>";
-                     $ind.="<td  align=right>".$hasilAbsnFp[$hslAkhir[0]][$isiTgl][0]['absensi']."</td>";             
+					if($hasilAbsn[$hslAkhir[0]][$isiTgl][0]['absensi']==$hasilAbsnFp[$hslAkhir[0]][$isiTgl][0]['absensi']){
+						$ind.="<td align=center>".$hasilAbsn[$hslAkhir[0]][$isiTgl][0]['absensi']."</td>";
+						$ind.="<td align=center>".$hasilAbsnFp[$hslAkhir[0]][$isiTgl][0]['absensi']."</td>";
+					}else{
+						if($hasilAbsn[$hslAkhir[0]][$isiTgl][0]['absensi']=='' and $hasilAbsnFp[$hslAkhir[0]][$isiTgl][0]['absensi']!='H'){
+							$ind.="<td align=center>".$hasilAbsn[$hslAkhir[0]][$isiTgl][0]['absensi']."</td>";
+							$ind.="<td align=center>".$hasilAbsnFp[$hslAkhir[0]][$isiTgl][0]['absensi']."</td>";
+						}else{
+							$ind.="<td align=center bgcolor='cyan'>".$hasilAbsn[$hslAkhir[0]][$isiTgl][0]['absensi']."</td>";
+							$ind.="<td align=center bgcolor='cyan'>".$hasilAbsnFp[$hslAkhir[0]][$isiTgl][0]['absensi']."</td>";
+						}
+					}
                 }
                     
                 $ind.="</tr>";
@@ -318,15 +339,11 @@ switch($proses)
 {
 ######PREVIEW
 	case 'preview':
-             
-            
 		echo $ind;
-    break;
+		break;
         
-        ######EXCEL	
+	######EXCEL	
 	case 'excel':
-            
-            
 		//$stream.="Print Time : ".date('H:i:s, d/m/Y')."<br>By : ".$_SESSION['empl']['name'];	
 		$tglSkrg=date("Ymd");
 		$nop_="laporan_absen_BKM_vs_absen_FP".$unit."_".$tgl1._.tgl2;
@@ -357,11 +374,9 @@ switch($proses)
 			fclose($handle);
 		}     
 		break;	
-        
-        
-        
 
 	default:
+		break;	
 }
 
 ?>

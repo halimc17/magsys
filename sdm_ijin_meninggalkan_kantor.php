@@ -45,7 +45,22 @@ for($i=0;$i<60;)
    $i++;
 }
 $optKary="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
-$sOrg="select karyawanid, namakaryawan from ".$dbname.".datakaryawan where (tanggalkeluar = '0000-00-00' or tanggalkeluar > '".date("Y-m-d")."') and tipekaryawan in ('0','7','8') and karyawanid!='".$_SESSION['standard']['userid']."' order by namakaryawan asc";
+//$sOrg="select karyawanid, namakaryawan from ".$dbname.".datakaryawan where (tanggalkeluar = '0000-00-00' or tanggalkeluar > '".date("Y-m-d")."') and tipekaryawan in ('0','2','6','7','8','9') and kodegolongan in ('DIR','KOM','MGR','SR MGR','ASST MGR') and karyawanid!='".$_SESSION['standard']['userid']."' order by namakaryawan asc";
+if(trim($_SESSION['empl']['tipelokasitugas'])=='HOLDING'){
+   $sOrg="select karyawanid, namakaryawan from ".$dbname.".datakaryawan where (tanggalkeluar = '0000-00-00' or tanggalkeluar > '".date("Y-m-d")."') and tipekaryawan in ('0','2','6','7','8','9') and kodegolongan in ('DIR','KOM','MGR','SR MGR','ASST MGR','PJS MGR') and lokasitugas like '%HO' and karyawanid!='".$_SESSION['standard']['userid']."' order by namakaryawan asc";
+}else{
+   if($_SESSION['empl']['tipekaryawan']=='1' or $_SESSION['empl']['tipekaryawan']=='2' or $_SESSION['empl']['tipekaryawan']=='3'){
+		$sOrg="select karyawanid, namakaryawan from ".$dbname.".datakaryawan where (tanggalkeluar = '0000-00-00' or tanggalkeluar > '".date("Y-m-d")."') and tipekaryawan in ('0','2','6','7','8','9') and lokasitugas='".$_SESSION['empl']['lokasitugas']."' and karyawanid!='".$_SESSION['standard']['userid']."' or (kodeorganisasi='".$_SESSION['empl']['kodeorganisasi']."' and (tanggalkeluar = '0000-00-00' or tanggalkeluar > '".date("Y-m-d")."') and tipekaryawan in ('0','2','6','7','8','9') and karyawanid!='".$_SESSION['standard']['userid']."' and (kodejabatan=86 or kodejabatan=332 or kodejabatan=344 or kodejabatan=119)) order by namakaryawan asc";
+   }else{
+		$sOrg="select karyawanid, namakaryawan from ".$dbname.".datakaryawan where (tanggalkeluar = '0000-00-00' or tanggalkeluar > '".date("Y-m-d")."') and tipekaryawan in ('0','2','6','7','8','9') and kodegolongan in ('DIR','KOM','MGR','SR MGR','ASST MGR','PJS MGR') and lokasitugas not like '%HO' and kodeorganisasi='".$_SESSION['empl']['kodeorganisasi']."' and karyawanid!='".$_SESSION['standard']['userid']."' 
+		or ((tanggalkeluar = '0000-00-00' or tanggalkeluar > '".date("Y-m-d")."') and karyawanid!='".$_SESSION['standard']['userid']."' and (kodejabatan=200 or kodejabatan=86 or kodejabatan=332 or kodejabatan=344 or kodejabatan=119 or ((kodejabatan=1 or kodejabatan=117) and kodegolongan like '%MGR%' and lokasitugas in (select kodeunit from ".$dbname.".bgt_regional_assignment where regional='".$_SESSION['empl']['regional']."')))) 
+		or karyawanid!='".$_SESSION['standard']['userid']."' and karyawanid in
+		(select karyawanid from ".$dbname.".datakaryawan where (tanggalkeluar = '0000-00-00' or tanggalkeluar > '".date("Y-m-d")."') and tipekaryawan in ('0','2','6','7','8','9') and lokasitugas='".$_SESSION['empl']['lokasitugas']."' and (kodejabatan in (select kodejabatan from ".$dbname.".sdm_5jabatan WHERE namajabatan like '%assis%' or namajabatan like '%Coordinator%' or namajabatan like '%PJS%') or kodejabatan=320 or kodejabatan=332 or kodejabatan=344 or kodejabatan=119))
+		or ((tanggalkeluar = '0000-00-00' or tanggalkeluar > '2023-09-29') and (kodejabatan=180))
+		order by namakaryawan asc";
+   }
+}
+//exit('Warning: '.$sOrg);
 $qOrg=mysql_query($sOrg) or die(mysql_error());
 while($rOrg=mysql_fetch_assoc($qOrg))
 {
@@ -54,50 +69,74 @@ while($rOrg=mysql_fetch_assoc($qOrg))
 
 //Pengambilan karyawan HRD
 $optHRD="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
-$sHRD="select karyawanid, namakaryawan from ".$dbname.".datakaryawan where (tanggalkeluar = '0000-00-00' or tanggalkeluar > '".date("Y-m-d")."') and tipekaryawan in ('0','7','8') and bagian in ('HRD','HHRD','HRA') and karyawanid!='".$_SESSION['standard']['userid']."' order by namakaryawan asc";
+//$sHRD="select karyawanid, namakaryawan from ".$dbname.".datakaryawan where (tanggalkeluar = '0000-00-00' or tanggalkeluar > '".date("Y-m-d")."') and tipekaryawan in ('0','2','6','7','8','9') and bagian in ('HRD','HHRD','HRA','HHRS') and karyawanid!='".$_SESSION['standard']['userid']."' order by namakaryawan asc";
+if(trim($_SESSION['empl']['tipelokasitugas'])=='HOLDING'){
+   $sHRD="select karyawanid, namakaryawan from ".$dbname.".datakaryawan where (tanggalkeluar = '0000-00-00' or tanggalkeluar > '".date("Y-m-d")."') and tipekaryawan in ('0','2','6','7','8','9') and bagian in ('HRA','HHRS') and lokasitugas like '%HO' and karyawanid!='".$_SESSION['standard']['userid']."' order by namakaryawan asc";
+}else{
+	if(trim($_SESSION['empl']['tipelokasitugas'])=='KANWIL'){
+		//$sHRD="select karyawanid, namakaryawan from ".$dbname.".datakaryawan where (tanggalkeluar = '0000-00-00' or tanggalkeluar > '".date("Y-m-d")."') and bagian in ('HRA','HHRS') and lokasitugas not like '%HO' and karyawanid!='".$_SESSION['standard']['userid']."' and kodeorganisasi='".$_SESSION['empl']['kodeorganisasi']."' order by namakaryawan asc";
+		$sHRD="select karyawanid, namakaryawan from ".$dbname.".datakaryawan where (tanggalkeluar = '0000-00-00' or tanggalkeluar > '".date("Y-m-d")."') and (bagian in ('HRA','HHRS') or kodejabatan=120) and lokasitugas not like '%HO' and karyawanid!='".$_SESSION['standard']['userid']."' and lokasitugas in (select kodeunit from ".$dbname.".bgt_regional_assignment where regional='".$_SESSION['empl']['regional']."') order by namakaryawan asc";
+	}else{
+		//$sHRD="select karyawanid, namakaryawan from ".$dbname.".datakaryawan where (tanggalkeluar = '0000-00-00' or tanggalkeluar > '".date("Y-m-d")."') and bagian in ('HRA','HHRS') and lokasitugas not like '%HO' and kodeorganisasi='".$_SESSION['empl']['kodeorganisasi']."' order by namakaryawan asc";
+		$sHRD="select karyawanid, namakaryawan from ".$dbname.".datakaryawan where (tanggalkeluar = '0000-00-00' or tanggalkeluar > '".date("Y-m-d")."') and (bagian in ('HRA','HHRS') or kodejabatan=120) and lokasitugas not like '%HO' and karyawanid!='".$_SESSION['standard']['userid']."' and lokasitugas in (select kodeunit from ".$dbname.".bgt_regional_assignment where regional='".$_SESSION['empl']['regional']."') order by namakaryawan asc";
+	}
+}
+//exit('Warning: '.$sHRD);
 $qHRD=mysql_query($sHRD) or die(mysql_error());
 while($rHRD=mysql_fetch_assoc($qHRD))
 {
         $optHRD.="<option value=".$rHRD['karyawanid'].">".$rHRD['namakaryawan']."</option>";
 }
-
+/*
 $optJenis="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
                 $arragama=getEnum($dbname,'sdm_ijin','jenisijin');
                 foreach($arragama as $kei=>$fal)
                 {
                     if($_SESSION['language']=='ID'){
-                        $optJenis.="<option value='".$kei."'>".$fal."</option>";
+                       //if($kei=='CUTI' or $kei=='MELAHIRKAN' or $kei=='ALASANPENTING'){
+                          $optJenis.="<option value='".$kei."'>".$fal."</option>";       
+                       //}
                     }else{
-                        switch($fal){
-                            case 'TERLAMBAT':
-                                $fal='Late for work';
-                                break;
-                            case 'KELUAR':
-                                $fal='Out of Office';
-                                break;         
-                            case 'PULANGAWAL':
-                                $fal='Home early';
-                                break;     
-                            case 'IJINLAIN':
-                                $fal='Other purposes';
-                                break;   
-                            case 'CUTI':
-                                $fal='Leave';
-                                break;       
-                            case 'MELAHIRKAN':
-                                $fal='Maternity';
-                                break;           
-                            default:
-                                $fal='Wedding, Circumcision or Graduation';
-                                break;                              
+                       switch($fal){
+                          case 'TERLAMBAT':
+                               $fal='Late for work';
+                               break;
+                          case 'KELUAR':
+                               $fal='Out of Office';
+                               break;         
+                          case 'PULANGAWAL':
+                               $fal='Home early';
+                               break;     
+                          case 'IJINLAIN':
+                               $fal='Other purposes';
+                               break;   
+                          case 'CUTI':
+                               $fal='Leave';
+					  		   break;       
+                          case 'MELAHIRKAN':
+                               $fal='Maternity';
+                               break;
+                          case 'PERJALANAN':
+                               $fal='Travel';
+                               break;           
+                          case 'SKRIPSI_TESIS':
+                               $fal='Skripsi/Tesis';
+                               break;           
+                          default:
+                               $fal='Important Reason';
+                               break;                              
                         }
-                        $optJenis.="<option value='".$kei."'>".$fal."</option>";       
+                        //if($kei=='CUTI' or $kei=='MELAHIRKAN' or $kei=='ALASANPENTING'){
+                           $optJenis.="<option value='".$kei."'>".$fal."</option>";       
+                        //}
                     }
-                }  
+                }
+*/
+$optJenis="<option value='CUTI'>CUTI</option>";
 
 //ambil cuti ybs
 // Ambil tanggal masuk ybs
-
+/*
 $stc="select right(tanggalmasuk,5) as tanggalmasuk from ".$dbname.".datakaryawan where karyawanid=".$_SESSION['standard']['userid'];
 $rec=mysql_query($stc);
 $tglmasup='';
@@ -113,9 +152,18 @@ else
 {
     $tahunplafon=date('Y');
 }   
+*/
+    $tahunplafon=date('Y');
+$stc="select periodecuti from ".$dbname.".sdm_cutiht where karyawanid=".$_SESSION['standard']['userid']." and periodecuti>=".date('Y');
+$rec=mysql_query($stc);
+$optPeriodec="";
+while($bac=mysql_fetch_object($rec))
+{
+	$optPeriodec.="<option value=".$bac->periodecuti.">".$bac->periodecuti."</option>";
+}
 #penguncian agar cuti yang sudah hangus tidak dapat diambil
-$optPeriodec="<option value=".$tahunplafon.">".$tahunplafon."</option>";
-$optPeriodec.="<option value=".($tahunplafon+1).">".($tahunplafon+1)."</option>"; 
+//$optPeriodec="<option value=".$tahunplafon.">".$tahunplafon."</option>";
+//$optPeriodec.="<option value=".($tahunplafon+1).">".($tahunplafon+1)."</option>"; 
 
 $strf="select sisa from ".$dbname.".sdm_cutiht where karyawanid=".$_SESSION['standard']['userid']." 
        and periodecuti=".$tahunplafon;
@@ -137,12 +185,12 @@ if($sisa=='')
 <tr>
 <td><?php echo $_SESSION['lang']['tanggal']?></td>
 <td>:</td>
-<td><input type='text' class='myinputtext' id='tglIzin' onmousemove='setCalendar(this.id)' onkeypress='return false;'  size='10' maxlength='10' style="width:150px;" /></td>
+<td><input type='text' class='myinputtext' id='tglIzin' disabled onmousemove='setCalendar(this.id)' onkeypress='return false;' value="<?php echo tanggalnormal(date('Y-m-d'));?>" size='10' maxlength='10' style="width:150px;" /></td>
 </tr>
 <tr>
 <td><?php echo $_SESSION['lang']['jenisijin']?></td>
 <td>:</td>
-<td><select id="jnsIjin" name="jnsIjin" style="width:150px"><? echo $optJenis;?></select></td>
+<td><select id="jnsIjin" name="jnsIjin" onchange='jumlahijin()' style="width:150px"><? echo $optJenis;?></select></td>
 </tr>
 
 <tr>
@@ -154,19 +202,19 @@ if($sisa=='')
 <tr>
 <td><?php echo $_SESSION['lang']['dari']."  ".$_SESSION['lang']['tanggal']."&".$_SESSION['lang']['jam']?></td>
 <td>:</td>
-<td><input type='text' class='myinputtext' id='tglAwal' onmousemove='setCalendar(this.id)' onkeypress='return false;'  size='10' maxlength='10' style="width:150px;" /><select id="jam1"><? echo $jm;?></select>:<select id="mnt1"><? echo $mnt;?></select></td>
+<td><input type='text' class='myinputtext' id='tglAwal' onmousemove='setCalendar(this.id)' onchange='jumlahhari()' onkeypress='return false;'  size='10' maxlength='10' style="width:150px;" /><select id="jam1"><? echo $jm;?></select>:<select id="mnt1"><? echo $mnt;?></select></td>
 </tr>
 <tr>
 <td><?php echo $_SESSION['lang']['tglcutisampai']."  ".$_SESSION['lang']['tanggal']."&".$_SESSION['lang']['jam']?></td>
 <td>:</td>
-<td><input type='text' class='myinputtext' id='tglEnd' onmousemove='setCalendar(this.id)' onkeypress='return false;'  size='10' maxlength='10' style="width:150px;" /><select id="jam2"><? echo $jm;?></select>:<select id="mnt2"><? echo $mnt;?></select></td>
+<td><input type='text' class='myinputtext' id='tglEnd' onmousemove='setCalendar(this.id)' onchange='jumlahhari()' onkeypress='return false;'  size='10' maxlength='10' style="width:150px;" /><select id="jam2"><? echo $jm;?></select>:<select id="mnt2"><? echo $mnt;?></select></td>
 </tr>
 <tr>
 <td><?php echo $_SESSION['lang']['jumlahhk']." ".$_SESSION['lang']['diambil'];?></td>
 <td>:</td>
 <td>
-<input type="text" class="myinputtext" id="jumlahhk" name="keperluan" onkeypress="return angka_doang(event);" maxlength="5" value="0"/><? echo $_SESSION['lang']['hari']; ?> -
-(<?echo $_SESSION['lang']['sisa']; ?>:<span id="sis"><?echo $sisa." ".$_SESSION['lang']['hari']; ?></span>)</td>
+<input type="text" class="myinputtext" id="jumlahhk" name="keperluan" disabled onkeypress="return angka_doang(event);" maxlength="5" value="0" /><? echo $_SESSION['lang']['hari']; ?> -
+(<?echo $_SESSION['lang']['sisa']; ?> : <span id="sis"><?echo number_format($sisa,0); ?></span> <?echo " ".$_SESSION['lang']['hari'].")"; ?> </td>
 </tr>
 <tr>
 <td><?php echo $_SESSION['lang']['keperluan']?></td>
@@ -230,6 +278,7 @@ CLOSE_BOX();
 <td><?php echo $_SESSION['lang']['approval_status']?></td>
 <td><?php echo $_SESSION['lang']['dari']."  ".$_SESSION['lang']['jam']?></td>
 <td><?php echo $_SESSION['lang']['tglcutisampai']."  ".$_SESSION['lang']['jam']?></td>
+<td><?php echo $_SESSION['lang']['hari']?></td>
 <td>Action</td>
 </tr>
 </thead>
@@ -256,7 +305,7 @@ $userOnline=$_SESSION['standard']['userid'];
         }
 
 
-$slvhc="select * from ".$dbname.".sdm_ijin where karyawanid='".$_SESSION['standard']['userid']."'   order by `tanggal` desc limit ".$offset.",".$limit." ";
+$slvhc="select * from ".$dbname.".sdm_ijin where karyawanid='".$_SESSION['standard']['userid']."' and jenisijin='CUTI' order by `tanggal` desc limit ".$offset.",".$limit." ";
 $qlvhc=mysql_query($slvhc) or die(mysql_error());
 $user_online=$_SESSION['standard']['userid'];
 while($rlvhc=mysql_fetch_assoc($qlvhc))
@@ -273,18 +322,23 @@ $no+=1;
 <td><?php echo $arrKeputusan[$rlvhc['stpersetujuan1']]?></td>
 <td><?php echo tanggalnormald($rlvhc['darijam']); ?></td>
 <td><?php echo tanggalnormald($rlvhc['sampaijam']);?></td>
+<td align='center'><?php echo $rlvhc['jumlahhari']?></td>
 
 <?php 
 if($rlvhc['stpersetujuan1']==0 and $rlvhc['stpersetujuanrd']==0)
 {
-echo"<td><img src=images/application/application_edit.png class=resicon  title='Edit' onclick=\"fillField('".$rlvhc['keperluan']."','".tanggalnormal($rlvhc['tanggal'])."','".$rlvhc['jenisijin']."','".$rlvhc['persetujuan1']."','".$rlvhc['stpersetujuan1']."','".$rlvhc['darijam']."','".$rlvhc['sampaijam']."','".$rlvhc['hrd']."','".$rlvhc['jumlahhari']."','".$rlvhc['periodecuti']."');\">
-    <img src=images/application/application_delete.png class=resicon  title='Delete' onclick=\"delData('".tanggalnormal($rlvhc['tanggal'])."');\" ></td>";
-    //<img src=images/pdf.jpg class=resicon  title='Print' onclick=\"masterPDF('sdm_ijin','".$rlvhc['tanggal'].",".$rlvhc['karyawanid']."','','sdm_slave_ijin_meninggalkan_kantor',event)\">";
+	if($rlvhc['darijam']>=date('Y-m-d')){
+	  echo"<td><img src=images/application/application_edit.png class=resicon  title='Edit' onclick=\"fillField('".$rlvhc['keperluan']."','".tanggalnormal($rlvhc['tanggal'])."','".$rlvhc['jenisijin']."','".$rlvhc['persetujuan1']."','".$rlvhc['stpersetujuan1']."','".$rlvhc['darijam']."','".$rlvhc['sampaijam']."','".$rlvhc['hrd']."','".$rlvhc['jumlahhari']."','".$rlvhc['periodecuti']."');\">
+	  <img src=images/application/application_delete.png class=resicon  title='Delete' onclick=\"delData('".tanggalnormal($rlvhc['tanggal'])."','".$rlvhc['jenisijin']."','".$rlvhc['darijam']."');\">
+	  <img src=images/pdf.jpg class=resicon  title='Print' onclick=\"masterPDF('".tanggalnormal($rlvhc['tanggal'])."','".$rlvhc['karyawanid']."','".$rlvhc['jenisijin']."','".$rlvhc['darijam']."',event)\"></td>";
+	}else{
+	  echo"<td><img src=images/pdf.jpg class=resicon  title='Print' onclick=\"masterPDF('".tanggalnormal($rlvhc['tanggal'])."','".$rlvhc['karyawanid']."','".$rlvhc['jenisijin']."','".$rlvhc['darijam']."',event)\"></td>";
+	}
 }
 else
 {
     echo "<td>".$arrKeputusan[$rlvhc['stpersetujuan1']]."</td>";
-   // echo"<td> <img src=images/pdf.jpg class=resicon  title='Print' onclick=\"masterPDF('sdm_ijin','".$rlvhc['tanggal'].",".$rlvhc['karyawanid']."','','sdm_slave_ijin_meninggalkan_kantor',event)\"></td>";
+    //"<img src=images/pdf.jpg class=resicon  title='Print' onclick=\"masterPDF('".tanggalnormal($rlvhc['tanggal'])."','".$rlvhc['karyawanid']."',event)\"></td>";
 }
 ?>
 </tr>

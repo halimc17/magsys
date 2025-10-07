@@ -22,7 +22,7 @@ if(($proses=='excel')or($proses=='pdf')){
 
 $optnmor=makeOption($dbname,'organisasi','kodeorganisasi,namaorganisasi');
 $optjnvhc=makeOption($dbname, 'vhc_5jenisvhc','jenisvhc,namajenisvhc');
-$optnmbar=makeOption($dbname,'log_5masterbarang','kodebarang,namabarang');
+$optnmbar=makeOption($dbname,'log_5masterbarang','kodebarang,namabarang',"kodebarang like '4%'");
 $optnamacostumer=makeOption($dbname,'log_5supplier','kodetimbangan,namasupplier');
 
 
@@ -83,7 +83,7 @@ if($kdsup!='')
                 <tbody>";
 //kgpotsortasi,kodecustomer,beratbersih as netto,substr(tanggal,1,10) as tanggal,(beratbersih/(jumlahtandan1+jumlahtandan2+jumlahtandan3)) as bjr
 $str=" 	SELECT * FROM ".$dbname.".pabrik_timbangan 
-WHERE tanggal between '".$tgl1."' and '".$tgl2."' ".$kdsupopt." and millcode='".$kdorg."' order by tanggal ";
+WHERE tanggal between '".$tgl1."' and '".$tgl2."' ".$kdsupopt." and millcode='".$kdorg."' and kodebarang='40000003' order by tanggal ";
 //echo $str;
 $res=mysql_query($str) or die (mysql_error($conn));	
 while($bar=mysql_fetch_assoc($res))

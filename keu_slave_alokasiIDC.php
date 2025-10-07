@@ -9,8 +9,15 @@ switch ($_POST['aksi']){
     
     
     case'getAfd';
+		$whrsts="";
+		if($_POST['stsblok']!=""){
+			$whrsts=" and b.statusblok like '".$_POST['stsblok']."%'";
+		}
         $optAfd="<option value=''>".$_SESSION['lang']['all']."</option>";
-        $iAfd="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi where induk='".$_POST['alokasi']."' ";
+        $iAfd="select a.kodeorganisasi,a.namaorganisasi from ".$dbname.".organisasi a
+				left join ".$dbname.".setup_blok b on b.kodeorg=a.kodeorganisasi 
+				where a.induk='".$_POST['alokasi']."'".$whrsts;
+		//exit('Warning: '.$iAfd);
         $nAfd=  mysql_query($iAfd) or die (mysql_error($conn));
         while($dAfd=  mysql_fetch_assoc($nAfd))
         {
@@ -21,7 +28,7 @@ switch ($_POST['aksi']){
     
     case 'ambilnokas':
 //        $str="select nojurnal as notransaksi,'".$_SESSION['empl']['lokasitugas']."' as kodeorg,totaldebet as jumlah from ".$dbname.".keu_jurnalht where tanggal=".tanggalsystem($_POST['tanggal'])." and nojurnal like '%/".$_SESSION['empl']['lokasitugas']."/M%'";
-        $str="select nojurnal as notransaksi,'".$_SESSION['empl']['lokasitugas']."' as kodeorg,sum(jumlah) as jumlah from ".$dbname.".keu_jurnaldt_vw where tanggal=".tanggalsystem($_POST['tanggal'])." and nojurnal like '%/".$_SESSION['empl']['lokasitugas']."/M%' and jumlah > 0 group by nojurnal";
+        $str="select nojurnal as notransaksi,'".$_SESSION['empl']['lokasitugas']."' as kodeorg,sum(jumlah) as jumlah from ".$dbname.".keu_jurnaldt_vw where tanggal=".tanggalsystem($_POST['tanggal'])." and (nojurnal like '%/".$_SESSION['empl']['lokasitugas']."/M%' or nojurnal like '%/".$_SESSION['empl']['lokasitugas']."/INVK1%') and jumlah > 0 group by nojurnal";
         $res=mysql_query($str);
         $opt="<option value=''>Pilih....</option>";
         while($bar= mysql_fetch_object($res))
@@ -40,7 +47,7 @@ switch ($_POST['aksi']){
         }
         $str="select distinct left(a.kodeorg,4) as kebun from ".$dbname.".setup_blok a
                   left join ".$dbname.".organisasi b on a.kodeorg=b.kodeorganisasi
-                  where a.statusblok in('TB','TBM','LC','TBM1','TBM2','TBM3','TM')
+                  where a.statusblok in('TB','TBM','LC','TBM-01','TBM-02','TBM-03','TM')
                   and left(b.induk,4) in(select kodeorganisasi from ".$dbname.".organisasi where induk='".$induk."')"; 
           $res=mysql_query($str);
         $opt="<option value=''>Choose....</option>";
@@ -91,6 +98,9 @@ switch ($_POST['aksi']){
         {
             $whereOrg=" where kodeorg like '".$_POST['afdeling']."%'";
         }
+		if($_POST['stsblok']!=""){
+			$whereOrg.=" and statusblok like '".$_POST['stsblok']."%'";
+		}
         
         
 		
@@ -182,6 +192,9 @@ switch ($_POST['aksi']){
         {
             $whereOrg=" where kodeorg like '".$_POST['afdeling']."%'";
         }
+		if($_POST['stsblok']!=""){
+			$whereOrg.=" and statusblok like '".$_POST['stsblok']."%'";
+		}
         
 	
 		#ambil luas perdiv

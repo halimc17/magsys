@@ -35,7 +35,7 @@ echo "<fieldset style='width:750px;'>
 			 <td><input type=text class=myinputtext onchange=getData() id=tanggal size=12 onmousemove=setCalendar(this.id) maxlength=10 onkeypress=\"return false;\">
 			 </td>	
 		     <td>		 
-		 </tr>
+		   </tr>
 		   <tr>
 		     <td>
 			    ".$_SESSION['lang']['sisatbskemarin']."
@@ -51,65 +51,89 @@ echo "<fieldset style='width:750px;'>
 			 <td>
 			    <input type=text id=tbsmasuk value=0  class=myinputtextnumber onblur=hitungSisa()  maxlength=10 size=10 onkeypress=\"return angka_doang(event);\">Kg. 
 			 </td>	 		 
-		 </tr>		
-		 <tr>
+		   </tr>		
+		   <tr>
 		     <td>
 			    ".$_SESSION['lang']['tbsdiolah']."
 			 </td>
 		     <td>
 			    <input type=text id=tbsdiolah value=0  class=myinputtextnumber onkeyup=hitungSisa()  maxlength=10 size=10 onkeypress=\"return angka_doang(event);\">Kg. 
 			 </td>		 
-		 </tr>
-		 <tr>
+		   </tr>
+		   <tr>
 		     <td>
 			    ".$_SESSION['lang']['sisa']."
 			 </td>
 		     <td>
 			    <input type=text id=sisa  value=0 class=myinputtextnumber  maxlength=10 size=10 readonly>Kg. 
 			 </td>		 
-		 </tr>	";
-               echo" <tr>
+		   </tr>";
+           echo" <tr>
 		     <td>% USB Before Collector
 			 </td>
 		     <td>
 			    <input type=text id=usbbefore  value=0 class=myinputtextnumber  maxlength=10 size=10 >%
 			 </td>		 
-		 </tr>	  
-                  <tr>
+		   </tr>	  
+           <tr>
 		     <td>% USB After Collector
 			 </td>
 		     <td>
 			    <input type=text id=usbafter  value=0 class=myinputtextnumber  maxlength=10 size=10 >% 
 			 </td>		 
-		 </tr>	
-                  <tr>
+		   </tr>	
+           <tr>
 		     <td>% Oil Diluted Crude Oil
 			 </td>
 		     <td>
 			    <input type=text id=oildiluted  value=0 class=myinputtextnumber  maxlength=10 size=10 >%
 			 </td>		 
-		 </tr>	
-                  <tr>
+		   </tr>	
+           <tr>
 		     <td>% Oil in underflow (CST)
 			 </td>
 		     <td>
 			    <input type=text id=oilin  value=0 class=myinputtextnumber  maxlength=10 size=10 >%
 			 </td>		 
-		 </tr>	
-                  <tr>
+		   </tr>	
+           <tr>
 		     <td>% Oil in Heavy Phase - S/D
 			 </td>
 		     <td>
 			    <input type=text id=oilinheavy  value=0 class=myinputtextnumber  maxlength=10 size=10 >%
 			 </td>		 
-		 </tr>	
-                  <tr>
+		   </tr>	
+           <tr>
 		     <td>CaCO3
 			 </td>
 		     <td>
 			    <input type=text id=caco  value=0 class=myinputtextnumber  maxlength=10 size=10 >
 			 </td>		 
-		 </tr>	";
+		   </tr>
+           <tr>
+		     <td>Limbah</td>
+		     <td>
+			    <input type=text id=limbah value=0 class=myinputtextnumber maxlength=10 size=10 >
+			 </td>		 
+		   </tr>
+           <tr>
+		     <td>Jam Pompa</td>
+		     <td>
+			    <input type=text id=jampompa value=0 class=myinputtextnumber maxlength=10 size=10 >
+			 </td>		 
+		   </tr>
+           <tr>
+		     <td>Land Aplikasi</td>
+		     <td>
+			    <input type=text id=landaplikasi value=0 class=myinputtextnumber maxlength=10 size=10 >
+			 </td>		 
+		   </tr>
+           <tr>
+		     <td>Kapasitas VS</td>
+		     <td>
+			    <input type=text id=kapasitasvs value=0 class=myinputtextnumber maxlength=10 size=10 >
+			 </td>		 
+		   </tr>";
 	  echo"</table>	  
 	  </td>
 	  <td valign=top>  
@@ -140,13 +164,21 @@ echo "<fieldset style='width:750px;'>
 			 <td>
 			    <input type=text id=kadaraircpo value=0 onblur=periksaCPO(this)   class=myinputtextnumber maxlength=5 size=10 onkeypress=\"return angka_doang(event);\">%. 
 			 </td>
-		 </tr>	
+		 </tr>
 		 <tr>
 		     <td>
 			    FFa
 			 </td>
 		     <td>
 			    <input type=text id=ffacpo value=0 onblur=periksaCPO(this)   class=myinputtextnumber maxlength=5 size=10 onkeypress=\"return angka_doang(event);\">%. 
+			 </td>			 
+		 </tr>
+		 <tr>
+		     <td>
+			    Dobi
+			 </td>
+		     <td>
+			    <input type=text id=dobicpo value=0 class=myinputtextnumber maxlength=5 size=10 onkeypress=\"return angka_doang(event);\">%. 
 			 </td>			 
 		 </tr>		   	   
 		</table>
@@ -255,6 +287,13 @@ echo "<fieldset style='width:750px;'>
 		     <td>
 			    <input type=text id=ffapk  value=0 onblur=periksaPK(this)  class=myinputtextnumber maxlength=5 size=10 onkeypress=\"return angka_doang(event);\">%. 
 			 </td>			 
+		 </tr>
+		 <tr>
+		     <td>&nbsp</td>
+		     <td>&nbsp</td>
+		 </tr>	
+		 <tr>
+		     <td></td>
 		 </tr>	
                  
 		</table>
@@ -312,6 +351,24 @@ echo "<fieldset style='width:750px;'>
 			 </td>			 
 		 </tr>	
                  
+		<tr>
+			<td>Kernel Pecah</td>
+			<td>
+				<input type=text id=kernelpecah value=0 class=myinputtextnumber maxlength=8 size=10 onkeypress=\"return angka_doang(event);\">
+			</td>			 
+		</tr>	
+		<tr>
+			<td>Jam Olah</td>
+			<td>
+				<input type=text id=kerneljamolah value=0 class=myinputtextnumber maxlength=8 size=10 onkeypress=\"return angka_doang(event);\">
+			</td>			 
+		</tr>	
+		<tr>
+			<td>Kapasitas Olah</td>
+			<td>
+				<input type=text id=kernelkapasitasolah value=0 class=myinputtextnumber maxlength=8 size=10 onkeypress=\"return angka_doang(event);\">
+			</td>			 
+		</tr>	
 		</table>
 		</fieldset>
 		
@@ -325,7 +382,10 @@ echo "<fieldset style='width:750px;'>
 	  
 	</table>	
 	
-		<center><button class=mybutton onclick=simpanProduksi()>".$_SESSION['lang']['save']."</button></center>
+		<center>
+			<button class=mybutton onclick=simpanProduksi()>".$_SESSION['lang']['save']."</button>
+			<button class=mybutton onclick=bersihkanForm()>".$_SESSION['lang']['cancel']."</button>
+		</center>
 	  </fieldset>
 	 ";
 CLOSE_BOX();
@@ -345,7 +405,7 @@ echo "<fieldset><legend>".$_SESSION['lang']['list']."</legend>
 		   </td>
 		   <td colspan=6 align=center>".$_SESSION['lang']['kernel']."
 		   </td>
-		   <td rowspan=2 align=center></td>	   
+		   <td rowspan=2 align=center>Action</td>	   
 		  </tr>  
 		  <tr class=rowheader> 
 		   <td align=center>".$_SESSION['lang']['cpo']." (Kg)</td>
@@ -397,7 +457,15 @@ while($bar=mysql_fetch_object($res))
 		   <td ".$drcl." align=right>".$bar->kadarairpk."</td>
 		    <td ".$drcl." align=right>".$tKernelLoses."</td>	   
 		   <td>
-		     <img src=images/application/application_delete.png class=resicon  title='delete' onclick=\"delProduksi('".$bar->kodeorg."','".$bar->tanggal."','".(isset($bar->kodebarang)? $bar->kodebarang:'')."');\">
+			 <img src='images/skyblue/edit.png' class='resicon' title='Edit' onclick=\"fillfield('".$bar->kodeorg."','".tanggalnormal($bar->tanggal)."','".$bar->sisatbskemarin."','".$bar->tbsmasuk."','".$bar->tbsdiolah."'
+				,'".$bar->sisahariini."','".$bar->oer."','".$bar->kadarkotoran."','".$bar->kadarair."','".$bar->ffa."','".$bar->oerpk."','".$bar->kadarkotoranpk."'
+				,'".$bar->kadarairpk."','".$bar->ffapk."','".$bar->usbbefore."','".$bar->usbafter."','".$bar->oildiluted."','".$bar->oilin."','".$bar->oilinheavy."'
+				,'".$bar->caco."','".$bar->fruitineb."','".$bar->ebstalk."','".$bar->fibre."','".$bar->nut."','".$bar->effluent."','".$bar->soliddecanter."'
+				,'".$bar->fruitinebker."','".$bar->cyclone."','".$bar->ltds."','".$bar->claybath."','".$bar->usbcpo."','".$bar->usbpk."','".$bar->hydrocyclone."'
+				,'".$bar->dobicpo."','".$bar->kernelpecah."','".$bar->kerneljamolah."','".$bar->kernelkapasitasolah."','".$bar->limbah."','".$bar->jampompa."'
+				,'".$bar->landaplikasi."','".$bar->kapasitasvs."')\">&nbsp
+
+		     <img src=images/application/application_delete.png class=resicon  title='Delete' onclick=\"delProduksi('".$bar->kodeorg."','".$bar->tanggal."','".(isset($bar->kodebarang)? $bar->kodebarang:'')."');\">
 		   </td>
 		  </tr>";	
 }	  

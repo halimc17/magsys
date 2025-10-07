@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 require_once('master_validation.php');
 require_once('config/connection.php');
 require_once('lib/nangkoelib.php');
@@ -50,13 +50,15 @@ while($dKom=mysql_fetch_assoc($nKom))
 }*/
   
 
-$iKom="select distinct (idkomponen) as idkomponen from ".$dbname.".sdm_gaji_vw where 1=1 "
-        . " ".$komponen." order by idkomponen asc ";
+$iKom="select distinct (a.idkomponen) as idkomponen,b.plus from ".$dbname.".sdm_gaji_vw a 
+		left join ".$dbname.".sdm_ho_component b on a.idkomponen=b.id
+		where true ".$komponen." order by b.plus desc,a.idkomponen asc ";
 $nKom=mysql_query($iKom) or die (mysql_error($conn));
 while($dKom=mysql_fetch_assoc($nKom))
 {
     $noKom+=1;
     $idKomponen[$dKom['idkomponen']]=$dKom['idkomponen'];
+    $pmKomponen[$dKom['idkomponen']]=$dKom['plus'];
 }
 
 
@@ -125,24 +127,34 @@ $stream.="<thead class=rowheader>
        
            <td rowspan=3 bgcolor=#CCCCCC align=center>".$_SESSION['lang']['jabatan']."</td>
            <td rowspan=3 bgcolor=#CCCCCC align=center>".$_SESSION['lang']['tipekaryawan']."</td>    
-       <td colspan=".$colspanPer*$noKom." bgcolor=#CCCCCC align=center>".$_SESSION['lang']['periode']."</td>
+       <td colspan=".$colspanPer*($noKom+4)." bgcolor=#CCCCCC align=center>".$_SESSION['lang']['periode']."</td>
       
-    </tr>";// <td rowspan=3 bgcolor=#CCCCCC align=center>".$_SESSION['lang']['subtotal']."</td>
+    </tr>";
+	// <td rowspan=3 bgcolor=#CCCCCC align=center>".$_SESSION['lang']['subtotal']."</td>
 $stream.="<tr class=rowheader>";
 foreach($rangePer as $ar => $per)
 {
-    $stream.="<td colspan=".$noKom." bgcolor=#CCCCCC align=center>".$per."</td>";
+    $stream.="<td colspan=".($noKom+4)." bgcolor=#CCCCCC align=center>".$per."</td>";
 }
 $stream.="</tr>";
 
-
 $stream.="<tr class=rowheader>";
-for($i=1;$i<=$colspanPer;$i++)
-{
-    foreach($idKomponen as $idKom)
-    {
-        $stream.="<td bgcolor=#CCCCCC align=center>".$optNmKomponen[$idKom]."</td>";
+for($i=1;$i<=$colspanPer;$i++){
+	$plus=0;
+    foreach($idKomponen as $idKom){
+		if($pmKomponen[$idKom]==$plus){
+			$stream.="<td bgcolor=#CCCCCC align=center>".$_SESSION['lang']['penambah']."</td>";
+			$plus=1;
+		}
+		if($idKom==32){
+	        $stream.="<td bgcolor=#CCCCCC align=center>".$optNmKomponen[$idKom]." Panen</td>";
+	        $stream.="<td bgcolor=#CCCCCC align=center>".$optNmKomponen[$idKom]." Non Panen</td>";
+		}else{
+	        $stream.="<td bgcolor=#CCCCCC align=center>".$optNmKomponen[$idKom]."</td>";
+		}
     }
+	$stream.="<td bgcolor=#CCCCCC align=center>".$_SESSION['lang']['pengurang']."</td>";
+	$stream.="<td bgcolor=#CCCCCC align=center>".$_SESSION['lang']['total']."</td>";
 }
 $stream.="</tr>";
 $stream.="</thead>";
@@ -151,7 +163,8 @@ $stream.="</thead>";
 
 
 
-
+$gtpenambah[$per]=0;
+$gtpengurang[$per]=0;
 foreach($kar as $idKar)
 {
     $no+=1;
@@ -166,41 +179,70 @@ foreach($kar as $idKar)
     {
         //$stream.="<td colspan=".$noKom."  align=right>".$isi."</td>";
         $granTotKom[$per]=0;
+		$subpenambah[$per]=0;
+		$subpengurang[$per]=0;
+		$plus=0;
         foreach($idKomponen as $idKom)
         {
-           
-            
+			if($pmKomponen[$idKom]==$plus){
+	            $stream.="<td align=right>".number_format((float)$subpenambah[$per],2)."</td>";
+				$plus=1;
+			}
             setIt($gaji[$idKar][$per][$idKom],'');
             setIt($subTotKar[$idKar],'');
             setIt($subPerKom[$per][$idKom],'');
-            
-           
-            
-            $stream.="<td align=right>".number_format((float)$gaji[$idKar][$per][$idKom],2)."</td>";
+			if($idKom==32){
+				if($jabatan[$idKar]==9 or $jabatan[$idKar]==10 or $jabatan[$idKar]==11 or $jabatan[$idKar]==14 or $jabatan[$idKar]==334){
+		            $stream.="<td align=right>".number_format((float)$gaji[$idKar][$per][$idKom],2)."</td>";
+		            $stream.="<td align=right>".number_format(0,2)."</td>";
+					$subPerPremiPnn[$per][$idKom]+=$gaji[$idKar][$per][$idKom];
+				}else{
+		            $stream.="<td align=right>".number_format(0,2)."</td>";
+		            $stream.="<td align=right>".number_format((float)$gaji[$idKar][$per][$idKom],2)."</td>";
+					$subPerPremiNon[$per][$idKom]+=$gaji[$idKar][$per][$idKom];
+				}
+			}else{
+	            $stream.="<td align=right>".number_format((float)$gaji[$idKar][$per][$idKom],2)."</td>";
+			}
             $subTotKar[$idKar]+=$gaji[$idKar][$per][$idKom];
             $subPerKom[$per][$idKom]+=$gaji[$idKar][$per][$idKom];
+			if($pmKomponen[$idKom]==1){
+				$subpenambah[$per]+=$gaji[$idKar][$per][$idKom];
+				$gtpenambah[$per]+=$gaji[$idKar][$per][$idKom];
+			}else{
+				$subpengurang[$per]+=$gaji[$idKar][$per][$idKom];
+				$gtpengurang[$per]+=$gaji[$idKar][$per][$idKom];
+			}
         }
+        $stream.="<td align=right>".number_format((float)$subpengurang[$per],2)."</td>";
+		$stream.="<td align=right>".number_format((float)($subpenambah[$per]-$subpengurang[$per]),2)."</td>";
     }
     $granTot="";
     $granTot+=$subTotKar[$idKar];
     //$stream.="<td align=right>".number_format($subTotKar[$idKar])."</td>";
     $stream.="</tr>";  
 }
-
-
 $stream.="<thead><tr class=rowcontent>";
-$stream.="<td colspan=5 align=right>".$_SESSION['lang']['grnd_total']."</td>";
-
-foreach($rangePer as $ar => $per)
-{
-    foreach($idKomponen as $idKom)
-    {
+$stream.="<td colspan=5 align=center>".$_SESSION['lang']['grnd_total']."</td>";
+foreach($rangePer as $ar => $per){
+	$plus=0;
+    foreach($idKomponen as $idKom){
+		if($pmKomponen[$idKom]==$plus){
+            $stream.="<td align=right>".number_format((float)$gtpenambah[$per],2)."</td>";
+			$plus=1;
+		}
         setIt($subPerKom[$per][$idKom],'');
-          $stream.="<td align=right>".number_format((float)$subPerKom[$per][$idKom],2)."</td>";
+		if($idKom==32){
+			$stream.="<td align=right>".number_format((float)$subPerPremiPnn[$per][$idKom],2)."</td>";
+			$stream.="<td align=right>".number_format((float)$subPerPremiNon[$per][$idKom],2)."</td>";
+		}else{
+			$stream.="<td align=right>".number_format((float)$subPerKom[$per][$idKom],2)."</td>";
+		}
     }
+    $stream.="<td align=right>".number_format((float)$gtpengurang[$per],2)."</td>";
+	$stream.="<td align=right>".number_format((float)($gtpenambah[$per]-$gtpengurang[$per]),2)."</td>";
 }
 //$stream.="<td>".number_format($granTot,2)."</td>";
-
 
 $stream.="</tr></thead>";
 $stream.="<tbody></table>";

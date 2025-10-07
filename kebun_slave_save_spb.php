@@ -8,6 +8,7 @@ include_once('lib/zLib.php');
 
 $proses=$_POST['proses'];
 
+$keterangan=checkPostGet('keterangan','');
 $blok=checkPostGet('blok','');
 $noSpb=checkPostGet('noSpb','');
 $tanggal=tanggalsystem(checkPostGet('tgl',''));
@@ -23,6 +24,7 @@ $busuk=checkPostGet('busuk','');
 $lwtmatang=checkPostGet('lwtmatang','');
 $kdOrg=checkPostGet('kdOrg','');
 $oldBlok=checkPostGet('oldBlok','');
+$oldketerangan=checkPostGet('oldketerangan','');
 $kgwb=checkPostGet('kgwb',0);
 $intex=  checkPostGet('intex','');
 $pks=  checkPostGet('pks','');
@@ -173,10 +175,10 @@ $rReg=mysql_fetch_assoc($qReg);
                     }
 
                     #bentuk periode baru dan bentuk bjr periode lalu
-                    $iBjr="SELECT sum(a.totalkg)/sum(a.jjg) as bjr,tanggal,blok
-                        FROM ".$dbname.".`kebun_spbdt` a left join ".$dbname.".kebun_spbht b on 
-                        a.nospb=b.nospb where blok='".$blok."'
-                        and tanggal like '%".$perlalu."%' "; 
+                    $iBjr	="SELECT sum(a.totalkg)/sum(a.jjg) as bjr,tanggal,blok
+							FROM ".$dbname.".`kebun_spbdt` a left join ".$dbname.".kebun_spbht b on a.nospb=b.nospb 
+							where blok='".$blok."' and tanggal like '".$perlalu."%' "; 
+					//exit('Warning: '.$iBjr);
                     $nBjr=  mysql_query($iBjr) or die (mysql_error($conn));
                     $dBjr=  mysql_fetch_assoc($nBjr);
                         $bjrlalu=$dBjr['bjr'];
@@ -187,18 +189,15 @@ $rReg=mysql_fetch_assoc($qReg);
                     $qStpBlok=mysql_query($sStpBlok) or die(mysql_error());
                     $rStpBlok=mysql_fetch_assoc($qStpBlok);
                         $bjrtabel=$rStpBlok['bjr'];
-
-                 //       exit("Error:$bjrlalu.__.$bjrtabel");
-                    if($bjrlalu=='0' || $bjrlalu<=0)
-                    {
+					//exit("Error:$bjrlalu.__.$bjrtabel");
+					$isiBjr=0;
+                    if($bjrtabel=='0' || $bjrtabel=='' || $bjrtabel<=0){
+						if($bjrlalu>=0){
+							$isiBjr=$bjrlalu;
+						}
+					}else{
                         $isiBjr=$bjrtabel;
-                    }
-                    else
-                    {
-                        $isiBjr=$bjrlalu;
-                    }
-                    
-                  
+					}
                     
                     //echo $rStpBlok['bjr'];
                     echo number_format($isiBjr,2);
@@ -228,7 +227,7 @@ $rReg=mysql_fetch_assoc($qReg);
                         if(mysql_query($sIns))
 			{
                             $kgBjr=($jjngHsl*$bjrHsl);
-                            $sDetIns="insert into ".$dbname.".kebun_spbdt (nospb, blok, jjg, bjr, brondolan, mentah, busuk, matang, lewatmatang,kgbjr,kgwb) values ('".$noSpb."','".$blok."','".$jjngHsl."','".$bjrHsl."','".$brondolanHsl."','".$mentah."','".$busuk."','".$matang."','".$lwtmatang."','".$kgBjr."','".$kgwb."')";
+                            $sDetIns="insert into ".$dbname.".kebun_spbdt (nospb, blok, jjg, bjr, brondolan, mentah, busuk, matang, lewatmatang,kgbjr,kgwb,keterangan) values ('".$noSpb."','".$blok."','".$jjngHsl."','".$bjrHsl."','".$brondolanHsl."','".$mentah."','".$busuk."','".$matang."','".$lwtmatang."','".$kgBjr."','".$kgwb."','".$keterangan."')";
                             if(mysql_query($sDetIns))
                             echo"";
                             else
@@ -254,11 +253,11 @@ $rReg=mysql_fetch_assoc($qReg);
                             }
                             else
                             {
-                                $iUpdate="update ".$dbname.".kebun_5bjr set bjr='".$bjrHsl."' where kodeorg='".$blok."' and tahunproduksi='".substr($tanggal,0,4)."'  ";        
-                                if(mysql_query($iUpdate))
-                                echo"";
-                                else
-                                echo "DB Error : ".mysql_error($conn);   
+                                //$iUpdate="update ".$dbname.".kebun_5bjr set bjr='".$bjrHsl."' where kodeorg='".$blok."' and //tahunproduksi='".substr($tanggal,0,4)."'  ";        
+                                //if(mysql_query($iUpdate))
+                                //echo"";
+                                //else
+                                //echo "DB Error : ".mysql_error($conn);   
                             }
                             
                             
@@ -280,8 +279,8 @@ $rReg=mysql_fetch_assoc($qReg);
                             exit("Error:Nospb Sudah Posting");
                         }
 			$kgBjr=($jjngHsl*$bjrHsl);
-			$sDetIns="insert into ".$dbname.".kebun_spbdt (nospb, blok, jjg, bjr, brondolan, mentah, busuk, matang, lewatmatang,kgbjr,kgwb)
-                                values ('".$noSpb."','".$blok."','".$jjngHsl."','".$bjrHsl."','".$brondolanHsl."','".$mentah."','".$busuk."','".$matang."','".$lwtmatang."','".$kgBjr."','".$kgwb."')";
+			$sDetIns="insert into ".$dbname.".kebun_spbdt (nospb, blok, jjg, bjr, brondolan, mentah, busuk, matang, lewatmatang,kgbjr,kgwb,keterangan)
+                                values ('".$noSpb."','".$blok."','".$jjngHsl."','".$bjrHsl."','".$brondolanHsl."','".$mentah."','".$busuk."','".$matang."','".$lwtmatang."','".$kgBjr."','".$kgwb."','".$keterangan."')";
 //                        exit("Error:".$sDetIns);
 				if(mysql_query($sDetIns))
 				echo"";
@@ -305,11 +304,11 @@ $rReg=mysql_fetch_assoc($qReg);
                             }
                             else
                             {
-                                $iUpdate="update ".$dbname.".kebun_5bjr set bjr='".$bjrHsl."' where kodeorg='".$blok."' and tahunproduksi='".substr($tanggal,0,4)."'  ";        
-                                if(mysql_query($iUpdate))
-                                echo"";
-                                else
-                                echo "DB Error : ".mysql_error($conn);   
+                                //$iUpdate="update ".$dbname.".kebun_5bjr set bjr='".$bjrHsl."' where kodeorg='".$blok."' and //tahunproduksi='".substr($tanggal,0,4)."'  ";        
+                                //if(mysql_query($iUpdate))
+                                //echo"";
+                                //else
+                                //echo "DB Error : ".mysql_error($conn);   
                             }       
                         //indra        
                                 
@@ -552,7 +551,7 @@ $rReg=mysql_fetch_assoc($qReg);
                                     $sUpDetail="update ".$dbname.".kebun_spbdt set
                                                  blok='".$blok."',jjg='".$jjngHsl."',bjr='".$bjrHsl."',brondolan='".$brondolanHsl."',mentah='".$mentah."',
                                                  busuk='".$busuk."',matang='".$matang."',lewatmatang='".$lwtmatang."',kgbjr='".$kgBjr."',kgwb='".$kgwb."'
-                                                 where nospb='".  $noSpb."' and blok='".$oldBlok."'";
+                                                 where nospb='".  $noSpb."' and blok='".$oldBlok."' and keterangan='".$oldketerangan."'";
                                     
                                     //echo "warning:".$sUpDetail;exit();
                                     if(mysql_query($sUpDetail))
@@ -583,11 +582,11 @@ $rReg=mysql_fetch_assoc($qReg);
                                     }
                                     else
                                     {
-                                        $iUpdate="update ".$dbname.".kebun_5bjr set bjr='".$bjrHsl."' where kodeorg='".$blok."' and tahunproduksi='".substr($tanggal,0,4)."'  ";        
-                                        if(mysql_query($iUpdate))
-                                        echo"";
-                                        else
-                                        echo "DB Error : ".mysql_error($conn);   
+                                        //$iUpdate="update ".$dbname.".kebun_5bjr set bjr='".$bjrHsl."' where kodeorg='".$blok."' and //tahunproduksi='".substr($tanggal,0,4)."'  ";        
+                                        //if(mysql_query($iUpdate))
+                                        //echo"";
+                                        //else
+                                        //echo "DB Error : ".mysql_error($conn);   
                                     }   
                                     
                                     
@@ -602,7 +601,7 @@ $rReg=mysql_fetch_assoc($qReg);
 		{
 			
                     $kgBjr=($jjngHsl*$bjrHsl);
-                    $sDetIns="insert into ".$dbname.".kebun_spbdt (nospb, blok, jjg, bjr, brondolan, mentah, busuk, matang, lewatmatang,kgbjr,kgwb) values ('".$noSpb."','".$blok."','".$jjngHsl."','".$bjrHsl."','".$brondolanHsl."','".$mentah."','".$busuk."','".$matang."','".$lwtmatang."','".$kgBjr."','".$kgwb."')";
+                    $sDetIns="insert into ".$dbname.".kebun_spbdt (nospb, blok, jjg, bjr, brondolan, mentah, busuk, matang, lewatmatang,kgbjr,kgwb,keterangan) values ('".$noSpb."','".$blok."','".$jjngHsl."','".$bjrHsl."','".$brondolanHsl."','".$mentah."','".$busuk."','".$matang."','".$lwtmatang."','".$kgBjr."','".$kgwb."','".$keterangan."')";
 //				echo "warning:".$sDetIns;exit();
                     if(mysql_query($sDetIns))
                     echo"";
@@ -626,11 +625,11 @@ $rReg=mysql_fetch_assoc($qReg);
                     }
                     else
                     {
-                        $iUpdate="update ".$dbname.".kebun_5bjr set bjr='".$bjrHsl."' where kodeorg='".$blok."' and tahunproduksi='".substr($tanggal,0,4)."'  ";        
-                        if(mysql_query($iUpdate))
-                        echo"";
-                        else
-                        echo "DB Error : ".mysql_error($conn);   
+                        //$iUpdate="update ".$dbname.".kebun_5bjr set bjr='".$bjrHsl."' where kodeorg='".$blok."' and tahunproduksi='".substr($tanggal,0,4)."'  ";
+                        //if(mysql_query($iUpdate))
+                        //echo"";
+                        //else
+                        //echo "DB Error : ".mysql_error($conn);
                     }    
 
 			
@@ -667,7 +666,7 @@ $rReg=mysql_fetch_assoc($qReg);
 		exit();
 		break;
 		case'delDetail':
-			$sqlDet="delete from ".$dbname.".kebun_spbdt where nospb='".$noSpb."' and blok='".$blok."'";
+			$sqlDet="delete from ".$dbname.".kebun_spbdt where nospb='".$noSpb."' and blok='".$blok."' and keterangan='".$keterangan."'";
 			if(mysql_query($sqlDet))
 			echo"";
 			else

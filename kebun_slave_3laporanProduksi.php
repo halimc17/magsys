@@ -165,9 +165,10 @@ if($kodeUnit=='')
            
             
         $where='';
-            
-            
-            
+        if($kodePabrik!=''){
+			$where.=" and millcode='".$kodePabrik."'";
+		}
+			
         if($tipeIntex!='')
         {
             if($tipeIntex==0)

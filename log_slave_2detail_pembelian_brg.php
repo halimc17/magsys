@@ -12,7 +12,8 @@ $klmpkBrg= 	empty($_POST['klmpkBrg'])? (isset($_GET['klmpkBrg'])? $_GET['klmpkBr
 $kdBrg= 	empty($_POST['kdBrg'])? (isset($_GET['kdBrg'])? $_GET['kdBrg']: ''): $_POST['kdBrg'];
 $tglDr= 	empty($_POST['tglDr'])? (isset($_GET['tglDr'])? tanggalsystem($_GET['tglDr']): ''): tanggalsystem($_POST['tglDr']);
 $tanggalSampai= 	empty($_POST['tanggalSampai'])? (isset($_GET['tanggalSampai'])? tanggalsystem($_GET['tanggalSampai']): ''): tanggalsystem($_POST['tanggalSampai']);
-$lokBeli= 	empty($_POST['lokBeli'])? (isset($_GET['lokBeli'])? $_GET['lokBeli']: ''): $_POST['lokBeli'];
+//$lokBeli= 	empty($_POST['lokBeli'])? (isset($_GET['lokBeli'])? $_GET['lokBeli']: ''): $_POST['lokBeli'];
+$lokBeli= 	$_POST['lokBeli'];
 $nmBrg= 	empty($_POST['nmBrg'])? (isset($_GET['nmBrg'])? $_GET['nmBrg']: ''): $_POST['nmBrg'];
 $sKlmpk="select kode,kelompok from ".$dbname.".log_5klbarang order by kode";
 $qKlmpk=mysql_query($sKlmpk) or die(mysql_error());
@@ -95,9 +96,9 @@ switch($proses)
 //            where a.statuspo>1 ".$where." group by kodebarang";
         //
         $sData="select distinct kodebarang,namasupplier,namabarang,kurs,nopo,jumlahpesan,hargasatuan,nopp,satuan,tanggal,matauang 
-                from ".$dbname.".log_po_vw where statuspo>1 ".$where." order by kodebarang asc";
+                from ".$dbname.".log_po_vw where statuspo>1 ".$where." order by kodebarang,tanggal,nopo asc";
         //echo $sData;
-         //exit("Error".$sData);
+        //exit("Error -".$lokBeli."- ".$sData);
         $qData=mysql_query($sData) or die(mysql_error($conn));
         $kdBrng="";
         while($rData=mysql_fetch_assoc($qData))
@@ -282,7 +283,7 @@ switch($proses)
                 $pdf->SetFillColor(255,255,255);
                 $pdf->SetFont('Arial','',7);
                 $sData="select distinct kodebarang,namasupplier,namabarang,kurs,nopo,jumlahpesan,hargasatuan,nopp,satuan,tanggal,matauang
-                        from ".$dbname.".log_po_vw where statuspo>1 ".$where." order by kodebarang asc";
+                        from ".$dbname.".log_po_vw where statuspo>1 ".$where." order by kodebarang,tanggal,nopo asc";
         //exit("Error".$sData);
         $qData=mysql_query($sData) or die(mysql_error($conn));
         $kdBrng="";
@@ -391,7 +392,7 @@ switch($proses)
 
         $data=array();
         $sData="select distinct kodebarang,namasupplier,namabarang,kurs,nopo,jumlahpesan,hargasatuan,nopp,satuan,tanggal,matauang from ".$dbname.".log_po_vw  
-        where statuspo>1 ".$where." order by kodebarang asc";
+        where statuspo>1 ".$where." order by kodebarang,tanggal,nopo asc";
 
         $qData=mysql_query($sData) or die(mysql_error($conn));
         $kdBrng="";

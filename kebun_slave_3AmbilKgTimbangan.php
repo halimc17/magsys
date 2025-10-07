@@ -39,7 +39,7 @@ switch($proses)
 		<tbody>
 		";
 		
-		$limit=50;
+		$limit=100;
 		$page=0;
 		if(isset($_POST['page']))
 		{
@@ -246,7 +246,7 @@ switch($proses)
                 if($b==$rCek2)
                 {
 
-                        $sNospb="select nospb,blok,kgbjr,brondolan from ".$dbname.".kebun_spbdt where nospb='".$noSpb."'";
+                        $sNospb="select nospb,blok,kgbjr,brondolan,keterangan from ".$dbname.".kebun_spbdt where nospb='".$noSpb."'";
                         //echo"warning".$sNospb;
                         
                         $qNospb=mysql_query($sNospb) or die(mysql_error());
@@ -305,7 +305,7 @@ switch($proses)
                                 */
                                 
                              //===================================   
-                                $sUpd="update ".$dbname.".kebun_spbdt set kgwb='".$kgWb."',totalkg='".$totKg."' where nospb='".$rNospb['nospb']."' and blok='".$rNospb['blok']."' "; //echo "warning:".$sUpd; echo"warning: berat__".$rNospb['kgbjr']."totalberat:".$rTotal['total']."___persen:".$persen;exit();
+                                $sUpd="update ".$dbname.".kebun_spbdt set kgwb='".$kgWb."',totalkg='".$totKg."' where nospb='".$rNospb['nospb']."' and blok='".$rNospb['blok']."' and keterangan='".$rNospb['keterangan']."'"; //echo "warning:".$sUpd; echo"warning: berat__".$rNospb['kgbjr']."totalberat:".$rTotal['total']."___persen:".$persen;exit();
                                         if(mysql_query($sUpd))
                                         {
                                                 $sUpdate="update ".$dbname.".kebun_spbht set posting='1',postingby='".$_SESSION['standard']['userid']."' where nospb='".$rNospb['nospb']."'";

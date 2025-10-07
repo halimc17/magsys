@@ -305,13 +305,13 @@ $str="select * from ".$dbname.".pabrik_produksi where tanggal like '".$periode."
                         <td align=right>".substr($jmStart[$bar->tanggal],0,5)."</td>
                         <td align=right>".substr($jmEnd[$bar->tanggal],0,5)."</td>";*/
                 
-                $ijm="select jammulai from ".$dbname.".pabrik_pengolahan where tanggal='".$bar->tanggal."'"
-                        . " and kodeorg='".$pabrik."' order by shift asc limit 1  ";
+                $ijm="select jammulai from ".$dbname.".pabrik_pengolahan where tanggal='".$bar->tanggal."' and kodeorg='".$pabrik."' 
+						order by nopengolahan asc limit 1";
                 $njm=  mysql_query($ijm) or die (mysql_error($conn));
                 $djm=  mysql_fetch_assoc($njm);
                 
-                $ijs="select jamselesai from ".$dbname.".pabrik_pengolahan where tanggal='".$bar->tanggal."'"
-                        . " and kodeorg='".$pabrik."' order by shift desc limit 1  ";
+                $ijs="select jamselesai from ".$dbname.".pabrik_pengolahan where tanggal='".$bar->tanggal."' and kodeorg='".$pabrik."' 
+						order by nopengolahan desc limit 1  ";
                 $njs=  mysql_query($ijs) or die (mysql_error($conn));
                 $djs=  mysql_fetch_assoc($njs);
                 

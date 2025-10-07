@@ -1,5 +1,4 @@
 <?
-//@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 include_once('lib/zLib.php');
@@ -11,8 +10,7 @@ OPEN_BOX();
 $optOrg="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
 $sOrg="select namaorganisasi,kodeorganisasi from ".$dbname.".organisasi where  tipe='KEBUN' order by kodeorganisasi asc";
 $qOrg=mysql_query($sOrg) or die(mysql_error($conn));
-while($rOrg=mysql_fetch_assoc($qOrg))
-{
+while($rOrg=mysql_fetch_assoc($qOrg)){
 	$optOrg.="<option value=".$rOrg['kodeorganisasi'].">".$rOrg['namaorganisasi']."</option>";
 }
 
@@ -59,10 +57,10 @@ function Clear1()
 				echo"<tr>
 					<td>".$_SESSION['lang']['intiplasma']."</td>
 					
-					<td><select id=intiplasma>".$optIP."</select></td>
+					<td><select id=intiplasma style=width:150px;>".$optIP."</select></td>
 				</tr>";
 				?>
-<tr height="20"><td colspan="2">&nbsp;</td></tr>
+<tr height="2"><td colspan="2">&nbsp;</td></tr>
 <tr><td colspan="2"><button onclick="zPreview('kebun_slave_2penggunaanHK','<?php echo $arr?>','printContainer')" class="mybutton" name="preview" id="preview">Preview</button><button onclick="zPdf('kebun_slave_2penggunaanHK','<?php echo $arr?>','printContainer')" class="mybutton" name="preview" id="preview">PDF</button><button onclick="zExcel(event,'kebun_slave_2penggunaanHK.php','<?php echo $arr?>')" class="mybutton" name="preview" id="preview">Excel</button>
 </td></tr>
 
@@ -73,7 +71,7 @@ function Clear1()
 <div style="margin-bottom: 30px;">
 </div>
 <fieldset style='clear:both'><legend><b>Print Area</b></legend>
-<div id='printContainer' style='overflow:auto;height:550px;max-width:1220px'>
+<div id='printContainer' style='overflow:auto;height:500px;max-width:100%'>
 
 </div></fieldset>
 

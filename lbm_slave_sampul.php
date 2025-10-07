@@ -57,8 +57,25 @@ switch($proses)
     $path='images/lbm_cover1.jpg';
     $pdf->Image($path,0,0,841);	
     $path='images/lbm_cover2.jpg';
-    $pdf->Image($path,80,130,470);
-    
+    $pdf->Image($path,80,110,250);
+	$kodept=$optPt[$unit];
+	if($kodept=='AMP'){
+		$path='images/logo_amp.jpg';
+	}else if($kodept=='CKS'){
+		$path='images/logo_cks.jpg';
+	}else if($kodept=='KAA'){
+		$path='images/logo_kaa.jpg';
+	}else if($kodept=='KAL'){
+		$path='images/logo_kal.jpg';
+	}else if($kodept=='LKA'){
+		$path='images/logo_lka.jpg';
+	}else if($kodept=='MPA'){
+		$path='images/logo_mpa.jpg';
+	}else{
+		$path='images/lbm_cover2.jpg';
+	}
+    $pdf->Image($path,680,110,110);
+
     //nama pt
     $pdf->SetY(220);   
     $pdf->SetFont('Arial','',30);

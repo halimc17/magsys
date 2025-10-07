@@ -120,6 +120,8 @@ function loadDetailBarang(firstload)
 
 function saveHeader()//save header + buka input detail di sini
 {
+    document.getElementById('containListBarang').innerHTML='';
+    document.getElementById('containListKaryawan').innerHTML='';
     codeOrg=document.getElementById('codeOrg').value;
     trans_no=document.getElementById('trans_no').value;
     vhc_code=document.getElementById('vhc_code').value;
@@ -427,6 +429,8 @@ function add_new_data()
 {
 	//alert('MASUK COI');
 	//alert(con.responseText);
+    document.getElementById('containListBarang').innerHTML='';
+    document.getElementById('containListKaryawan').innerHTML='';
 	document.getElementById('headher').style.display='block';
 	document.getElementById('listData').style.display='none';
 	document.getElementById('detailEntry').style.display='none';
@@ -683,11 +687,15 @@ function getKm()
                     {
                         document.getElementById('kmmasuk').value=ar[0];   
                         document.getElementById('kmmasuk').disabled=true; 
+						document.getElementById('kmkeluar').value=ar[0];   
+                        document.getElementById('kmkeluar').disabled=false; 
                     }
                     else
                     {
                         document.getElementById('kmmasuk').disabled=false;
-                        document.getElementById('kmmasuk').value=0;   
+                        document.getElementById('kmmasuk').value=0;
+						document.getElementById('kmkeluar').disabled=false;
+                        document.getElementById('kmkeluar').value=0; 						
                     }
                     
                     

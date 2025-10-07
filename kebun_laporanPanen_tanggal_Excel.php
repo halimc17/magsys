@@ -47,8 +47,10 @@
     {
         $str="select a.tanggal,a.tahuntanam,a.unit,a.kodeorg,sum(a.hasilkerja) as jjg,sum(a.hasilkerjakg) as berat,
               sum(a.upahkerja) as upah,sum(a.luaspanen) as luas,sum(a.upahpremi) as premi,
-              sum(a.rupiahpenalty) as penalty,count(a.karyawanid) as jumlahhk,sum(hkpanenperhari) as hkpanenperhari, if(b.intiplasma='I','Inti','Plasma') as intiplasma 
+              sum(a.rupiahpenalty) as penalty,count(a.karyawanid) as jumlahhk,sum(hkpanenperhari) as hkpanenperhari, if(b.intiplasma='I','Inti','Plasma') as intiplasma
+			  ,d.namaorganisasi
               from ".$dbname.".kebun_prestasi_vs_hk a
+              left join ".$dbname.".organisasi d on a.kodeorg=d.kodeorganisasi 
               left join ".$dbname.".organisasi c on substr(a.kodeorg,1,4)=c.kodeorganisasi
 			  left join ".$dbname.".setup_blok b on a.kodeorg = b.kodeorg 
               where c.induk = '".$pt."'  and a.tanggal between '".tanggalsystem($tgl1)."' and '".tanggalsystem($tgl2)."' and b.intiplasma like '%".$intiplasma."%' 
@@ -63,8 +65,10 @@
         }
         $str="select a.tanggal,a.tahuntanam,a.unit,a.kodeorg,sum(a.hasilkerja) as jjg,sum(a.hasilkerjakg) as berat,
               sum(a.upahkerja) as upah,sum(a.luaspanen) as luas,sum(a.upahpremi) as premi,
-              sum(a.rupiahpenalty) as penalty,count(a.karyawanid) as jumlahhk,sum(hkpanenperhari) as hkpanenperhari, if(b.intiplasma='I','Inti','Plasma') as intiplasma   
+              sum(a.rupiahpenalty) as penalty,count(a.karyawanid) as jumlahhk,sum(hkpanenperhari) as hkpanenperhari, if(b.intiplasma='I','Inti','Plasma') as intiplasma
+			  ,d.namaorganisasi
               from ".$dbname.".kebun_prestasi_vs_hk a 
+              left join ".$dbname.".organisasi d on a.kodeorg=d.kodeorganisasi 
 			  left join ".$dbname.".setup_blok b on a.kodeorg = b.kodeorg 
               where unit = '".$unit."'  and a.tanggal between '".tanggalsystem($tgl1)."' and '".tanggalsystem($tgl2)."' and b.intiplasma like '%".$intiplasma."%'
               ".$where." 
@@ -78,7 +82,9 @@ if($unit=='') // script copy-an dari kebun_laporanPanen.php
         $str2="select a.tanggal,a.tahuntanam,a.unit,a.kodeorg,sum(a.hasilkerja) as jjg,sum(a.hasilkerjakg) as berat,
                sum(a.upahkerja) as upah,sum(a.luaspanen) as luas,sum(a.upahpremi) as premi,
                sum(a.rupiahpenalty) as penalty,count(a.karyawanid) as jumlahhk,sum(hkpanenperhari) as hkpanenperhari, if(b.intiplasma='I','Inti','Plasma') as intiplasma 
+			   ,d.namaorganisasi
                from ".$dbname.".kebun_prestasi_vs_hk a
+               left join ".$dbname.".organisasi d on a.kodeorg=d.kodeorganisasi 
                left join ".$dbname.".organisasi c on substr(a.kodeorg,1,4)=c.kodeorganisasi 
 			   left join ".$dbname.".setup_blok b on a.kodeorg = b.kodeorg 
                where c.induk = '".$pt."'  and a.tanggal between '".$kmrn."' and '".tanggalsystem($tgl2)."' 
@@ -93,8 +99,10 @@ if($unit=='') // script copy-an dari kebun_laporanPanen.php
         }
         $str2="select a.tanggal,a.tahuntanam,a.unit,a.kodeorg,sum(a.hasilkerja) as jjg,sum(a.hasilkerjakg) as berat,
                sum(a.upahkerja) as upah,sum(a.luaspanen) as luas,sum(a.upahpremi) as premi,
-               sum(a.rupiahpenalty) as penalty,count(a.karyawanid) as jumlahhk,sum(hkpanenperhari) as hkpanenperhari, if(b.intiplasma='I','Inti','Plasma') as intiplasma   
+               sum(a.rupiahpenalty) as penalty,count(a.karyawanid) as jumlahhk,sum(hkpanenperhari) as hkpanenperhari, if(b.intiplasma='I','Inti','Plasma') as intiplasma
+			   ,d.namaorganisasi
                from ".$dbname.".kebun_prestasi_vs_hk a 
+               left join ".$dbname.".organisasi d on a.kodeorg=d.kodeorganisasi 
 			   left join ".$dbname.".setup_blok b on a.kodeorg = b.kodeorg 
                where unit = '".$unit."'  and a.tanggal between '".$kmrn."' and '".tanggalsystem($tgl2)."' and b.intiplasma like '%".$intiplasma."%'   
                ".$where."
@@ -125,6 +133,7 @@ if($unit=='') // script copy-an dari kebun_laporanPanen.php
             $dzArr[$bar->kodeorg][$bar->tanggal.'k']=$bar->berat;
             $dzArr[$bar->kodeorg][$bar->tanggal.'h']=$bar->hkpanenperhari;//jumlahhk
             $dzArr[$bar->kodeorg][$bar->tanggal.'l']=$bar->luas;
+            $dzArr[$bar->kodeorg]['namaorg']=$bar->namaorganisasi;
         }	
     } 
     if(!empty($dzArr)) { // list isi data on kodeorg
@@ -174,7 +183,7 @@ if($unit=='') // script copy-an dari kebun_laporanPanen.php
         $stream.="<tr class='rowcontent'>
             <td align=center>".$no."</td>
             <td align=center>".substr($arey['kodeorg'],0,6)."</td>
-            <td align=center>".$arey['kodeorg']."</td>
+            <td align=center>".$arey['namaorg']."</td>
             <td align=center>".$arey['intiplasma']."</td>
             <td align=center>".number_format($luasblok[$arey['kodeorg']],2)."</td>
             <td align=center>".$arey['tahuntanam']."</td>";    

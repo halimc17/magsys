@@ -14,8 +14,9 @@
         $str="select a.tanggal,a.tahuntanam,a.unit,a.kodeorg,sum(a.hasilkerja) as jjg,sum(a.hasilkerjakg) as berat,
               sum(a.upahkerja) as upah,sum(a.upahpenalty) as upahpenalty, sum(a.premibasis) as premibasis,
               sum(a.upahpremi) as premi,sum(a.rupiahpenalty) as penalty,count(a.karyawanid) as jumlahhk
-              ,sum(hkpanenperhari) as hkpanenperhari, if(b.intiplasma='I','Inti','Plasma') as intiplasma
+              ,sum(hkpanenperhari) as hkpanenperhari, if(b.intiplasma='I','Inti','Plasma') as intiplasma,d.namaorganisasi
               from ".$dbname.".kebun_prestasi_vs_hk a
+              left join ".$dbname.".organisasi d on a.kodeorg=d.kodeorganisasi 
               left join ".$dbname.".organisasi c on substr(a.kodeorg,1,4)=c.kodeorganisasi 
 			  left join ".$dbname.".setup_blok b on a.kodeorg = b.kodeorg 
               where c.induk = '".$pt."'  and a.tanggal between ".tanggalsystem($tgl1)." and ".tanggalsystem($tgl2)." and b.intiplasma like '%".$intiplasma."%' 
@@ -31,8 +32,9 @@
         $str="select a.tanggal,a.tahuntanam,a.unit,a.kodeorg,sum(a.hasilkerja) as jjg,sum(a.hasilkerjakg) as berat,
               sum(a.upahkerja) as upah,sum(a.upahpenalty) as upahpenalty, sum(a.premibasis) as premibasis,
               sum(a.upahpremi) as premi,sum(a.rupiahpenalty) as penalty,count(a.karyawanid) as jumlahhk  
-              ,sum(hkpanenperhari) as hkpanenperhari, if(b.intiplasma='I','Inti','Plasma') as intiplasma
+              ,sum(hkpanenperhari) as hkpanenperhari, if(b.intiplasma='I','Inti','Plasma') as intiplasma,d.namaorganisasi
               from ".$dbname.".kebun_prestasi_vs_hk a 
+              left join ".$dbname.".organisasi d on a.kodeorg=d.kodeorganisasi 
 			  left join ".$dbname.".setup_blok b on a.kodeorg = b.kodeorg 
               where unit = '".$gudang."'  and a.tanggal between ".tanggalsystem($tgl1)." and ".tanggalsystem($tgl2)." and b.intiplasma like '%".$intiplasma."%'
               ".$where." 
@@ -77,13 +79,14 @@
             $periode=date('Y-m-d H:i:s');
             $tanggal=$bar->tanggal; 
             $kodeorg 	=$bar->kodeorg;
+            $namaorg 	=$bar->namaorganisasi;
            
             $stream.="<tr>
                 <td align=center width=20>".$no."</td>
 
                 <td align=center>".$tanggal."</td>
                 <td align=center>".substr($kodeorg,0,6)."</td>
-                <td align=center>".$kodeorg."</td>
+                <td align=center>".$namaorg."</td>
                 <td align=center>".$bar->intiplasma."</td>
                 <td align=center>".$bar->tahuntanam."</td>
                 <td align=right>".number_format($bar->jjg,0)."</td>

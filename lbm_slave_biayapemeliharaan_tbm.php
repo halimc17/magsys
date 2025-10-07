@@ -39,11 +39,11 @@ $dzArr=array();
 
 // aresta real
 $aresta="SELECT sum(luasareaproduktif) as luasareal FROM ".$dbname.".setup_blok
-    WHERE kodeorg like '".$unit."%' and statusblok ='TBM'";
+    WHERE kodeorg like '".$unit."%' and statusblok like 'TBM%'";
 if($afdId!='')
 {
     $aresta="SELECT sum(luasareaproduktif) as luasareal FROM ".$dbname.".setup_blok
-    WHERE kodeorg like '".$afdId."%' and statusblok ='TBM'";
+    WHERE kodeorg like '".$afdId."%' and statusblok like 'TBM%'";
 }
 $query=mysql_query($aresta) or die(mysql_error($conn));
 while($res=mysql_fetch_assoc($query))
@@ -53,7 +53,7 @@ while($res=mysql_fetch_assoc($query))
 
 // aresta budget
 $aresta="SELECT sum(hathnini) as luasareal FROM ".$dbname.".bgt_blok
-    WHERE kodeblok like '".$unit."%' and statusblok in ('TBM','TB') and tahunbudget = '".$tahun."'";
+    WHERE kodeblok like '".$unit."%' and statusblok like 'TB%' and tahunbudget = '".$tahun."'";
 $query=mysql_query($aresta) or die(mysql_error($conn));
 while($res=mysql_fetch_assoc($query))
 {

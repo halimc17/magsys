@@ -6,13 +6,37 @@ $notransaksi=$_POST['notransaksi'];
 $karyawanid=$_POST['karyawanid'];
 $status=$_POST['status'];
 $kolom=$_POST['kolom'];
+$tujuan2=$_POST['tujuan2'];
 $tanggal=date('Ymd');
 
 $kolomstatus='status'.$kolom;
 $kolomtanggal='tanggal'.$kolom;
 
-$str="update ".$dbname.".sdm_pjdinasht set ".$kolomstatus."=".$status.", 
-      ".$kolomtanggal."=".$tanggal." where notransaksi='".$notransaksi."'";	  
+$str="select a.tanggalperjalanan,a.kodeorg,a.tujuan1,a.tugas1,a.uangmuka,b.namakaryawan,b.bagian from ".$dbname.".sdm_pjdinasht a
+      left join ".$dbname.".datakaryawan b on a.karyawanid=b.karyawanid 
+      where a.notransaksi='".$notransaksi."'";
+$res=mysql_query($str);
+while($bar=mysql_fetch_object($res))
+{
+	$nama=$bar->namakaryawan;
+    $tgldari=tanggalnormal($bar->tanggalperjalanan);
+    $tglsampai=tanggalnormal($bar->tanggalkebali);
+    $tujuan=$bar->tujuan2;
+    $bagian=$bar->bagian;
+    $tugas=$bar->tugas2;
+	$uangmuka=$bar->uangmuka;
+}
+
+if($uangmuka==0 and $status=='1'){
+	exit('Warning: Uang muka masih 0 !!!');
+}
+
+if($status=='1'){
+	$str="update ".$dbname.".sdm_pjdinasht set ".$kolomstatus."=".$status.",".$kolomtanggal."=".$tanggal." where uangmuka<>'0' and notransaksi='".$notransaksi."'";
+}elseif($status=='2'){
+	$str="update ".$dbname.".sdm_pjdinasht set ".$kolomstatus."=".$status.",".$kolomtanggal."=".$tanggal.",uangmuka='0' where notransaksi='".$notransaksi."'";
+}
+
 if(mysql_query($str))
 {
     //ambil email notifikasi ke GA
@@ -25,6 +49,7 @@ if(mysql_query($str))
     
     if($status=='1' and $to!='')
     {
+		/*
         $str="select a.tanggalperjalanan,a.kodeorg,a.tujuan1,a.tugas1,b.namakaryawan,b.bagian from ".$dbname.".sdm_pjdinasht a
               left join ".$dbname.".datakaryawan b on a.karyawanid=b.karyawanid 
               where a.notransaksi='".$notransaksi."'";
@@ -34,27 +59,29 @@ if(mysql_query($str))
         while($bar=mysql_fetch_object($res))
         {
             $nama=$bar->namakaryawan;
-            $tanggal=tanggalnormal($bar->tanggalperjalanan);
-            $tujuan=$bar->tujuan1;
+            $tgldari=tanggalnormal($bar->tanggalperjalanan);
+            $tglsampai=tanggalnormal($bar->tanggalkebali);
+            $tujuan=$bar->tujuan2;
             $bagian=$bar->bagian;
-            $tugas=$bar->tugas1;
+            $tugas=$bar->tugas2;
         }
-        
+        */
         $subject="[Notifikasi] Perjalanan Dinas";
         $body="<html>
                  <head>
                  <body>
                    <dd>Dengan Hormat,</dd><br>
                    <br>
-                   Telah disetujui perjalanan dinas  A/n:".$nama." (".$bagian.")<br>
-                   Tujuan:".$tujuan."<br>
-                   Tugas :".$tugas."<br>
-                   Tanggal:".$tanggal."
+                   Telah disetujui perjalanan dinas  A/n: ".$nama." (".$bagian.")<br>
+                   Tujuan  : ".$tujuan."<br>
+                   Tugas   : ".$tugas."<br>
+                   Tanggal : ".$tgldari."<br>
+                   Sampai  : ".$tglsampai."
                    <br>
                    <br>
                    <br>
                    Regards,<br>
-                   Owl-Plantation System.
+                   MAGSYS - Medco Agro System.
                  </body>
                  </head>
                </html>

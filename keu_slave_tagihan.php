@@ -37,19 +37,20 @@ switch($proses) {
         # Header
         $header = array(
             $_SESSION['lang']['noinvoice'],$_SESSION['lang']['noinvoice']." Supplier",$_SESSION['lang']['pt'],$_SESSION['lang']['tanggal'],'Last Update',
-			$_SESSION['lang']['nopo'],$_SESSION['lang']['supplier'],$_SESSION['lang']['keterangan'],
+			$_SESSION['lang']['nopo'],$_SESSION['lang']['supplier'],$_SESSION['lang']['nofaktur'],$_SESSION['lang']['keterangan'],
 			$_SESSION['lang']['subtotal'],'postingby'
         );
         
         # Content
         $cols = "a.noinvoice,a.noinvoicesupplier,a.kodeorg,a.tanggal,a.updateby,a.nopo,
-			b.namasupplier,a.keterangan,a.nilaiinvoice,a.postingby,a.posting";
-        $order="a.tanggal desc";
+			b.namasupplier,a.nofp,a.keterangan,a.nilaiinvoice+a.uangmuka as nilaiinvoice,a.postingby,a.posting";
+        $order="a.posting,a.tanggal desc";
 		
 		$queryRow = "select count(*) as rows";
 		$query = " from ".$dbname.".keu_tagihanht a 
 			left join ".$dbname.".log_5supplier b on a.kodesupplier=b.supplierid	
 			where ".$where." order by ".$order;
+		//print_r($query);
 		$queryRow .= $query;
 		if(!is_null($param['shows'])) {
 			if(!is_null($param['page'])) {
@@ -109,15 +110,15 @@ switch($proses) {
         # Make Table
         $tHeader = new rTable('headTable','headTableBody',$header,$data);
         $tHeader->addAction('showEdit','Edit','images/'.$_SESSION['theme']."/edit.png");
-            
-    
+
+//	if($data['posting']==0) {
         if($_SESSION['empl']['tipelokasitugas']=='HOLDING' or $_SESSION['empl']['tipelokasitugas']=='KANWIL' or $_SESSION['empl']['kodejabatan']==117 or $_SESSION['empl']['kodejabatan']==119){
-                    $tHeader->addAction('deleteData','Delete','images/'.$_SESSION['theme']."/delete.png");
+				$tHeader->addAction('deleteData','Delete','images/'.$_SESSION['theme']."/delete.png");
             }
             else{//hanya HO dan region yang boleh menghapus
-                $tHeader->addAction('','Delete','images/'.$_SESSION['theme']."/delete.png");
+                $tHeader->addAction('deleteData','Delete','images/'.$_SESSION['theme']."/delete.png");
             }
-            
+//	}
         $tHeader->addAction('postingData','Posting','images/'.$_SESSION['theme']."/posting.png");
         $tHeader->_actions[2]->setAltImg('images/'.$_SESSION['theme']."/posted.png");
         $tHeader->addAction('detailPDF','Print Data Detail','images/'.$_SESSION['theme']."/pdf.jpg");
@@ -152,12 +153,10 @@ switch($proses) {
 		$data = $_POST;
 		if($data['tipeinvoice']=='po') {
 			$optPO = makeOption($dbname,'log_poht','nopo,kodesupplier',"stat_release=1 and nopo='".$data['nopo']."'");
-			
-                            //jmlh po di dari po
-                        $sCek2="select distinct  nilaipo as jmlhpo,ppn from ".$dbname.".log_poht where nopo='".$data['nopo']."' ";
-                        $qCek2=mysql_query($sCek2) or die(mysql_error($conn));
-                        $rCek2=mysql_fetch_assoc($qCek2);
-            
+			//jmlh po di dari po
+			$sCek2="select distinct  nilaipo as jmlhpo,ppn from ".$dbname.".log_poht where nopo='".$data['nopo']."' ";
+			$qCek2=mysql_query($sCek2) or die(mysql_error($conn));
+			$rCek2=mysql_fetch_assoc($qCek2);
 		} else if($data['tipeinvoice']=='sj') {
 			$optPO = makeOption($dbname,'log_suratjalanht','nosj,expeditor');
             $rCek2['jmlhpo']=0;
@@ -166,42 +165,40 @@ switch($proses) {
 			$optPO = makeOption($dbname,'log_konosemenht','nokonosemen,shipper');
             $rCek2['jmlhpo']=0;
 			$rCek2['ppn']=0;
-		} 
-                else if($data['tipeinvoice']=='bykrm') {
+		} else if($data['tipeinvoice']=='bykrm') {
 			$optPO = makeOption($dbname,'log_biayakirim','nodok,kodetrp');
-                        $rCek2['jmlhpo']=0;
+			$rCek2['jmlhpo']=0;
 			$rCek2['ppn']=0;
-                        
-                        $sCek2="select distinct jumlah as jmlhpo from ".$dbname.".log_biayakirim where nodok='".$data['nopo']."' ";           
-                        $qCek2=mysql_query($sCek2) or die(mysql_error($conn));
-                        $rCek2=mysql_fetch_assoc($qCek2);
-                        
+			$sCek2="select distinct jumlah as jmlhpo from ".$dbname.".log_biayakirim where nodok='".$data['nopo']."' ";           
+			$qCek2=mysql_query($sCek2) or die(mysql_error($conn));
+			$rCek2=mysql_fetch_assoc($qCek2);
+		} else if($data['tipeinvoice']=='trading') {
+			$optPO = makeOption($dbname,'pmn_traderht','nokontrakext,kodecustomer');
+			$rCek2['jmlhpo']=0;
+			$rCek2['ppn']=0;
+			$sCek2="select (nilaikontrakext+nilaippnext) as jmlhpo from ".$dbname.".pmn_traderht where nokontrakext='".$data['nopo']."' ";
+			$qCek2=mysql_query($sCek2) or die(mysql_error($conn));
+			$rCek2=mysql_fetch_assoc($qCek2);
+		} else {
+			$sCek2="select distinct nilaikontrak as jmlhpo from ".$dbname.".log_spkht where notransaksi='".$data['nopo']."' ";           
+			$qCek2=mysql_query($sCek2) or die(mysql_error($conn));
+			$rCek2=mysql_fetch_assoc($qCek2);
+                    
+			#ppn
+			$iPn="select sum(nilai) as jumppn from ".$dbname.".log_spk_tax where noakun='1160100' and notransaksi='".$data['nopo']."' ";
+			$nPn=  mysql_query($iPn) or die (mysql_error($conn));
+			$dPn=  mysql_fetch_assoc($nPn);
+			#pph
+			$iPh="select sum(nilai) as jumpph from ".$dbname.".log_spk_tax where noakun!='1160100' and notransaksi='".$data['nopo']."' ";
+			$nPh=  mysql_query($iPh) or die (mysql_error($conn));
+			$dPh=  mysql_fetch_assoc($nPh);
+			$rCek2['jmlhpo']=$rCek2['jmlhpo']+$dPn['jumppn']-$dPh['jumpph'];
+			$optPO = makeOption($dbname,'log_spkht','notransaksi,koderekanan');
 		}
-                else {
-                    
-                    
-                    
-                    $sCek2="select distinct nilaikontrak as jmlhpo from ".$dbname.".log_spkht where notransaksi='".$data['nopo']."' ";           
-                    $qCek2=mysql_query($sCek2) or die(mysql_error($conn));
-                    $rCek2=mysql_fetch_assoc($qCek2);
-                    
-                    #ppn
-                    $iPn="select sum(nilai) as jumppn from ".$dbname.".log_spk_tax where noakun='1160100' and notransaksi='".$data['nopo']."' ";
-                    $nPn=  mysql_query($iPn) or die (mysql_error($conn));
-                    $dPn=  mysql_fetch_assoc($nPn);
-                    #pph
-                    $iPh="select sum(nilai) as jumpph from ".$dbname.".log_spk_tax where noakun!='1160100' and notransaksi='".$data['nopo']."' ";
-                    $nPh=  mysql_query($iPh) or die (mysql_error($conn));
-                    $dPh=  mysql_fetch_assoc($nPh);
-                    
-                    $rCek2['jmlhpo']=$rCek2['jmlhpo']+$dPn['jumppn']-$dPh['jumpph'];
-                    
-                                $optPO = makeOption($dbname,'log_spkht','notransaksi,koderekanan');
-		}
-                //$a=$rCek2['jmlhpo'];
-                //exit("Error:$a._.$b._.$c");
-                
-		#$optPO = makeOption($dbname,'log_poht','nopo,kodesupplier',"nopo='".$data['nopo']."'");
+
+		//$a=$rCek2['jmlhpo'];
+		//exit("Error:$a._.$b._.$c");
+		//$optPO = makeOption($dbname,'log_poht','nopo,kodesupplier',"nopo='".$data['nopo']."'");
 		
 		// Error Trap
 		$warning = "";
@@ -246,10 +243,11 @@ switch($proses) {
                 $b=$data['nilaiinvoice'];
                 $c=$rCek2['jmlhpo'];
                 //exit("Error:$a._.$b._.$c");
-                
-        if(($jmlInv+$data['nilaiinvoice'])>$rCek2['jmlhpo'])
+		 //print_r(jmlInv+'___'+$data['nilaiinvoice']+'____'+$rCek2['jmlhpo']);return false;		
+         if(round($jmlInv+$data['nilaiinvoice'],2)>round($rCek2['jmlhpo'],2))
         {
-            exit("Warning: Invouce amount greater than PO/Contract amount");
+			//exit("Warning: Invoice amount greater than PO/Contract amount");
+            exit("Warning: Invoice amount greater than PO/Contract amount! InvoiceLama:".$jmlInv." + InvoiceBaru:".$data['nilaiinvoice']." > JumlahPO:".round($rCek2['jmlhpo'],2));
         }
         
 		// Insert Header
@@ -322,7 +320,13 @@ switch($proses) {
 		break;
     case 'delete':
 		$where = "noinvoice='".$param['noinvoice']."'";
+        if($_SESSION['empl']['tipelokasitugas']=='HOLDING' or $_SESSION['empl']['tipelokasitugas']=='KANWIL' or $_SESSION['empl']['kodejabatan']==117 or $_SESSION['empl']['kodejabatan']==119){
+			$where.="";
+		}else{
+			$where.=" and updateby='".$_SESSION['standard']['userid']."'";
+		}
 		$query = "delete from `".$dbname."`.`keu_tagihanht` where ".$where;
+		//exit('Warning: '.$query);
 		if(!mysql_query($query)) {
 			echo "DB Error : ".mysql_error();
 			exit;
@@ -351,10 +355,7 @@ switch($proses) {
 		break;
     case'getPo':
         $jenisInvoice = $_POST['jnsInvoice'];
-		
-        
-       
-        
+
 		// Get Akun Ppn
 		$qPpn = selectQuery($dbname,'setup_parameterappl','nilai',
 			"kodeaplikasi='TX' and kodeparameter='PPNINV'");
@@ -371,30 +372,42 @@ switch($proses) {
 		
 		$where = '';
 		switch($jenisInvoice) {
+
+			case'bykrm':
+				//if($_SESSION['empl']['tipelokasitugas']!='HOLDING')
+				//{
+					$sortHold=" and right(nodok,3)='".$_SESSION['empl']['kodeorganisasi']."'";
+				//}
+				if($param['txtfind']!='')
+				{
+					$where=" and nodok like '%".$param['txtfind']."%'";
+				} 
+				$sPo="select * from ".$dbname.".log_biayakirim where 1=1 ".$where.""
+					. " and posting=1 ".$sortHold."  order by updatetime desc ";
+				//$nBy=  mysql_query($iBy) or die (mysql_error($conn));
+				$dat.="<td>".$_SESSION['lang']['nopo']."</td>";
+				$dat.="<td>".$_SESSION['lang']['kodebarang']."</td>";
+				$dat.="<td>".$_SESSION['lang']['namabarang']."</td>";
+				$dat.="<td>Transportir</td>";
+				$dat.="<td>".$_SESSION['lang']['jumlah']."</td></tr></thead><tbody>";
+				break;
                     
-                    
-                        case'bykrm':
-                            
-                            //if($_SESSION['empl']['tipelokasitugas']!='HOLDING')
-                            //{
-                                $sortHold=" and right(nodok,3)='".$_SESSION['empl']['kodeorganisasi']."'";
-                            //}
-                            
-                            if($param['txtfind']!='')
-                            {
-                                    $where=" and nodok like '%".$param['txtfind']."%'";
-                            } 
-                            
-                            $sPo="select * from ".$dbname.".log_biayakirim where 1=1 ".$where.""
-                                    . " and posting=1 ".$sortHold."  order by updatetime desc ";
-                            //$nBy=  mysql_query($iBy) or die (mysql_error($conn));
-                            $dat.="<td>".$_SESSION['lang']['nopo']."</td>";
-                            $dat.="<td>".$_SESSION['lang']['kodebarang']."</td>";
-                            $dat.="<td>".$_SESSION['lang']['namabarang']."</td>";
-                            $dat.="<td>Transportir</td>";
-                            $dat.="<td>".$_SESSION['lang']['jumlah']."</td></tr></thead><tbody>";
-                            
-                        break;
+			case'trading':
+				//if($_SESSION['empl']['tipelokasitugas']!='HOLDING'){
+					$sortHold=" and kodeorg='".$_SESSION['empl']['lokasitugas']."'";
+				//}
+				if($param['txtfind']!=''){
+					$where=" and nokontrakext like '%".$param['txtfind']."%'";
+				} 
+				$sPo="select * from ".$dbname.".pmn_traderht where 1=1 ".$where.""
+					. "  ".$sortHold."  order by tanggalext desc ";
+				//$nBy=  mysql_query($iBy) or die (mysql_error($conn));
+				$dat.="<td>".$_SESSION['lang']['noKontrak']." Ext</td>";
+				$dat.="<td>".$_SESSION['lang']['kodebarang']."</td>";
+				$dat.="<td>".$_SESSION['lang']['namabarang']."</td>";
+				$dat.="<td>Vendor</td>";
+				$dat.="<td>".$_SESSION['lang']['jumlah']."</td></tr></thead><tbody>";
+				break;
                     
 			case 'po':
 				if($param['txtfind']!='')
@@ -409,7 +422,8 @@ switch($proses) {
 					$addlokal=" and lokalpusat=1 ";
 					$addkdorg="";
 				}
-				$sPo="select distinct nopo,(subtotal + ppn) as nilaipo,ppn,kodesupplier,stat_release,matauang,nilaidiskon from ".$dbname.".log_poht where 
+				//$sPo="select distinct nopo,(subtotal + ppn) as nilaipo,ppn,kodesupplier,stat_release,matauang,nilaidiskon from ".$dbname.".log_poht where 
+				$sPo="select distinct nopo,(subtotal + ppn + pbbkb) as nilaipo,ppn,kodesupplier,stat_release,matauang,nilaidiskon from ".$dbname.".log_poht where 
                                       kodeorg='".$_SESSION['org']['kodeorganisasi']."' ".$where.$addlokal."  order by tanggal desc ";
 									                      /* //and nopo not in (select distinct nopo from ".$dbname.".keu_tagihanht where tipeinvoice='p') ".$where." and kodeorg='".$_SESSION['org']['kodeorganisasi']."'order by tanggal desc "; */
 				//print_r($sPo);
@@ -418,8 +432,7 @@ switch($proses) {
 				$dat.="<td>".$_SESSION['lang']['namasupplier']."</td>";
 				$dat.="<td>".$_SESSION['lang']['matauang']."</td></tr></thead><tbody>"; 
 				break;
-                               
-                                
+
 			case 'sj':
 				if($param['txtfind']!='')
 				{
@@ -432,6 +445,7 @@ switch($proses) {
 				$dat.="<td>".$_SESSION['lang']['nosj']."</td>";
 				$dat.="<td>".$_SESSION['lang']['expeditor']."</td></tr></thead><tbody>";
 				break;
+
 			case 'ns':
 				if($param['txtfind']!='')
 				{
@@ -444,14 +458,17 @@ switch($proses) {
 				$dat.="<td>".$_SESSION['lang']['nokonosemen']."</td>";
 				$dat.="<td>".$_SESSION['lang']['shipper']."</td></tr></thead><tbody>";
 				break;
+
 			default:
+				//$where=" and kodeorg='".$_SESSION['empl']['lokasitugas']."'";
+				$where="";
 				if($param['txtfind']!='')
 				{
-					$where=" and notransaksi like '%".$param['txtfind']."%'";
+					$where.=" and notransaksi like '%".$param['txtfind']."%'";
 				}
 			   if($_SESSION['empl']['tipelokasitugas']=='HOLDING')
 			   {
-				   $sPo="select distinct notransaksi as nopo,kodeorg,nilaikontrak as nilaipo,koderekanan as kodesupplier from ".$dbname.".log_spkht where kodeorg in (select distinct kodeorganisasi from ".$dbname.".organisasi where induk='".$_SESSION['org']['kodeorganisasi']."')  ".$where."  order by tanggal desc";
+				   $sPo="select distinct notransaksi as nopo,kodeorg,nilaikontrak as nilaipo,koderekanan as kodesupplier from ".$dbname.".log_spkht where kodeorg in (select distinct kodeorganisasi from ".$dbname.".organisasi where induk='".$_SESSION['org']['kodeorganisasi']."') ".$where."  order by tanggal desc";
 			   }
 			   else
 			   {
@@ -466,45 +483,70 @@ switch($proses) {
 		$no=0;
         while($rPo=mysql_fetch_assoc($qPo)){
             
-                if($jenisInvoice=='bykrm') {
-                   
-                    
-                    #cek sudah pernah ada inv apa belum
-                    $sCek="select sum(nilaiinvoice) as jmlhinvoice,sum(nilaippn) as jmlppn,noinvoice,updateby "
-                    . "from ".$dbname.".keu_tagihanht where nopo='".$rPo['nodok']."' and tipeinvoice='b' order by noinvoice";
-                    $qCek=  mysql_query($sCek) or die(mysql_error($conn));
-                    $rCek=  mysql_fetch_assoc($qCek);
-                    if($rCek['jmlhinvoice']!='')
-                    {
-                        $rPo['jumlah']=$rPo['jumlah']-$rCek['jmlhinvoice'];
-                    }
-                    $nmBrg=makeOption($dbname,'log_5masterbarang','kodebarang,namabarang',$whbrg);
+			if($jenisInvoice=='bykrm') {
+				#cek sudah pernah ada inv apa belum
+				$sCek="select sum(nilaiinvoice) as jmlhinvoice,sum(nilaippn) as jmlppn,noinvoice,updateby "
+					. "from ".$dbname.".keu_tagihanht where nopo='".$rPo['nodok']."' and tipeinvoice='b' order by noinvoice";
+				$qCek=  mysql_query($sCek) or die(mysql_error($conn));
+				$rCek=  mysql_fetch_assoc($qCek);
+				if($rCek['jmlhinvoice']!='')
+				{
+					$rPo['jumlah']=$rPo['jumlah']-$rCek['jmlhinvoice'];
+				}
+				$whbrg="kodebarang='".$rPo['kodebarang']."'";
+				$nmBrg=makeOption($dbname,'log_5masterbarang','kodebarang,namabarang',$whbrg);
                         
-                    if($rPo['jumlah']>0)
-                    {
-                        $whbrg="kodebarang='".$rPo['kodebarang']."'";
-                        $no+=1;
-                        $dat.="<tr class='rowcontent' onclick=\"setPo('".$rPo['nodok']."','";
-                                $dat.=isset($rPo['jumlah'])? $rPo['jumlah']: 0;
-                                $dat.="','".$param['jnsInvoice']."','";
-                                $dat.="','".$optNmsupp[$rPo['kodetrp']]."')\" style='pointer:cursor;'><td>".$no."</td>";
-                        $dat.="<td>".$rPo['nodok']."</td>";  
-                        $dat.="<td>".$rPo['kodebarang']."</td>";
-                        $dat.="<td>".$nmBrg[$rPo['kodebarang']]."</td>";
-                        $dat.="<td>".$optNmsupp[$rPo['kodetrp']]."</td>";
-                        $dat.="<td>".number_format($rPo['jumlah'])."</td></tr>";
-                    }
-                }
-            
-                
-                
+				if($rPo['jumlah']>0)
+				{
+					$no+=1;
+					$dat.="<tr class='rowcontent' onclick=\"setPo('".$rPo['nodok']."','";
+					$dat.=isset($rPo['jumlah'])? $rPo['jumlah']: 0;
+					$dat.="','".$param['jnsInvoice']."','";
+					$dat.="','".$optNmsupp[$rPo['kodetrp']]."')\" style='pointer:cursor;'><td>".$no."</td>";
+					$dat.="<td>".$rPo['nodok']."</td>";  
+					$dat.="<td>".$rPo['kodebarang']."</td>";
+					$dat.="<td>".$nmBrg[$rPo['kodebarang']]."</td>";
+					$dat.="<td>".$optNmsupp[$rPo['kodetrp']]."</td>";
+					$dat.="<td>".number_format($rPo['jumlah'])."</td></tr>";
+				}
+			}
+	        elseif($jenisInvoice=='trading') {
+				#cek sudah pernah ada inv apa belum
+				$jmlhinvoice=0;
+				$sCek="select sum(nilaiinvoice) as jmlhinvoice,sum(nilaippn) as jmlppn,noinvoice,updateby "
+					. "from ".$dbname.".keu_tagihanht where nopo='".$rPo['nokontrakext']."' and tipeinvoice='t' order by noinvoice";
+				$qCek=  mysql_query($sCek) or die(mysql_error($conn));
+				$rCek=  mysql_fetch_assoc($qCek);
+				if($rCek['jmlhinvoice']!='')
+				{
+					//$rPo['nilaikontrakext']=$rPo['nilaikontrakext']+$rPo['nilaippnext']-$rCek['jmlhinvoice'];
+					$jmlhinvoice=$rCek['jmlhinvoice'];
+				}
+				$rPo['nilaikontrakext']=$rPo['nilaikontrakext']+$rPo['nilaippnext']-$jmlhinvoice;
+				$whbrg="kodebarang='".$rPo['kodebarang']."'";
+				$nmBrg=makeOption($dbname,'log_5masterbarang','kodebarang,namabarang',$whbrg);
+				$nmVdr=makeOption($dbname,'pmn_4customer','kodecustomer,namacustomer',$whbrg2);
+				if($rPo['nilaikontrakext']>0)
+				{
+					$no+=1;
+					$dat.="<tr class='rowcontent' title='Tradeklik' onclick=\"setPo('".$rPo['nokontrakext']."','";
+					$dat.=isset($rPo['nilaikontrakext'])? $rPo['nilaikontrakext']: 0;
+					$dat.="','".$param['jnsInvoice']."','";
+					$dat.="','".$nmVdr[$rPo['kodecustomer']]."')\" style='pointer:cursor;'><td>".$no."</td>";
+					$dat.="<td>".$rPo['nokontrakext']."</td>";  
+					$dat.="<td>".$rPo['kodebarang']."</td>";
+					$dat.="<td>".$nmBrg[$rPo['kodebarang']]."</td>";
+					$dat.="<td>".$nmVdr[$rPo['kodecustomer']]."</td>";
+					$dat.="<td>".number_format($rPo['nilaikontrakext'])."</td></tr>";
+				}
+            }
 	        elseif($jenisInvoice=='po') {
                     if($rPo['nilaidiskon']==''){
                         $rPo['nilaidiskon']=0;
                     }
                     $nilPo=($rPo['nilaipo']-$rPo['nilaidiskon']);
                     $rPo['nilaipo']=$nilPo;
-                $sCek="select sum(nilaiinvoice) as jmlhinvoice,sum(nilaippn) as jmlppn,noinvoice,updateby "
+                $sCek="select sum(nilaiinvoice+uangmuka) as jmlhinvoice,sum(nilaippn) as jmlppn,noinvoice,updateby "
                     . "from ".$dbname.".keu_tagihanht where nopo='".$rPo['nopo']."' and tipeinvoice='p' order by noinvoice";
 				//print_r($sCek);	
 				//print_r('<br/><br/>');	
@@ -547,9 +589,19 @@ switch($proses) {
                             $dat.="','".$optNmsupp[$rPo['kodesupplier']]."')\" style='pointer:cursor;'><td>".$no."</td>";
                 $dat.="<td>".$rPo['nopo']."</td>";
                 $dat.="<td>".$optNmsupp[$rPo['kodesupplier']]."</td></tr>";
+
             } else {
+				#cek sudah pernah ada inv apa belum
+				$sCek="select sum(nilaiinvoice) as jmlhinvoice,sum(nilaippn) as jmlppn,noinvoice,updateby "
+					. "from ".$dbname.".keu_tagihanht where nopo='".$rPo['nopo']."' and tipeinvoice='k' order by noinvoice";
+				$qCek=  mysql_query($sCek) or die(mysql_error($conn));
+				$rCek=  mysql_fetch_assoc($qCek);
+				if($rCek['jmlhinvoice']!='')
+				{
+					$rPo['nilaipo']=$rPo['nilaipo']-$rCek['jmlhinvoice'];
+				}
+
 				$notransaksi = $rPo['nopo'];
-				
 				// Get Tax
 				$optTax = makeOption($dbname,'log_spk_tax','noakun,nilai',
 					"notransaksi='".$notransaksi."' and kodeorg='".$rPo['kodeorg']."'");
@@ -575,7 +627,8 @@ switch($proses) {
         }
         $dat.="</tbody></table></div></fieldset>";
         echo $dat;
-        break;
+	break;
+
     default:
 	break;
 }
@@ -602,6 +655,7 @@ function formHeader($mode,$data) {
 		$data['supplier'] = '';
 		$data['matauang'] = 'IDR';
     } else {
+		//exit('Warning: '.$data['nopo'].'  '.$data['tipeinvoice']);
 		$data['nilaiinvoice'] = number_format($data['nilaiinvoice'],0);
 		$data['uangmuka'] = number_format($data['uangmuka'],0);
 		$data['nilaippn'] = number_format($data['nilaippn'],0);
@@ -639,6 +693,26 @@ function formHeader($mode,$data) {
 			$qPO = "select a.*,b.namasupplier from ".$dbname.".log_konosemenht a
 				left join ".$dbname.".log_5supplier b on a.shipper=b.supplierid
 				where a.nokonosemen='".$data['nopo']."'";
+			$resPO = fetchData($qPO);
+			if(!empty($resPO)) {
+				$data['supplier'] = $resPO[0]['namasupplier'];
+			}
+		} else if($data['tipeinvoice']=='b') { // Invoice Konosemen
+			$data['tipeinvoice']='bykrm';
+			// Cek Biaya kirim
+			$qPO = "select a.*,b.namasupplier from ".$dbname.".log_biayakirim a
+				left join ".$dbname.".log_5supplier b on a.kodetrp=b.supplierid
+				where a.nodok='".$data['nopo']."'";
+			$resPO = fetchData($qPO);
+			if(!empty($resPO)) {
+				$data['supplier'] = $resPO[0]['namasupplier'];
+			}
+		} elseif($data['tipeinvoice']=='t') { // Invoice Konosemen
+			$data['tipeinvoice']='trading';
+			// Cek Trading
+			$qPO = "select a.*,b.namacustomer as namasupplier from ".$dbname.".pmn_traderht a
+				left join ".$dbname.".pmn_4customer b on a.kodecustomer=b.kodecustomer
+				where a.nokontrakext='".$data['nopo']."'";
 			$resPO = fetchData($qPO);
 			if(!empty($resPO)) {
 				$data['supplier'] = $resPO[0]['namasupplier'];
@@ -695,6 +769,11 @@ function formHeader($mode,$data) {
 		$optPO = makeOption($dbname,'log_suratjalanht','nosj,nosj',null,'0',true);
 	} elseif($data['tipeinvoice']=='ns') {
 		$optPO = makeOption($dbname,'log_konosemenht','nokonosemen,nokonosemen',null,'0',true);
+	} elseif($data['tipeinvoice']=='bykrm') {
+		$optPO = makeOption($dbname,'log_biayakirim','nodok,nodok',null,'0',true);
+	} elseif($data['tipeinvoice']=='trading') {
+		$optPO = makeOption($dbname,'pmn_traderht','nokontrakext,nokontrakext',null,'0',true);
+		$optNmsupp=makeOption($dbname, 'pmn_4customer','kodecustomer,namacustomer');
     } else {
 		$optPO = makeOption($dbname,'log_spkht','notransaksi,notransaksi',null,'0',true);
     }
@@ -710,7 +789,7 @@ function formHeader($mode,$data) {
 	$els[] = array(
 	makeElement('noinvoicesupplier','label',$_SESSION['lang']['noinvoice']." Supplier"),
 	makeElement('noinvoicesupplier','text',$data['noinvoicesupplier'],
-	    array('style'=>'width:150px','maxlength'=>'25'))
+	    array('style'=>'width:150px','maxlength'=>'30'))
     );
     $els[] = array(
 	makeElement('kodeorg','label',$_SESSION['lang']['kodeorg']),
@@ -733,7 +812,8 @@ function formHeader($mode,$data) {
 	    array('po'=>'PO',
 			  'kontrak'=>$_SESSION['lang']['kontrak'],
 			  'sj'=>$_SESSION['lang']['suratjalan'],
-                          'bykrm'=>'Biaya Kirim',
+              'bykrm'=>'Biaya Kirim',
+              'trading'=>'Trading'
 			  // 'ns'=>$_SESSION['lang']['konosemen']
 		))
     );

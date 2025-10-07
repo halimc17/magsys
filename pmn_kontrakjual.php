@@ -118,7 +118,7 @@ $frm[0].="
                         <tbody>
                                 <td><select id=kdBrg name=kdBrg onchange=\"getSatuan(0,0,0)\" style=\"width:150px;\"><option value=''>".$_SESSION['lang']['pilihdata']."</option></select></td>
                                 <td><select id=stn name=stn style=\"width:50px;\"><option value=''></option></select></td>
-                                <td><input type=text class=myinputtextnumber  name=HrgStn id=HrgStn onkeypress=\"return angka_doang(event);\"  onkeyup=\"z.numberFormat('HrgStn',2);hitungHarga();rupiahkan(getById('tmpHarga'),'tBlg',true)\" onblur=\"rupiahkan(this,'tBlg',true)\" style=\"width:100px;\" /></td>
+                                <td><input type=text class=myinputtextnumber  name=HrgStn id=HrgStn onkeypress=\"return angka_doang(event);\"  onkeyup=\"z.numberFormat('HrgStn',3);hitungHarga();rupiahkan(getById('tmpHarga'),'tBlg',true)\" onblur=\"rupiahkan(this,'tBlg',true)\" style=\"width:100px;\" /></td>
                                 <td><select id=kurs name=kurs style=\"width:50px;\">".$optKurs."</select></td>
                                 <td><input type=text class=myinputtextnumber name=jmlh id=jmlh onkeypress=\"return angka_doang(event);\" style=\"width:100px;\" onkeyup=\"z.numberFormat('jmlh',2);hitungHarga();getBerat();\" />
 								<input id=tmpHarga type=hidden value=0>
@@ -238,6 +238,22 @@ while($dPt=  mysql_fetch_assoc($nPt))
     $optSch.="<option value='".$dPt['kodeorganisasi']."'>".$dPt['namaorganisasi']."</option>";
 }
 
+$optKomoditi="<option value=''>".$_SESSION['lang']['all']."</option>";
+$sKomoditi="select distinct(a.kodebarang),b.namabarang from ".$dbname.".pmn_kontrakjual a left join ".$dbname.".log_5masterbarang b on a.kodebarang=b.kodebarang";
+$qKomoditi= mysql_query($sKomoditi) or die (mysql_error($conn));
+while($dKomoditi=  mysql_fetch_assoc($qKomoditi))
+{
+    $optKomoditi.="<option value='".$dKomoditi['kodebarang']."'>".$dKomoditi['namabarang']."</option>";
+}
+
+$optCust="<option value=''>".$_SESSION['lang']['all']."</option>";
+$sCust="select distinct(a.koderekanan),b.namacustomer from ".$dbname.".pmn_kontrakjual a left join ".$dbname.".pmn_4customer b on a.koderekanan=b.kodecustomer";
+$qCust= mysql_query($sCust) or die (mysql_error($conn));
+while($dCust=  mysql_fetch_assoc($qCust))
+{
+    $optCust.="<option value='".$dCust['koderekanan']."'>".$dCust['namacustomer']."</option>";
+}
+
 $frm[1]="<fieldset>
            <legend>".$_SESSION['lang']['list']."</legend>
           <fieldset><legend></legend>
@@ -245,7 +261,13 @@ $frm[1]="<fieldset>
           <input type=text id=txtnokntrk size=25 class=myinputtext onkeypress=\"return tanpa_kutip(event);\" >
           
           ".$_SESSION['lang']['pt']."
-          <select style=\"width: 170px;\" name=ptSch id=ptSch >".$optSch."</select>    
+          <select style=\"width: 210px;\" name=ptSch id=ptSch >".$optSch."</select>    
+
+          ".$_SESSION['lang']['komoditi']."
+          <select style=\"width: 155px;\" name=ptKomoditi id=ptKomoditi >".$optKomoditi."</select><BR>    
+
+          ".$_SESSION['lang']['nmcust']."
+          <select style=\"width: 270px;\" name=ptCust id=ptCust >".$optCust."</select>    
 
           <button class=mybutton onclick=cariNoKntrk()>".$_SESSION['lang']['find']."</button>
           </fieldset>
@@ -257,10 +279,11 @@ $frm[1]="<fieldset>
           <td>".$_SESSION['lang']['nm_perusahaan']."</td>
           <td>".$_SESSION['lang']['nmcust']."</td>
           <td>".$_SESSION['lang']['tglKontrak']."</td>
-          <td>".$_SESSION['lang']['kodebarang']."</td>
           <td>".$_SESSION['lang']['produk']."</td>
+          <td>".$_SESSION['lang']['hargasatuan']."</td>
+          <td>".$_SESSION['lang']['ppn'].' Incl/Excl'."</td>
           <td>".$_SESSION['lang']['tgl_kirim']."</td>
-          <td>Action</td>
+          <td width='8%'>Action</td>
           </tr>
           </head>
            <tbody id=containerlist>
@@ -276,7 +299,7 @@ $frm[1]="<fieldset>
 $hfrm[0]=$_SESSION['lang']['form'];
 $hfrm[1]=$_SESSION['lang']['list'];
 
-drawTab('FRM',$hfrm,$frm,100,900);
+drawTab('FRM',$hfrm,$frm,100,1100);
 ?>
 
 <?

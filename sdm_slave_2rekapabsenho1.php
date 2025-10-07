@@ -14,7 +14,7 @@ $tahun = checkPostGet('tahun','');
 $tangsys1=$tahun.'-01-01';
 $tangsys2=$tahun.'-12-31';
 
-function dates_inbetween($date1, $date2){
+function dates_inbetwee($date1, $date2){
     $day = 60*60*24;
     $date1 = strtotime($date1);
     $date2 = strtotime($date2);
@@ -55,7 +55,8 @@ if(($tahun==""))
     exit();
 }
 
-$tanggaltanggal = dates_inbetween($tangsys1, $tangsys2);
+//$tanggaltanggal = dates_inbetwee($tangsys1, $tangsys2);
+$tanggaltanggal = rangeTanggal($tangsys1, $tangsys2);
 
 // karyawan ijin & cuti
 $str="SELECT a.karyawanid, substr(a.darijam,1,10) as daritanggal, substr(a.sampaijam,1,10) as sampaitanggal, a.jenisijin, c.namakaryawan, c.lokasitugas, a.jenisijin 

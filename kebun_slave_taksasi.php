@@ -25,6 +25,7 @@ switch($proses) {
 //        $tab.="<td>".$_SESSION['lang']['mandor']."</td>";
         $tab.="<td>".$_SESSION['lang']['afdeling']."</td>";
         $tab.="<td>".$_SESSION['lang']['tanggal']."</td>";
+        $tab.="<td>".$_SESSION['lang']['kodeblok']."</td>";
         $tab.="<td>".$_SESSION['lang']['blok']."</td>";
         $tab.="<td>".$_SESSION['lang']['section']."</td>";
         $tab.="<td>".$_SESSION['lang']['hasisa']."</td>";
@@ -53,7 +54,9 @@ switch($proses) {
 //            $kamuskaryawan[$rdata['karyawanid']]=$rdata['namakaryawan'];            
 //        }
         
-        $sdata="select distinct * from ".$dbname.".kebun_taksasi where ".$where." order by tanggal desc limit ".$offset.",".$limit." ";
+        $sdata="select a.*,b.namaorganisasi from ".$dbname.".kebun_taksasi a
+				left join ".$dbname.".organisasi b on b.kodeorganisasi=a.blok
+				where ".$where." order by a.tanggal desc limit ".$offset.",".$limit." ";
         //echo $sdata;
         $qdata=mysql_query($sdata) or die(mysql_error($conn));
         while($rdata=  mysql_fetch_assoc($qdata)){
@@ -62,6 +65,7 @@ switch($proses) {
             $tab.="<td>".$rdata['afdeling']."</td>";
             $tab.="<td>".tanggalnormal($rdata['tanggal'])."</td>";
             $tab.="<td>".$rdata['blok']."</td>";
+            $tab.="<td>".$rdata['namaorganisasi']."</td>";
             $tab.="<td>".$rdata['seksi']."</td>";
             $tab.="<td align=right>".$rdata['hasisa']."</td>";
             $tab.="<td align=right>".$rdata['haesok']."</td>";

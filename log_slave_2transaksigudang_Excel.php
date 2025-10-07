@@ -31,7 +31,7 @@ if($jenis=='9')$jenis='';
 $tipetransaksi = "a.tipetransaksi like '%".$jenis."%'";
 
 $str="select tanggalmulai, tanggalsampai from ".$dbname.".setup_periodeakuntansi
-      where periode ='".$periode."' and kodeorg='".$unit."'";
+      where periode like '".$periode."%' and kodeorg='".$unit."' order by periode";
     if($unit=='sumatera')
         $str="select tanggalmulai, tanggalsampai from ".$dbname.".setup_periodeakuntansi
               where periode ='".$periode."' and kodeorg in ('MRKE10','SKSE10','SOGM20','SSRO21','WKNE10')";
@@ -41,7 +41,10 @@ $str="select tanggalmulai, tanggalsampai from ".$dbname.".setup_periodeakuntansi
 $res=mysql_query($str);
 while($bar=mysql_fetch_object($res))
 {
-	$tanggalmulai=$bar->tanggalmulai;
+	$no+=1;
+	if($no==1){
+		$tanggalmulai=$bar->tanggalmulai;
+	}
 	$tanggalsampai=$bar->tanggalsampai;
 }
 
@@ -55,20 +58,34 @@ while($bar=mysql_fetch_object($res))
 }	
 
 */	
-//	if($kodebarang=='')
-//	$str="select a.tanggal, a.kodebarang, b.namabarang, a.jumlah, a.satuan, a.hargasatuan, a.hargarata, a.nopo, c.namasupplier, a.kodeblok, a.kodemesin, a.notransaksi, d.gudangx from ".$dbname.".log_transaksi_vw a
-//	      left join ".$dbname.".log_5masterbarang b on a.kodebarang=b.kodebarang  
-//	      left join ".$dbname.".log_5supplier c on a.idsupplier=c.supplierid  
-//	      left join ".$dbname.".log_transaksiht d on a.notransaksi=d.notransaksi  
-//	      where a.tanggal>='".$tanggalmulai."' and a.tanggal<='".$tanggalsampai."' and a.tipetransaksi = '".$jenis."' and a.kodegudang = '".$unit."'
-//		  order by a.tanggal";
-//	else
-//	$str="select a.tanggal, a.kodebarang, b.namabarang, a.jumlah, a.satuan, a.hargasatuan, a.hargarata, a.nopo, c.namasupplier, a.kodeblok, a.kodemesin, a.notransaksi, d.gudangx from ".$dbname.".log_transaksi_vw a
-//	      left join ".$dbname.".log_5masterbarang b on a.kodebarang=b.kodebarang  
-//	      left join ".$dbname.".log_5supplier c on a.idsupplier=c.supplierid  
-//	      left join ".$dbname.".log_transaksiht d on a.notransaksi=d.notransaksi  
-//	      where a.tanggal>='".$tanggalmulai."' and a.tanggal<='".$tanggalsampai."' and a.tipetransaksi = '".$jenis."' and a.kodegudang = '".$unit."' and a.kodebarang = '".$kodebarang."'
-//		  order by a.tanggal";
+
+if($kodebarang==''){
+    $str="select a.tanggal, a.kodebarang, b.namabarang, a.jumlah, a.satuan, a.hargasatuan, a.hargarata, a.nopo, 
+        c.namasupplier, a.kodeblok, a.kodemesin, a.notransaksi, d.gudangx, a.tipetransaksi, a.statusjurnal, d.statusjurnal, e.namaorganisasi
+        from ".$dbname.".log_transaksi_vw a
+        left join ".$dbname.".log_5masterbarang b on a.kodebarang=b.kodebarang  
+        left join ".$dbname.".log_5supplier c on a.idsupplier=c.supplierid  
+        left join ".$dbname.".log_transaksiht d on a.notransaksi=d.notransaksi  
+        left join ".$dbname.".organisasi e on a.kodeblok=e.kodeorganisasi
+        where a.tanggal>='".$tanggalmulai."' and a.tanggal<='".$tanggalsampai."' 
+        and ".$tipetransaksi." and a.kodegudang = '".$unit."'
+        order by a.tanggal, a.tipetransaksi";
+}
+else{
+    $str="select a.tanggal, a.kodebarang, b.namabarang, a.jumlah, a.satuan, a.hargasatuan, a.hargarata, a.nopo, 
+        c.namasupplier, a.kodeblok, a.kodemesin, a.notransaksi, d.gudangx, a.tipetransaksi, a.statusjurnal, d.statusjurnal, e.namaorganisasi
+        from ".$dbname.".log_transaksi_vw a
+        left join ".$dbname.".log_5masterbarang b on a.kodebarang=b.kodebarang  
+        left join ".$dbname.".log_5supplier c on a.idsupplier=c.supplierid  
+        left join ".$dbname.".log_transaksiht d on a.notransaksi=d.notransaksi  
+        left join ".$dbname.".organisasi e on a.kodeblok=e.kodeorganisasi
+        where a.tanggal>='".$tanggalmulai."' and a.tanggal<='".$tanggalsampai."' and ".$tipetransaksi."
+        and a.kodegudang = '".$unit."' and a.kodebarang = '".$kodebarang."' 
+        order by a.tanggal, a.tipetransaksi";
+    $str22="select sum(saldoawalqty) as saldoawalqty, avg(hargaratasaldoawal) as hargaratasaldoawal, sum(nilaisaldoawal) as nilaisaldoawal from ".$dbname.".log_5saldobulanan where kodegudang = '".$unit."'
+        and kodebarang = '".$kodebarang."' and periode = '".(strlen($periode)==4 ? $periode.'-01' : $periode)."'";                
+
+/*
 if($kodebarang==''){
     if($unit=='sumatera'){
     $str="select a.tanggal, a.kodebarang, b.namabarang, a.jumlah, a.satuan, a.hargasatuan, a.hargarata, 
@@ -143,7 +160,7 @@ else{
     $str22="select sum(saldoawalqty) as saldoawalqty, avg(hargaratasaldoawal) as hargaratasaldoawal, sum(nilaisaldoawal) as nilaisaldoawal from ".$dbname.".log_5saldobulanan where kodegudang = '".$unit."'
         and kodebarang = '".$kodebarang."' and periode = '".$periode."'";                
     }
-
+*/
 $res22=mysql_query($str22);
 if(mysql_num_rows($res22)>0)
 while($bar22=mysql_fetch_object($res22))
@@ -201,6 +218,7 @@ while($bar44=mysql_fetch_object($res44))
 			  if($jenis=='7')$stream.="<td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['tujuan']."</td>";
 			  if($jenis=='3')$stream.="<td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['sumber']."</td>";
 			  if(($jenis=='5')or($jenis=='6'))$stream.="<td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['kodeblok']."</td>";
+			  if(($jenis=='5')or($jenis=='6'))$stream.="<td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['blok']."</td>";
 			  if(($jenis=='5')or($jenis=='6'))$stream.="<td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['kodevhc']."</td>";
 			  $stream.="<td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['notransaksi']."</td>";
 					$stream.="</tr>";
@@ -227,12 +245,15 @@ while($bar44=mysql_fetch_object($res44))
             $stream.="<td align=right>".number_format($keluar,2)."</td>";
             $stream.="<td align=right>".number_format($saldoawalqty,2)."</td>";
             $stream.="<td>".$satuan."</td>";
-            $stream.="<td align=right>".number_format($hargaratasaldoawal)."</td>";
-            $stream.="<td align=right>".number_format($nilaisaldoawal)."</td>";
+            $stream.="<td align=right>".number_format($hargaratasaldoawal,2)."</td>";
+            $stream.="<td align=right>".number_format($nilaisaldoawal,2)."</td>";
             $stream.="<td></td>";
             $stream.="<td></td>";
         $stream.="</tr>";
         }    
+		$tothrg=0;
+		$totjml=0;
+		$no=0;
         while($bar=mysql_fetch_object($res))
 	{
 		$no+=1; $total=0;
@@ -258,20 +279,22 @@ while($bar44=mysql_fetch_object($res44))
                 $stream.="<td align=right>".number_format($saldo,2)."</td>";
             }else{
 				  $stream.="<td align=right>".number_format($bar->jumlah,2)."</td>";
+                $totjml+=$bar->jumlah;
             }
                                                                     
 				  $stream.="<td>".$bar->satuan."</td>";
-				  if(($jenis=='0')or($jenis=='1')or($jenis=='2')or($jenis=='3'))$stream.="<td align=right>".number_format($bar->hargasatuan)."</td>"; else
-				  	$stream.="<td align=right>".number_format($bar->hargarata)."</td>";
-				  $stream.="<td align=right>".number_format($total)."</td>";
+				  if(($jenis=='0')or($jenis=='1')or($jenis=='2')or($jenis=='3'))$stream.="<td align=right>".number_format($bar->hargasatuan,2)."</td>"; else
+				  	$stream.="<td align=right>".number_format($bar->hargarata,2)."</td>";
+				  $stream.="<td align=right>".number_format($total,2)."</td>";
 //				  if(($jenis=='0')or($jenis=='1')or($jenis=='2')or($jenis=='3'))$stream.="<td nowrap>".$bar->nopo."</td>";
 //				  if(($jenis=='0')or($jenis=='1')or($jenis=='2')or($jenis=='3'))$stream.="<td nowrap>".$bar->namasupplier."</td>";
 				  if(($jenis=='0')or($jenis=='1')or($jenis=='2'))$stream.="<td nowrap>".$bar->nopo."</td>";
 				  if(($jenis=='0')or($jenis=='1')or($jenis=='2'))$stream.="<td nowrap>".$bar->namasupplier."</td>";
 				  if($jenis=='7')$stream.="<td>".$bar->gudangx."</td>";
 				  if($jenis=='3')$stream.="<td>".$bar->gudangx."</td>";
-				  if(($jenis=='5')or($jenis=='6'))$stream.="<td>".$bar->kodeblok."</td>";
-				  if(($jenis=='5')or($jenis=='6'))$stream.="<td>".$bar->kodemesin."</td>";
+				  if(($jenis=='5')or($jenis=='6'))$stream.="<td nowrap>".$bar->kodeblok."</td>";
+				  if(($jenis=='5')or($jenis=='6'))$stream.="<td nowrap>".$bar->namaorganisasi."</td>";
+				  if(($jenis=='5')or($jenis=='6'))$stream.="<td nowrap>".$bar->kodemesin."</td>";
             if($jenis==''){
                 if($bar->tipetransaksi<4)$keluarmasuk=$bar->nopo." ".$bar->namasupplier." ".$bar->gudangx;
                 if($bar->tipetransaksi>4)$keluarmasuk=$bar->kodeblok." ".$bar->kodemesin." ".$bar->gudangx;
@@ -279,6 +302,7 @@ while($bar44=mysql_fetch_object($res44))
             }
 				  $stream.="<td nowrap>".$bar->notransaksi."</td>";
 			$stream.="</tr>"; 	
+			$tothrg+=$total;
 	}
         if($jenis==''){
         $stream.="<tr class=rowcontent>
@@ -286,8 +310,20 @@ while($bar44=mysql_fetch_object($res44))
             $stream.="<td align=right>".number_format($totmas,2)."</td>";
             $stream.="<td align=right>".number_format($totkel,2)."</td>";
             $stream.="<td align=right>".number_format($saldo,2)."</td>";
-            $stream.="<td colspan=5>".$satuan."</td>";
+            $stream.="<td>".$satuan."</td>";
+            $stream.="<td colspan=4></td>";
         $stream.="</tr>";
+		}else{
+			if($kodebarang<>''){
+				$stream.="<tr class=rowcontent>
+					<td align=center colspan=5>Total</td>";
+				$stream.="<td align=right>".number_format($totjml,2)."</td>";
+			    $stream.="<td>".$satuan."</td>";
+				$stream.="<td align=right>".number_format($tothrg/$totjml,2)."</td>";
+				$stream.="<td align=right>".number_format($tothrg,2)."</td>";
+				//$stream.="<td colspan=5></td>";
+		        $stream.="</tr>";
+			}
         }    
 
 	$stream.="</table>Print Time:".date('YmdHis')."<br>By:".$_SESSION['empl']['name'];	

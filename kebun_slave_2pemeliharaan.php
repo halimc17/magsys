@@ -115,14 +115,16 @@ if ($proses=='excel' or $proses=='preview')
                   b.kodekegiatan as kodekegiatan,b.hasilkerja as hasilkerja, b.jumlahhk as jumlahhk,
                   IF((select count(t1.notransaksi) from ".$dbname.".kebun_pakai_material_vw t1 where t1.notransaksi = a.notransaksi) <= 1, sum(c.umr),sum(c.umr)/(select count(t1.notransaksi) from ".$dbname.".kebun_pakai_material_vw t1 where t1.notransaksi = a.notransaksi)) as upah,
 				  IF((select count(t1.notransaksi) from ".$dbname.".kebun_pakai_material_vw t1 where t1.notransaksi = a.notransaksi) <= 1, sum(c.insentif),sum(c.insentif)/(select count(t1.notransaksi) from ".$dbname.".kebun_pakai_material_vw t1 where t1.notransaksi = a.notransaksi)) as premi,
+				  IF((select count(t1.notransaksi) from ".$dbname.".kebun_pakai_material_vw t1 where t1.notransaksi = a.notransaksi) <= 1, sum(c.denda),sum(c.denda)/(select count(t1.notransaksi) from ".$dbname.".kebun_pakai_material_vw t1 where t1.notransaksi = a.notransaksi)) as denda,
 				  d.namakegiatan as namakegiatan,
-                  d.satuan as satuan,d.kelompok as kelompok,e.kodebarang
+                  d.satuan as satuan,d.kelompok as kelompok,e.kodebarang,g.namaorganisasi
                   from ".$dbname.".kebun_aktifitas a 
                   left join ".$dbname.".kebun_prestasi b on a.notransaksi = b.notransaksi
                   left join ".$dbname.".kebun_kehadiran c on a.notransaksi = c.notransaksi
                   left join ".$dbname.".setup_kegiatan d on b.kodekegiatan = d.kodekegiatan
                   left join ".$dbname.".kebun_pakai_material_vw e  on a.notransaksi = e.notransaksi
 				  left join ".$dbname.".setup_blok f on b.kodeorg = f.kodeorg
+				    left join ".$dbname.".organisasi g on b.kodeorg = g.kodeorganisasi
                   where b.kodeorg like '".$kdAfd."%' and a.tanggal between '".$tgl1_."' and '".$tgl2_."'
                   and b.kodekegiatan like '%".$kegiatan."%'  and b.kodekegiatan != '0' and a.jurnal=1
                   ".$brg." and f.intiplasma like '%".$intiplasma."%'
@@ -140,14 +142,16 @@ if ($proses=='excel' or $proses=='preview')
 					b.kodekegiatan as kodekegiatan,b.hasilkerja as hasilkerja, b.jumlahhk as jumlahhk,
 					IF((select count(t1.notransaksi) from ".$dbname.".kebun_pakai_material_vw t1 where t1.notransaksi = a.notransaksi) <= 1, sum(c.umr),sum(c.umr)/(select count(t1.notransaksi) from ".$dbname.".kebun_pakai_material_vw t1 where t1.notransaksi = a.notransaksi)) as upah,
 					IF((select count(t1.notransaksi) from ".$dbname.".kebun_pakai_material_vw t1 where t1.notransaksi = a.notransaksi) <= 1, sum(c.insentif),sum(c.insentif)/(select count(t1.notransaksi) from ".$dbname.".kebun_pakai_material_vw t1 where t1.notransaksi = a.notransaksi)) as premi,
+					IF((select count(t1.notransaksi) from ".$dbname.".kebun_pakai_material_vw t1 where t1.notransaksi = a.notransaksi) <= 1, sum(c.denda),sum(c.denda)/(select count(t1.notransaksi) from ".$dbname.".kebun_pakai_material_vw t1 where t1.notransaksi = a.notransaksi)) as denda,
 					d.namakegiatan as namakegiatan,
-					d.satuan as satuan,d.kelompok as kelompok,e.kodebarang
+					d.satuan as satuan,d.kelompok as kelompok,e.kodebarang,g.namaorganisasi
 					from ".$dbname.".kebun_aktifitas a 
 					left join ".$dbname.".kebun_prestasi b on a.notransaksi = b.notransaksi
 					left join ".$dbname.".kebun_kehadiran c on a.notransaksi = c.notransaksi
 					left join ".$dbname.".setup_kegiatan d on b.kodekegiatan = d.kodekegiatan
                     left join ".$dbname.".kebun_pakai_material_vw e  on a.notransaksi = e.notransaksi
-				  left join ".$dbname.".setup_blok f on b.kodeorg = f.kodeorg
+				    left join ".$dbname.".setup_blok f on b.kodeorg = f.kodeorg
+				    left join ".$dbname.".organisasi g on b.kodeorg = g.kodeorganisasi
 					where b.kodeorg like '".$kdAfd."%' and a.tanggal between '".$tgl1_."' and '".$tgl2_."'
 					and b.kodekegiatan like '%".$kegiatan."%'  and b.kodekegiatan != '0' ".$where."
 					  ".$brg." and f.intiplasma like '%".$intiplasma."%'
@@ -161,28 +165,29 @@ if ($proses=='excel' or $proses=='preview')
                 $str1="select a.notransaksi as notransaksi,a.tanggal as tanggal,a.kodeblok as kodeorg,
                   a.kodekegiatan as kodekegiatan,a.hasilkerjarealisasi as hasilkerja,a.hkrealisasi as jumlahhk,
                   a.jumlahrealisasi as upah,b.namakegiatan as namakegiatan,
-                  b.satuan as satuan,b.kelompok as kelompok
+                  b.satuan as satuan,b.kelompok as kelompok,g.namaorganisasi
                   from ".$dbname.".log_baspk a 
                   left join ".$dbname.".setup_kegiatan b on a.kodekegiatan = b.kodekegiatan
-				  left join ".$dbname.".setup_blok c on a.kodeblok = c.kodeorg
+		    left join ".$dbname.".setup_blok c on a.kodeblok = c.kodeorg
+		    left join ".$dbname.".organisasi g on a.kodeblok = g.kodeorganisasi
                   where a.kodeblok like '".$kdAfd."%' and a.tanggal between '".$tgl1_."' and '".$tgl2_."'
-                  and a.kodekegiatan like '%".$kegiatan."%' and a.posting=1 and c.intiplasma like '%".$intiplasma."%'
+                  and a.kodekegiatan like '%".$kegiatan."%' and a.statusjurnal=1 and c.intiplasma like '%".$intiplasma."%'
                   group by a.notransaksi,a.kodekegiatan,a.kodeblok,a.tanggal
                   order by a.kodekegiatan,a.kodeblok asc";
             }
             else{
                 $where='';
                 if($kdOrg != $_SESSION['empl']['lokasitugas']){                
-                    $where=" and a.posting=1";
+                    $where=" and a.statusjurnal=1";
                 }
             $str1="select a.notransaksi as notransaksi,a.tanggal as tanggal,a.kodeblok as kodeorg,
                   a.kodekegiatan as kodekegiatan,a.hasilkerjarealisasi as hasilkerja,a.hkrealisasi as jumlahhk,
                   a.jumlahrealisasi as upah,b.namakegiatan as namakegiatan,
-                  b.satuan as satuan,b.kelompok as kelompok
+                  b.satuan as satuan,b.kelompok as kelompok,g.namaorganisasi
                   from ".$dbname.".log_baspk a 
                   left join ".$dbname.".setup_kegiatan b on a.kodekegiatan = b.kodekegiatan
-				  left join ".$dbname.".setup_blok c on a.kodeblok = c.kodeorg
-                                      
+		    left join ".$dbname.".setup_blok c on a.kodeblok = c.kodeorg
+		    left join ".$dbname.".organisasi g on a.kodeblok = g.kodeorganisasi
                   where a.kodeblok like '".$kdAfd."%' and a.tanggal between '".$tgl1_."' and '".$tgl2_."'
                   and a.kodekegiatan like '%".$kegiatan."%' ".$where." and c.intiplasma like '%".$intiplasma."%'
                    and b.kelompok in ('BBT','TM','TB','TBM','PNN')    
@@ -224,13 +229,15 @@ if ($proses=='excel' or $proses=='preview')
         <td align=center>".$_SESSION['lang']['jumlahhk']."</td>
 	<td  align=center>".$_SESSION['lang']['upahkerja']."</td>
 	<td align=center>".$_SESSION['lang']['insentif']."</td>
+	<td align=center>".$_SESSION['lang']['denda']."</td>
+	<td align=center>".$_SESSION['lang']['jumlahrp']."</td>
         <td align=center>".$_SESSION['lang']['kodebarang']."</td> 
         <td align=center>".$_SESSION['lang']['namabarang']."</td>
         <td align=center>".$_SESSION['lang']['jumlah']."</td>  
         <td align=center>".$_SESSION['lang']['satuan']."</td>     
         </tr></thead>
 	<tbody>";
-        $no=$thk=$tupah=$tpremi=0;
+        $no=$thk=$tupah=$tpremi=$tdenda=0;
         $oldnotrans='';
         while($bar1=mysql_fetch_object($res1))
         {
@@ -241,9 +248,9 @@ if ($proses=='excel' or $proses=='preview')
                 if(isset($barang[$oldnotrans]['kodebarang']) and is_array($barang[$oldnotrans]['kodebarang'])){
                 foreach($barang[$oldnotrans]['kodebarang'] as $key =>$val){
                 $stream.="<tr class=rowcontent>
-                <td></td>
+                <td align=center></td>
                 <td>".$oldnotrans."</td>    
-                <td>".$sumber."</td>
+                <td align=center>".$sumber."</td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -253,9 +260,11 @@ if ($proses=='excel' or $proses=='preview')
                 <td align=right></td>
                 <td align=right></td>
                 <td align=right></td>
+                <td align=right></td>
+                <td align=right></td>
                 <td>".$barang[$oldnotrans]['kodebarang'][$key]."</td> 
                 <td>".$barang[$oldnotrans]['namabarang'][$key]."</td>
-                <td>".$barang[$oldnotrans]['jumlah'][$key]."</td>  
+                <td align=right>".$barang[$oldnotrans]['jumlah'][$key]."</td>  
                 <td>".$barang[$oldnotrans]['satuan'][$key]."</td>  
                 </tr>";  
                 }
@@ -263,11 +272,11 @@ if ($proses=='excel' or $proses=='preview')
             }
             if($proses=='excel')$tampiltanggal=$bar1->tanggal; else $tampiltanggal=tanggalnormal($bar1->tanggal);
             $stream.="<tr class=rowcontent>
-            <td>".$no."</td>
+            <td align=center>".$no."</td>
             <td>".$bar1->notransaksi."</td>    
-            <td>".$sumber."</td>
+            <td align=center>".$sumber."</td>
             <td>".$tampiltanggal."</td>
-            <td>".$bar1->kodeorg."</td>
+            <td>".$bar1->namaorganisasi."</td>
             <td>".$bar1->kodekegiatan."</td>
             <td>". $kamusKeg[$bar1->kodekegiatan]."</td>         
             <td align=right>".number_format($bar1->hasilkerja,2)."</td>                 
@@ -275,9 +284,11 @@ if ($proses=='excel' or $proses=='preview')
             <td align=right>".number_format($bar1->jumlahhk,2)."</td>
             <td align=right>".number_format($bar1->upah)."</td>
             <td align=right>".number_format($bar1->premi)."</td>
+            <td align=right>".number_format($bar1->denda)."</td>
+            <td align=right>".number_format($bar1->upah+$bar1->premi-$bar1->denda)."</td>
             <td>-</td> 
             <td>-</td>
-            <td>-</td>  
+            <td align=right>-</td>  
             <td>-</td>                  
             </tr>";
             
@@ -285,25 +296,28 @@ if ($proses=='excel' or $proses=='preview')
             $thk+=$bar1->jumlahhk;
             $tupah+=$bar1->upah;
             $tpremi+=$bar1->premi;
+            $tdenda+=$bar1->denda;
         }
                 if(isset($barang[$oldnotrans]['kodebarang']) and is_array($barang[$oldnotrans]['kodebarang'])){
                 foreach($barang[$oldnotrans]['kodebarang'] as $key =>$val){
                 $stream.="<tr class=rowcontent>
-                <td></td>
+                <td align=center></td>
                 <td>".$oldnotrans."</td>    
-                <td>".$sumber."</td>
+                <td align=center>".$sumber."</td>
                 <td></td>
                 <td></td>
                 <td></td>
                 <td></td>         
-                <td align=right></td>                 
+                <td align=right></td>
                 <td></td>
+                <td align=right></td>
+                <td align=right></td>
                 <td align=right></td>
                 <td align=right></td>
                 <td align=right></td>
                 <td>".$barang[$oldnotrans]['kodebarang'][$key]."</td> 
                 <td>".$barang[$oldnotrans]['namabarang'][$key]."</td>
-                <td>".$barang[$oldnotrans]['jumlah'][$key]."</td>  
+                <td align=right>".$barang[$oldnotrans]['jumlah'][$key]."</td>  
                 <td>".$barang[$oldnotrans]['satuan'][$key]."</td>  
                 </tr>";  
                 }
@@ -315,9 +329,11 @@ if ($proses=='excel' or $proses=='preview')
 	<td align=right>".number_format($thk)."</td>
 	<td align=right>".number_format($tupah)."</td>
 	<td align=right>".number_format($tpremi)."</td>
+	<td align=right>".number_format($tdenda)."</td>
+	<td align=right>".number_format($tupah+$tpremi-$tdenda)."</td>
         <td>-</td> 
         <td>-</td>
-        <td>-</td>  
+        <td align=right>-</td>  
         <td>-</td>  
         </tbody></table>";
  
@@ -344,7 +360,7 @@ switch($proses)
         case 'excel':
             $stream.="</table>Print Time:".date('YmdHis')."<br>By:".$_SESSION['empl']['name'];	
             $dte=date("YmdHms");
-            $nop_="Laporan_perawatan".$kdAfd.$tgl1_."-".$tgl2_."_".date('YmdHis');
+            $nop_="Laporan_Perawatan".$kdAfd.$tgl1_."-".$tgl2_."_".date('YmdHis');
              $gztralala = gzopen("tempExcel/".$nop_.".xls.gz", "w9");
              gzwrite($gztralala, $stream);
              gzclose($gztralala);

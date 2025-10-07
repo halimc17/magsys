@@ -8,31 +8,81 @@ include('master_mainMenu.php');
 OPEN_BOX();
 ?>
 
-<?php 
+<?php
+//Unit 
+if($_SESSION['empl']['tipelokasitugas']=='HOLDING'){
+	$sUnit="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi where tipe in ('PABRIK','KEBUN') and detail<>'0'";
+	$optUnit="<option value=''>".$_SESSION['lang']['all']."</option>";
+    $optDivisi="<option value=''>".$_SESSION['lang']['all']."</option>";
+	//$optUnit="<option value=''>''</option>";
+}else if($_SESSION['empl']['tipelokasitugas']=='KANWIL'){
+	$sUnit="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi where tipe in ('PABRIK','KEBUN') and detail<>'0' and induk='".$_SESSION['empl']['induk']."'";
+	$optUnit="<option value=''>".$_SESSION['lang']['all']."</option>";
+    $optDivisi="<option value=''>".$_SESSION['lang']['all']."</option>";
+	//$optUnit="<option value=''>''</option>";
+}else{
+	$sUnit="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi where tipe in ('PABRIK','KEBUN') and detail<>'0' and kodeorganisasi='".$_SESSION['empl']['lokasitugas']."'";
+	$str = "select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi 
+			where kodeorganisasi like '".$_SESSION['empl']['lokasitugas']."%' and length(kodeorganisasi)=6 and tipe in ('AFDELING','BIBITAN','STATION') order by namaorganisasi" ;
+	$res=mysql_query($str);
+	$optDivisi="<option value=''>".$_SESSION['lang']['all']."</option>";
+	while($bar=mysql_fetch_object($res)){
+		$optDivisi.="<option value='".$bar->kodeorganisasi."'>".$bar->namaorganisasi."</option>";
+	}
+}
+$qUnit=mysql_query($sUnit) or die(mysql_error());
+while($rUnit=mysql_fetch_assoc($qUnit))
+{
+	$optUnit.="<option value=".$rUnit['kodeorganisasi'].">".$rUnit['namaorganisasi']."</option>";
+}
 // periode 
-$sOrg="select distinct substr(tanggal,1,7) as tahun from ".$dbname.".keu_jurnalht order by tanggal desc";
+//$sOrg="select distinct substr(tanggal,1,7) as tahun from ".$dbname.".keu_jurnalht order by tanggal desc";
+$sOrg="select distinct periode as tahun from ".$dbname.".setup_periodeakuntansi order by periode desc";
 $qOrg=mysql_query($sOrg) or die(mysql_error($conn));
 while($rOrg=mysql_fetch_assoc($qOrg))
 {
     $optPeriode.="<option value=".$rOrg['tahun'].">".$rOrg['tahun']."</option>";
 }
- 
+
 //$arr0="##kebun0##afdeling0##mandor0##periode0"; 
-$arr0="##periode0"; 
+$arr0="##periode0##periode2##unit0##divisi0"; 
 ?>
 <script language=javascript src='js/zTools.js'></script>
 <script language=javascript src='js/zReport.js'></script>
+<script language=javascript src='js/agro_2costelement.js'></script>
 <link rel='stylesheet' type='text/css' href='style/zTable.css'>
  
 <?php
 $title[0]=$_SESSION['lang']['laporan']." ".$_SESSION['lang']['costelement'];
+ 
 
-$frm[0].="<fieldset style=\"float: left;\">
+$frm[0].="<fieldset style=\"float: left;\"> 
 <legend><b>".$title[0]."</b></legend>
 <table cellspacing=\"1\" border=\"0\" >
 <tr>
+    <td>
+        <label>".$_SESSION['lang']['unit']."</label>
+    </td>
+    <td>
+        <select id=\"unit0\" name=\"unit0\"  style=\"width:220px\" onChange=\"getAfd()\">".$optUnit."</select>
+    </td>
+</tr>
+<tr>
+
+    <td>
+        <label>".$_SESSION['lang']['divisi']."</label>
+    </td>
+    <td>
+        <select id=\"divisi0\" name=\"divisi0\" style=\"width:220px\">".$optDivisi."</select>
+    </td>
+</tr>
+<tr>
     <td><label>".$_SESSION['lang']['periode']."</label></td>
-    <td><select id=\"periode0\" name=\"periode0\"  style=\"width:150px\">".$optPeriode."</select></td>
+    <td>
+        <select id=\"periode0\" name=\"periode0\"  style=\"width:100px\">".$optPeriode."</select>
+		"." sd "."
+        <select id=\"periode2\" name=\"periode2\"  style=\"width:100px\">".$optPeriode."</select>
+    </td>
 </tr>
 
 <tr height=\"20\">

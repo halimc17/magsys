@@ -56,7 +56,11 @@ return $default;
 function cekAkunPiutang($noakun){
 $akunPiutang=array('11401',
                    '11402',
-                   '11404');
+                   '11403',
+                   '11404',
+                   '11407',
+                   '11803',
+                   '11804');
 $akun=  substr(str_replace(" ","",$noakun), 0,5);
 $default=false;
 foreach($akunPiutang as $val)

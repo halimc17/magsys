@@ -7,13 +7,13 @@ $uname   ='production';
 $passwd  ='passwordFORProduction';
 #$uname	='root';
 #$passwd	='M3dc0@20';
-$conn=mysql_connect($dbserver.":".$dbport,$uname,$passwd) or exit(mysql_error($conn)."Error production connection:".$dbname);
+$conn3=mysql_connect($dbserver.":".$dbport,$uname,$passwd) or exit(mysql_error($conn3)."Error production connection:".$dbname);
 
 //PKS
 $str="select ip,username,password,port,dbname from ".$dbname.".setup_remotetimbangan
       where lokasi='MHS'";
 //	  echo $str;	
-$res=mysql_query($str,$conn);
+$res=mysql_query($str,$conn3);
 $idAdd='';
 while($bar=mysql_fetch_object($res))
 {
@@ -26,5 +26,5 @@ while($bar=mysql_fetch_object($res))
 if($idAdd=='')
 { echo "Error: Koneksi PKS (".$idAdd.") gagal";}
 else
-  $corn=mysql_connect($idAdd.":".$prt,$usrName,$pswrd) or exit(mysql_error($corn).":Cloud not Connect to remote Computer".$dbnm);
+  $corn3=mysql_connect($idAdd.":".$prt,$usrName,$pswrd) or exit(mysql_error($corn3).":Cloud not Connect to remote Computer".$dbnm);
 ?>

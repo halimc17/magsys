@@ -237,6 +237,7 @@ OPEN_BOX();
         <td><?php echo $_SESSION['lang']['busuk'] ?></td>
         <td><?php echo $_SESSION['lang']['matang'] ?></td>
         <td><?php echo $_SESSION['lang']['lewatmatang'] ?></td>
+        <td><?php echo $_SESSION['lang']['keterangan'] ?></td>
     <td colspan=3>Action</td>
     </tr>
 </thead>

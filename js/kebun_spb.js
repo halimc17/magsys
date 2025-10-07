@@ -109,6 +109,7 @@ function bersihDetailForm()
     document.getElementById('mnth').value='0';
     document.getElementById('bsk').value='0';
     document.getElementById('lwtmtng').value='0';
+    document.getElementById('keterangan').value='Panen';
 }
 function add_detail()
 {
@@ -214,6 +215,7 @@ function addDetail() {
 	var rbusuk = document.getElementById('bsk');
         
 	var rlwtmatang = document.getElementById('lwtmtng');
+	var keterangan = document.getElementById('keterangan');
 	//addSession();
 	//var id_user = trim(document.getElementById('user_id').value);
 	rtgl = trim(document.getElementById('tgl_ganti').value);
@@ -264,7 +266,7 @@ function loadDetail(intex,pks)
 		}
 }
 
-function editDetail(nospb,blok, jjg, bjr, brondolan, mentah, busuk, matang, lewatmatang,kgwb) 
+function editDetail(nospb,blok, jjg, bjr, brondolan, mentah, busuk, matang, lewatmatang,kgwb,keterangan) 
 {//	alert('test');
 	document.getElementById('blok').value=blok;
 	document.getElementById('bjr').value=bjr;
@@ -275,7 +277,9 @@ function editDetail(nospb,blok, jjg, bjr, brondolan, mentah, busuk, matang, lewa
 	document.getElementById('mnth').value=mentah;
 	document.getElementById('bsk').value=busuk;
 	document.getElementById('lwtmtng').value=lewatmatang;	
+	document.getElementById('keterangan').value=keterangan;	
 	document.getElementById('oldBlok').value=blok;
+	document.getElementById('oldketerangan').value=keterangan;
 	document.getElementById('proses').value='updateData';
 }
 
@@ -376,7 +380,7 @@ function addNewRow(body,onDetail) {
 		// Create Row
 		newRow.innerHTML += "<td><select id='blok_"+numRow+"' type='text' style='width:150px' onchange='getBjr("+numRow+")' />"+optIsi+"</select><input type=hidden id=oldBlok_"+numRow+"  /></td><td>"+
             "<input id='bjr_"+numRow+"' type='text' class='myinputtextnumber' style='width:120px' disabled='disabled' value=''  /></td><td><input id='jjng_"+numRow+
-	"' type='text' class='myinputtextnumber' style='width:100px' value='' onkeypress='return angka_doang(event)' maxlength='12' /></td>"+"<td><input id='brondln_"+numRow+"' type='text' class='myinputtextnumber' onkeypress='return angka_doang(event)' style='width:100px' value='0' maxlength='12' />"+""+"<td><input id='mnth_"+numRow+"' type='text' class='myinputtextnumber' onkeypress='return angka_doang(event)' style='width:100px' value='0' maxlength='12' />"+""+"<td><input id='bsk_"+numRow+"' type='text' class='myinputtextnumber' onkeypress='return angka_doang(event)' style='width:100px' value='0' maxlength='12' />"+""+"<td><input id='mtng_"+numRow+"' type='text' class='myinputtextnumber' onkeypress='return angka_doang(event)' style='width:100px' value='0' maxlength='12' />"+""+"<td><input id='lwtmtng_"+numRow+"' type='text' class='myinputtextnumber' onkeypress='return angka_doang(event)' style='width:100px' value='0' maxlength='12' />"+"<td><img id='detail_add_"+numRow+"' title='Tambah' class=zImgBtn onclick=\"addDetail('"+numRow+"')\" src='images/save.png'/>"+"&nbsp;<img id='detail_delete_"+numRow+"' />"+"&nbsp;<img id='detail_pass_"+numRow+"' />"+"</td>";
+	"' type='text' class='myinputtextnumber' style='width:100px' value='' onkeypress='return angka_doang(event)' maxlength='12' /></td>"+"<td><input id='brondln_"+numRow+"' type='text' class='myinputtextnumber' onkeypress='return angka_doang(event)' style='width:100px' value='0' maxlength='12' />"+""+"<td><input id='mnth_"+numRow+"' type='text' class='myinputtextnumber' onkeypress='return angka_doang(event)' style='width:100px' value='0' maxlength='12' />"+""+"<td><input id='bsk_"+numRow+"' type='text' class='myinputtextnumber' onkeypress='return angka_doang(event)' style='width:100px' value='0' maxlength='12' />"+""+"<td><input id='mtng_"+numRow+"' type='text' class='myinputtextnumber' onkeypress='return angka_doang(event)' style='width:100px' value='0' maxlength='12' />"+""+"<td><input id='lwtmtng_"+numRow+"' type='text' class='myinputtextnumber' onkeypress='return angka_doang(event)' style='width:100px' value='0' maxlength='12' />"+""+"<td><select id='keterangan_"+numRow+"' type='text' style='width:65px' />"+optIsi+"</select><input type=hidden id=oldketerangan_"+numRow+" />"+"<td><img id='detail_add_"+numRow+"' title='Tambah' class=zImgBtn onclick=\"addDetail('"+numRow+"')\" src='images/save.png'/>"+"&nbsp;<img id='detail_delete_"+numRow+"' />"+"&nbsp;<img id='detail_pass_"+numRow+"' />"+"</td>";
 	/*newRow.innerHTML += "<td><select id='kd_brg_"+numRow+"' style='width:180px' onchange='set_brg("+numRow+")'>"+isi_barang+"</select><input type=hidden id=skd_brg_"+numRow+" name=skd_brg_"+numRow+" /></td><td>"+
             "<select id='sat_"+numRow+"'  style='width:70px'></select></td>"+"<td><input id='jmlh_"+numRow+"' type='text' class='myinputtextnumber' onkeypress='return amgka_doang(event)' style='width:70px' value='' />"+"<td><input id='ket_"+numRow+"' type='text' class='myinputtext' style='width:130px' value='' onkeypress='return tanpa_kutip(event)' />"+"<td><img id='detail_add_"+numRow+
 	"' title='Tambah' class=zImgBtn onclick=\"addDetail('"+numRow+"')\" src='images/save.png'/>"+
@@ -458,6 +462,7 @@ function cek_data()
 	var rbusuk = document.getElementById('bsk');
 	var rlwtmatang = document.getElementById('lwtmtng');
         var kagewebe = document.getElementById('kgwb');
+        var keterangan = document.getElementById('keterangan');
 	var rkodeOrg= document.getElementById('kodeOrg').options[document.getElementById('kodeOrg').selectedIndex].value;
         
         
@@ -474,7 +479,8 @@ function cek_data()
 	else
 	{
 		oldBlok=document.getElementById('oldBlok').value;
-		param = "proses="+pros+'&oldBlok='+oldBlok;
+		oldketerangan=document.getElementById('oldketerangan').value;
+		param = "proses="+pros+'&oldBlok='+oldBlok+'&oldketerangan='+oldketerangan;
 	}
 	param += "&noSpb="+rnospb;
 	param += "&blok="+rblok.value;
@@ -490,6 +496,7 @@ function cek_data()
 	param += "&lwtmatang="+rlwtmatang.value;
 	param += "&kdOrg="+rkodeOrg;
         param += "&kgwb="+kagewebe.value;
+        param += "&keterangan="+keterangan.value;
 	tujuan='kebun_slave_save_spb.php';
 //	alert(param);
 //        return;
@@ -692,12 +699,12 @@ function delData(nosbp)
 		 return;
 	 }
 }
-function delDetail(nosbp,blk)
+function delDetail(nosbp,blk,keterangan)
 {
 	noSpb=nosbp;
 	blok=blk;
 	
-	param='noSpb='+noSpb+'&proses=delDetail'+'&blok='+blok;
+	param='noSpb='+noSpb+'&proses=delDetail'+'&blok='+blok+'&keterangan='+keterangan;
 	tujuan='kebun_slave_save_spb.php';
 	function respog()
 	{

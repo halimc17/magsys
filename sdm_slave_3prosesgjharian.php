@@ -148,7 +148,7 @@ else
                and  (b.tanggalkeluar>='".$tanggal1."' or b.tanggalkeluar='0000-00-00') and b.alokasi=0
                and a.idkomponen in(1,2,31) and sistemgaji='Harian'
                group by a.karyawanid";
-
+   
     $resgjh = fetchData($strgjh);
     foreach($resgjh as $idx => $val)
         {
@@ -174,7 +174,7 @@ else
                and a.tanggal>='".$tanggal1."' and a.tanggal<='".$tanggal2."'     
                and sistemgaji='Harian'
                group by a.karyawanid";
-      
+    //exit('Warning: '.$strgjh);  
     $tdkdibayar=Array();
     $resgjh = fetchData($strgjh);
     foreach($resgjh as $idx => $val)
@@ -182,13 +182,17 @@ else
           $tdkdibayar[$val['karyawanid']]=$gajiperhari[$val['karyawanid']]*$val['jlh'];#jumlah tidak dibayar
         //koreksi untuk memindahkan potongan hk dari gaji pokok ke komponen potongan hk
         //seperti yang diterangkan pada escape dibawah  
+		/*
         $readyData[] = array(
         'kodeorg'=>$param['kodeorg'],
         'periodegaji'=>$param['periodegaji'],
         'karyawanid'=>$val['karyawanid'],
         'idkomponen'=>37,//potongan hk
         'jumlah'=>$tdkdibayar[$val['karyawanid']],
-        'pengali'=>1);      
+        'pengali'=>1);
+		*/
+		$karid[$val['karyawanid']]=$val['karyawanid'];
+		$pothk[$val['karyawanid']]=$tdkdibayar[$val['karyawanid']];
         }
 
         
@@ -374,7 +378,7 @@ else
                 'periodegaji'=>$param['periodegaji'],
                 'karyawanid'=>$val['karyawanid'],
                 'idkomponen'=>$val['idkomponen'],
-                'jumlah'=>$val['jumlah'],
+                'jumlah'=>($val['idkomponen']==56 ? 0 : $val['jumlah']),
                 'pengali'=>1);
              if($val['idkomponen']==1 or $val['idkomponen']==2 or $val['idkomponen']==30 or $val['idkomponen']==31)
              { #ambil,
@@ -471,15 +475,21 @@ else
    
 
 #3. Get Lembur Data
-    $where2 = " a.kodeorg like '".$param['kodeorg']."%' and (tanggal>='".
-        $tanggal1."' and tanggal<='".$tanggal2."')";
-      $query2="select a.karyawanid,sum(a.uangkelebihanjam) as lembur from ".$dbname.".sdm_lemburdt a left join 
-              ".$dbname.".datakaryawan b on a.karyawanid=b.karyawanid
-               where b.tipekaryawan in(2,3,4,6) and b.lokasitugas='".$param['kodeorg']."' 
-               and  (b.tanggalkeluar>='".$tanggal1."' or b.tanggalkeluar='0000-00-00') and b.alokasi=0
-               and sistemgaji='Harian'                  
-               and ".$where2." group by a.karyawanid";
-    $lbrRes = fetchData($query2); 
+	$where2 = " a.kodeorg like '".$param['kodeorg']."%' and (a.tanggal>='".$tanggal1."' and a.tanggal<='".$tanggal2."')";
+	$query2="select posting from ".$dbname.".sdm_lemburdt a where posting=0 and ".$where2;
+	//exit('Warning: '.$query2);
+	$lbrRes=mysql_query($query2);
+	$lbrnum=mysql_num_rows($lbrRes);
+	if($lbrnum>0){
+		exit('Warning: Ada Data Lembur belum diposting, Cek Menu Verifikasi Lembur...!');
+	}
+	$query2="select a.karyawanid,sum(a.uangmakan+a.uangtransport+a.uangkelebihanjam+a.uanglembur2) as lembur from ".$dbname.".sdm_lemburdt a left join 
+			".$dbname.".datakaryawan b on a.karyawanid=b.karyawanid
+			where b.tipekaryawan in(2,3,4,6) and b.lokasitugas='".$param['kodeorg']."' 
+			and  (b.tanggalkeluar>='".$tanggal1."' or b.tanggalkeluar='0000-00-00') and b.alokasi=0
+			and sistemgaji='Harian'                  
+			and ".$where2." group by a.karyawanid";
+	$lbrRes = fetchData($query2); 
     foreach($lbrRes as $idx=>$row) {  
           if(isset ($id[$row['karyawanid']]))
           {
@@ -509,10 +519,23 @@ else
                and  (b.tanggalkeluar>='".$tanggal1."' or b.tanggalkeluar='0000-00-00') and b.alokasi=0
                and sistemgaji='Harian'                   
                and ".$where3." group by a.nik,a.tipepotongan";
+	//exit('Warning: '.$query3);
     $potRes = fetchData($query3);
+	$adapothk=0;
     foreach($potRes as $idx=>$row) {  
           if(isset ($id[$row['karyawanid']]))
           {
+			  if($row['tipepotongan']=='37' and $row['karyawanid']==$karid[$row['karyawanid']]){
+				//unset($readyData['jumlah'][0]);
+                $readyData[] = array(
+                'kodeorg'=>$param['kodeorg'],
+                'periodegaji'=>$param['periodegaji'],
+                'karyawanid'=>$row['karyawanid'],
+                'idkomponen'=>$row['tipepotongan'],   
+                'jumlah'=>$row['potongan']+$pothk[$row['karyawanid']],
+                'pengali'=>1); 
+				$adapothk=0;
+			  }else{
                 $readyData[] = array(
                 'kodeorg'=>$param['kodeorg'],
                 'periodegaji'=>$param['periodegaji'],
@@ -520,13 +543,41 @@ else
                 'idkomponen'=>$row['tipepotongan'],   
                 'jumlah'=>$row['potongan'],
                 'pengali'=>1); 
+			  }
           }
           else
           {
             //abaikan jika tidak terdaftar pada karyawanid  
           }   
-    }   
-    
+    }
+
+if($adapothk==0){
+ #ambil jumlah hk tidak dibayar untuk KHT dan total tidak dibayar
+     $strgjh = "select  count(*) as jlh,b.karyawanid from ".$dbname.".sdm_hktdkdibayar_vw a left join 
+              ".$dbname.".datakaryawan b on a.karyawanid=b.karyawanid
+               where b.tipekaryawan in(2,3,6) and b.lokasitugas='".$param['kodeorg']."' 
+               and  (b.tanggalkeluar>='".$tanggal1."' or b.tanggalkeluar='0000-00-00') and b.alokasi=0
+               and a.tanggal>='".$tanggal1."' and a.tanggal<='".$tanggal2."'     
+               and sistemgaji='Harian'
+               group by a.karyawanid";
+    //exit('Warning: '.$strgjh);  
+    $tdkdibayar=Array();
+    $resgjh = fetchData($strgjh);
+    foreach($resgjh as $idx => $val)
+        {
+          $tdkdibayar[$val['karyawanid']]=$gajiperhari[$val['karyawanid']]*$val['jlh'];#jumlah tidak dibayar
+        //koreksi untuk memindahkan potongan hk dari gaji pokok ke komponen potongan hk
+        //seperti yang diterangkan pada escape dibawah  
+        $readyData[] = array(
+        'kodeorg'=>$param['kodeorg'],
+        'periodegaji'=>$param['periodegaji'],
+        'karyawanid'=>$val['karyawanid'],
+        'idkomponen'=>37,//potongan hk
+        'jumlah'=>$tdkdibayar[$val['karyawanid']],
+        'pengali'=>1);
+        }
+}
+
 
 #5. Get Angsuran Data==========================================================
     $where4 = " start<='".$param['periodegaji']."' and end>='".$param['periodegaji']."'";
@@ -613,7 +664,7 @@ else
         $penalty=Array();
         $gapokbhl=Array();
          $penaltykehadiran=Array();
-        $query5="select sum(a.umr) as gaji,a.karyawanid,sum(a.insentif) as premi from ".$dbname.".kebun_kehadiran_vw a left join 
+        $query5="select sum(a.umr) as gaji,a.karyawanid,sum(a.insentif) as premi,sum(a.denda) as denda from ".$dbname.".kebun_kehadiran_vw a left join 
               ".$dbname.".datakaryawan b on a.karyawanid=b.karyawanid
                where b.tipekaryawan in(2,3,4,6) and b.lokasitugas='".$param['kodeorg']."' 
                and  (b.tanggalkeluar>='".$tanggal1."' or b.tanggalkeluar='0000-00-00') and b.alokasi=0
@@ -626,6 +677,7 @@ else
         {
             if($val['premi']>0)
             $premi[$val['karyawanid']]=$val['premi'];
+			$penalty[$val['karyawanid']]=$val['denda'];
           #gapok KHL
           if($tipekaryawan[$val['karyawanid']]=='PHL')
           {   
@@ -774,17 +826,23 @@ else
         
         
         #gapok BHL dari absensi===================================
-        $strup="select a.karyawanid,(b.jumlah/25) as upahabsen,absensi FROM ".$dbname.".sdm_absensidt_vw a 
-                left join ".$dbname.".sdm_5gajipokok b on a.karyawanid=b.karyawanid and nilaihk=1
-                and b.idkomponen=1 
-               where b.tahun=".substr($tanggal1,0,4)." and substr(a.kodeorg,1,4)='".$param['kodeorg']."' 
-               and a.tanggal>='".$tanggal1."' and a.tanggal<='".$tanggal2."' 
-               and a.tipekaryawan=4 and a.absensi='H'";
+        $strup="select a.karyawanid,(b.jumlah/25) as upahabsen,a.absensi,a.tanggal,if(ISNULL(c.tanggal),'',c.tanggal) as tglbkm
+				FROM ".$dbname.".sdm_absensidt_vw a 
+                left join ".$dbname.".sdm_5gajipokok b on a.karyawanid=b.karyawanid and nilaihk=1 and b.idkomponen=1 
+				left join 
+				(select karyawanid,tanggal from ".$dbname.".kebun_kehadiran_vw where unit='".$param['kodeorg']."' and tanggal>='".$tanggal1."' and      tanggal<='".$tanggal2."'
+				union
+				select  karyawanid,tanggal from ".$dbname.".kebun_prestasi_vw  where unit='".$param['kodeorg']."' and tanggal>='".$tanggal1."' and tanggal<='".$tanggal2."')
+				c on a.karyawanid=c.karyawanid and a.tanggal=c.tanggal
+				where b.tahun=".substr($tanggal1,0,4)." and substr(a.kodeorg,1,4)='".$param['kodeorg']."' 
+					and a.tanggal>='".$tanggal1."' and a.tanggal<='".$tanggal2."' 
+					and a.tipekaryawan=4 and a.absensi='H' and a.tanggal<>if(ISNULL(c.tanggal),'',c.tanggal)
+				GROUP BY a.karyawanid,a.tanggal";
       
         
         $resup = fetchData($strup);    
         foreach($resup as $idx => $val)
-        {        
+        {
               if(empty ($gapokbhl[$val['karyawanid']]))
                   $gapokbhl[$val['karyawanid']]=$val['upahabsen'];
               else
@@ -1011,10 +1069,11 @@ else
     }
     
     
-    $iKerja="select * from ".$dbname.".sdm_5bpjs where lokasibpjs='".$bpjsOrg."' and jenisbpjs='ketanagakerjaan' ";
+    $iKerja="select * from ".$dbname.".sdm_5bpjs where lokasibpjs='".$bpjsOrg."' and jenisbpjs='ketenagakerjaan' ";
     $nKerja=  mysql_query($iKerja) or die (mysql_error($conn));
     $dKerja=  mysql_fetch_assoc($nKerja);
         $bpjsKerja=$dKerja['bebankaryawan'];
+        $bpjsKerja_lanjut=$dKerja['bebankaryawan']-1;
 
     $iSehat="select * from ".$dbname.".sdm_5bpjs where lokasibpjs='".$bpjsOrg."' and jenisbpjs='kesehatan' ";
     $nSehat=  mysql_query($iSehat) or die (mysql_error($conn));
@@ -1030,7 +1089,7 @@ else
             'periodegaji'=>$param['periodegaji'],
             'karyawanid'=>$key,
             'idkomponen'=>3,   
-            'jumlah'=>($bpjsKerja/100*$nilai),
+            'jumlah'=>($tipekaryawan[$key]=='Kontrak Karya' ? $bpjsKerja_lanjut/100*$nilai : $bpjsKerja/100*$nilai),
             'pengali'=>1);  
           }
     } 
@@ -1105,6 +1164,7 @@ else
               if($val[0]==$bar['karyawanid'])
               {
                   $sisa[$val[0]]+=$bar['jumlah']*$comp[$bar['idkomponen']]; 
+				$sisaket[$val[0]].=$bar['idkomponen'].'='.($bar['jumlah']*$comp[$bar['idkomponen']]).' ';
                   // tambahan pph21
                     /*if (in_array($bar['idkomponen'], $komponenkenapajak)){
 						setIt($gajikenapajak[$val[0]],0);
@@ -1141,6 +1201,7 @@ else
                 $list2 .= "<td>".$namakar[$val[0]]."</td>";
                 $list2 .= "<td>".$tipekaryawan[$val[0]]."</td>";
                 $list2 .= "<td align=right>".number_format($sisa[$val[0]],0,',','.')."</td>"; 
+                //$list2 .= "<td>".$sisaket[$val[0]]."</td>";
                 $list2 .= "</tr>"; 
            }    
        }

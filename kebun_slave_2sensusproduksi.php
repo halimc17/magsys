@@ -9,6 +9,7 @@ $proses = checkPostGet('proses','');
 $periode = checkPostGet('periode','');
 $kodeorg = checkPostGet('kodeorg','');
 
+$optNm=makeOption($dbname, 'organisasi', 'kodeorganisasi,namaorganisasi');
 $str = "select kodeblok,tahuntanam,tahun,bulan,jumlah,bjr,kgsensus,jumlahpokok,jumlahha,jumlahpremi
         from ".$dbname.".kebun_rencanapanen_vw
         where substr(kodeorg,1,4)='$kodeorg' and substr(tanggal,1,7)='$periode'
@@ -47,13 +48,14 @@ if($proses=='excel')
     $brdr=1;
     $tab.="
     <table>
-    <tr><td colspan=5 align=center><b>Laporan Sensus Produksi</b></td><td colspan=7 align=right><b>".$_SESSION['lang']['periode']." : ".$periode."</b></td></tr>
+    <tr><td colspan=5 align=left><b>Laporan Sensus Produksi</b></td><td colspan=6 align=right><b>".$_SESSION['lang']['periode']." : ".$periode."</b></td></tr>
     <tr><td colspan=5 align=left>&nbsp;</td></tr>
     </table>";
+	$tab.="<table class=sortable cellspacing=1 border=1 width=100%>";
+}else{
+	$tab.="<table class=sortable cellspacing=1 border=0 width=100%>";
 }
-        
-$tab.="<table class=sortable cellspacing=1 border=0 width=100%>
-        <thead>
+$tab.="  <thead>
             <tr>
                 <td align=center>No.</td>
                 <td align=center>".$_SESSION['lang']['kodeblok']."</td>
@@ -76,7 +78,7 @@ $tab.="<table class=sortable cellspacing=1 border=0 width=100%>
                $i++;
                $tab.="<tr class=rowcontent>";
                $tab.="<td align=center>".$i."</td>"; 
-               $tab.="<td align=left>".$lsblok."</td>"; 
+               $tab.="<td align=left>".$optNm[$lsblok]."</td>"; 
                $tab.="<td align=center>".$tt[$lsblok]."</td>"; 
                $tab.="<td align=center>".$thnprd[$lsblok]."</td>";
                $tab.="<td align=center>".$bln[$lsblok]."</td>";
@@ -215,7 +217,7 @@ switch($proses)
                 $i++;
 
                     $pdf->Cell(15,$height,$i,1,0,'L',1);
-                    $pdf->Cell(80,$height,$lsblok,1,0,'L',1);
+                    $pdf->Cell(80,$height,$optNm[$lsblok],1,0,'L',1);
                     $pdf->Cell(60,$height,$tt[$lsblok],1,0,'C',1);
                     $pdf->Cell(70,$height,$thnprd[$lsblok],1,0,'C',1);
                     $pdf->Cell(30,$height,$bln[$lsblok],1,0,'C',1);

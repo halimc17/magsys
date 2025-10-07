@@ -21,11 +21,30 @@ if(isTransactionPeriod())//check if transaction period is normal
 
 //    $str="select karyawanid, namakaryawan, nik from ".$dbname.".datakaryawan 
 //        where (tanggalkeluar > '".$today."' or tanggalkeluar = '0000-00-00') and lokasitugas like '".$unit."%' and subbagian = '".$subunit."'
-//        order by namakaryawan";        
-    $str="select karyawanid, namakaryawan, subbagian from ".$dbname.".datakaryawan 
-        where (tanggalkeluar > '".$today."' or tanggalkeluar = '0000-00-00') and lokasitugas like '".$unit."%'
-        order by namakaryawan";        
-    
+//        order by namakaryawan";
+	if(substr($unit,2,2)=='HO'){
+	    $str="select karyawanid, namakaryawan, subbagian from ".$dbname.".datakaryawan 
+	        where (tanggalkeluar > '".$today."' or tanggalkeluar = '0000-00-00') and lokasitugas like '%HO'
+		    order by namakaryawan";
+	}else if(substr($unit,2,2)=='RO'){
+	    $str="select karyawanid, namakaryawan, subbagian from ".$dbname.".datakaryawan 
+	        where (tanggalkeluar > '".$today."' or tanggalkeluar = '0000-00-00') and lokasitugas in 
+				(select kodeorganisasi from ".$dbname.".organisasi 
+						where induk in (select induk from ".$dbname.".organisasi where kodeorganisasi='".substr($unit,0,4)."')
+				and (kodeorganisasi like '".$unit."%' or tipe='KANWIL'))
+		    order by namakaryawan";
+	}else{
+		//$str="select karyawanid, namakaryawan, subbagian from ".$dbname.".datakaryawan 
+	    //    where (tanggalkeluar > '".$today."' or tanggalkeluar = '0000-00-00') and lokasitugas like '".$unit."%'
+		//    order by namakaryawan";
+	    $str="select karyawanid, namakaryawan, subbagian from ".$dbname.".datakaryawan 
+	        where (tanggalkeluar > '".$today."' or tanggalkeluar = '0000-00-00') and lokasitugas in 
+				(select kodeorganisasi from ".$dbname.".organisasi 
+						where induk in (select induk from ".$dbname.".organisasi where kodeorganisasi='".substr($unit,0,4)."')
+				and (kodeorganisasi like '".$unit."%' or tipe='KANWIL'))
+		    order by namakaryawan";
+	}
+    //exit('Warning: '.$str);
     if($penerima!='0'){
     $str="select karyawanid, namakaryawan, nik from ".$dbname.".datakaryawan 
         where karyawanid = '".$penerima."'

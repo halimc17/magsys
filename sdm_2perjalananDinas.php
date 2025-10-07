@@ -18,13 +18,21 @@ while($rTipe=mysql_fetch_assoc($qTipe))
 }
 
 $optPeriode="<option value=''>".$_SESSION['lang']['all']."</option>";
-$sPeriode="select distinct substring(tglpertanggungjawaban,1,7) as periode  from ".$dbname.".sdm_pjdinasht order by tglpertanggungjawaban desc";
+$sPeriode="select distinct substring(tanggalperjalanan,1,7) as periode  from ".$dbname.".sdm_pjdinasht order by tanggalperjalanan desc";
 $qPeriode=mysql_query($sPeriode) or die(mysql_error());
 while($rPeriode=mysql_fetch_assoc($qPeriode))
 {
     if($rPeriode['periode']!="0000-00")
     {
-        $optPeriode.="<option value=".$rPeriode['periode'].">".$rPeriode['periode']."</option>";
+		$no+=1;
+		if($no==1){
+			$optPeriode.="<option value='".substr($rPeriode['periode'],0,4)."'>".substr($rPeriode['periode'],0,4)."</option>";
+		}else
+		if(substr($rPeriode['periode'],5,2)=='12')
+		{
+			$optPeriode.="<option value='".substr($rPeriode['periode'],0,4)."'>".substr($rPeriode['periode'],0,4)."</option>";
+		}
+		$optPeriode.="<option value=".$rPeriode['periode'].">".$rPeriode['periode']."</option>";
     }
 }
 
@@ -121,7 +129,7 @@ function Clear1()
 <link rel=stylesheet type=text/css href=style/zTable.css>
 <div>
 <fieldset style="float: left;">
-<legend><b><?php echo $_SESSION['lang']['lapPjd']?></b></legend>
+<legend><b><?php echo $_SESSION['lang']['biaya'].' '.$_SESSION['lang']['perjalanandinas']?></b></legend>
 <table cellspacing="1" border="0" >
 <tr><td><label><?php echo $_SESSION['lang']['perusahaan']?></label></td><td><?php echo $optOrg?></td></tr>
 <tr><td><label><?php echo $_SESSION['lang']['bagian']?></label></td><td><select id="bagId" name="bagId" style="width:150px" onchange="getKaryawan2()"><?php echo $optTipe?></select></td></tr>
@@ -140,7 +148,7 @@ function Clear1()
 <div style="margin-bottom: 30px;">
 </div>
 <fieldset style='clear:both'><legend><b>Print Area</b></legend>
-<div id='printContainer' style='overflow:auto;height:350px;max-width:1220px'>
+<div id='printContainer' style='overflow:auto;height:350px;max-width:1250px'>
 </div></fieldset>
 
 <?php

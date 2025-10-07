@@ -32,7 +32,7 @@ if($period=='') {
 }
 
 #== Get Journal Header
-$where = " YEAR(tanggal)>=".intval(date('Y')-1)." and month(tanggal)=12 and day(tanggal)=31".
+$where = " YEAR(tanggal)>=".intval(date('Y')-2)." and month(tanggal)=12 and day(tanggal)=31".
     " and substr(nojurnal,10,4)='".$_SESSION['empl']['lokasitugas'].
     "' and kodejurnal='M'".
     " and revisi!=0";

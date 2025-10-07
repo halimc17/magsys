@@ -21,8 +21,7 @@ while ($data=mysql_fetch_assoc($qry))
 }
 
 $optAkun="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
-$sql = "SELECT * FROM ".$dbname.".keu_5akun where "
-        . " namaakun like '%bank%' and length(noakun)=7";
+$sql = "SELECT * FROM ".$dbname.".keu_5akun where (namaakun like '%bank%' or noakun like '11102%') and length(noakun)=7 order by namaakun";
 $qry = mysql_query($sql) or die ("SQL ERR : ".mysql_error());
 while ($data=mysql_fetch_assoc($qry))
 {

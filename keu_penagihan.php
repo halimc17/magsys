@@ -15,10 +15,27 @@ OPEN_BOX("","<b>".strtoupper($_SESSION['lang']['penagihan'])."</b>"); //1 O
 
 
 <?php
-$arr="##noinvoice##jatuhtempo##kodeorganisasi##nofakturpajak##tanggal##bayarke##proses";
+$arr="##noinvoice##jatuhtempo##kodeorganisasi##nofakturpajak##tanggal##bayarke##proses##nokontrak";
 $arr.="##kodecustomer##noorder##nilaippn##nilaiinvoice##debet##kredit##keterangan1##keterangan2##keterangan3";
 $arr.="##keterangan4##keterangan5##rupiah1##rupiah2##rupiah3##rupiah4##rupiah5##matauang##kurs##keterangan6##rupiah6";
 $arr.="##keterangan7##keterangan8##rupiah7##rupiah8##ttd##jenis##kuantitas";
+
+$optKomoditi="<option value=''>".$_SESSION['lang']['all']."</option>";
+$sKomoditi="select distinct(a.kodebarang),b.namabarang from ".$dbname.".pmn_kontrakjual a left join ".$dbname.".log_5masterbarang b on a.kodebarang=b.kodebarang";
+$qKomoditi= mysql_query($sKomoditi) or die (mysql_error($conn));
+while($dKomoditi=  mysql_fetch_assoc($qKomoditi))
+{
+    $optKomoditi.="<option value='".$dKomoditi['kodebarang']."'>".$dKomoditi['namabarang']."</option>";
+}
+
+$optCust="<option value=''>".$_SESSION['lang']['all']."</option>";
+$sCust="select distinct(a.koderekanan),b.namacustomer from ".$dbname.".pmn_kontrakjual a left join ".$dbname.".pmn_4customer b on a.koderekanan=b.kodecustomer";
+$qCust= mysql_query($sCust) or die (mysql_error($conn));
+while($dCust=  mysql_fetch_assoc($qCust))
+{
+    $optCust.="<option value='".$dCust['koderekanan']."'>".$dCust['namacustomer']."</option>";
+}
+
 echo"<table>
      <tr valign=moiddle>
 	 <td align=center style='width:100px;cursor:pointer;' onclick=displayFormInput()>
@@ -27,7 +44,10 @@ echo"<table>
 	   <img class=delliconBig src=images/skyblue/list.png title='".$_SESSION['lang']['list']."'><br>".$_SESSION['lang']['list']."</td>
 	 <td><fieldset><legend>".$_SESSION['lang']['find']."</legend>"; 
 			echo $_SESSION['lang']['noinvoice'].":<input type=text id=txtsearch size=25 maxlength=30 class=myinputtext>";
-			echo $_SESSION['lang']['tanggal'].":<input type=text class=myinputtext id=tgl_cari onmousemove=setCalendar(this.id) onkeypress=return false;  size=10 maxlength=10 />";
+			echo $_SESSION['lang']['NoKontrak'].":<input type=text id=txtnokont size=25 maxlength=30 class=myinputtext >";  
+			echo $_SESSION['lang']['tanggal'].":<input type=text class=myinputtext id=tgl_cari onmousemove=setCalendar(this.id) onkeypress=return false;  size=10 maxlength=10 /><BR>";
+            echo $_SESSION['lang']['komoditi'].":<select style=\"width: 155px;\" name=ptKomoditi id=ptKomoditi >".$optKomoditi."</select>";    
+            echo $_SESSION['lang']['nmcust'].":<select style=\"width: 290px;\" name=ptCust id=ptCust >".$optCust."</select>";
 			echo"<button class=mybutton onclick=cariData(0)>".$_SESSION['lang']['find']."</button>";
 echo"</fieldset></td>
      </tr>
@@ -115,7 +135,7 @@ $optDebet='';
 while($rakun=  mysql_fetch_assoc($qakun)){
     $optDebet.="<option value='".$rakun['noakun']."'>".$rakun['noakun']."-".$rakun['namaakun']."</option>";
 }
-$sakundbt="select distinct noakun,namaakun from ".$dbname.".keu_5akun where noakun like '1130100%' and char_length(noakun)=7
+$sakundbt="select distinct noakun,namaakun from ".$dbname.".keu_5akun where noakun in ('1130100','1130205')  and char_length(noakun)=7
         order by namaakun asc";
 $qakun=mysql_query($sakundbt) or die(mysql_error($conn));
 $optKredit='';
@@ -157,12 +177,12 @@ echo"<tr><td>Penanda Tangan</td><td><select id=ttd  style=width:150px; >".$optTt
 
 
 echo"<tr><td colspan=2>".$_SESSION['lang']['potongan']."</td></tr>";
-echo"<tr><td><input type=text id=keterangan1 disabled class=myinputtext style=width:110px; onkeypress='return tanpa_kutip(event)' value='Kesusutan'  /></td><td><input type=text id=rupiah1 class=myinputtextnumber style=width:150px; onkeypress='return angka_doang(event)'  value=0 /></td>";
+echo"<tr><td><input type=text id=keterangan1 disabled class=myinputtext style=width:110px; onkeypress='return tanpa_kutip(event)' value='Kesusutan/Loss'  /></td><td><input type=text id=rupiah1 class=myinputtextnumber style=width:150px; onkeypress='return angka_doang(event)'  value=0 /></td>";
 echo"<td><input type=text id=keterangan2 disabled class=myinputtext style=width:110px; onkeypress='return tanpa_kutip(event)' value='FFA'  /></td><td><input type=text id=rupiah2 class=myinputtextnumber style=width:150px; onkeypress='return angka_doang(event)'   value=0 /></td></tr>";
 echo"<tr><td><input type=text id=keterangan3 disabled class=myinputtext style=width:110px; onkeypress='return tanpa_kutip(event)' value='M and I'  /></td><td><input type=text id=rupiah3 class=myinputtextnumber style=width:150px; onkeypress='return angka_doang(event)'  value=0  /></td>";
 echo"<td><input type=text id=keterangan4 disabled class=myinputtext style=width:110px; onkeypress='return tanpa_kutip(event)' value='DOBI'  /></td><td><input type=text id=rupiah4 class=myinputtextnumber style=width:150px; onkeypress='return angka_doang(event)'  value=0  /></td></tr>";
-echo"<tr><td><input type=text id=keterangan5 disabled class=myinputtext style=width:110px; onkeypress='return tanpa_kutip(event)' value='Moisture'  /></td><td><input type=text id=rupiah5 class=myinputtextnumber style=width:150px; onkeypress='return angka_doang(event)' value=0  /></td>";
-echo"<td><input type=text id=keterangan6 disabled class=myinputtext style=width:110px; onkeypress='return tanpa_kutip(event)' value='Impurities'  /></td><td><input type=text id=rupiah6 class=myinputtextnumber style=width:150px; onkeypress='return angka_doang(event)'  value=0  /></td></tr>";
+echo"<tr><td><input type=text id=keterangan5 disabled class=myinputtext style=width:110px; onkeypress='return tanpa_kutip(event)' value='Batu'  /></td><td><input type=text id=rupiah5 class=myinputtextnumber style=width:150px; onkeypress='return angka_doang(event)' value=0  /></td>";
+echo"<td><input type=text id=keterangan6 disabled class=myinputtext style=width:110px; onkeypress='return tanpa_kutip(event)' value='Keterlambatan Kirim'  /></td><td><input type=text id=rupiah6 class=myinputtextnumber style=width:150px; onkeypress='return angka_doang(event)'  value=0  /></td></tr>";
 
 echo"<tr><td><input type=text id=keterangan7 disabled class=myinputtext style=width:110px; onkeypress='return tanpa_kutip(event)' value='Kesusutan Timbangan'  /></td><td><input type=text id=rupiah7 class=myinputtextnumber style=width:150px; onkeypress='return angka_doang(event)'  value=0  /></td>";
 echo"<td><input type=text id=keterangan8 disabled class=myinputtext style=width:110px; onkeypress='return tanpa_kutip(event)' value='Kelebihan Timbangan'  /></td><td><input type=text id=rupiah8 class=myinputtextnumber style=width:150px; onkeypress='return angka_doang(event)'  value=0  /></td></tr>";

@@ -5,6 +5,8 @@ include_once('lib/zLib.php');
 include_once('lib/rTable.php');
 $param=$_POST;
 
+//print_r($param);
+
 $optnmCust=  makeOption($dbname, 'pmn_4customer', 'kodecustomer,namacustomer');
 
 switch($param['proses']){
@@ -15,8 +17,14 @@ switch($param['proses']){
         if($param['nilaiinvoice']==''){
             exit("error:Nilai invoice tidak boleh kosong");
         }
-		if($param['noorder']==''){
+	 if($param['noorder']==''){
             exit("error:No Kontrak tidak boleh kosong");
+        }
+	 if($param['debet']==''){
+            exit("error:Debet tidak boleh kosong");
+        }
+	 if($param['kredit']==''){
+            exit("error:Kredit tidak boleh kosong");
         }
         if($param['nilaippn']==''){
             $param['nilaippn']=0;
@@ -104,17 +112,29 @@ switch($param['proses']){
         
 	
     case'loadData':
+	   // print_r($param);
 		$where = '';
         if(!empty($param['noinvoice'])) {
-            $where=" and noinvoice like '%".$param['noinvoice']."%'";
+            $where= $where." and noinvoice like '%".$param['noinvoice']."%'";
+        }
+		if(!empty($param['nokontrak'])) {
+            $where= $where." and nokontrak like '%".$param['nokontrak']."%'";
         }
         if(!empty($param['tanggalCr'])) {            
             $tgrl=explode("-",$param['tanggalCr']);
             $ert=$tgrl[2]."-".$tgrl[1]."-".$tgrl[0];
-            $where=" and left(tanggal,10) = '".$ert."'";
+            $where= $where." and left(tanggal,10) = '".$ert."'";
         }
+		if(!empty($param['kodebarang'])) {
+            $where= $where." and kodebarang = '".$param['kodebarang']."'";
+        }
+		if(!empty($param['kodecustomer'])) {
+            $where= $where." and kodecustomer = '".$param['kodecustomer']."'";
+        }
+		
+		
         $sdel="";
-        $limit=10;
+        $limit=20;
         $page=0;
         if(isset($_POST['page'])) {
             $page=$_POST['page'];
@@ -122,6 +142,7 @@ switch($param['proses']){
         }
         $offset=$page*$limit;
         $sql="select count(*) jmlhrow from ".$dbname.".keu_penagihanht where nokontrak!='' ".$where." order by tanggal desc";
+		
         $query=mysql_query($sql) or die(mysql_error());
         while($jsl=mysql_fetch_object($query)){
             $jlhbrs= $jsl->jmlhrow;
@@ -129,6 +150,7 @@ switch($param['proses']){
 		
 		$str="select * from ".$dbname.".keu_penagihanht where  nokontrak!=''  ".$where."  order by tanggal desc
               limit ".$offset.",".$limit." ";
+        //print_r($str);			  
         $qstr=mysql_query($str) or die(mysql_error($conn));
 		$tab='';$nor=0;
         while($rstr=  mysql_fetch_assoc($qstr)) {
@@ -149,7 +171,11 @@ switch($param['proses']){
           // $totalkurang=$nilaiinv-$nilaiKlaimPengurang; 
             $ppnKlaim=0;
             if($rPpn['ppn']==1){
-           		$ppnKlaim=10/100*$nilaiKlaimPengurang;         	
+				if($rstr['tanggal']<='2022-03-31'){
+	           		$ppnKlaim=10/100*$nilaiKlaimPengurang;
+				}else{
+	           		$ppnKlaim=11/100*$nilaiKlaimPengurang;
+				}
             }
            $nilaiTot=$nilaiinv-$nilaiKlaimPengurang-$ppnKlaim;
            
@@ -324,12 +350,12 @@ switch($param['proses']){
 						}else if($bnykInv==1){
 							$sisaKuantitas=$nilaiQty;
 							if($rdata['ppn']==1 and $rdata['statusberikat']=='1') {
-								$nilaiKontrak = $nilaiKontrak / 1.1;
+								$nilaiKontrak = $nilaiKontrak / 1.11;
 							}
 						}else{
 							$sisaKuantitas=($nilaiQty -($dCek['jumlahkuantitas']-$nilaiQty));
 							if($rdata['ppn']==1 and $rdata['statusberikat']=='1') {
-								$nilaiKontrak = $nilaiKontrak / 1.1;
+								$nilaiKontrak = $nilaiKontrak / 1.11;
 							}
 						}
 						
@@ -386,11 +412,11 @@ switch($param['proses']){
                             // $ppnnya=10/100*$nilInvoice;
                         // }
                         if($rdata['ppn']==1 and $rdata['statusberikat']=='0') {
-							$nilInvoice = $nilInvoice / 1.1;
-							$ppnnya = $nilInvoice * 0.1;
+							$nilInvoice = $nilInvoice / 1.11;
+							$ppnnya = $nilInvoice * 0.11;
 						} else {
 							if($rdata['ppn']==1 and $rdata['statusberikat']=='1' and $bnykInv==0) {
-								$nilInvoice = $nilInvoice / 1.1;
+								$nilInvoice = $nilInvoice / 1.11;
 							}
 							$ppnnya = 0;
 						}
@@ -499,7 +525,11 @@ switch($param['proses']){
 					+$rdata['rupiah4']+$rdata['rupiah5']+$rdata['rupiah6']+$rdata['rupiah7']-$rdata['rupiah8'];
 		$ppnKlaim=0;
 		if($rdata['nilaippn']>0) {
-			$ppnKlaim=10/100*$nilaiKlaimPengurang;
+			if($rdata['tanggal']<='2022-03-31'){
+           		$ppnKlaim=10/100*$nilaiKlaimPengurang;
+			}else{
+				$ppnKlaim=11/100*$nilaiKlaimPengurang;
+			}
 		}
 		$piutangKurang = $nilaiKlaimPengurang + $ppnKlaim;
 		
@@ -724,7 +754,7 @@ function generateNoInvoice($nokontrak,$tgl){
 		$invPT = $rPt['kodept'];
 	}
 	$ql="select `noinvoice` from ".$dbname.".`keu_penagihanht` where kodept = '".$invPT."' and left(noinvoice,3) = '".$invPT."' and left(tanggal,4) = '".$tgldt[2]."'
-		order by noinvoice desc limit 1";
+		and right(noinvoice,4) = '".$tgldt[2]."' order by noinvoice desc limit 1";
 	
     $qr=mysql_query($ql) or die('error: '.mysql_error());
 	$data = mysql_fetch_object($qr);

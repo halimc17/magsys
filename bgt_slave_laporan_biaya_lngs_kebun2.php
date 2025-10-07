@@ -47,7 +47,7 @@ while($bar=mysql_fetch_object($res))
 //luas TBM
 //ambil luas planted per tahuntanam
 $str="select sum(hathnini) as luas,thntnm from ".$dbname.".bgt_blok where 
-      kodeblok like '".$kodeOrg."%' and statusblok in ('TBM','TB') and tahunbudget='".$thnBudget."' 
+      kodeblok like '".$kodeOrg."%' and statusblok in ('TBM','TBM-01','TBM-02','TBM-03','TB') and tahunbudget='".$thnBudget."' 
       group by thntnm";
 $res=mysql_query($str);
 while($bar=mysql_fetch_object($res))

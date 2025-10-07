@@ -30,8 +30,8 @@ $whrNotranA="";
 if($kdBrg!='40000003'){
     #filter untuk data timbangan yang duplikasi dari keuangan>Transaksi>Pengakuan Jual
     #jika TBS maka tidak di tambahkan,kodebarang untuk TBS=40000003
-    $whrNotran=" and char_length(notransaksi)<8";
-    $whrNotranA=" and char_length(a.notransaksi)<8";
+    $whrNotran=" and char_length(notransaksi)<=12";
+    $whrNotranA=" and char_length(a.notransaksi)<=12";
 }
 switch($proses)
 {
@@ -100,6 +100,7 @@ switch($proses)
 					}
 					
 					$sTimb="select sum(beratbersih) as jumlahTotal,sum(kgpembeli) as jumlahKgpem   from ".$dbname.".pabrik_timbangan where nokontrak in ('".implode("','",$optKontrak)."') ".$whrNotran."";
+					//exit('Warning: '.$sTimb);
 					if(!empty($optSipb)) {$sTimb .= " AND nosipb in ('".implode("','",$optSipb)."')";}
 					$qTimb=mysql_query($sTimb) or die(mysql_error());
 					$rTimb=mysql_fetch_assoc($qTimb);
@@ -190,6 +191,7 @@ switch($proses)
 				}
 				
 				$sTimb="select sum(beratbersih) as jumlahTotal,sum(kgpembeli) as jumlahKgpem   from ".$dbname.".pabrik_timbangan where nokontrak in ('".implode("','",$optKontrak)."')  ".$whrNotran."";
+				//exit('Warning: '.$sTimb);
 				if(!empty($optSipb)) {$sTimb .= " AND nosipb in ('".implode("','",$optSipb)."')";}
 				//$sTimb="select sum(beratbersih) as jumlahTotal,sum(kgpembeli) as jumlahKgpem   from ".$dbname.".pabrik_timbangan where nokontrak='".$res['nokontrak']."'";
 				$qTimb=mysql_query($sTimb) or die(mysql_error());
@@ -256,6 +258,7 @@ switch($proses)
 			  where substr(a.tanggal,1,10) between '".$tangglAwl."' and '".$tangglSmp."' and a.kodebarang like '%".$kdBrg3."%'
                   and a.nokontrak !='' and b.induk like '%".$pt3."%'  ".$whrNotranA."
               order by tanggal asc";
+		//exit('Warning: '.$sDet);
         $qDet=mysql_query($sDet) or die(mysql_error());
         $rCek=mysql_num_rows($qDet);
         if($rCek>0)
@@ -624,15 +627,15 @@ switch($proses)
 
 
                 $this->Cell(3/100*$width,$height,'No',1,0,'C',1);
-                $this->Cell(9/100*$width,$height,$_SESSION['lang']['NoKontrak'],1,0,'C',1);
-                $this->Cell(10/100*$width,$height,$_SESSION['lang']['komoditi'],1,0,'C',1);
+                $this->Cell(14/100*$width,$height,$_SESSION['lang']['NoKontrak'],1,0,'C',1);
+                $this->Cell(13/100*$width,$height,$_SESSION['lang']['komoditi'],1,0,'C',1);
                 $this->Cell(8/100*$width,$height,$_SESSION['lang']['tglKontrak'],1,0,'C',1);
                 $this->Cell(18/100*$width,$height,$_SESSION['lang']['Pembeli'],1,0,'C',1);
-                $this->Cell(13/100*$width,$height,$_SESSION['lang']['estimasiPengiriman'],1,0,'C',1);
-                $this->Cell(9/100*$width,$height,$_SESSION['lang']['jmlhBrg']." (KG)",1,0,'C',1);
-                $this->Cell(9/100*$width,$height,$_SESSION['lang']['pemenuhan']." (KG)",1,0,'C',1);
-                $this->Cell(11/100*$width,$height,$_SESSION['lang']['beratBersih']." ".$_SESSION['lang']['Pembeli'],1,0,'C',1);
-                $this->Cell(9/100*$width,$height,$_SESSION['lang']['sisa']." (KG)",1,1,'C',1);
+                $this->Cell(10/100*$width,$height,$_SESSION['lang']['estimasiPengiriman'],1,0,'C',1);
+                $this->Cell(8/100*$width,$height,$_SESSION['lang']['jmlhBrg']." (KG)",1,0,'C',1);
+                $this->Cell(8/100*$width,$height,$_SESSION['lang']['pemenuhan']." (KG)",1,0,'C',1);
+                $this->Cell(10/100*$width,$height,$_SESSION['lang']['beratBersih']." ".$_SESSION['lang']['Pembeli'],1,0,'C',1);
+                $this->Cell(8/100*$width,$height,$_SESSION['lang']['sisa']." (KG)",1,1,'C',1);
 
             }
 
@@ -700,26 +703,43 @@ switch($proses)
 							$qTimb=mysql_query($sTimb) or die(mysql_error());
 							$rTimb=mysql_fetch_assoc($qTimb);
 							$sisaData=$rDet['kuantitaskontrak']-$rTimb['jumlahTotal'];
-							$pdf->Cell(3/100*$width,$height,$no,1,0,'C',1);
-							$pdf->Cell(9/100*$width,$height,$rDet['nokontrak'],1,0,'L',1);
-							$pdf->Cell(10/100*$width,$height,$rBrg['namabarang'],1,0,'L',1);
-							$pdf->Cell(8/100*$width,$height,tanggalnormal($rDet['tanggalkontrak']),1,0,'L',1);
-							$pdf->Cell(18/100*$width,$height,substr($rCust['namacustomer'],0,50),1,0,'L',1);		
-							$pdf->Cell(13/100*$width,$height,tanggalnormal($rDet['tanggalkirim'])."-".tanggalnormal($rDet['sdtanggal']),1,0,'C',1);		
-							$pdf->Cell(9/100*$width,$height,number_format($rDet['kuantitaskontrak']),1,0,'R',1);
-							$pdf->Cell(9/100*$width,$height,number_format($rTimb['jumlahTotal']),1,0,'R',1);
-							$pdf->Cell(11/100*$width,$height,number_format($rTimb['jumlahKgpem']),1,0,'R',1);
-							$pdf->Cell(9/100*$width,$height,number_format($sisaData),1,1,'R',1);
+							
+							$awalX = $pdf->GetX();
+							$awalY = $pdf->GetY();
+							
+							$pdf->SetX(1000);
+							$pdf->MultiCell(14/100*$width,$height,$rDet['nokontrak'],1,'L',1);
+							$height2 = $pdf->GetY() - $awalY;
+							
+							
+							$pdf->SetX($awalX);
+							$pdf->SetY($awalY);
+							
+							$pdf->Cell(3/100*$width,$height2,$no,1,0,'C',1);
+							
+							$awalX2 = $pdf->GetX();
+							$awalY2 = $pdf->GetY();
+							$pdf->MultiCell(14/100*$width,$height,$rDet['nokontrak'],1,'L',1);
+							
+							$pdf->SetXY($awalX2+(14/100*$width),$awalY2);
+							$pdf->Cell(13/100*$width,$height2,$rBrg['namabarang'],1,0,'L',1);
+							$pdf->Cell(8/100*$width,$height2,tanggalnormal($rDet['tanggalkontrak']),1,0,'L',1);
+							$pdf->Cell(18/100*$width,$height2,substr($rCust['namacustomer'],0,50),1,0,'L',1);		
+							$pdf->Cell(10/100*$width,$height2,tanggalnormal($rDet['tanggalkirim'])."-".tanggalnormal($rDet['sdtanggal']),1,0,'C',1);		
+							$pdf->Cell(8/100*$width,$height2,number_format($rDet['kuantitaskontrak']),1,0,'R',1);
+							$pdf->Cell(8/100*$width,$height2,number_format($rTimb['jumlahTotal']),1,0,'R',1);
+							$pdf->Cell(10/100*$width,$height2,number_format($rTimb['jumlahKgpem']),1,0,'R',1);
+							$pdf->Cell(8/100*$width,$height2,number_format($sisaData),1,1,'R',1);
 							$total1p+=$rDet['kuantitaskontrak'];
 							$total2p+=$rTimb['jumlahTotal'];
 							$total3p+=$rTimb['jumlahKgpem'];
 							$total4p+=$sisaData;
 					}
-							$pdf->Cell(61/100*$width,$height,$_SESSION['lang']['total'],1,0,'R',1);
-							$pdf->Cell(9/100*$width,$height,number_format($total1p),1,0,'R',1);
-							$pdf->Cell(9/100*$width,$height,number_format($total2p),1,0,'R',1);
-							$pdf->Cell(11/100*$width,$height,number_format($total3p),1,0,'R',1);
-							$pdf->Cell(9/100*$width,$height,number_format($total4p),1,1,'R',1);
+							$pdf->Cell(66/100*$width,$height,$_SESSION['lang']['total'],1,0,'R',1);
+							$pdf->Cell(8/100*$width,$height,number_format($total1p),1,0,'R',1);
+							$pdf->Cell(8/100*$width,$height,number_format($total2p),1,0,'R',1);
+							$pdf->Cell(10/100*$width,$height,number_format($total3p),1,0,'R',1);
+							$pdf->Cell(8/100*$width,$height,number_format($total4p),1,1,'R',1);
 				}
         $pdf->Output();
         break;
@@ -869,7 +889,7 @@ switch($proses)
 			}
 			$optSipb[] = $row['nodo'];
 		}
-        $sDet="select notransaksi,tanggal,nodo,nosipb,beratbersih,nokendaraan,supir,kgpembeli from ".$dbname.".pabrik_timbangan where nokontrak='".$nokontrak."'  ".$whrNotran."";
+        $sDet="select notransaksi,tanggal,nodo,nosipb,beratbersih,nokendaraan,supir,kgpembeli from ".$dbname.".pabrik_timbangan where nokontrak in ('".implode("','",$optKontrak)."')  ".$whrNotran."";
         if(!empty($optSipb)) {$sDet .= " AND nosipb in ('".implode("','",$optSipb)."')";}
         $qDet=mysql_query($sDet) or die(mysql_error());
         $rCek=mysql_num_rows($qDet);
@@ -1129,7 +1149,7 @@ switch($proses)
 					$optSipb[] = $row['nodo'];
 				}
 				
-                $sDet="select notransaksi,tanggal,nodo,nosipb,beratbersih,nokendaraan,supir,kgpembeli from ".$dbname.".pabrik_timbangan where nokontrak='".$no_kontrak."'  ".$whrNotran."";
+                $sDet="select notransaksi,tanggal,nodo,nosipb,beratbersih,nokendaraan,supir,kgpembeli from ".$dbname.".pabrik_timbangan where nokontrak in ('".implode("','",$optKontrak)."')  ".$whrNotran."";
                 if(!empty($optSipb)) {$sDet .= " AND nosipb in ('".implode("','",$optSipb)."')";}
                 $qDet=mysql_query($sDet) or die(mysql_error());
                 while($rDet=mysql_fetch_assoc($qDet))

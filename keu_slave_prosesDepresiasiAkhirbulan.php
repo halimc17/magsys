@@ -25,7 +25,7 @@ $blm=str_replace("-","",$param['periode']);
 // Delete jurnal yang sudah terbentuk, jika proses di row 1
 if($param['row']==1) {
 	$qDel = deleteQuery($dbname,'keu_jurnalht',"nojurnal 
-		  like '%".$blm."28/".substr($_SESSION['empl']['lokasitugas'],0,4)."/DEP%'");
+		  like '%".$blm."28/".substr($_SESSION['empl']['lokasitugas'],0,4)."/".substr($kodeJurnal,0,3)."%'");
 	if(!mysql_query($qDel)) {
 		exit("Proses Delete Jurnal Error: ".mysql_error($conn));
 	}
@@ -152,7 +152,10 @@ if(mysql_num_rows($res)<1) {
 		}
 		 
 		// Hitung Penyusutan Masing2 Kendaraan
-		$qAsset = selectQuery($dbname,'sdm_daftarasset',"*","kodeasset in ('".implode("','",$listAsset)."') and status<>0");
+		$qAsset = selectQuery($dbname,'sdm_daftarasset',"*","kodeasset in ('".implode("','",$listAsset)."') 
+	and jlhblnpenyusutan-(((".substr($param['periode'],0,4)."*12)+".substr($param['periode'],5,2).")-((left(awalpenyusutan,4)*12)+RIGHT(awalpenyusutan,2)))>0
+		and status=1
+		 and awalpenyusutan <= '".$param['periode']."'");
 		$resAsset = fetchData($qAsset);
 		$nilaiDep = array();
 		foreach($resAsset as $row) {

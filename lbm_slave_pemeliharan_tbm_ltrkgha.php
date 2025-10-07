@@ -5,6 +5,7 @@ require_once('lib/nangkoelib.php');
 require_once('lib/zLib.php');
 require_once('lib/fpdf.php');
  
+
 $proses=$_GET['proses'];
 $_POST['unit']==''?$unit=$_GET['unit']:$unit=$_POST['unit'];
 $_POST['periode']==''?$periode=$_GET['periode']:$periode=$_POST['periode'];
@@ -114,7 +115,7 @@ $iKegtbmtm="select distinct kodekegiatan from ".$dbname.".kebun_pakai_material_v
 $nKegtbmtm=  mysql_query($iKegtbmtm) or die (mysql_error($conn));
 $eKegtbmtm= mysql_num_rows($nKegtbmtm);
 
-$kodekode3="and kodekegiatan in (";
+$kodekode3=" and kodekegiatan in (";
 $notbmtm=0;
 while($dKegtbmtm=  mysql_fetch_assoc($nKegtbmtm))
 {   
@@ -128,7 +129,7 @@ while($dKegtbmtm=  mysql_fetch_assoc($nKegtbmtm))
          $kodekode3.="'".$dKegtbmtm['kodekegiatan']."',";
     }
 }
-$kodekode3.=")";
+$kodekode3.=") ";
 
 ##tutup buat kegiatannya
 

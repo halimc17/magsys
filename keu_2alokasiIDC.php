@@ -20,7 +20,13 @@ echo"<fieldset><legend>".$_SESSION['lang']['form']."</legend>
              <tr>
                 <td>".$_SESSION['lang']['alokasibiaya']."</td>
                 <td><select id=alokasi onchange=getAfd()></select>
-                <select id=afdeling onchange=ambilBlok(this.options[this.selectedIndex].value)></select></td>
+                <select id=afdeling onchange=ambilBlok(this.options[this.selectedIndex].value)></select>
+                <select id=stsblok onchange=getStsBlok(this.options[this.selectedIndex].value)>
+					<option value=''>".$_SESSION['lang']['all']."</option>
+					<option value='TM'>TM</option>
+					<option value='TB'>TBM</option>
+					<option value='BBT'>BBT</option>
+				</select></td></td>
                 
              </tr>   
            </table>
@@ -29,8 +35,11 @@ CLOSE_BOX();
 OPEN_BOX('','');
 
 #ambil daftar IDC
-$str="select distinct nojurnal,tanggal,totaldebet as jumlah,substr(nojurnal,10,4) as kodeorg from ".$dbname.".keu_jurnalht where nojurnal like '%/IDC/%' and substr(nojurnal,10,4) in( select kodeorganisasi from ".$dbname.".organisasi
-          where induk='".$_SESSION['empl']['kodeorganisasi']."') order by tanggal desc";
+$str = "select distinct nojurnal,tanggal,totaldebet as jumlah,substr(nojurnal,10,4) as kodeorg from ".$dbname.".keu_jurnalht 
+		where nojurnal like '%/IDC/%' and substr(nojurnal,10,4) in 
+			(select kodeorganisasi from ".$dbname.".organisasi where induk='".$_SESSION['empl']['kodeorganisasi']."') 
+		and tanggal>='".$_SESSION['org']['period']['start']."'
+		order by tanggal desc";
 		  
 $res=mysql_query($str);
 $tab="<table>

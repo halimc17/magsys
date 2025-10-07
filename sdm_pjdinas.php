@@ -11,17 +11,19 @@ include('master_mainMenu.php');
 OPEN_BOX('',$_SESSION['lang']['perjalanandinas']);
 
 if($_SESSION['empl']['tipelokasitugas']=='HOLDING') {
-	$whereKary = " and bagian = 'HHRS'";
+	$whereKary = " and karyawanid <>".$_SESSION['standard']['userid']. " and tipekaryawan in ('0','2','7','8','9') and lokasitugas like '%HO'";
 } else {
-	$whereKary = " and bagian = 'HRA' and
-		kodeorganisasi='".$_SESSION['org']['kodeorganisasi']."'";
+	if($_SESSION['empl']['tipelokasitugas']=='KANWIL') {
+		$whereKary = " and karyawanid <>".$_SESSION['standard']['userid']. " and lokasitugas not like '%HO' and kodeorganisasi in (select induk FROM ".$dbname.".organisasi where kodeorganisasi='".$_SESSION['empl']['lokasitugas']."')";
+	}else{
+		$whereKary = " and lokasitugas not like '%HO' and kodeorganisasi in (select induk FROM ".$dbname.".organisasi where kodeorganisasi='".$_SESSION['empl']['lokasitugas']."')";
+	}
 }
-
 //ambil karyawan permanen
 $str="select namakaryawan,karyawanid from ".$dbname.".datakaryawan
-      where (tanggalkeluar = '0000-00-00' or tanggalkeluar > '".date("Y-m-d")."') and
-	  tipekaryawan in ('0','7','8') ".$whereKary." and
-	  karyawanid <>".$_SESSION['standard']['userid']. " order by namakaryawan";
+      where (tanggalkeluar = '0000-00-00' or tanggalkeluar > '".date("Y-m-d")."') ".$whereKary." 
+	  and (bagian='HRA' or bagian='HHRS')
+	  and karyawanid in (select karyawanid FROM ".$dbname.".user where status='1') order by namakaryawan";
 $res=mysql_query($str);
 // $optKar="<option value=''></option>";
 $optKar = "";
@@ -32,18 +34,44 @@ while($bar=mysql_fetch_object($res))
 	$optKar2.="<option value='".$bar->karyawanid."'>".$bar->namakaryawan."</option>";
 }	  	
 
+$str="select namaorganisasi from ".$dbname.".organisasi
+      where kodeorganisasi='".$_SESSION['empl']['lokasitugas']."'";
+$res=mysql_query($str);
+while($bar=mysql_fetch_object($res)){
+	$namalokasitugas=$bar->namaorganisasi;
+}
+
 $str="select kodeorganisasi, namaorganisasi from ".$dbname.".organisasi
-      where length(kodeorganisasi)=4 order by namaorganisasi";
+      where length(kodeorganisasi)=4 and kodeorganisasi<>'".$_SESSION['empl']['lokasitugas']."' order by namaorganisasi";
+$res=mysql_query($str);
+echo mysql_error($conn);
+$optPemberiTgs="<option value='".$_SESSION['empl']['lokasitugas']."'></option>";
+$lokasitugas="<option value='".$_SESSION['empl']['lokasitugas']."'>".$namalokasitugas."</option>";
+if(substr($_SESSION['empl']['lokasitugas'],2,2)=='HO'){
+   while($bar=mysql_fetch_object($res))
+   {
+	   if(substr($bar->kodeorganisasi,2,2)=='HO'){
+		   if($bar->kodeorganisasi=='AMHO' or $bar->kodeorganisasi=='CKHO' or $bar->kodeorganisasi=='MPHO' or $bar->kodeorganisasi=='KAHO'){
+			   $lokasitugas.="<option value='".$bar->kodeorganisasi."'>".$bar->namaorganisasi."</option>";
+		   }
+	   }
+	   if($bar->kodeorganisasi==$_SESSION['empl']['lokasitugas']){
+		   $optPemberiTgs.="<option value='".$bar->kodeorganisasi."' selected>".$bar->namaorganisasi."</option>";
+	   }
+   }
+}
+if(substr($_SESSION['empl']['lokasitugas'],2,2)=='HO'){
+	$str="select kodeorganisasi, namaorganisasi from ".$dbname.".organisasi where length(kodeorganisasi)=4 and kodeorganisasi<>'".$_SESSION['empl']['lokasitugas']."' 
+ 		  and induk in (select induk from ".$dbname.".organisasi where kodeorganisasi='".$_SESSION['empl']['lokasitugas']."') order by namaorganisasi";
+}else{
+	$str="select a.kodeorganisasi,a.namaorganisasi,b.regional from ".$dbname.".organisasi a left join ".$dbname.".bgt_regional_assignment b on a.kodeorganisasi=b.kodeunit where length(a.kodeorganisasi)=4 and a.kodeorganisasi<>'".$_SESSION['empl']['lokasitugas']."' and b.regional not in (select d.regional from ".$dbname.".organisasi c left join ".$dbname.".bgt_regional_assignment d on c.kodeorganisasi=d.kodeunit where c.kodeorganisasi='".$_SESSION['empl']['lokasitugas']."') order by a.namaorganisasi";
+}
 $res=mysql_query($str);
 echo mysql_error($conn);
 $optOrg="<option value=''></option>";
-$optPemberiTgs="";
 while($bar=mysql_fetch_object($res))
 {
 	$optOrg.="<option value='".$bar->kodeorganisasi."'>".$bar->namaorganisasi."</option>";
-	if($bar->kodeorganisasi==$_SESSION['empl']['lokasitugas']){
-		$optPemberiTgs.="<option value='".$bar->kodeorganisasi."' selected>".$bar->namaorganisasi."</option>";
-	}
 }
 
 $bagianHRD = array('HHRD','HRA');
@@ -54,7 +82,7 @@ if($_SESSION['empl']['tipelokasitugas']=='HOLDING' or !in_array($_SESSION['empl'
 }
 $optKary = makeOption($dbname,'datakaryawan','karyawanid,namakaryawan',$where);
 
-$lokasitugas = $_SESSION['empl']['lokasitugas'];
+//$lokasitugas = $_SESSION['empl']['lokasitugas'];
 
 $frm[0]="
      <fieldset>
@@ -69,7 +97,7 @@ $frm[0]="
 	 </tr>
 	 <tr>
 	    <td>".$_SESSION['lang']['kodeorg']."</td>
-		<td><select id='kodeorg'><option  value='".$lokasitugas."'>".$lokasitugas."</option></select></td>
+		<td><select id='kodeorg' onchange=getTujuan()>".$lokasitugas."'</select></td>
 	 </tr>	 
 	 <tr>
 	    <td>".$_SESSION['lang']['tanggaldinas']."</td>
@@ -167,7 +195,7 @@ $frm[1]="<fieldset>
 	   <legend>".$_SESSION['lang']['list']."</legend>
 	  <fieldset><legend></legend>
 	  ".$_SESSION['lang']['cari_transaksi']."
-	  <input type=text id=txtbabp size=25 class=myinputtext onkeypress=\"return tanpa_kutip(event);\" maxlength=9>
+	  <input type=text id=txtbabp size=25 class=myinputtext onkeypress=\"return tanpa_kutip(event);\" maxlength=13>
 	  <button class=mybutton onclick=cariPJD(0)>".$_SESSION['lang']['find']."</button>
 	  </fieldset>
 	  <table class=sortable cellspacing=1 border=0>
@@ -179,7 +207,11 @@ $frm[1]="<fieldset>
 	  <td>".$_SESSION['lang']['tanggalsurat']."</td>
 	  <td>".$_SESSION['lang']['tujuan']."</td>
 	  <td>".$_SESSION['lang']['approval_status']."</td>
-	  <td>".$_SESSION['lang']['hrd']."</td>
+	  <td>".$_SESSION['lang']['hrd']."</td>";
+if($_SESSION['empl']['tipelokasitugas']=='HOLDING'){
+	$frm[1].="<td>".$_SESSION['lang']['uangmuka']."</td>";
+}
+$frm[1].="<td>".$_SESSION['lang']['pembayaran']."</td>
 	  <td></td>
 	  </tr>
 	  </head>
@@ -257,14 +289,36 @@ while($bar=mysql_fetch_object($res))
      $sthrd=$_SESSION['lang']['wait_approve'];
 	 $sthrd.="<br> &nbsp ".$_SESSION['lang']['ganti'].":<select   style='width:100px;' onchange=ganti(this.options[this.selectedIndex].value,'hrd','".$bar->notransaksi."')>".$optKar2."</select>";
   }
+
+  $tujuan=$bar->tujuan1;
+  if($bar->tujuan2!=''){
+	$tujuan=$bar->tujuan2;
+  }elseif($bar->tujuan3!=''){
+	$tujuan=$bar->tujuan3;
+  }elseif($bar->tujuanlain!=''){
+	$tujuan=$bar->tujuanlain;
+  }
+
+	if(($bar->uangmuka==0 and $bar->dibayar==0) or $bar->statushrd==2){
+		$dibayar='';
+	}else if($bar->dibayar>0){
+		$dibayar='Sudah dibayar';
+	}else{
+		$dibayar='Belum dibayar';
+	}
+
 	$frm[1].="<tr class=rowcontent>
-	  <td>".$no."</td>
+	  <td align=center>".$no."</td>
 	  <td>".$bar->notransaksi."</td>
 	  <td>".$namakaryawan."</td>
-	  <td>".tanggalnormal($bar->tanggalbuat)."</td>
-	  <td>".$bar->tujuan2."</td>
+	  <td align=center>".tanggalnormal($bar->tanggalbuat)."</td>
+	  <td>".$tujuan."</td>
 	  <td>".$stpersetujuan."</td>
-	  <td>".$sthrd."</td>	
+	  <td>".$sthrd."</td>";
+	if($_SESSION['empl']['tipelokasitugas']=='HOLDING'){
+		$frm[1].="<td align=right>".number_format($bar->uangmuka,2,'.',',')."</td>";
+	}
+	$frm[1].="<td align=center>".$dibayar."</td>
 	  <td align=center>
 	     <img src=images/pdf.jpg class=resicon  title='".$_SESSION['lang']['pdf']."' onclick=\"previewPJD('".$bar->notransaksi."',event);\"> 
        ".$add."

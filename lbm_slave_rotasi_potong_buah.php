@@ -100,12 +100,14 @@ while($res=mysql_fetch_assoc($query))
 }   
 
 // data panen sd bulan ini
-$panen="select kodeorg,tanggal,tahuntanam from ".$dbname.".kebun_interval_panen_vw
-    where (tanggal between '".$tahun."-01-01' and LAST_DAY('".$periode."-15')) and kodeorg like '".$kdUnit."%'";
+$panen="select a.*,d.namaorganisasi from (select kodeorg,tanggal,tahuntanam from ".$dbname.".kebun_interval_panen_vw
+    where (tanggal between '".$tahun."-01-01' and LAST_DAY('".$periode."-15')) and kodeorg like '".$kdUnit."%') a
+		left join ".$dbname.".organisasi d on a.kodeorg=d.kodeorganisasi";
 if($afdId!='')
 {
-    $panen="select kodeorg,tanggal,tahuntanam from ".$dbname.".kebun_interval_panen_vw
-    where (tanggal between '".$tahun."-01-01' and LAST_DAY('".$periode."-15')) and kodeorg like '".$afdId."%'";
+    $panen="select a.*,d.namaorganisasi from (select kodeorg,tanggal,tahuntanam from ".$dbname.".kebun_interval_panen_vw
+    where (tanggal between '".$tahun."-01-01' and LAST_DAY('".$periode."-15')) and kodeorg like '".$afdId."%') a
+		left join ".$dbname.".organisasi d on a.kodeorg=d.kodeorganisasi";
 }
 $query=mysql_query($panen) or die(mysql_error($conn));
 while($res=mysql_fetch_assoc($query))
@@ -114,6 +116,7 @@ while($res=mysql_fetch_assoc($query))
     $tanggalsdArr[$res['tanggal']]=$res['tanggal'];
     $dzArr[$res['kodeorg']][$res['tanggal']]='P';
     $ttArr[$res['kodeorg']]=$res['tahuntanam'];
+    $NamaOrgArr[$res['kodeorg']]=$res['namaorganisasi'];
 }   
 
 $dzRot=array();
@@ -123,6 +126,13 @@ if(!empty($kodeorgArr))foreach($kodeorgArr as $koko){
     if(!empty($tanggallaluArr))foreach($tanggallaluArr as $tata){
         $kemarin = strtotime('-1 day',strtotime($tata));
         $kemarin = date('Y-m-d',$kemarin);
+		$sql1="select * from ".$dbname.".sdm_5harilibur where tanggal='".$kemarin."' and LOWER(keterangan)='libur' and (upper(kebun)='GLOBAL' or upper(kebun)='".$kdUnit."')";
+		$qry1=mysql_query($sql1) or die ("SQL ERR : ".mysql_error());
+		$row1=mysql_num_rows($qry1);
+		if((date('D', strtotime('-1 day',strtotime($tata)))=='Sun' or $row1!=0) and $dzArr[$koko][$kemarin]!='P'){
+			$kemarin = strtotime('-2 day',strtotime($tata));
+			$kemarin = date('Y-m-d',$kemarin);
+		}
         if(($dzArr[$koko][$tata]=='P')and($dzArr[$koko][$kemarin]!='P'))
             $dzRot[$koko]['bl']+=1;
     }    
@@ -130,14 +140,29 @@ if(!empty($kodeorgArr))foreach($kodeorgArr as $koko){
     if(!empty($tanggalArr))foreach($tanggalArr as $tata){
         $kemarin = strtotime('-1 day',strtotime($tata));
         $kemarin = date('Y-m-d',$kemarin);
+		$sql1="select * from ".$dbname.".sdm_5harilibur where tanggal='".$kemarin."' and LOWER(keterangan)='libur' and (upper(kebun)='GLOBAL' or upper(kebun)='".$kdUnit."')";
+		//exit('Warning: '.$sql1);
+		$qry1=mysql_query($sql1) or die ("SQL ERR : ".mysql_error());
+		$row1=mysql_num_rows($qry1);
+		if((date('D', strtotime('-1 day',strtotime($tata)))=='Sun' or $row1!=0) and $dzArr[$koko][$kemarin]!='P'){
+			$kemarin = strtotime('-2 day',strtotime($tata));
+			$kemarin = date('Y-m-d',$kemarin);
+		}
         if(($dzArr[$koko][$tata]=='P')and($dzArr[$koko][$kemarin]!='P'))
-//            $dzRot[$koko].=$tata."_".$kemarin.' .';
+			//$dzRot[$koko].=$tata."_".$kemarin.' .';
             $dzRot[$koko]['bi']+=1;
     }    
     // sd bulan ini
     if(!empty($tanggalsdArr))foreach($tanggalsdArr as $tata){
         $kemarin = strtotime('-1 day',strtotime($tata));
         $kemarin = date('Y-m-d',$kemarin);
+		$sql1="select * from ".$dbname.".sdm_5harilibur where tanggal='".$kemarin."' and LOWER(keterangan)='libur' and (upper(kebun)='GLOBAL' or upper(kebun)='".$kdUnit."')";
+		$qry1=mysql_query($sql1) or die ("SQL ERR : ".mysql_error());
+		$row1=mysql_num_rows($qry1);
+		if((date('D', strtotime('-1 day',strtotime($tata)))=='Sun' or $row1!=0) and $dzArr[$koko][$kemarin]!='P'){
+			$kemarin = strtotime('-2 day',strtotime($tata));
+			$kemarin = date('Y-m-d',$kemarin);
+		}
         if(($dzArr[$koko][$tata]=='P')and($dzArr[$koko][$kemarin]!='P'))
             $dzRot[$koko]['sd']+=1;
     }    
@@ -204,7 +229,7 @@ if($proses=='excel')
         foreach($kodeorgArr as $lsBlok)
         {
             $tab.="<tr class=rowcontent>";
-            $tab.="<td>".$lsBlok."</td>";
+            $tab.="<td>".$NamaOrgArr[$lsBlok]."</td>";
             $tab.="<td align=right>".$ttArr[$lsBlok]."</td>";
             $tab.="<td align=right>".number_format($dzRot[$lsBlok]['bl'],2)."</td>";
             $tab.="<td align=right>".number_format($dzRot[$lsBlok]['bib'],2)."</td>";
@@ -323,7 +348,7 @@ switch($proses)
          
             foreach($kodeorgArr as $lsBlok)
             {
-                $pdf->Cell(50,$height,$lsBlok,TBLR,0,'L',1);
+                $pdf->Cell(50,$height,$NamaOrgArr[$lsBlok],TBLR,0,'L',1);
                 $pdf->Cell(50,$height,$ttArr[$lsBlok],TBLR,0,'C',1);
                 $pdf->Cell(50,$height,number_format($dzRot[$lsBlok]['bl'],2),TBLR,0,'R',1);
                 $pdf->Cell(35,$height,number_format($dzRot[$lsBlok]['bib'],2),TBLR,0,'R',1);

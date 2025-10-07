@@ -190,7 +190,7 @@ switch($method)
 			$sch.=" and kodegudang in (select kodeorganisasi from ".$dbname.".organisasi 
 					where tipe in ('GUDANG','GUDANGTEMP') and induk in 
 					(select kodeorganisasi from ".$dbname.".organisasi where induk='".$_SESSION['empl']['kodeorganisasi']."')
-					and kodeorganisasi not like 'HO%')";
+					and kodeorganisasi not like '%HO')";
 		}
 		else
 		{
@@ -208,7 +208,7 @@ switch($method)
 		$i="select a.*,b.namaorganisasi as namagudang,c.namasupplier from ".$dbname.".log_biayakirim a
 			LEFT JOIN ".$dbname.".organisasi b ON a.kodegudang=b.kodeorganisasi
 			LEFT JOIN ".$dbname.".log_5supplier c ON a.kodetrp=c.supplierid
-			where 1=1 ".$sch."  limit ".$offset.",".$limit."";
+			where 1=1 ".$sch." order by posting,nodok desc limit ".$offset.",".$limit."";
 		
 		$n=mysql_query($i) or die(mysql_error());
 		$no=$maxdisplay;
@@ -354,7 +354,7 @@ switch($method)
 			'totaldebet'=>$data['jumlah'],
 			'totalkredit'=>$data['jumlah'],
 			'amountkoreksi'=>'0',
-			'noreferensi'=>"EXP01-".$kodept."-".$kodebarang."-".$kodegudang,
+			'noreferensi'=>"EXP01-".$nopo."-".$kodebarang."-".$kodegudang,
 			'autojurnal'=>'1',
 			'matauang'=>'IDR',
 			'kurs'=>'1',
@@ -378,10 +378,10 @@ switch($method)
 			'nik'=>'',
 			'kodecustomer'=>'',
 			'kodesupplier'=>'',
-			'noreferensi'=>"EXP01-".$kodept."-".$kodebarang."-".$kodegudang,
+			'noreferensi'=>"EXP01-".$nopo."-".$kodebarang."-".$kodegudang,
 			'noaruskas'=>'',
 			'kodevhc'=>'',
-			'nodok'=>"EXP01-".$kodept."-".$kodebarang."-".$kodegudang,
+			'nodok'=>"EXP01-".$nopo."-".$kodebarang."-".$kodegudang,
 			'kodeblok'=>'',
 			'revisi'=>'0',
 			'kodesegment' => $defSegment

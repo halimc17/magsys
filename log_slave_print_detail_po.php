@@ -99,7 +99,30 @@ class PDF extends FPDF {
                 $cpsn=$res->kontakperson;
 
         $this->SetMargins(15,10,0);
-		$path='images/logo.jpg';
+		//$path='images/logo.jpg';
+		$kodept=$bar->kodeorg;
+		if($kodept=='AMP'){
+			$path='images/logo_amp.jpg';
+		}else if($kodept=='CKS'){
+			$path='images/logo_cks.jpg';
+		}else if($kodept=='KAA'){
+			$path='images/logo_kaa.jpg';
+		}else if($kodept=='KAL'){
+			$path='images/logo_kal.jpg';
+		}else if($kodept=='LKA'){
+			$path='images/logo_lka.jpg';
+		}else if($kodept=='MPA'){
+			$path='images/logo_mpa.jpg';
+		}else if($kodept=='MHS'){
+			$path='images/logo_mhs.jpg';
+		}else if($kodept=='MEA'){
+			$path='images/logo_mea.jpg';
+		}else if($kodept=='SMA'){
+			$path='images/logo_sma.jpg';
+		}else{
+			$path='images/logo.jpg';
+		}
+
 		$this->Image($path,15,5,0,30);	
 		$this->SetFont('Arial','B',9);
 		$this->SetFillColor(255,255,255);	
@@ -302,7 +325,7 @@ $akhirYKet=$pdf->GetY();
 
 $pdf->SetY($akhirYKet-4.5);
 $pdf->SetX(32);
-$pdf->MultiCell(120,4,$rlopoht->uraian,0,1,'J',0);
+$pdf->MultiCell(110,4,$rlopoht->uraian,0,1,'J',0);
 $yakhiruraian=$pdf->GetY();
 $pdf->SetY($akhirY);
 $pdf->SetX($pdf->GetX()+131);
@@ -413,8 +436,13 @@ $qPo=mysql_query($qp) or die(mysql_error($conn));
 $rPo=mysql_fetch_assoc($qPo);
 $pdf->Cell(65,4,'',0,0,'C');
 $pdf->Cell(40,4,$_SESSION['lang']['dbuat_oleh'],'TBLR',0,'C');
-$pdf->Cell(40,4,$_SESSION['lang']['mengetahui'],'TBLR',0,'C');
-$pdf->Cell(40,4,$_SESSION['lang']['menyetujui'],'TBLR',0,'C');
+if($rlopoht->matauang=='IDR' and $gr_total>=500000000){
+	$pdf->Cell(40,4,$_SESSION['lang']['menyetujui'],'TBLR',0,'C');
+	$pdf->Cell(40,4,$_SESSION['lang']['mengetahui'],'TBLR',0,'C');
+} else {
+	$pdf->Cell(40,4,$_SESSION['lang']['mengetahui'],'TBLR',0,'C');
+	$pdf->Cell(40,4,$_SESSION['lang']['menyetujui'],'TBLR',0,'C');
+}
 
 $pdf->Ln();
 $pdf->Cell(65,4,'','',0,'C');
@@ -444,7 +472,11 @@ $pdf->Ln();
 $pdf->Cell(65,4,'',0,0,'C');
 $pdf->Cell(40,4,strtoupper($nm_kary),'TBLR',0,'C');
 $pdf->Cell(40,4,isset($optNmkry[$rPo['persetujuan1']])? strtoupper($optNmkry[$rPo['persetujuan1']]): '','TBLR',0,'C');
-$pdf->Cell(40,4,isset($optNmkry[$rPo['persetujuan2']])? strtoupper($optNmkry[$rPo['persetujuan2']]): '','TBLR',0,'C');
+if(strtoupper($optNmkry[$rPo['persetujuan2']])=='RIZKI HERNANDA DASLIA'){
+	$pdf->Cell(40,4,'DIRECTOR','TBLR',0,'C');
+}else{
+	$pdf->Cell(40,4,isset($optNmkry[$rPo['persetujuan2']])? strtoupper($optNmkry[$rPo['persetujuan2']]): '','TBLR',0,'C');
+}
 //$pdf->Cell(20,4,$_SESSION['lang']['tanggal'],'TBLR',0,'C');
 //$pdf->Cell(30,4,$_SESSION['lang']['status'],'TBLR',0,'C');
 //$pdf->Cell(30,4,$_SESSION['lang']['keputusan'],'TBLR',0,'C');

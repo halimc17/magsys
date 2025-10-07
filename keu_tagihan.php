@@ -41,7 +41,7 @@ $ctl[] = "<fieldset><legend><b>".$_SESSION['lang']['find']."</b></legend>".
 $header = array(
    $_SESSION['lang']['noinvoice'],$_SESSION['lang']['noinvoice']." Supplier",
    $_SESSION['lang']['pt'],$_SESSION['lang']['tanggalterima'],'Last Update',
-   $_SESSION['lang']['nopo'],$_SESSION['lang']['supplier'],
+   $_SESSION['lang']['nopo'],$_SESSION['lang']['supplier'],$_SESSION['lang']['nofaktur'],
    $_SESSION['lang']['keterangan'],$_SESSION['lang']['subtotal'],'postingby'
 );
 
@@ -55,8 +55,8 @@ while($bar= mysql_fetch_object($res))
 
 # Content
 $cols = "a.noinvoice,a.noinvoicesupplier,a.kodeorg,a.tanggal,a.updateby,a.nopo,
-	b.namasupplier,a.keterangan,a.nilaiinvoice,a.postingby,a.posting";
-$order="a.tanggal desc";
+	b.namasupplier,a.nofp,a.keterangan,a.nilaiinvoice+a.uangmuka as nilaiinvoice,a.postingby,a.posting";
+$order="a.posting,a.tanggal desc";
 $where = "a.kodeorg='".$_SESSION['org']['kodeorganisasi']."' and updateby='".$_SESSION['standard']['userid']."'";
 if($_SESSION['empl']['kodejabatan']==5)$where = "a.kodeorg like '%' and updateby like '%'";
 
@@ -66,6 +66,7 @@ $query = " from ".$dbname.".keu_tagihanht a
 	where ".$where." order by ".$order." limit 0,10";
 $queryRow .= $query;
 $query = "select ".$cols.$query;
+
 $tmpTotal = fetchData($queryRow);
 $data = fetchData($query);
 $totalRow = $tmpTotal[0]['rows'];
@@ -110,11 +111,14 @@ foreach($data as $key=>$row) {
 # Make Table
 $tHeader = new rTable('headTable','headTableBody',$header,$data);
 $tHeader->addAction('showEdit','Edit','images/'.$_SESSION['theme']."/edit.png");
+/*
 if($_SESSION['empl']['tipelokasitugas']=='HOLDING' or $_SESSION['empl']['tipelokasitugas']=='KANWIL' or $_SESSION['empl']['kodejabatan']==117 or $_SESSION['empl']['kodejabatan']==119){
 	$tHeader->addAction('deleteData','Delete','images/'.$_SESSION['theme']."/delete.png");
 } else {//hanya HO dan region yang boleh menghapus
 	$tHeader->addAction('','Delete','images/'.$_SESSION['theme']."/delete.png");
 }
+*/
+	$tHeader->addAction('deleteData','Delete','images/'.$_SESSION['theme']."/delete.png");
 
 $tHeader->addAction('postingData','Posting','images/'.$_SESSION['theme']."/posting.png");
 $tHeader->_actions[2]->setAltImg('images/'.$_SESSION['theme']."/posted.png");

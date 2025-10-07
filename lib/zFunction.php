@@ -10,7 +10,7 @@ function ambilLokasiTugasDanTurunannya($returntype='array',$lokasitugas)
 	$arr=Array();
 	$list='';
 	$option="";
-	$str="select distinct kodeorganisasi,namaorganisasi,tipe from ".$dbname.".organisasi where kodeorganisasi='".$lokasitugas."' and tipe not in('BLOK','STENGINE','STATION') order by kodeorganisasi";
+	$str="select distinct kodeorganisasi,namaorganisasi,tipe from ".$dbname.".organisasi where kodeorganisasi='".$lokasitugas."' and tipe not in('BLOK','STENGINE','STATION') and detail='1' order by kodeorganisasi";
 	$res=mysql_query($str);
 	while($bar=mysql_fetch_object($res))
 	{
@@ -34,7 +34,7 @@ function ambilLokasiTugasDanTurunannya($returntype='array',$lokasitugas)
 			 }
 		}
 //second grade==============================
-			$str1="select kodeorganisasi,namaorganisasi,tipe from ".$dbname.".organisasi where induk='".$bar->kodeorganisasi."' and tipe not in('BLOK','STENGINE','STATION') order by kodeorganisasi";
+			$str1="select kodeorganisasi,namaorganisasi,tipe from ".$dbname.".organisasi where induk='".$bar->kodeorganisasi."' and tipe not in('BLOK','STENGINE','STATION') and detail='1' order by kodeorganisasi";
 			$res1=mysql_query($str1);
 			while($bar1=mysql_fetch_object($res1))
 			{
@@ -58,7 +58,7 @@ function ambilLokasiTugasDanTurunannya($returntype='array',$lokasitugas)
 					 }
 				}
 //third grade==============================
-				$str2="select kodeorganisasi,namaorganisasi,tipe from ".$dbname.".organisasi where induk='".$bar1->kodeorganisasi."' and tipe not in('BLOK','STENGINE','STATION') order by kodeorganisasi";
+				$str2="select kodeorganisasi,namaorganisasi,tipe from ".$dbname.".organisasi where induk='".$bar1->kodeorganisasi."' and tipe not in('BLOK','STENGINE','STATION') and detail='1' order by kodeorganisasi";
 				$res2=mysql_query($str2);
 				while($bar2=mysql_fetch_object($res2))
 				{
@@ -82,7 +82,7 @@ function ambilLokasiTugasDanTurunannya($returntype='array',$lokasitugas)
 					 }
 				}
 //forth grade==============================
-						$str3="select kodeorganisasi,namaorganisasi,tipe from ".$dbname.".organisasi where induk='".$bar2->kodeorganisasi."' and tipe not in('BLOK','STENGINE','STATION') order by kodeorganisasi";
+						$str3="select kodeorganisasi,namaorganisasi,tipe from ".$dbname.".organisasi where induk='".$bar2->kodeorganisasi."' and tipe not in('BLOK','STENGINE','STATION') and detail='1' order by kodeorganisasi";
 						$res3=mysql_query($str3);
 						while($bar3=mysql_fetch_object($res3))
 						{
@@ -107,7 +107,7 @@ function ambilLokasiTugasDanTurunannya($returntype='array',$lokasitugas)
 							  
 						}
 //fifth grade==============================
-									$str4="select kodeorganisasi,namaorganisasi,tipe from ".$dbname.".organisasi where induk='".$bar3->kodeorganisasi."' and tipe not in('BLOK','STENGINE','STATION') order by kodeorganisasi";
+									$str4="select kodeorganisasi,namaorganisasi,tipe from ".$dbname.".organisasi where induk='".$bar3->kodeorganisasi."' and tipe not in('BLOK','STENGINE','STATION') and detail='1' order by kodeorganisasi";
 									$res4=mysql_query($str4);
 									while($bar4=mysql_fetch_object($res4))
 									{
@@ -131,7 +131,7 @@ function ambilLokasiTugasDanTurunannya($returntype='array',$lokasitugas)
 										 }
 									}
 //sixth grade==============================
-										$str5="select kodeorganisasi,namaorganisasi,tipe from ".$dbname.".organisasi where induk='".$bar4->kodeorganisasi."' and tipe not in('BLOK','STENGINE','STATION') order by kodeorganisasi";
+										$str5="select kodeorganisasi,namaorganisasi,tipe from ".$dbname.".organisasi where induk='".$bar4->kodeorganisasi."' and tipe not in('BLOK','STENGINE','STATION') and detail='1' order by kodeorganisasi";
 										$res5=mysql_query($str5);
 										while($bar5=mysql_fetch_object($res5))
 										{
@@ -195,7 +195,7 @@ function ambilUnitPembebananBarang($returntype='array')
 	$option="";
 	$str="select distinct kodeorganisasi,namaorganisasi,tipe from ".$dbname.".organisasi 
 	      where length(kodeorganisasi)=4
-		  and induk!=''
+		  and induk!='' and detail='1'
 		  order by namaorganisasi";
 	$res=mysql_query($str);
 	while($bar=mysql_fetch_object($res))
@@ -240,7 +240,7 @@ function ambilSubUnit($returntype='array',$induk)
 	$arr=Array();
 	$list='';
 	$option="";
-	$str="select distinct kodeorganisasi,namaorganisasi,tipe from ".$dbname.".organisasi where induk='".$induk."' order by kodeorganisasi";
+	$str="select distinct kodeorganisasi,namaorganisasi,tipe from ".$dbname.".organisasi where induk='".$induk."' and detail='1' order by kodeorganisasi";
 	$res=mysql_query($str);
 	while($bar=mysql_fetch_object($res))
 	{
@@ -339,7 +339,7 @@ function getGudangPT($returntype='array',$gudang)
 	while($bar1=mysql_fetch_object($res))
 	{
 		$no+=1;
-		$str="select namaorganisasi from ".$dbname.".organisasi where kodeorganisasi='".$bar1->kodeorg."'";
+		$str="select namaorganisasi from ".$dbname.".organisasi where kodeorganisasi='".$bar1->kodeorg."' and detail='1'";
 		$res1=mysql_query($str);
 		while($bar=mysql_fetch_object($res1))
 		{
@@ -386,7 +386,7 @@ function getKegiatanBlok($returntype='array',$blok)
 		     $str="select kodekegiatan,kelompok,namakegiatan from ".$dbname.".setup_kegiatan where (kelompok='TM' or kelompok='PNN') and status = '1' order by kelompok,namakegiatan";
 		else
                 {
-                    $str="select kodekegiatan,kelompok,namakegiatan from ".$dbname.".setup_kegiatan where kelompok='".$bar1->statusblok."' and status = '1' order by kelompok,namakegiatan"; 
+                    $str="select kodekegiatan,kelompok,namakegiatan from ".$dbname.".setup_kegiatan where kelompok='".substr($bar1->statusblok,0,3)."' and status = '1' order by kelompok,namakegiatan"; 
                 } 
                 $res1=mysql_query($str);
 		while($bar=mysql_fetch_object($res1))
@@ -403,7 +403,7 @@ function getKegiatanBlok($returntype='array',$blok)
 			 } 
 			 else
 			 {
-			 	$option.= "<option value='".$bar->kodekegiatan."'>[".$bar->kelompok."]-".$bar->namakegiatan."</option>";
+			 	$option.= "<option value='".$bar->kodekegiatan."'>[".$bar->kelompok."][".$bar->kodekegiatan."]-".$bar->namakegiatan."</option>";
 			 } 
 		}
 	}	
@@ -425,7 +425,7 @@ function ambilSeluruhGudang($returntype='array',$kecuali)
 	$no=0;
 		$no+=1;
 		$str="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi 
-		      where tipe='GUDANG' and kodeorganisasi<>'".$kecuali."' order by namaorganisasi";
+		      where tipe='GUDANG' and kodeorganisasi<>'".$kecuali."' and detail='1' order by namaorganisasi";
 		$res1=mysql_query($str);
 		while($bar=mysql_fetch_object($res1))
 		{

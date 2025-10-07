@@ -22,12 +22,13 @@ $param['karyawanid']=str_replace("#","'",$param['karyawanid']);
   #output pada jurnal kolom noreferensi ALK_GAJI_LBR  
    
 #periksa di perawatan
-$str="select distinct b.kodekegiatan,b.kodeorg,c.noakun,b.kodesegment,a.tanggal from ".$dbname.".kebun_kehadiran_vw a 
+$str="select distinct b.kodeorg,b.kodekegiatan,c.noakun,b.kodesegment,a.tanggal from ".$dbname.".kebun_kehadiran_vw a 
       left join ".$dbname.".kebun_perawatan_vw b on a.notransaksi=b.notransaksi 
       left join ".$dbname.".setup_kegiatan c on b.kodekegiatan=c.kodekegiatan    
       where a.tanggal between '".$param['dari']."' and '".$param['sampai']."'
       and a.karyawanid in(".$param['karyawanid'].") and a.unit='".$_SESSION['empl']['lokasitugas']."' 
-      having noakun!=''";
+      having noakun!=''
+	  order by b.kodeorg,b.kodekegiatan";
 	  //exit("error:".$str);
 $res1=mysql_query($str);
 $res=$res1;

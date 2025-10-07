@@ -31,7 +31,7 @@ echo"<fieldset>
 	 ".$_SESSION['lang']['materialname'].": <b><span id=captionbarang></span></b><br>
 	 ".$_SESSION['lang']['smallestuom'].": <b><span id=captionsatuan></span></b><br>
 	 ".$_SESSION['lang']['uomsource']." 1<input type=text class=myinputtext id=satuansource disabled size=10 maxlength=10 onkeypress=\"return tanpa_kutip(event);\">
-	 =<input type=text class=myinputtextnumber id=jumlah size=8 maxlength=8 onkeypress=\"return angka_doang(event);\">
+	 =<input type=text class=myinputtextnumber id=jumlah size=16 maxlength=18 onkeypress=\"return angka_doang(event);\">
          ".$_SESSION['lang']['satuan']."<td><select id=satuandest>".$optsatuan."</select></td>
 	 ".$_SESSION['lang']['keterangan']." <input type=text class=myinputtext id=keterangan size=25 maxlength=30 onkeypress=\"return tanpa_kutip(event);\">
      <input type=hidden value=insert id=method>

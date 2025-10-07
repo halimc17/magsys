@@ -30,7 +30,7 @@ foreach($pos as $key=>$val){
 if(substr($_SESSION['empl']['lokasitugas'],2,2)=='HO')
 {
   $str=" select karyawanid,namakaryawan,bagian from ".$dbname.".datakaryawan
-       where (tanggalkeluar = '0000-00-00' or tanggalkeluar > '".date("Y-m-d")."') and tipekaryawan in ('0','7','8') order by namakaryawan";	
+       where (tanggalkeluar = '0000-00-00' or tanggalkeluar > '".date("Y-m-d")."') and tipekaryawan in ('0','2','6','7','8') order by namakaryawan";	
 }
 else if($_SESSION['empl']['tipelokasitugas']=='KANWIL')
 {

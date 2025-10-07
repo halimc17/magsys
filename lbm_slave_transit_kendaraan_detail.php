@@ -222,7 +222,7 @@ foreach($rowData as $judul){
 				$divisi = substr($getOrg[$rBlok['kodeorg']],0,6);
 				$blok = $getOrg[$rBlok['kodeorg']];
 				$tt = $rBlok['tahuntanam'];
-				if($rBlok['statusblok'] == 'TBM'){
+				if(substr($rBlok['statusblok'],0,3) == 'TBM'){
 					if((substr($_GET['periode'],0,4) - $tt == 0)){
 						$tbm0 = $hargaUnit;
 						$tbm1 = 0;

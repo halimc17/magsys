@@ -42,33 +42,39 @@ if($tgl_cari2!='')
         exit("Error: Date required");
     }
     $whre=" and a.tanggal between '".$tgl_cari."' and  '".$tgl_cari2."'";
+    $whre2=" and tanggal between '".$tgl_cari."' and  '".$tgl_cari2."'";
 //    $rhd=" and left(b.tanggal,4)='".substr($tgl_cari,0,4)."'";
     $rhd=" and c.tanggal between '".$tgl_cari."' and  '".$tgl_cari2."'";
 }
 else if($tgl_cari!='')
 {
     $whre=" and a.tanggal='".$tgl_cari."'";
+    $whre2=" and tanggal='".$tgl_cari."'";
 }
 
 if($kdUnit!='')
 {
      $unitId=$optNmOrg[$kdUnit];
      $whre.=" and a.kodeorg='".$kdUnit."'";
+     $whre2.=" and kodeorg='".$kdUnit."'";
 }
 
 if($jenisId2!='')
 {
     $jenisId2=='0'?$dr="k":$dr="p";
     $whre.=" and a.tipeinvoice like '%".$dr."%'";
+    $whre2.=" and tipeinvoice like '%".$dr."%'";
 }
 
 if($suppId2!='')
 {
     $whre.=" and a.kodesupplier='".$suppId2."'";
+    $whre2.=" and kodesupplier='".$suppId2."'";
 }
 if($cariNopo!='')
 {
     $whre.=" and a.nopo like '%".$cariNopo."%'";
+    $whre2.=" and nopo like '%".$cariNopo."%'";
 }
 
 if($proses=='preview'||$proses=='excel')
@@ -78,13 +84,14 @@ if($proses=='preview'||$proses=='excel')
         exit("Error: Transaction type required");
     }
 
-    $sTagi="select sum(a.nilaiinvoice) as jumlah,sum(c.nilai) as jumlahppn,a.kodesupplier as kodesupplier
+//    $sTagi="select sum(a.nilaiinvoice) as jumlah,sum(c.nilai) as jumlahppn,a.kodesupplier as kodesupplier
+    $sTagi="select sum(a.nilaiinvoice+a.uangmuka) as jumlah,sum(c.nilai) as jumlahppn,a.kodesupplier as kodesupplier
            from ".$dbname.".keu_tagihanht a 
            left join ".$dbname.".log_poht b on a.nopo=b.nopo
 		   left join ".$dbname.".keu_tagihandt c on a.noinvoice=c.noinvoice
            where a.posting=1 and a.tanggal!=''  ".$whre." 
            group by a.kodesupplier";    
-//    exit("Error:".$sTagi);
+//    exit("Warning: ".$sTagi);
     $qTagi=mysql_query($sTagi) or die(mysql_error($conn));
     while($rTagi=  mysql_fetch_assoc($qTagi))
     {
@@ -100,7 +107,8 @@ if($proses=='preview'||$proses=='excel')
          left join ".$dbname.".keu_tagihanht c on c.noinvoice=a.keterangan1
          where a.tipetransaksi='K' and b.posting=1 and a.keterangan1 in
          (select noinvoice from ".$dbname.". keu_tagihanht 
-         where tanggal between '".$tgl_cari."' and  '".$tgl_cari2."' and posting=1) group by c.kodesupplier";
+         where posting=1 and tanggal!=''  ".$whre2.") 
+		 group by c.kodesupplier";
     
 //     exit("Error:".$sByr);
 $qByr=mysql_query($sByr) or die(mysql_error($conn));
@@ -115,7 +123,8 @@ $sByr2="select sum(a.jumlah) as jumlah,c.kodesupplier as kodesupplier
         left join ".$dbname.".keu_tagihanht c on c.noinvoice=a.keterangan1    
         where a.tipetransaksi='M' and b.posting=1 and a.keterangan1 in
         (select noinvoice from ".$dbname.". keu_tagihanht 
-        where tanggal between '".$tgl_cari."' and  '".$tgl_cari2."' and posting=1) group by c.kodesupplier";
+        where posting=1 and tanggal!=''  ".$whre2.") 
+		group by c.kodesupplier";
 //exit("Error:".$sByr2);
 $qByr2=mysql_query($sByr2) or die(mysql_error($conn));
 while($rByr2=mysql_fetch_assoc($qByr2)){

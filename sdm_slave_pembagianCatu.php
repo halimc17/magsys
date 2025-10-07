@@ -170,7 +170,8 @@ function display($kodeorg,$periode,$harga,$dbname,$conn)
         }
         
         //buang hari minggu 
-        $hari = dates_inbetween($tgl1, $tgl2);
+        //$hari = dates_inbetwee($tgl1, $tgl2);
+        $hari = rangeTanggal($tgl1, $tgl2);
             foreach($hari as $ar => $isi)
             {
                     $qwe=date('D', strtotime($isi));
@@ -1118,7 +1119,7 @@ function posting($kodeorg,$periode,$jumlah,$dbname,$conn)
         }         
 }
 
-function dates_inbetween($date1, $date2){
+function dates_inbetwee($date1, $date2){
 
     $day = 60*60*24;
 

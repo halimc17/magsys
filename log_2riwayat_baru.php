@@ -37,9 +37,14 @@ foreach($arrPo as $brsLokal =>$isiLokal)
 //$optper="<option value=''>".$_SESSION['lang']['all']."</option>";
 $sTgl="select distinct substr(tanggal,1,7) as periode from ".$dbname.".log_prapoht order by tanggal desc";
 $qTgl=mysql_query($sTgl) or die(mysql_error());
+//$optper="<option value='".substr(date('Y-m-d'),0,4)."'>".substr(date('Y-m-d'),0,4)."</option>";
 $optper="";
 while($rTgl=mysql_fetch_assoc($qTgl))
 {
+	$no+=1;
+	if($no==1){
+         $optper.="<option value='".substr($rTgl['periode'],0,4)."'>".substr($rTgl['periode'],0,4)."</option>";
+	}else
    if(substr($rTgl['periode'],5,2)=='12')
    {
          $optper.="<option value='".substr($rTgl['periode'],0,4)."'>".substr($rTgl['periode'],0,4)."</option>";
@@ -127,7 +132,7 @@ CLOSE_BOX();
 OPEN_BOX();
 echo "
 <fieldset style='clear:both'><legend><b>".$_SESSION['lang']['printArea']."</b></legend>
-<div id='printContainer' style='overflow:auto;height:400px;max-width:1220px'; >
+<div id='printContainer' style='overflow:auto;height:400px;max-width:1235px'; >
 </div></fieldset>";//<div id='printContainer' style='overflow:auto;height:350px;max-width:1220px'; >
 //<div id='printContainer'>
 CLOSE_BOX();

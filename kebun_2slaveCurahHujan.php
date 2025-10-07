@@ -113,18 +113,18 @@ if($proses!='getPeriode')
             case'excel':
              $tab="<table cellpadding=1 cellspacing=1 border=0>";
              $tab.="<tr><td colspan=5>".$_SESSION['lang']['curahharian']." ".$_SESSION['lang']['tahun']." ".$thn[0]."</td></tr>";
-             $tab.="<tr><td colspan=3>".$_SESSION['lang']['afdeling']."</td>";
-             $tab.="<td>:</td><td>".$optNmOrg[$kdUnit]."</td></tr>";
-             $tab.="<tr><td colspan=3>".$_SESSION['lang']['kebun']."</td>";
-             $tab.="<td>:</td><td>".$optNmOrg[$kebun]."</td></tr>";
-             $tab.="<tr><td colspan=3>".$_SESSION['lang']['pt']."</td>";
-             $tab.="<td>:</td><td>".$optNmOrg[$rInd['induk']]."</td></tr></table><br />";
+             $tab.="<tr><td colspan=1>".$_SESSION['lang']['afdeling']."</td>";
+             $tab.="<td>:</td><td colspan=2>".$optNmOrg[$kdUnit]."</td></tr>";
+             $tab.="<tr><td colspan=1>".$_SESSION['lang']['kebun']."</td>";
+             $tab.="<td>:</td><td colspan=2>".$optNmOrg[$kebun]."</td></tr>";
+             $tab.="<tr><td colspan=1>".$_SESSION['lang']['pt']."</td>";
+             $tab.="<td>:</td><td colspan=2>".$optNmOrg[$rInd['induk']]."</td></tr></table><br />";
              $tab.="<table cellpadding=1 cellspacing=1 border=1 class=sortable><thead>";
              $tab.="<tr class=rowheader>";
-             $tab.="<td rowspan=2>".$_SESSION['lang']['tanggal']."</td>";
+             $tab.="<td align=center rowspan=2>".$_SESSION['lang']['tanggal']."</td>";
              for($adf=1;$adf<=$thn[1];$adf++)
              {
-                 $tab.="<td colspan=2>".$arrBln[$adf]."</td>";
+                 $tab.="<td align=center colspan=3>".$arrBln[$adf]."</td>";
              }
              $tab.="</tr>";
              $tab.="<tr class=rowheader>";

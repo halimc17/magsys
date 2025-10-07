@@ -8,7 +8,7 @@ include('master_mainMenu.php');
 ?>
 <script language=javascript src='js/sdm_2laporanPjdinas.js'></script>
 <?
-OPEN_BOX('',$_SESSION['lang']['perjalanandinas']);
+OPEN_BOX('',$_SESSION['lang']['daftar'].' '.$_SESSION['lang']['perjalanandinas']);
 
 $frm[0]="<fieldset>
 	   <legend>".$_SESSION['lang']['list']."</legend>

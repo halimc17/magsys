@@ -52,6 +52,9 @@ if(mysql_num_rows($res)<1) { // Validasi Periode Gudang
             $awalQty=$bar->saldoawalqty;
             $awalHarga=$bar->hargaratasaldoawal;
             $awalNilai=$bar->nilaisaldoawal;
+            $currqty=$bar->saldoakhirqty;
+            $curnil=$bar->hargarata;
+            $curtot=$bar->nilaisaldoakhir;
         }
 	} else {
 		$awalQty=0;
@@ -157,8 +160,8 @@ if(mysql_num_rows($res)<1) { // Validasi Periode Gudang
 		'notransaksi' => $noTrans,
 		'tanggal' => $currTgl,
 		'kodept' => $resPt[0]['induk'],
-		'keterangan' => empty($param['keterangan'])? $param['keterangan']: '',
-		'notransaksireferensi' => empty($param['notransreferensi'])? $param['notransreferensi']: '',
+		'keterangan' => !empty($param['keterangan'])? $param['keterangan']: '',
+		'notransaksireferensi' => !empty($param['notransreferensi'])? $param['notransreferensi']: '',
 		'statusjurnal' => 1,
 		'kodegudang' => $param['kodegudang'],
 		'user' => $_SESSION['standard']['userid'],
@@ -271,7 +274,7 @@ if(mysql_num_rows($res)<1) { // Validasi Periode Gudang
 				'tanggal'=>$currTgl,
 				'nourut'=>1,
 				'noakun'=>$akunBarang,
-				'keterangan'=>"Adjustment ".$noTrans." untuk barang ".$param['kodebarang'],
+				'keterangan'=>"Adjustment ".$noTrans." untuk barang ".$param['kodebarang']." No BA ".$param['notransreferensi']." ".$param['keterangan'],
 				'jumlah'=>$rupiah,
 				'matauang'=>'IDR',
 				'kurs'=>'1',
@@ -285,7 +288,7 @@ if(mysql_num_rows($res)<1) { // Validasi Periode Gudang
 				'noreferensi'=>$noTrans,
 				'noaruskas'=>'',
 				'kodevhc'=>'',
-				'nodok'=>empty($param['notransreferensi'])? $param['notransreferensi']: '',
+				'nodok'=>!empty($param['notransreferensi'])? $param['notransreferensi']: '',
 				'kodeblok'=>'',
 				'revisi'=>'0',
 				'kodesegment' => ''
@@ -297,7 +300,7 @@ if(mysql_num_rows($res)<1) { // Validasi Periode Gudang
 				'tanggal'=>$currTgl,
 				'nourut'=>2,
 				'noakun'=>$akunKredit,
-				'keterangan'=>"Adjustment ".$noTrans." untuk barang ".$param['kodebarang'],
+				'keterangan'=>"Adjustment ".$noTrans." untuk barang ".$param['kodebarang']." No BA ".$param['notransreferensi']." ".$param['keterangan'],
 				'jumlah'=>$rupiah * (-1),
 				'matauang'=>'IDR',
 				'kurs'=>'1',
@@ -311,7 +314,7 @@ if(mysql_num_rows($res)<1) { // Validasi Periode Gudang
 				'noreferensi'=>$noTrans,
 				'noaruskas'=>'',
 				'kodevhc'=>'',
-				'nodok'=>empty($param['notransreferensi'])? $param['notransreferensi']: '',
+				'nodok'=>!empty($param['notransreferensi'])? $param['notransreferensi']: '',
 				'kodeblok'=>'',
 				'revisi'=>'0',
 				'kodesegment' => ''
@@ -327,7 +330,7 @@ if(mysql_num_rows($res)<1) { // Validasi Periode Gudang
 					'tanggal'=>$currTgl,
 					'nourut'=>1,
 					'noakun'=>$akunDebet,
-					'keterangan'=>"Adjustment ".$noTrans." untuk barang ".$param['kodebarang'],
+					'keterangan'=>"Adjustment ".$noTrans." untuk barang ".$param['kodebarang']." No BA ".$param['notransreferensi']." ".$param['keterangan'],
 					'jumlah'=>$rupiah,
 					'matauang'=>'IDR',
 					'kurs'=>'1',
@@ -341,7 +344,7 @@ if(mysql_num_rows($res)<1) { // Validasi Periode Gudang
 					'noreferensi'=>$noTrans,
 					'noaruskas'=>'',
 					'kodevhc'=>'',
-					'nodok'=>empty($param['notransreferensi'])? $param['notransreferensi']: '',
+					'nodok'=>!empty($param['notransreferensi'])? $param['notransreferensi']: '',
 					'kodeblok'=>'',
 					'revisi'=>'0',
 					'kodesegment' => ''
@@ -353,7 +356,7 @@ if(mysql_num_rows($res)<1) { // Validasi Periode Gudang
 					'tanggal'=>$currTgl,
 					'nourut'=>2,
 					'noakun'=>$akunBarang,
-					'keterangan'=>"Adjustment ".$noTrans." untuk barang ".$param['kodebarang'],
+					'keterangan'=>"Adjustment ".$noTrans." untuk barang ".$param['kodebarang']." No BA ".$param['notransreferensi']." ".$param['keterangan'],
 					'jumlah'=>$rupiah * (-1),
 					'matauang'=>'IDR',
 					'kurs'=>'1',
@@ -367,7 +370,7 @@ if(mysql_num_rows($res)<1) { // Validasi Periode Gudang
 					'noreferensi'=>$noTrans,
 					'noaruskas'=>'',
 					'kodevhc'=>'',
-					'nodok'=>empty($param['notransreferensi'])? $param['notransreferensi']: '',
+					'nodok'=>!empty($param['notransreferensi'])? $param['notransreferensi']: '',
 					'kodeblok'=>'',
 					'revisi'=>'0',
 					'kodesegment' => ''
@@ -431,12 +434,13 @@ if(mysql_num_rows($res)<1) { // Validasi Periode Gudang
 	$rKeluar = mysql_fetch_assoc($qKeluar);
 	
     if(mysql_num_rows($res)>0) { // Saldobulanan sudah ada, lakukan update
+		/*
         while($bar=mysql_fetch_object($res)) {
             $currqty=$bar->saldoakhirqty;
             $curnil=$bar->hargarata;
             $curtot=$bar->nilaisaldoakhir;
         }
-		
+		*/
 		is_null($rMasuk['rpmasuk'])?$rMasuk['rpmasuk']=0:$rMasuk['rpmasuk']=$rMasuk['rpmasuk'];
 		is_null($rKeluar['rpkeluar'])?$rKeluar['rpkeluar']=0:$rKeluar['rpkeluar']=$rKeluar['rpkeluar'];
 		#ada maka update saldobulanan
@@ -453,7 +457,7 @@ if(mysql_num_rows($res)<1) { // Validasi Periode Gudang
             if(mysql_query($str)) {
                 #write log
                 $str="insert into ".$dbname.".log_stopname_log(kodegudang,kodebarang,updateby,oldqty,oldharga,newqty,newharga)
-                          values('".$param['kodegudang']."','".$param['kodebarang']."',".$_SESSION['standard']['userid'].",".$currqty.",".$curnil.",".$currQty.",".$currHarga.")";
+				values('".$param['kodegudang']."','".$param['kodebarang']."',".$_SESSION['standard']['userid'].",".$currqty.",".$curnil.",".$currQty.",".$currHarga.")";
                 $res=mysql_query($str);
             } else {
                 #rollback masterbarangdt
@@ -485,7 +489,7 @@ if(mysql_num_rows($res)<1) { // Validasi Periode Gudang
 		is_null($rKeluar['rpkeluar'])?$rKeluar['rpkeluar']=0:$rKeluar['rpkeluar']=$rKeluar['rpkeluar'];
         #tidak ada maka insert
         $str="insert into ".$dbname.".log_5saldobulanan(`kodeorg`, `kodebarang`, `saldoakhirqty`, `hargarata`, `lastuser`, `periode`, `nilaisaldoakhir`, `kodegudang`, `qtymasuk`, `qtykeluar`, `qtymasukxharga`, `qtykeluarxharga`, `saldoawalqty`, `hargaratasaldoawal`, `nilaisaldoawal`) 
-            values ('".$kodept."', '".$param['kodebarang']."', ".$currQty.", ".$currHarga.", ".$_SESSION['standard']['userid'].", '".$periode."', ".($currQty*$currHarga).", '".$param['kodegudang']."', ".$qtyIn.", ".$qtyOut.", ".$rMasuk['rpkeluar'].", ".$rKeluar['rpmasuk'].", 0, 0, 0);";
+            values ('".$kodept."', '".$param['kodebarang']."', ".$currQty.", ".$currHarga.", ".$_SESSION['standard']['userid'].", '".$periode."', ".($currQty*$currHarga).", '".$param['kodegudang']."', ".$qtyIn.", ".$qtyOut.", ".$rMasuk['rpmasuk'].", ".$rKeluar['rpkeluar'].", 0, 0, 0);";
        
 		$str2= "insert into ".$dbname.".log_5masterbarangdt (`kodeorg`, `kodebarang`, `saldoqty`, `hargalastin`, `hargalastout`, `stockbataspesan`, `stockminimum`, `lastuser`, `kodegudang`) values
 			('".$kodept."', '".$param['kodebarang']."', ".$currQty.", ".$lastIn.", ".$lastOut.", 0, 0, ".$_SESSION['standard']['userid'].",  '".$param['kodegudang']."')";

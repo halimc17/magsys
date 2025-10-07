@@ -4,33 +4,6 @@ require_once('config/connection.php');
 require_once('lib/nangkoelib.php');
 require_once('lib/zFunction.php');
 
-//Numrows perpage==20;
-
-
-
-	/*$thn1='';
-	if($thnmsk!='')
-	{
-		$thn1="and left(tanggalmasuk,4)='".$thnmsk."'   ";
-	}
-	
-	$bln1='';
-	if($blnmsk!='')
-	{
-		$bln1="and mid(tanggalmasuk,6,2)='".$blnmsk."'  ";
-	}
-	$thn2='';
-	if($thnkel!='')
-	{
-		$thn2="and left(tanggalkeluar,4)='".$thnkel."'  ";
-	}
-	
-	$bln2='';
-	if($blnkel!='')
-	{
-		$bln2="and mid(tanggalkeluar,6,2)='".$blnkel."' ";
-	}*/
-
 $getrows=20;
 //default query
 if($_POST['page'])
@@ -40,34 +13,22 @@ else
   
 $maxdisplay=($page*$getrows-20);
 
-if(isset($_POST['txtsearch']))
-{
-	$txtsearch=$_POST['txtsearch'];
-	$ptsearch=$_POST['ptsearch'];	
-	$orgsearch=$_POST['orgsearch'];	
-	$tipesearch=$_POST['tipesearch'];
-	$statussearch=$_POST['statussearch'];	
-	$thnmsk=$_POST['thnmsk'];
-	$blnmsk=$_POST['blnmsk'];
-	$thnkel=$_POST['thnkel'];
-	$blnkel=$_POST['blnkel'];
-	$schjk=$_POST['schjk'];
-	
-
-}
-else
-{
-	$txtsearch='';
-	$ptsearch='';	
-	$orgsearch='';	
-	$tipesearch='';
-	$statussearch='';	
-	$thnmsk='';
-	$blnmsk='';
-	$thnkel='';
-	$blnkel='';
-	$schjk='';
-}
+$ptsearch = checkPostGet('ptsearch','');
+$regional = checkPostGet('regional','');
+$txtsearch = checkPostGet('txtsearch','');
+$orgsearch = checkPostGet('orgsearch','');
+$subunit = checkPostGet('subunit','');
+$kodegolongan = checkPostGet('kodegolongan','');
+$tipesearch = checkPostGet('tipesearch','');
+$statussearch = checkPostGet('statussearch','');
+$schjk = checkPostGet('schjk','');
+$levelpendidikan = checkPostGet('levelpendidikan','');
+$tanggalmasuk1 = tanggalsystem(checkPostGet('tanggalmasuk1',''));
+$tanggalmasuk2 = tanggalsystem(checkPostGet('tanggalmasuk2',''));
+$tanggalkeluar1 = tanggalsystem(checkPostGet('tanggalkeluar1',''));
+$tanggalkeluar2 = tanggalsystem(checkPostGet('tanggalkeluar2',''));
+$umur1 = checkPostGet('umur1','');
+$umur2 = checkPostGet('umur2','');
 
 if(isset($_POST['method'])){
 	$optpt="";
@@ -91,152 +52,154 @@ if(isset($_POST['method'])){
 		}
 	}
 	echo $optpt;
+	exit;
 }
-
-//exit("Error:$thnkel");
-//echo $schjk;
 
 $where='';
 if($txtsearch!='')
-   $where= " and a.namakaryawan like '%".$txtsearch."%'";
-if($orgsearch!='')
-{
-   $where .=" and (a.lokasitugas='".$orgsearch."' or a.subbagian='".$orgsearch."') ";    
-}
-else
-{
-    if(trim($_SESSION['empl']['tipelokasitugas'])=='HOLDING')
-    {
-		if($_POST['ptsearch'] != ''){
-			$where .=" and a.kodeorganisasi='".$_POST['ptsearch']."'";
-		}else{
-			$where .="";
+	$where= " and a.namakaryawan like '%".$txtsearch."%'";
+if($orgsearch!=''){
+	$where .=" and (a.lokasitugas='".$orgsearch."' or left(a.subbagian,4)='".$orgsearch."')";    
+}else{
+	if(trim($_SESSION['empl']['tipelokasitugas'])=='HOLDING'){
+		if($ptsearch!=''){
+			//$where.=" and a.kodeorganisasi='".$ptsearch."'";
+			$where.=" and (a.kodeorganisasi='".$ptsearch."' or left(a.subbagian,4) in (select kodeorganisasi from ".$dbname.".organisasi where induk='".$ptsearch."'))";
 		}
-    }
-    else if(trim($_SESSION['empl']['tipelokasitugas'])=='KANWIL')
-    {
+		if($regional!=''){
+			if($regional=='JAKARTA'){
+				$where.=" and left(a.subbagian,4) in (select kodeunit from ".$dbname.".bgt_regional_assignment where regional='".$regional."')";
+			}else{
+				$where.=" and a.lokasitugas in (select kodeunit from ".$dbname.".bgt_regional_assignment where regional='".$regional."')";
+			}
+		}
+    }else if(trim($_SESSION['empl']['tipelokasitugas'])=='KANWIL'){
         $where .=" and a.lokasitugas in (select kodeorganisasi from ".$dbname.".organisasi where "
-                . " induk='".$_SESSION['empl']['kodeorganisasi']."') ";    
-    }
-    else
-    {
-        $where .=" and a.lokasitugas='".$_SESSION['empl']['lokasitugas']."' ";    
+                . " induk='".$_SESSION['empl']['kodeorganisasi']."')";    
+    }else{
+        $where .=" and a.lokasitugas='".$_SESSION['empl']['lokasitugas']."'";    
     }
 }
-
-
-if($tipesearch!='')
-{
-if($tipesearch==100){
-    $where.=" and a.tipekaryawan!=4 ";
+if($subunit!=''){
+	$where .=" and a.subbagian='".$subunit."'"; 
 }
-else{
-   $where .=" and a.tipekaryawan='".$tipesearch."'"; 
+if($kodegolongan!=''){
+	$where .=" and a.kodegolongan like '".$kodegolongan."%'"; 
 }
+if($tipesearch!=''){
+	if($tipesearch==100){
+		$where.=" and a.tipekaryawan!=4 ";
+	}else{
+		$where .=" and a.tipekaryawan='".$tipesearch."'"; 
+	}
 }
-	if($thnmsk!='')
-	{
-		$where.="and left(a.tanggalmasuk,4)='".$thnmsk."'   ";
+if($schjk!=''){
+	$where.=" and a.jeniskelamin='".$schjk."'";
+}
+if($levelpendidikan!=''){
+	$where .=" and a.levelpendidikan='".$levelpendidikan."'"; 
+}
+$hariini = date("Y-m-d");	 
+if($tanggalmasuk1!='' and $tanggalmasuk2==''){
+	//$tanggalmasuk2=$tanggalmasuk1;
+	$hariini = $tanggalmasuk1;
+}
+if($tanggalmasuk1=='' and $tanggalmasuk2!=''){
+	//$tanggalmasuk1=$tanggalmasuk2;
+	$hariini = $tanggalmasuk2;
+}
+if($tanggalmasuk1!='' and $tanggalmasuk2!=''){
+	$where.=" and (a.tanggalmasuk>='".$tanggalmasuk1."' and a.tanggalmasuk<='".$tanggalmasuk2."')";
+}else{
+	//if($statussearch=='0000-00-00'){
+	//	$where .=" and a.tanggalmasuk<='".$hariini."'";
+	//}
+}
+if($tanggalkeluar1!='' and $tanggalkeluar2==''){
+	//$tanggalkeluar2=$tanggalkeluar1;
+	$hariini = $tanggalkeluar1;
+}
+if($tanggalkeluar1=='' and $tanggalkeluar2!=''){
+	//$tanggalkeluar1=$tanggalkeluar2;
+	$hariini = $tanggalkeluar2;
+}
+if($tanggalkeluar1!='' and $tanggalkeluar2!=''){
+	$where.=" and (a.tanggalkeluar>='".$tanggalkeluar1."' and a.tanggalkeluar<='".$tanggalkeluar2."')";
+}
+if($umur1!='' and $umur2==''){
+	$umur2=$umur1;
+}
+if($umur1=='' and $umur2!=''){
+	$umur1=$umur2;
+}
+if($umur1!='' and $umur2!=''){
+	$where.=" and ((year(CURDATE())-year(a.tanggallahir))>='".$umur1."' and (year(CURDATE())-year(a.tanggallahir))<='".$umur2."')";
+}
+
+//$hariini = date("Y-m-d");
+if($statussearch=='*'){
+	//$where .=" and (a.tanggalkeluar!='0000-00-00')";
+	$where .=" and (a.tanggalkeluar!='0000-00-00' and a.tanggalkeluar<'".$hariini."')"; // tidak aktif
+}else if($statussearch=='0000-00-00'){
+	//$where .=" and (a.tanggalkeluar='0000-00-00')";
+	$where .=" and (a.tanggalkeluar='0000-00-00' or a.tanggalkeluar>='".$hariini."')"; // masih aktif
+}else{
+	if($tanggalmasuk1!='' and $tanggalmasuk2==''){
+		$where .=" and a.tanggalmasuk<='".$hariini."'";
 	}
-	
-
-	if($blnmsk!='')
-	{
-		$where.="and mid(a.tanggalmasuk,6,2)='".$blnmsk."'  ";
+	if($tanggalmasuk1=='' and $tanggalmasuk2!=''){
+		$where .=" and a.tanggalmasuk<='".$hariini."'";
 	}
-
-	if($thnkel!='')
-	{
-		$where.="and left(a.tanggalkeluar,4)='".$thnkel."'  ";
+	if($tanggalkeluar1!='' and $tanggalkeluar2==''){
+		$where .=" and (a.tanggalkeluar='0000-00-00' or a.tanggalkeluar>='".$hariini."')"; // masih aktif
 	}
-	
+	if($tanggalkeluar1=='' and $tanggalkeluar2!=''){
+		$where .=" and (a.tanggalkeluar='0000-00-00' or a.tanggalkeluar>='".$hariini."')"; // masih aktif
+	}
+}
 
-	if($blnkel!='')
-	{
-		$where.="and mid(a.tanggalkeluar,6,2)='".$blnkel."' ";
-	}   
-   
-        $hariini = date("Y-m-d");
-	if($statussearch=='*')
-//	   $where .=" and (a.tanggalkeluar!='0000-00-00')";
-	   $where .=" and (a.tanggalkeluar!='0000-00-00' and a.tanggalkeluar<='".$hariini."')"; // tidak aktif
-	else if($statussearch=='0000-00-00')
-//	   $where .=" and (a.tanggalkeluar='0000-00-00')";
-	   $where .=" and (a.tanggalkeluar='0000-00-00' or a.tanggalkeluar>'".$hariini."')"; // masih aktif
-	else
-	{} 
-	 
-	 if($schjk!='')
-	 {
-		 $where.=" and a.jeniskelamin='".$schjk."'";
-	 }
-	 
-
-
-	
-   
 //make sure user can only access allowed data   
 $listOrg=ambilLokasiTugasDanTurunannya('list',$_SESSION['empl']['lokasitugas']);
 $list=str_replace("|","','",$listOrg);
 $list="'".$list."'";
 
-if(trim($_SESSION['empl']['tipelokasitugas'])=='HOLDING')
-{
-$str="select a.*,b.namajabatan,c.namagolongan,d.tipe from ".$dbname.".datakaryawan a, 
-      ".$dbname.".sdm_5jabatan b, ".$dbname.".sdm_5golongan c,  ".$dbname.".sdm_5tipekaryawan d where 
-	  a.kodejabatan=b.kodejabatan and a.kodegolongan=c.kodegolongan
-	  and d.id=a.tipekaryawan 
-	  ".$where."
-	  limit ".$maxdisplay.",".$getrows
-	  ;
-	  
-//	 echo $str;    
- $strx="select a.*,b.namajabatan,c.namagolongan,d.tipe from ".$dbname.".datakaryawan a, 
-      ".$dbname.".sdm_5jabatan b, ".$dbname.".sdm_5golongan c,  ".$dbname.".sdm_5tipekaryawan d where 
-	  a.kodejabatan=b.kodejabatan and a.kodegolongan=c.kodegolongan
-	  and d.id=a.tipekaryawan 
-	  ".$where."";  
+if(trim($_SESSION['empl']['tipelokasitugas'])=='HOLDING'){
+	$str="select a.*,b.namajabatan,c.namagolongan,d.tipe,e.kelompok from ".$dbname.".datakaryawan a, 
+		".$dbname.".sdm_5jabatan b, ".$dbname.".sdm_5golongan c, ".$dbname.".sdm_5tipekaryawan d, ".$dbname.".sdm_5pendidikan e 
+		where a.kodejabatan=b.kodejabatan and a.kodegolongan=c.kodegolongan and d.id=a.tipekaryawan and a.levelpendidikan=e.levelpendidikan ".$where."
+		order by a.namakaryawan
+		limit ".$maxdisplay.",".$getrows;
+	$strx="select a.*,b.namajabatan,c.namagolongan,d.tipe,e.kelompok from ".$dbname.".datakaryawan a, 
+		".$dbname.".sdm_5jabatan b, ".$dbname.".sdm_5golongan c, ".$dbname.".sdm_5tipekaryawan d, ".$dbname.".sdm_5pendidikan e 
+		where a.kodejabatan=b.kodejabatan and a.kodegolongan=c.kodegolongan and d.id=a.tipekaryawan and a.levelpendidikan=e.levelpendidikan ".$where."
+		order by a.namakaryawan";
+}else if(trim($_SESSION['empl']['tipelokasitugas'])=='KANWIL'){
+	$str="select a.*,b.namajabatan,c.namagolongan,d.tipe,e.kelompok from ".$dbname.".datakaryawan a, 
+		".$dbname.".sdm_5jabatan b, ".$dbname.".sdm_5golongan c, ".$dbname.".sdm_5tipekaryawan d, ".$dbname.".sdm_5pendidikan e 
+		where a.kodejabatan=b.kodejabatan and a.kodegolongan=c.kodegolongan and d.id=a.tipekaryawan and a.levelpendidikan=e.levelpendidikan 
+		and a.tipekaryawan not in ('0','7','8') ".$where."
+		order by a.namakaryawan
+		limit ".$maxdisplay.",".$getrows;
+	$strx="select a.*,b.namajabatan,c.namagolongan,d.tipe,e.kelompok from ".$dbname.".datakaryawan a, 
+		".$dbname.".sdm_5jabatan b, ".$dbname.".sdm_5golongan c,  ".$dbname.".sdm_5tipekaryawan d, ".$dbname.".sdm_5pendidikan e 
+		where a.kodejabatan=b.kodejabatan and a.kodegolongan=c.kodegolongan and d.id=a.tipekaryawan and a.levelpendidikan=e.levelpendidikan 
+		and a.tipekaryawan not in ('0','7','8') ".$where."
+		order by a.namakaryawan";
+}else{
+	$str="select a.*,b.namajabatan,c.namagolongan,d.tipe,e.kelompok from ".$dbname.".datakaryawan a, 
+		".$dbname.".sdm_5jabatan b, ".$dbname.".sdm_5golongan c, ".$dbname.".sdm_5tipekaryawan d, ".$dbname.".sdm_5pendidikan e 
+		where a.kodejabatan=b.kodejabatan and a.kodegolongan=c.kodegolongan and d.id=a.tipekaryawan and a.levelpendidikan=e.levelpendidikan 
+		and a.tipekaryawan not in ('0','7','8') and lokasitugas in(".$list.") ".$where." 
+		order by a.namakaryawan
+		limit ".$maxdisplay.",".$getrows;
+	$strx="select a.*,b.namajabatan,c.namagolongan,d.tipe,e.kelompok from ".$dbname.".datakaryawan a, 
+		".$dbname.".sdm_5jabatan b, ".$dbname.".sdm_5golongan c, ".$dbname.".sdm_5tipekaryawan d, ".$dbname.".sdm_5pendidikan e 
+		where a.kodejabatan=b.kodejabatan and a.kodegolongan=c.kodegolongan and d.id=a.tipekaryawan and a.levelpendidikan=e.levelpendidikan 
+		and a.tipekaryawan not in ('0','7','8') and lokasitugas in(".$list.") ".$where." 
+		order by a.namakaryawan";
 }
 
-else if(trim($_SESSION['empl']['tipelokasitugas'])=='KANWIL')
-{
-  $str="select a.*,b.namajabatan,c.namagolongan,d.tipe from ".$dbname.".datakaryawan a, 
-      ".$dbname.".sdm_5jabatan b, ".$dbname.".sdm_5golongan c,  ".$dbname.".sdm_5tipekaryawan d where 
-	  a.kodejabatan=b.kodejabatan and a.kodegolongan=c.kodegolongan
-	  and d.id=a.tipekaryawan and a.tipekaryawan not in ('0','7','8')
-	  ".$where."
-	  limit ".$maxdisplay.",".$getrows
-	  ;
-	  
-//	 echo $str;    
- $strx="select a.*,b.namajabatan,c.namagolongan,d.tipe from ".$dbname.".datakaryawan a, 
-      ".$dbname.".sdm_5jabatan b, ".$dbname.".sdm_5golongan c,  ".$dbname.".sdm_5tipekaryawan d where 
-	  a.kodejabatan=b.kodejabatan and a.kodegolongan=c.kodegolongan
-	  and d.id=a.tipekaryawan and a.tipekaryawan not in ('0','7','8')
-	  ".$where."";  
-  
-}
-
-else
-{
-//a.tipekaryawan!=0 orang yang tidak di pusat tidak dapat melihat data orang permanent
-$str="select a.*,b.namajabatan,c.namagolongan,d.tipe from ".$dbname.".datakaryawan a, 
-      ".$dbname.".sdm_5jabatan b, ".$dbname.".sdm_5golongan c,  ".$dbname.".sdm_5tipekaryawan d where 
-      lokasitugas in(".$list.")
-	  and a.kodejabatan=b.kodejabatan and a.kodegolongan=c.kodegolongan
-	  and d.id=a.tipekaryawan and a.tipekaryawan not in ('0','7','8')
-	  ".$where." order by a.namakaryawan ASC 
-	  limit ".$maxdisplay.",".$getrows
-	  ;
- $strx="select a.*,b.namajabatan,c.namagolongan,d.tipe from ".$dbname.".datakaryawan a, 
-      ".$dbname.".sdm_5jabatan b, ".$dbname.".sdm_5golongan c,  ".$dbname.".sdm_5tipekaryawan d where 
-      lokasitugas in(".$list.")
-	  and a.kodejabatan=b.kodejabatan and a.kodegolongan=c.kodegolongan
-	  and d.id=a.tipekaryawan and a.tipekaryawan not in ('0','7','8')
-	  ".$where.""; 	     	
-}
-
-
+//exit('Warning: '.$strx);
 
 //==================jlh karyawan
 $jlhkar=0;

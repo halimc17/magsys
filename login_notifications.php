@@ -6,6 +6,7 @@ require_once('config/connection.php');
 @require_once('master_validation.php');
 require_once('lib/nangkoelib.php');
 require_once('lib/zLib.php');
+include_once('lib/zFunction.php');
 
 $karyawanid = $_GET['karyawanid'];
 $bahasanya = $_GET['bahasa'];
@@ -54,6 +55,7 @@ while($bar=mysql_fetch_object($res))
     $bahasa[$bar->legend]=$isiBahasa;
 }
 
+
 // persetujuan PP
 //$str="SELECT * FROM ".$dbname.".log_prapoht
   //  WHERE close < 2 and komentar1 != 'diputihkan'";
@@ -83,12 +85,19 @@ while($bar=mysql_fetch_object($res))
 
 // Verifikasi PP
 if(in_array(518,$_SESSION['priv'])) {
-    $str="SELECT a.*, c.namabarang FROM ".$dbname.".log_prapodt a
+	/*
+	$str="SELECT a.*, c.namabarang FROM ".$dbname.".log_prapodt a
         LEFT JOIN ".$dbname.".log_prapoht b on a.nopp = b.nopp
         LEFT JOIN ".$dbname.".log_5masterbarang c on a.kodebarang = c.kodebarang
         WHERE b.close = 2 and a.status = 0 and a.create_po = 0 and
         substr(tanggal,1,4)='".$_SESSION['org']['period']['tahun']."' and a.purchaser = 0 and a.ditolakoleh = 0";
-    $res=mysql_query($str);
+	*/
+    $str="SELECT a.*, c.namabarang FROM ".$dbname.".log_prapodt a
+        LEFT JOIN ".$dbname.".log_prapoht b on a.nopp = b.nopp
+        LEFT JOIN ".$dbname.".log_5masterbarang c on a.kodebarang = c.kodebarang
+        WHERE b.close = 2 and a.status = 0 and a.create_po = 0 and
+        substr(tanggal,1,4)=YEAR(NOW()) and a.purchaser = 0 and a.ditolakoleh = 0";
+	$res=mysql_query($str);
     while($bar=mysql_fetch_object($res))
     {
         $tipetransaksi="verpp";
@@ -106,9 +115,13 @@ if(in_array(518,$_SESSION['priv'])) {
 
 
 // PO lokal
-$str="SELECT a.*, b.namabarang FROM ".$dbname.".log_prapodt a
-    LEFT JOIN ".$dbname.".log_5masterbarang b on a.kodebarang = b.kodebarang
-    WHERE a.create_po = 0 and a.lokalpusat = 1 and a.purchaser != 0 and a.ditolakoleh = 0 and a.status < 3";
+$str="select a.*, b.namabarang from  ".$dbname.".log_sudahpo_vsrealisasi_vw a 
+	  LEFT JOIN ".$dbname.".log_5masterbarang b on a.kodebarang = b.kodebarang
+	  where (a.create_po = 0 and a.lokalpusat = 1 and a.ditolakoleh = 0 and purchaser='".$_SESSION['standard']['userid']."' and status!='3') 
+	  and (selisih>0 or selisih is null)"; 
+//$str="SELECT a.*, b.namabarang FROM ".$dbname.".log_prapodt a
+//    LEFT JOIN ".$dbname.".log_5masterbarang b on a.kodebarang = b.kodebarang
+//    WHERE a.create_po = 0 and a.lokalpusat = 1 and a.purchaser != 0 and a.ditolakoleh = 0 and a.status < 3";
 //echo $str;
 $res=mysql_query($str);
 while($bar=mysql_fetch_object($res))
@@ -124,10 +137,15 @@ while($bar=mysql_fetch_object($res))
     }
 }
 
+
 // PO pusat
-$str="SELECT a.*, b.namabarang FROM ".$dbname.".log_prapodt a
-    LEFT JOIN ".$dbname.".log_5masterbarang b on a.kodebarang = b.kodebarang
-    WHERE a.create_po = 0 and a.lokalpusat = 0 and a.purchaser != 0 and a.ditolakoleh = 0 and a.status < 3";
+$str="select a.*, b.namabarang from  ".$dbname.".log_sudahpo_vsrealisasi_vw a 
+	  LEFT JOIN ".$dbname.".log_5masterbarang b on a.kodebarang = b.kodebarang
+	  where (a.create_po = 0 and a.lokalpusat = 0 and a.ditolakoleh = 0 and purchaser='".$_SESSION['standard']['userid']."' and status!='3') 
+	  and (selisih>0 or selisih is null)"; 
+//$str="SELECT a.*, b.namabarang FROM ".$dbname.".log_prapodt a
+//    LEFT JOIN ".$dbname.".log_5masterbarang b on a.kodebarang = b.kodebarang
+//    WHERE a.create_po = 0 and a.lokalpusat = 0 and a.purchaser != 0 and a.ditolakoleh = 0 and a.status < 3";
 //echo $str;
 $res=mysql_query($str);
 while($bar=mysql_fetch_object($res))
@@ -144,7 +162,6 @@ while($bar=mysql_fetch_object($res))
         $modulenotifextras[$tipetransaksi]['file']='log_po';
     }
 }
-
 
 
 ##demosi
@@ -170,14 +187,6 @@ while($bar=mysql_fetch_object($res))
 }
 
 
-
-
-
-
-
-
-
-
 // persetujuan PJD
 $str="SELECT a.*, b.namakaryawan FROM ".$dbname.".sdm_pjdinasht a
     LEFT JOIN ".$dbname.".datakaryawan b on a.karyawanid = b.karyawanid
@@ -201,9 +210,10 @@ while($bar=mysql_fetch_object($res))
     }
 }
 
+
 // pertanggungjawaban PJD
 $str="SELECT * FROM ".$dbname.".sdm_pjdinasht
-    WHERE (statuspertanggungjawaban = 0) and tanggalkembali <= '".$hariini."' ";
+    WHERE (statuspertanggungjawaban = 0) and statushrd=1 and tanggalkembali <= '".$hariini."' ";
 //echo $str;
 $res=mysql_query($str);
 while($bar=mysql_fetch_object($res))
@@ -222,11 +232,11 @@ while($bar=mysql_fetch_object($res))
         $modulenotifextras[$tipetransaksi]['file']='sdm_pertanggungjawabanPJD';
     }
 }    
-    
+
+
 // persetujuan ijin/cuti
-
+$whkar="";
 $nmKar=  makeOption($dbname, 'datakaryawan', 'karyawanid,namakaryawan', $whkar);
-
 $str="SELECT * FROM ".$dbname.".sdm_ijin
     WHERE (stpersetujuan1 = 0 or stpersetujuanhrd = 0)";
 $res=mysql_query($str);
@@ -235,12 +245,10 @@ while($bar=mysql_fetch_object($res))
     $tipetransaksi="ijincuti";
     if(
         (($bar->persetujuan1==$karyawanid)and($bar->stpersetujuan1 =='0'))or
-        (($bar->hrd==$karyawanid)and($bar->stpersetujuanhrd =='0'))
+        (($bar->hrd==$karyawanid)and($bar->stpersetujuanhrd =='0')and($bar->stpersetujuan1 =='1'))
     )
     {
         $whkar=" karyawanid='".$bar->karyawanid."'";
-        
-        
 		setIt($modulenotifextras[$tipetransaksi]['jumlah'],0);
 		setIt($modulenotifextras[$tipetransaksi]['note'],'');
         $jumlahnotif+=1;
@@ -249,164 +257,408 @@ while($bar=mysql_fetch_object($res))
         $modulenotifextras[$tipetransaksi]['note'].=$nmKar[$bar->karyawanid]." - ".$bar->jenisijin." : ".tanggalnormal(substr($bar->darijam,0,10))." sd ".tanggalnormal(substr($bar->sampaijam,0,10))."\n";
         $modulenotifextras[$tipetransaksi]['title']=$bahasa['persetujuan']." ".$bahasa['cuti']."/".$bahasa['izinkntor'];
         $modulenotifextras[$tipetransaksi]['file']='sdm_laporan_ijin_keluar_kantor';
-        
         //$modulenotifextras[$tipetransaksi]['kar'][$bar->karyawanid]=$bar->karyawanid;
-        
     }
-}  
-
+} 
 
 
 // daerah khusus kasie begins
 //echo "<pre>";
 //print_r($_SESSION);
 //echo "</pre>";
-if($jabatan=='119'){
-$str="select tanggalmulai,tanggalsampai from ".$dbname.".setup_periodeakuntansi where 
-      tutupbuku = 0 and kodeorg='".$lokasitugas."' order by periode limit 1";
+
+$str="select * from ".$dbname.".setup_posting order by kodeaplikasi";
 $res=mysql_query($str);
-$tanggal1='';
-$tanggal2='';
-while($bar=mysql_fetch_object($res))
-{
-    $tanggal1=$bar->tanggalmulai;
-    $tanggal2=$bar->tanggalsampai;
+$postJabatanAll     =array();
+$postJabatankebun   =array();
+$postJabatanbaspk   =array();
+$postJabatangudang  =array();
+$postJabatankeuangan=array();
+$postJabatanpabrik  =array();
+$postJabatanpanen   =array();
+$postJabatanrawat   =array();
+$postJabatantraksi  =array();
+$postJabatansdm		=array();
+$postJabatanbku		=array();
+$postJabatanAcc		=array();
+while($row=mysql_fetch_assoc($res)) {
+   $postJabatanAll[$row['jabatan']] = $row['jabatan'];
+   if($row['kodeaplikasi']=='baspk'){
+      $postJabatanbaspk[$row['jabatan']] = $row['jabatan'];
+   }elseif($row['kodeaplikasi']=='gudang'){
+      $postJabatangudang[$row['jabatan']] = $row['jabatan'];
+   }elseif($row['kodeaplikasi']=='keuangan'){
+	  if($row['jabatan']=='124' or $row['jabatan']=='147' or $row['jabatan']=='205' or $row['jabatan']=='206' or $row['jabatan']=='207' or $row['jabatan']=='208' or $row['jabatan']=='220' or $row['jabatan']=='221'){
+			$postJabatanAcc[$row['jabatan']] = $row['jabatan'];
+	  }else{
+			$postJabatankeuangan[$row['jabatan']] = $row['jabatan'];
+	  }
+   }elseif($row['kodeaplikasi']=='pabrik'){
+      $postJabatanpabrik[$row['jabatan']] = $row['jabatan'];
+   }elseif($row['kodeaplikasi']=='panen'){
+      $postJabatanpanen[$row['jabatan']] = $row['jabatan'];
+      $postJabatankebun[$row['jabatan']] = $row['jabatan'];
+   }elseif($row['kodeaplikasi']=='rawatkebun'){
+      $postJabatanrawat[$row['jabatan']] = $row['jabatan'];
+      $postJabatankebun[$row['jabatan']] = $row['jabatan'];
+   }elseif($row['kodeaplikasi']=='traksi'){
+      $postJabatantraksi[$row['jabatan']] = $row['jabatan'];
+      $postJabatankebun[$row['jabatan']] = $row['jabatan'];
+   }elseif($row['kodeaplikasi']=='sdm'){
+	  if($row['jabatan']=='79' or $row['jabatan']=='255'){
+         $postJabatansdm[$row['jabatan']] = $row['jabatan'];
+	  }else{
+         $postJabatanbku[$row['jabatan']] = $row['jabatan'];
+	  }
+   }
 }
+ 
+/*
+$postJabatanbaspk    = getPostingJabatan('baspk');
+$postJabatangudang   = getPostingJabatan('gudang');
+$postJabatankeuangan = getPostingJabatan('keuangan');
+$postJabatanpabrik   = getPostingJabatan('pabrik');
+$postJabatanpanen    = getPostingJabatan('panen');
+$postJabatanrawat    = getPostingJabatan('rawatkebun');
+$postJabatantraksi   = getPostingJabatan('traksi');
+//$postJabatanAll      = $postJabatanbaspk.$postJabatangudang.$postJabatankeuangan.$postJabatanpabrik.$postJabatanpanen.$postJabatanrawat.$postJabatantraksi;
+*/
+if(in_array($jabatan,$postJabatanAll)){
+//if($jabatan=='117' or $jabatan=='2' or $jabatan=='119' or $jabatan=='283' or $jabatan=='89' or $jabatan=='97' or $jabatan=='107' or $jabatan=='220'){
+   $str="select tanggalmulai,tanggalsampai from ".$dbname.".setup_periodeakuntansi where 
+         tutupbuku = 0 and kodeorg='".$lokasitugas."' order by periode limit 1";
+   $res=mysql_query($str);
+   $tanggal1='';
+   $tanggal2='';
+   while($bar=mysql_fetch_object($res))
+   {
+      $tanggal1=$bar->tanggalmulai;
+      $tanggal2=$bar->tanggalsampai;
+   }
+}
+
 
 // kasbank yang belum diposting
-$str="SELECT * FROM ".$dbname.".keu_kasbankht
-    WHERE kodeorg like '".$lokasitugas."%' and posting = 0 and tanggal between '".$tanggal1."' and '".$tanggal2."' ";
-//echo $str;
-$res=mysql_query($str);
-while($bar=mysql_fetch_object($res))
-{
-	$tipetransaksi="kasbank";
-    $jumlahnotif+=1;
-	setIt($modulenotifextras[$tipetransaksi],array());
-	setIt($modulenotifextras[$tipetransaksi]['note'],'');
-	setIt($modulenotifextras[$tipetransaksi]['jumlah'],0);
-    $modulenotif[$tipetransaksi]=$tipetransaksi;
-    $modulenotifextras[$tipetransaksi]['jumlah']+=1;
-    $modulenotifextras[$tipetransaksi]['note'].=$bar->notransaksi ."; ";
-    $modulenotifextras[$tipetransaksi]['title']=$bahasa['posting']." ".$bahasa['kasbank'];
-    $modulenotifextras[$tipetransaksi]['file']='keu_kasbank';
+if(in_array($jabatan,$postJabatankeuangan)){
+//if($jabatan=='117' or $jabatan=='119'){
+   $str="SELECT * FROM ".$dbname.".keu_kasbankht
+         WHERE kodeorg like '".$lokasitugas."%' and posting = 0 and tanggal between '".$tanggal1."' and '".$tanggal2."' ";
+   //echo $str;
+   $res=mysql_query($str);
+   while($bar=mysql_fetch_object($res))
+   {
+	  $tipetransaksi="kasbank";
+      $jumlahnotif+=1;
+	  setIt($modulenotifextras[$tipetransaksi],array());
+	  setIt($modulenotifextras[$tipetransaksi]['note'],'');
+	  setIt($modulenotifextras[$tipetransaksi]['jumlah'],0);
+      $modulenotif[$tipetransaksi]=$tipetransaksi;
+      $modulenotifextras[$tipetransaksi]['jumlah']+=1;
+      $modulenotifextras[$tipetransaksi]['note'].=$bar->notransaksi ."; ";
+      $modulenotifextras[$tipetransaksi]['title']=$bahasa['posting']." ".$bahasa['kasbank'];
+      $modulenotifextras[$tipetransaksi]['file']='keu_kasbank';
+   }
 }
 
+
 // transaksi BKM yang belum diposting
-$str="SELECT * FROM ".$dbname.".kebun_aktifitas
-    WHERE kodeorg like '".$lokasitugas."%' and jurnal = 0 and tanggal between '".$tanggal1."' and '".$tanggal2."' ";
-//echo $str;
-$res=mysql_query($str);
-while($bar=mysql_fetch_object($res))
-{
-    $tipetransaksi="bkm".$bar->tipetransaksi;
-    $jumlahnotif+=1;
-    $modulenotif[$tipetransaksi]=$tipetransaksi;
-	setIt($modulenotifextras[$tipetransaksi]['jumlah'],0);
-	setIt($modulenotifextras[$tipetransaksi]['note'],'');
-    $modulenotifextras[$tipetransaksi]['jumlah']+=1;
-    $modulenotifextras[$tipetransaksi]['note'].=$bar->notransaksi."; ";
-    if(
+if(in_array($jabatan,$postJabatankebun)){
+//if($jabatan=='117' or $jabatan=='2' or $jabatan=='119' or $jabatan=='283'){
+   $str="SELECT * FROM ".$dbname.".kebun_aktifitas
+         WHERE kodeorg like '".$lokasitugas."%' and jurnal = 0 and tanggal between '".$tanggal1."' and '".$tanggal2."' ";
+   //echo $str;
+   $res=mysql_query($str);
+   while($bar=mysql_fetch_object($res))
+   {
+      $tipetransaksi="bkm".$bar->tipetransaksi;
+      $jumlahnotif+=1;
+      $modulenotif[$tipetransaksi]=$tipetransaksi;
+	  setIt($modulenotifextras[$tipetransaksi]['jumlah'],0);
+	  setIt($modulenotifextras[$tipetransaksi]['note'],'');
+      $modulenotifextras[$tipetransaksi]['jumlah']+=1;
+      $modulenotifextras[$tipetransaksi]['note'].=$bar->notransaksi."; ";
+      if(
         ($bar->tipetransaksi=='TB')
-    ){        
-        $modulenotifextras[$tipetransaksi]['title']="[".$bahasa['posting']." BKM] ".$bahasa['bukalahan'];
-        $modulenotifextras[$tipetransaksi]['file']='kebun_bukalahan';
-    }
-    if(
+        ){        
+         $modulenotifextras[$tipetransaksi]['title']="[".$bahasa['posting']." BKM] ".$bahasa['bukalahan'];
+         $modulenotifextras[$tipetransaksi]['file']='kebun_bukalahan';
+      }
+      if(
         ($bar->tipetransaksi=='BBT')
-    ){        
-        $modulenotifextras[$tipetransaksi]['title']="[".$bahasa['posting']." BKM] ".$bahasa['pembibitan'];
-        $modulenotifextras[$tipetransaksi]['file']='kebun_pembibitan';
-    }
-    if(
+        ){        
+         $modulenotifextras[$tipetransaksi]['title']="[".$bahasa['posting']." BKM] ".$bahasa['pembibitan'];
+         $modulenotifextras[$tipetransaksi]['file']='kebun_pembibitan';
+      }
+      if(
         ($bar->tipetransaksi=='TBM')
-    ){        
-        $modulenotifextras[$tipetransaksi]['title']="[".$bahasa['posting']." BKM] ".$bahasa['tbm'];
-        $modulenotifextras[$tipetransaksi]['file']='kebun_pemeliharaantbm';
-    }
-    if(
+        ){        
+         $modulenotifextras[$tipetransaksi]['title']="[".$bahasa['posting']." BKM] ".$bahasa['tbm'];
+         $modulenotifextras[$tipetransaksi]['file']='kebun_pemeliharaantbm';
+      }
+      if(
         ($bar->tipetransaksi=='TM')
-    ){        
-        $modulenotifextras[$tipetransaksi]['title']="[".$bahasa['posting']." BKM] ".$bahasa['tm'];
-        $modulenotifextras[$tipetransaksi]['file']='kebun_pemeliharaantm';
-    }
-    if(
+        ){        
+         $modulenotifextras[$tipetransaksi]['title']="[".$bahasa['posting']." BKM] ".$bahasa['tm'];
+         $modulenotifextras[$tipetransaksi]['file']='kebun_pemeliharaantm';
+      }
+      if(
         ($bar->tipetransaksi=='PNN')
-    ){        
-        $modulenotifextras[$tipetransaksi]['title']="[".$bahasa['posting']." BKM] ".$bahasa['panen'];
-        $modulenotifextras[$tipetransaksi]['file']='kebun_panen';
-    }
-}      
-// SPB yang belum diposting
-$str="SELECT * FROM ".$dbname.".kebun_spbht
-    WHERE kodeorg like '".$lokasitugas."%' and posting = 0 and tanggal between '".$tanggal1."' and '".$tanggal2."' ";
-//echo $str;
-$res=mysql_query($str);
-while($bar=mysql_fetch_object($res))
-{
-	$tipetransaksi="spb";
-    $jumlahnotif+=1;
-	setIt($modulenotifextras[$tipetransaksi]['jumlah'],0);
-	setIt($modulenotifextras[$tipetransaksi]['note'],'');
-    $modulenotif[$tipetransaksi]=$tipetransaksi;
-    $modulenotifextras[$tipetransaksi]['jumlah']+=1;
-    $modulenotifextras[$tipetransaksi]['note'].=$bar->nospb ."; ";
-    $modulenotifextras[$tipetransaksi]['title']=$bahasa['posting']." ".$bahasa['suratPengantarBuah'];
-    $modulenotifextras[$tipetransaksi]['file']='kebun_3AmbilKgTimbangan';
+        ){        
+         $modulenotifextras[$tipetransaksi]['title']="[".$bahasa['posting']." BKM] ".$bahasa['panen'];
+         $modulenotifextras[$tipetransaksi]['file']='kebun_panen';
+      }
+      if(
+        ($bar->tipetransaksi=='BM')
+        ){        
+         $modulenotifextras[$tipetransaksi]['title']="[".$bahasa['posting']." BKM] ".$bahasa['bongkarmuat'];
+         $modulenotifextras[$tipetransaksi]['file']='kebun_bm';
+      }
+   }
+
+
+   // SPB yang belum diposting
+   $str="SELECT * FROM ".$dbname.".kebun_spbht
+         WHERE kodeorg like '".$lokasitugas."%' and posting = 0 and tanggal between '".$tanggal1."' and '".$tanggal2."' ";
+   //echo $str;
+   $res=mysql_query($str);
+   while($bar=mysql_fetch_object($res))
+   {
+	  $tipetransaksi="spb";
+      $jumlahnotif+=1;
+  	  setIt($modulenotifextras[$tipetransaksi]['jumlah'],0);
+	  setIt($modulenotifextras[$tipetransaksi]['note'],'');
+      $modulenotif[$tipetransaksi]=$tipetransaksi;
+      $modulenotifextras[$tipetransaksi]['jumlah']+=1;
+      $modulenotifextras[$tipetransaksi]['note'].=$bar->nospb ."; ";
+      $modulenotifextras[$tipetransaksi]['title']=$bahasa['posting']." ".$bahasa['suratPengantarBuah'];
+      $modulenotifextras[$tipetransaksi]['file']='kebun_3AmbilKgTimbangan';
+   }
+
+
+   // transaksi Taksasi yang belum diposting
+   //update ind taksasi gk ada posting
+   /*$str="SELECT * FROM ".$dbname.".kebun_taksasi
+         WHERE afdeling like '".$lokasitugas."%' and posting = 0 and tanggal between '".$tanggal1."' and '".$tanggal2."' ";
+   exit("Error:$str");
+   //echo $str;
+   $res=mysql_query($str);
+   while($bar=mysql_fetch_object($res))
+   {
+      $tipetransaksi="taksasi";
+      $jumlahnotif+=1;
+      $modulenotif[$tipetransaksi]=$tipetransaksi;
+      $modulenotifextras[$tipetransaksi]['jumlah']+=1;
+      $modulenotifextras[$tipetransaksi]['note'].=$bar->blok .":".tanggalnormal($bar->tanggal)."; ";
+      $modulenotifextras[$tipetransaksi]['title']=$bahasa['posting']." ".$bahasa['taksasi'];
+      $modulenotifextras[$tipetransaksi]['file']='kebun_taksasi';
+   }*/
 }
-// transaksi Taksasi yang belum diposting
-//update ind taksasi gk ada posting
-/*$str="SELECT * FROM ".$dbname.".kebun_taksasi
-    WHERE afdeling like '".$lokasitugas."%' and posting = 0 and tanggal between '".$tanggal1."' and '".$tanggal2."' ";
-exit("Error:$str");
-//echo $str;
-$res=mysql_query($str);
-while($bar=mysql_fetch_object($res))
-{
-    $tipetransaksi="taksasi";
-    $jumlahnotif+=1;
-    $modulenotif[$tipetransaksi]=$tipetransaksi;
-    $modulenotifextras[$tipetransaksi]['jumlah']+=1;
-    $modulenotifextras[$tipetransaksi]['note'].=$bar->blok .":".tanggalnormal($bar->tanggal)."; ";
-    $modulenotifextras[$tipetransaksi]['title']=$bahasa['posting']." ".$bahasa['taksasi'];
-    $modulenotifextras[$tipetransaksi]['file']='kebun_taksasi';
-}*/
 
 
 // transaksi VHC pekerjaan yang belum diposting
-$str="SELECT * FROM ".$dbname.".vhc_runht
-    WHERE kodeorg like '".$lokasitugas."%' and posting = 0 and tanggal between '".$tanggal1."' and '".$tanggal2."' ";
-//echo $str;
-$res=mysql_query($str);
-while($bar=mysql_fetch_object($res))
-{
-    $tipetransaksi="vhcrun";
-	setIt($modulenotifextras[$tipetransaksi]['jumlah'],0);
-	setIt($modulenotifextras[$tipetransaksi]['note'],'');
-    $jumlahnotif+=1;
-    $modulenotif[$tipetransaksi]=$tipetransaksi;
-    $modulenotifextras[$tipetransaksi]['jumlah']+=1;
-    $modulenotifextras[$tipetransaksi]['note'].=$bar->notransaksi ."; ";
-    $modulenotifextras[$tipetransaksi]['title']="[".$bahasa['posting']." ".$bahasa['traksi']."] ".$bahasa['pekerjaan'];
-    $modulenotifextras[$tipetransaksi]['file']='vhc_postingPekerjaan';
+if(in_array($jabatan,$postJabatantraksi)){
+//if($jabatan=='117' or $jabatan=='2' or $jabatan=='119' or $jabatan=='89' or $jabatan=='97' or $jabatan=='107'){
+   $str="SELECT * FROM ".$dbname.".vhc_runht
+         WHERE kodeorg like '".$lokasitugas."%' and posting = 0 and tanggal between '".$tanggal1."' and '".$tanggal2."' ";
+   //echo $str;
+   $res=mysql_query($str);
+   while($bar=mysql_fetch_object($res))
+   {
+      $tipetransaksi="vhcrun";
+	  setIt($modulenotifextras[$tipetransaksi]['jumlah'],0);
+	  setIt($modulenotifextras[$tipetransaksi]['note'],'');
+      $jumlahnotif+=1;
+      $modulenotif[$tipetransaksi]=$tipetransaksi;
+      $modulenotifextras[$tipetransaksi]['jumlah']+=1;
+      $modulenotifextras[$tipetransaksi]['note'].=$bar->notransaksi ."; ";
+      $modulenotifextras[$tipetransaksi]['title']="[".$bahasa['posting']." ".$bahasa['traksi']."] ".$bahasa['pekerjaan'];
+      $modulenotifextras[$tipetransaksi]['file']='vhc_postingPekerjaan';
+   }
+
+
+   // transaksi VHC service yang belum diposting
+   $str="SELECT * FROM ".$dbname.".vhc_penggantianht
+         WHERE kodeorg like '".$lokasitugas."%' and posting = 0 and tanggal between '".$tanggal1."' and '".$tanggal2."' ";
+   //echo $str;
+   $res=mysql_query($str);
+   while($bar=mysql_fetch_object($res))
+   {
+      $tipetransaksi="vhcserv";
+      $jumlahnotif+=1;
+	  setIt($modulenotifextras[$tipetransaksi]['jumlah'],0);
+	  setIt($modulenotifextras[$tipetransaksi]['note'],'');
+      $modulenotif[$tipetransaksi]=$tipetransaksi;
+      $modulenotifextras[$tipetransaksi]['jumlah']+=1;
+      $modulenotifextras[$tipetransaksi]['note'].=$bar->notransaksi ."; ";
+      $modulenotifextras[$tipetransaksi]['title']="[".$bahasa['posting']." ".$bahasa['traksi']."] ".$bahasa['service'];
+      $modulenotifextras[$tipetransaksi]['file']='vhc_postingPenggunaanKomponen';
+   }
 }
-// transaksi VHC service yang belum diposting
-$str="SELECT * FROM ".$dbname.".vhc_penggantianht
-    WHERE kodeorg like '".$lokasitugas."%' and posting = 0 and tanggal between '".$tanggal1."' and '".$tanggal2."' ";
-//echo $str;
-$res=mysql_query($str);
-while($bar=mysql_fetch_object($res))
-{
-    $tipetransaksi="vhcserv";
-    $jumlahnotif+=1;
-	setIt($modulenotifextras[$tipetransaksi]['jumlah'],0);
-	setIt($modulenotifextras[$tipetransaksi]['note'],'');
-    $modulenotif[$tipetransaksi]=$tipetransaksi;
-    $modulenotifextras[$tipetransaksi]['jumlah']+=1;
-    $modulenotifextras[$tipetransaksi]['note'].=$bar->notransaksi ."; ";
-    $modulenotifextras[$tipetransaksi]['title']="[".$bahasa['posting']." ".$bahasa['traksi']."] ".$bahasa['service'];
-    $modulenotifextras[$tipetransaksi]['file']='vhc_postingPenggunaanKomponen';
+
+
+// BA yang belum diposting
+if(in_array($jabatan,$postJabatanbaspk)){
+//if($jabatan=='117' or $jabatan=='2' or $jabatan=='119' or $jabatan=='283' or $jabatan=='89' or $jabatan=='97' or $jabatan=='107' or $jabatan=='220'){
+   $str="SELECT * FROM ".$dbname.".log_baspk
+         WHERE kodeblok like '".$lokasitugas."%' and statusjurnal = 0 and tanggal between '".$tanggal1."' and '".$tanggal2."' ";
+   //echo $str;
+   $res=mysql_query($str);
+   while($bar=mysql_fetch_object($res))
+   {
+	  $tipetransaksi="realisasispk";
+      $jumlahnotif+=1;
+	  setIt($modulenotifextras[$tipetransaksi],array());
+	  setIt($modulenotifextras[$tipetransaksi]['note'],'');
+	  setIt($modulenotifextras[$tipetransaksi]['jumlah'],0);
+      $modulenotif[$tipetransaksi]=$tipetransaksi;
+      $modulenotifextras[$tipetransaksi]['jumlah']+=1;
+      $modulenotifextras[$tipetransaksi]['note'].=$bar->notransaksi ."; ";
+      $modulenotifextras[$tipetransaksi]['title']=$bahasa['posting']." ".$bahasa['realisasispk'];
+      $modulenotifextras[$tipetransaksi]['file']='log_realisasispk';
+   }
 }
+
+
+// Gudang yang belum diposting
+if(in_array($jabatan,$postJabatangudang)){
+//if($jabatan=='117' or $jabatan=='2' or $jabatan=='119' or $jabatan=='283' or $jabatan=='89' or $jabatan=='97' or $jabatan=='107' or $jabatan=='220'){
+   $str="SELECT * FROM ".$dbname.".log_transaksiht
+         WHERE kodegudang like '".$lokasitugas."%' and post = 0 and tanggal between '".$tanggal1."' and '".$tanggal2."' ";
+   //echo $str;
+   $res=mysql_query($str);
+   while($bar=mysql_fetch_object($res))
+   {
+	  $tipetransaksi="gudang";
+      $jumlahnotif+=1;
+	  setIt($modulenotifextras[$tipetransaksi],array());
+	  setIt($modulenotifextras[$tipetransaksi]['note'],'');
+	  setIt($modulenotifextras[$tipetransaksi]['jumlah'],0);
+      $modulenotif[$tipetransaksi]=$tipetransaksi;
+      $modulenotifextras[$tipetransaksi]['jumlah']+=1;
+      $modulenotifextras[$tipetransaksi]['note'].=$bar->notransaksi ."; ";
+      $modulenotifextras[$tipetransaksi]['title']=$bahasa['posting']." ".$bahasa['gudang'];
+      $modulenotifextras[$tipetransaksi]['file']='log_postingGudang';
+   }
+}
+
+// BKU perdin yang belum diinput
+if(in_array($jabatan,$postJabatanbku)){
+   if(substr($lokasitugas,2,2)=='RO'){
+		$str="select q.* from (select a.notransaksi,a.kodeorg,a.karyawanid,c.namakaryawan,a.uangmuka,a.tglbayar,a.dibayar,a.statuspertanggungjawaban,b.jumlahhrd,b.jumlahdibayar,if(a.tglbayar='0000-00-00',a.uangmuka,b.jumlahhrd) as jmlhrd from ".$dbname.".sdm_pjdinasht a
+		left join (select z.notransaksi,sum(z.jumlahhrd) as jumlahhrd,sum(z.jumlahdibayar) as jumlahdibayar from ".$dbname.".sdm_pjdinasdt z where z.jumlahhrd>0 and z.jumlahdibayar=0 GROUP BY z.notransaksi) b on a.notransaksi=b.notransaksi
+		left join ".$dbname.".datakaryawan c on a.karyawanid=c.karyawanid
+			where a.kodeorg not like '%HO' and a.kodeorg in (select d.kodeorganisasi from ".$dbname.".organisasi d where d.induk='".$_SESSION['empl']['induk']."')
+			and a.statushrd='1' 
+			and a.uangmuka>0
+			and (a.tglbayar='0000-00-00' or a.tglbayar='' or a.tglbayar is null or a.statuspertanggungjawaban='1')) q
+		where q.jmlhrd>0 and q.jumlahdibayar=0";
+   }else{
+		//$str="select q.* from (select a.notransaksi,a.karyawanid,c.namakaryawan,a.dibayar,a.statuspertanggungjawaban,if(a.dibayar=0,a.uangmuka,b.jmlhrd) as 	//jmlhrd,b.jmldibayar from ".$dbname.".sdm_pjdinasht a 
+		//	left join (select notransaksi,sum(jumlah) as jmluser,sum(jumlahhrd) as jmlhrd,sum(jumlahdibayar) as jmldibayar from ".$dbname.".sdm_pjdinasdt where //jumlahhrd>0 and jumlahdibayar=0 GROUP BY notransaksi) b on b.notransaksi=a.notransaksi 
+		//	left join ".$dbname.".datakaryawan c on c.karyawanid=a.karyawanid
+		//	where a.kodeorg='".$lokasitugas."' 
+		//	and a.statushrd='1' 
+		//	and a.uangmuka>0
+		//	and (a.tglbayar='0000-00-00' or a.tglbayar='' or a.tglbayar is null or a.statuspertanggungjawaban='1'))	q 
+		//where q.dibayar=0 or (q.statuspertanggungjawaban = '1' and q.jmlhrd>0 and q.jmldibayar=0)";
+		$str="select q.* from (select a.notransaksi,a.kodeorg,a.karyawanid,c.namakaryawan,a.uangmuka,a.tglbayar,a.dibayar,a.statuspertanggungjawaban,b.jumlahhrd,b.jumlahdibayar,if(a.tglbayar='0000-00-00',a.uangmuka,b.jumlahhrd) as jmlhrd from ".$dbname.".sdm_pjdinasht a 
+		left join (select z.notransaksi,sum(z.jumlahhrd) as jumlahhrd,sum(z.jumlahdibayar) as jumlahdibayar from ".$dbname.".sdm_pjdinasdt z where z.jumlahhrd>0 and z.jumlahdibayar=0 GROUP BY z.notransaksi) b on b.notransaksi=a.notransaksi 
+		left join ".$dbname.".datakaryawan c on c.karyawanid=a.karyawanid
+			where a.kodeorg='".$lokasitugas."'
+			and a.statushrd='1' 
+			and a.uangmuka>0
+			and (a.tglbayar='0000-00-00' or a.tglbayar='' or a.tglbayar is null or a.statuspertanggungjawaban='1')) q
+		where q.jmlhrd>0 and q.jumlahdibayar=0";
+   }
+   $res=mysql_query($str);
+   while($bar=mysql_fetch_object($res))
+   {
+	  $tipetransaksi="bkuperdin";
+      $jumlahnotif+=1;
+	  setIt($modulenotifextras[$tipetransaksi],array());
+	  setIt($modulenotifextras[$tipetransaksi]['note'],'');
+	  setIt($modulenotifextras[$tipetransaksi]['jumlah'],0);
+      $modulenotif[$tipetransaksi]=$tipetransaksi;
+      $modulenotifextras[$tipetransaksi]['jumlah']+=1;
+      $modulenotifextras[$tipetransaksi]['note'].=$bar->notransaksi."=".$bar->namakaryawan."=".$bar->jmlhrd.";";
+      $modulenotifextras[$tipetransaksi]['title']="BKU ".$bahasa['perjalanandinas'];
+      $modulenotifextras[$tipetransaksi]['file']='keu_kasbank';
+   }
+}
+
+// BKU perdin yang belum approve
+if(in_array($jabatan,$postJabatansdm)){
+   if(substr($lokasitugas,2,2)=='HO'){
+		$str="select a.*,b.namakaryawan from ".$dbname.".sdm_pjdinasht a
+			left join ".$dbname.".datakaryawan b on b.karyawanid=a.karyawanid
+			where a.statushrd='0'
+			and a.uangmuka>0
+			and kodeorg like '%HO'";
+   }else{
+		$str="select a.*,b.namakaryawan from ".$dbname.".sdm_pjdinasht a
+			left join ".$dbname.".datakaryawan b on b.karyawanid=a.karyawanid
+			where a.statushrd='0'
+			and a.uangmuka>0
+			and kodeorg not like '%HO'
+			and kodeorg in (select kodeorganisasi from ".$dbname.".organisasi where induk='".$_SESSION['empl']['induk']."')";
+   }
+   $res=mysql_query($str);
+   while($bar=mysql_fetch_object($res))
+   {
+	  $tipetransaksi="approveperdin";
+      $jumlahnotif+=1;
+	  setIt($modulenotifextras[$tipetransaksi],array());
+	  setIt($modulenotifextras[$tipetransaksi]['note'],'');
+	  setIt($modulenotifextras[$tipetransaksi]['jumlah'],0);
+      $modulenotif[$tipetransaksi]=$tipetransaksi;
+      $modulenotifextras[$tipetransaksi]['jumlah']+=1;
+      $modulenotifextras[$tipetransaksi]['note'].=$bar->notransaksi."=".$bar->namakaryawan."=".$bar->uangmuka.";";
+      $modulenotifextras[$tipetransaksi]['title']="Approval ".$bahasa['perjalanandinas'];
+      $modulenotifextras[$tipetransaksi]['file']='sdm_3persetujuanPJD';
+   }
+}
+
+/*
+// BKU perdin yang belum diinput
+if(in_array($jabatan,$postJabatankeuangan)){
+   $str="select a.*,b.namakaryawan from ".$dbname.".sdm_pjdinasht a 
+		left join ".$dbname.".datakaryawan b on b.karyawanid=a.karyawanid 
+		where a.kodeorg='".$lokasitugas."' 
+		and a.statushrd='1' 
+		and (a.dibayar='0' or a.statuspertanggungjawaban='1')";
+   $res=mysql_query($str);
+   $totalperdin=0
+   while($bar=mysql_fetch_object($res))
+   {
+	if($totalperdin==0){
+		if($bar->statuspertanggungjawaban=='1'){
+			$sRp="select sum(jumlahhrd) as totalperdin from ".$dbname.".sdm_pjdinasdt where notransaksi='".$bar->notransaksi."' and (jumlahdibayar='' or jumlahdibayar='0')";
+		}else{
+			$sRp="select sum(uangmuka) as totalperdin from ".$dbname.".sdm_pjdinasht where notransaksi='".$bar->notransaksi."'";
+		}
+		$qRp=mysql_query($sRp) or die(mysql_error($conn));
+		$rRp=mysql_fetch_assoc($qRp);
+		if($rRp['totalperdin']<0){
+			$rRp['totalperdin']=$rRp['totalperdin']*(-1);
+		}
+		$totalperdin=$rRp['totalperdin'];
+	}
+	if($totalperdin<>0){
+	  $tipetransaksi="bkuperdin";
+      $jumlahnotif+=1;
+	  setIt($modulenotifextras[$tipetransaksi],array());
+	  setIt($modulenotifextras[$tipetransaksi]['note'],'');
+	  setIt($modulenotifextras[$tipetransaksi]['jumlah'],0);
+      $modulenotif[$tipetransaksi]=$tipetransaksi;
+      $modulenotifextras[$tipetransaksi]['jumlah']+=1;
+      $modulenotifextras[$tipetransaksi]['note'].=$bar->notransaksi."; ";
+      $modulenotifextras[$tipetransaksi]['title']="BKU ".$bahasa['perjalanandinas'];
+      $modulenotifextras[$tipetransaksi]['file']='keu_kasbank';
+	}
+   }
+}
+*/
+
 // lembur yang belum diposting
 // $str="SELECT * FROM ".$dbname.".sdm_lemburht
     // WHERE kodeorg like '".$lokasitugas."%' and posting = 0 and tanggal between '".$tanggal1."' and '".$tanggal2."' ";
@@ -425,11 +677,34 @@ while($bar=mysql_fetch_object($res))
     // $modulenotifextras[$tipetransaksi]['file']='sdm_lembur';
 // }
     
+//}
+
+// Pengakuan Jual yang belum diposting
+if(in_array($jabatan,$postJabatanAcc)){
+   $str="select a.notransaksi,b.posting from ".$dbname.".pabrik_timbangan a
+		 LEFT JOIN ".$dbname.".keu_pengakuanjual b on a.notransaksi = b.notransaksi
+		 WHERE left(a.tanggal,10) between '".$tanggal1."' and '".$tanggal2."' and (b.posting=0 or b.posting='' or isnull(b.posting)) and a.nokontrak<>''
+		 and substr(a.nokontrak,5,3)='".$_SESSION['empl']['induk']."'";
+   //echo 'Warning: '.$str;
+   $res=mysql_query($str);
+   while($bar=mysql_fetch_object($res))
+   {
+	  $tipetransaksi="pengakuanjual";
+      $jumlahnotif+=1;
+	  setIt($modulenotifextras[$tipetransaksi],array());
+	  setIt($modulenotifextras[$tipetransaksi]['note'],'');
+	  setIt($modulenotifextras[$tipetransaksi]['jumlah'],0);
+      $modulenotif[$tipetransaksi]=$tipetransaksi;
+      $modulenotifextras[$tipetransaksi]['jumlah']+=1;
+      $modulenotifextras[$tipetransaksi]['note'].=$bar->notransaksi ."; ";
+      $modulenotifextras[$tipetransaksi]['title']=$bahasa['posting']." ".$bahasa['penjualan'];
+      $modulenotifextras[$tipetransaksi]['file']='keu_pengakuanjual';
+   }
 }
+
 // daerah khusus kasie ends
 
 $qwe="You've got <font color=red><b>".number_format($jumlahnotif)."</b></font> notifications";
-
 echo"<table class=sortable cellspacing=1 border=0 width=230px>
     <tr class=rowcontent>
     <td align=right width=1% nowrap><!--".$karyawanid." -->".$qwe."</td>

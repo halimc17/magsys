@@ -8,8 +8,15 @@ include('master_mainMenu.php');
 OPEN_BOX();
 ?>
 <?php
-$optUnitId="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
-$sOrg="select namaorganisasi,kodeorganisasi from ".$dbname.".organisasi where kodeorganisasi='".$_SESSION['empl']['lokasitugas']."' order by kodeorganisasi asc";
+if(trim($_SESSION['empl']['tipelokasitugas'])=='HOLDING'){
+	$optUnitId="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
+	$sOrg="select kodeorganisasi, namaorganisasi from ".$dbname.".organisasi where length(kodeorganisasi)=4 order by kodeorganisasi";
+}elseif(trim($_SESSION['empl']['tipelokasitugas'])=='KANWIL'){
+	$optUnitId="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
+	$sOrg="select kodeorganisasi, namaorganisasi from ".$dbname.".organisasi where length(kodeorganisasi)=4 and kodeorganisasi not like '%HO' and induk='".$_SESSION['empl']['induk']."' order by kodeorganisasi";
+}else{
+	$sOrg="select namaorganisasi,kodeorganisasi from ".$dbname.".organisasi where kodeorganisasi='".$_SESSION['empl']['lokasitugas']."' order by kodeorganisasi";
+}
 $qOrg=mysql_query($sOrg) or die(mysql_error($conn));
 while($rOrg=mysql_fetch_assoc($qOrg))
 {

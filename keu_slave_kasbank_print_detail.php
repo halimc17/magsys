@@ -191,29 +191,27 @@ switch($proses) {
 					$namapt=$bar1->namaorganisasi;
 					$alamatpt=$bar1->alamat;
 					$telp=$bar1->telepon;				 
-				}    
-                                
-                                if($kodept=='CKS')
-                                {
-                                    $path='images/logo_cks.jpg';
-                                }
-                                else if($kodept=='MEA')
-                                {
-                                    $path='images/logo_mea.jpg';
-                                }
-                                else if($kodept=='MHS')
-                                {
-                                    $path='images/logo_mhs.jpg';
-                                }
-                                else if($kodept=='SMA')
-                                {
-                                    $path='images/logo_sma.jpg';
-                                }
-                                else
-                                {
-                                    $path='images/logo.jpg';
-                                }
-                                
+				}
+
+				if($kodept=='AMP'){
+					$path='images/logo_amp.jpg';
+				}else if($kodept=='CKS'){
+					$path='images/logo_cks.jpg';
+				}else if($kodept=='KAA'){
+					$path='images/logo_kaa.jpg';
+				}else if($kodept=='KAL'){
+					$path='images/logo_kal.jpg';
+				}else if($kodept=='MPA'){
+					$path='images/logo_mpa.jpg';
+				}else if($kodept=='MHS'){
+					$path='images/logo_mhs.jpg';
+				}else if($kodept=='MEA'){
+					$path='images/logo_mea.jpg';
+				}else if($kodept=='SMA'){
+					$path='images/logo_sma.jpg';
+				}else{
+					$path='images/logo.jpg';
+				}
 				
 				$this->Image($path,15,3,18);	
 				$this->SetFont('Arial','B',10);
@@ -391,14 +389,35 @@ switch($proses) {
 				$res1=mysql_query($str1);
 				while($bar1=mysql_fetch_object($res1))
 				{
-                                        $kodept=$bar1->kodeorganisasi;
+					$kodept=$bar1->kodeorganisasi;
 					$namapt=$bar1->namaorganisasi;
 					$alamatpt=$bar1->alamat;
 					$telp=$bar1->telepon;				 
-				}    
-                                
-                                
-                                $path='images/logo.jpg';
+				}
+				
+				if($kodept=='AMP'){
+					$path='images/logo_amp.jpg';
+				}else if($kodept=='CKS'){
+					$path='images/logo_cks.jpg';
+				}else if($kodept=='KAA'){
+					$path='images/logo_kaa.jpg';
+				}else if($kodept=='KAL'){
+					$path='images/logo_kal.jpg';
+				}else if($kodept=='LKA'){
+					$path='images/logo_lka.jpg';
+				}else if($kodept=='MPA'){
+					$path='images/logo_mpa.jpg';
+				}else if($kodept=='MHS'){
+					$path='images/logo_mhs.jpg';
+				}else if($kodept=='MEA'){
+					$path='images/logo_mea.jpg';
+				}else if($kodept=='SMA'){
+					$path='images/logo_sma.jpg';
+				}else{
+					$path='images/logo.jpg';
+				}
+				
+				//$path='images/logo.jpg';
                                 
 				$this->Image($path,15,3,18);	
 				$this->SetFont('Arial','B',10);
@@ -758,7 +777,7 @@ switch($proses) {
                 #######
                 ##ttd###
                 #######
-                
+               
                 $pdf->SetFillColor(220,220,220);
                 if($tipeLokasiTugas[$dht['kodeorg']]!='HOLDING')
                     {
@@ -780,13 +799,13 @@ switch($proses) {
                                     } else {
                                             $pdf->Cell(25/100*$width,$height,'','BLR',0,'C',1);
                                     }
-                                    $pdf->Cell(25/100*$width,$height,'(ROA)','BLR',0,'C',1);
+                                    $pdf->Cell(25/100*$width,$height,'(FAO)','BLR',0,'C',1);
                                     $pdf->Cell(25/100*$width,$height,'(General Manager)','BLR',0,'C',1);
                                     $pdf->Cell(25/100*$width,$height,'(Acct & Tax)','BLR',0,'C',1);	
                     }
                     else
                     {
-                                    if(($dht['tipetransaksi']=='K' and ($dht['jumlah']*$dht['kurs']) > 0 and ($dht['jumlah']*$dht['kurs']) <= 5000000) or
+                                    if(($dht['tipetransaksi']=='K' and ($dht['jumlah']*$dht['kurs']) >= 0 and ($dht['jumlah']*$dht['kurs']) <= 10000000) or
                            $dht['tipetransaksi']=='M'){
                                             $pdf->Cell(25/100*$width,$height,$_SESSION['lang']['dibuatoleh'],1,0,'C',1);
                                             $pdf->Cell(25/100*$width,$height,$_SESSION['lang']['diketahuioleh'],1,0,'C',1);
@@ -802,14 +821,28 @@ switch($proses) {
                                                     $pdf->Ln();
                                             }
                                             if(isset($userId[$dht['userid']])) {
-                                                            $pdf->Cell(25/100*$width,$height,$userId[$dht['userid']],'BLR',0,'C',1);
+                                                           // $pdf->Cell(25/100*$width,$height,$userId[$dht['userid']],'BLR',0,'C',1);
+															$pdf->Cell(25/100*$width,$height+5,$userId[$dht['userid']],'BLR',0,'C',1);
                                             } else {
-                                                            $pdf->Cell(25/100*$width,$height,'','BLR',0,'C',1);
+                                                            //$pdf->Cell(25/100*$width,$height,'','BLR',0,'C',1);
+															$pdf->Cell(25/100*$width,$height+5,'','BLR',0,'C',1);
+															
                                             }
-                                            $pdf->Cell(25/100*$width,$height,'','BLR',0,'C',1);
-                                            $pdf->Cell(25/100*$width,$height,'(Budget & Cost Control)','BLR',0,'C',1);
-                                            $pdf->Cell(25/100*$width,$height,'(Acct & Tax)','BLR',0,'C',1);		
-                        }elseif(($dht['jumlah']*$dht['kurs']) > 5000000 && ($dht['jumlah']*$dht['kurs']) <= 100000000){
+											/*
+											  $pdf->Cell(125,$height,$isiBerikat,RL,0,'L'); 
+											  $pdf->vcell(125,15,25,$isiBerikat,87); 
+											  function Cell($w, $h=0, $txt='', $border=0, $ln=0, $align='', $fill=false, $link='')
+											*/
+                                            $pdf->Cell(25/100*$width,$height+5,'(Budget & Cost Control)','BLR',0,'C',1);
+                                            //$pdf->vcell2(28/100*$width,$height+5,57.5,'(Budget & Cost Control)',23,'BLR',0,'C');
+											if($kodept=='MPA'){
+												$pdf->Cell(25/100*$width,$height+5,'(Director)','BLR',0,'C',1);
+											}else{
+												$pdf->Cell(25/100*$width,$height+5,'(Finance)','BLR',0,'C',1);
+											}
+                                            $pdf->Cell(25/100*$width,$height+5,'(Acct & Tax)','BLR',0,'C',1);
+
+                        }elseif(($dht['jumlah']*$dht['kurs']) > 10000000 && ($dht['jumlah']*$dht['kurs']) <= 500000000){
                                             $pdf->Cell(20/100*$width,$height,$_SESSION['lang']['dibuatoleh'],1,0,'C',1);
                                             $pdf->Cell(20/100*$width,$height,$_SESSION['lang']['diketahuioleh'],1,0,'C',1);
                                             $pdf->Cell(20/100*$width,$height,$_SESSION['lang']['disetujui'].' (1)',1,0,'C',1);
@@ -826,42 +859,56 @@ switch($proses) {
                                                             $pdf->Ln();
                                             }
                                             if(isset($userId[$dht['userid']])) {
-                                                            $pdf->Cell(20/100*$width,$height,$userId[$dht['userid']],'BLR',0,'C',1);
+                                                            //$pdf->Cell(20/100*$width,$height,$userId[$dht['userid']],'BLR',0,'C',1);
+															$pdf->Cell(20/100*$width,$height+5,$userId[$dht['userid']],'BLR',0,'C',1);
                                             } else {
-                                                            $pdf->Cell(20/100*$width,$height,'','BLR',0,'C',1);
+                                                            //$pdf->Cell(20/100*$width,$height,'','BLR',0,'C',1);
+															$pdf->Cell(20/100*$width,$height+5,'','BLR',0,'C',1);
                                             }
-                                            $pdf->Cell(20/100*$width,$height,'','BLR',0,'C',1);
-                                            $pdf->Cell(20/100*$width,$height,'(Budget & Cost Control)','BLR',0,'C',1);
-                                            $pdf->Cell(20/100*$width,$height,'(Finance Director)','BLR',0,'C',1);
-                                            $pdf->Cell(20/100*$width,$height,'(Acct & Tax)','BLR',0,'C',1);
+                                            $pdf->Cell(20/100*$width,$height+5,'(Budget & Cost Control)','BLR',0,'C',1);
+											//$pdf->vcell2(20/100*$width,$height+5,48,'(Budget & Cost Control)',15,'BLR',0,'C');
+                                            if($kodept=='MPA'){
+												$pdf->Cell(20/100*$width,$height+5,'(Director)','BLR',0,'C',1);
+	                                            $pdf->Cell(20/100*$width,$height+5,'(Finance Director)','BLR',0,'C',1);
+											}else{
+												$pdf->Cell(20/100*$width,$height+5,'(Finance)','BLR',0,'C',1);
+	                                            $pdf->Cell(20/100*$width,$height+5,'(Director)','BLR',0,'C',1);
+											}
+                                            $pdf->Cell(20/100*$width,$height+5,'(Acct & Tax)','BLR',0,'C',1);
                         }else{
-                                            $pdf->Cell(14/100*$width,$height,$_SESSION['lang']['dibuatoleh'],1,0,'C',1);
-                                            $pdf->Cell(15/100*$width,$height,$_SESSION['lang']['diketahuioleh'],1,0,'C',1);
-                                            $pdf->Cell(20/100*$width,$height,$_SESSION['lang']['disetujui'].' (1)',1,0,'C',1);
-                                            $pdf->Cell(16/100*$width,$height,$_SESSION['lang']['disetujui'].' (2)',1,0,'C',1);
-                                            $pdf->Cell(20/100*$width,$height,$_SESSION['lang']['disetujui'].' (3)',1,0,'C',1);
-                                            $pdf->Cell(15/100*$width,$height,$_SESSION['lang']['diverifikasi'],1,0,'C',1);
+                                            $pdf->Cell(15/100*$width,$height,$_SESSION['lang']['dibuatoleh'],1,0,'C',1);
+                                            $pdf->Cell(20/100*$width,$height,$_SESSION['lang']['diketahuioleh'],1,0,'C',1);
+                                            $pdf->Cell(17/100*$width,$height,$_SESSION['lang']['disetujui'].' (1)',1,0,'C',1);
+                                            $pdf->Cell(17/100*$width,$height,$_SESSION['lang']['disetujui'].' (2)',1,0,'C',1);
+                                            $pdf->Cell(17/100*$width,$height,$_SESSION['lang']['disetujui'].' (3)',1,0,'C',1);
+                                            $pdf->Cell(14/100*$width,$height,$_SESSION['lang']['diverifikasi'],1,0,'C',1);
                                             $pdf->Ln();
                                             $pdf->SetFillColor(255,255,255);
                                             for($i=0;$i<5;$i++) {
+                                                            $pdf->Cell(15/100*$width,$height,'','LR',0,'C',1);
+                                                            $pdf->Cell(20/100*$width,$height,'','LR',0,'C',1);
+                                                            $pdf->Cell(17/100*$width,$height,'','LR',0,'C',1);
+                                                            $pdf->Cell(17/100*$width,$height,'','LR',0,'C',1);
+                                                            $pdf->Cell(17/100*$width,$height,'','LR',0,'C',1);
                                                             $pdf->Cell(14/100*$width,$height,'','LR',0,'C',1);
-                                                            $pdf->Cell(15/100*$width,$height,'','LR',0,'C',1);
-                                                            $pdf->Cell(20/100*$width,$height,'','LR',0,'C',1);
-                                                            $pdf->Cell(16/100*$width,$height,'','LR',0,'C',1);
-                                                            $pdf->Cell(20/100*$width,$height,'','LR',0,'C',1);
-                                                            $pdf->Cell(15/100*$width,$height,'','LR',0,'C',1);
                                                             $pdf->Ln();
                                             }
                                             if(isset($userId[$dht['userid']])) {
-                                                            $pdf->Cell(14/100*$width,$height,$userId[$dht['userid']],'BLR',0,'C',1);
+                                                            $pdf->Cell(15/100*$width,$height+5,$userId[$dht['userid']],'BLR',0,'C',1);
                                             } else {
-                                                            $pdf->Cell(14/100*$width,$height,'','BLR',0,'C',1);
+                                                            $pdf->Cell(15/100*$width,$height+5,'','BLR',0,'C',1);
                                             }
-                                            $pdf->Cell(15/100*$width,$height,'','BLR',0,'C',1);
-                                            $pdf->Cell(20/100*$width,$height,'(Budget & Cost Control)','BLR',0,'C',1);
-                                            $pdf->Cell(16/100*$width,$height,'(Finance Director)','BLR',0,'C',1);
-                                            $pdf->Cell(20/100*$width,$height,'(President Director)','BLR',0,'C',1);
-                                            $pdf->Cell(15/100*$width,$height,'(Acct & Tax)','BLR',0,'C',1);
+                                            $pdf->Cell(20/100*$width,$height+5,'(Budget & Cost Control)','BLR',0,'C',1);
+											//$pdf->vcell2(18/100*$width,$height+5,36.5,'(Budget & Cost Control)',15,'BLR',0,'C');
+											if($kodept=='MPA'){
+												$pdf->Cell(17/100*$width,$height+5,'(Director)','BLR',0,'C',1);
+	                                            $pdf->Cell(17/100*$width,$height+5,'(Finance Director)','BLR',0,'C',1);
+											}else{
+												$pdf->Cell(17/100*$width,$height+5,'(Finance)','BLR',0,'C',1);
+	                                            $pdf->Cell(17/100*$width,$height+5,'(Director)','BLR',0,'C',1);
+											}	
+                                            $pdf->Cell(17/100*$width,$height+5,'(President Dir/Com)','BLR',0,'C',1);
+                                            $pdf->Cell(14/100*$width,$height+5,'(Acct & Tax)','BLR',0,'C',1);
                         }
                     }
                 

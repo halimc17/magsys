@@ -1,376 +1,321 @@
-/**
- * @author repindra.ginting
+/*
+ * datakaryawan
  */
 
-function pendi()
-{
-        document.getElementById('levelpendidikan').value;
-        //document.getElementById('levelpendidikan2').value;
-
-        param='levelpendidikan='+levelpendidikan+'&method=cek';
-        alert(param);
-        tujuan='sdm_slave_save_datakaryawan.php';
-        post_response_text(tujuan, param, respog);
-
-        function respog()
-        {
-                      if(con.readyState==4)
-                      {
-                                if (con.status == 200) 
-                                        {
-                                                busy_off();
-                                                if (!isSaveResponse(con.responseText))
-                                                {
-                                                        alert('ERROR TRANSACTION,\n' + con.responseText);
-                                                }
-                                                else 
-                                                {											
-                                                }
-                                        }
-                                        else {
-                                                busy_off();
-                                                error_catch(con.status);
-                                        }
-                      }	
-         } 
+function pendi(){
+	document.getElementById('levelpendidikan').value;
+	param='levelpendidikan='+levelpendidikan+'&method=cek';
+	tujuan='sdm_slave_save_datakaryawan.php';
+	post_response_text(tujuan, param, respog);
+	function respog(){
+		if(con.readyState==4){
+			if(con.status == 200){
+				busy_off();
+				if(!isSaveResponse(con.responseText)){
+					alert('ERROR TRANSACTION,\n' + con.responseText);
+				}else{
+				}
+			}else{
+				busy_off();
+				error_catch(con.status);
+			}
+		}	
+	} 
 }
 
-
-function simpanKaryawan()
-{
-//get input text and textarea value	
-        nik			=trim(document.getElementById('nik').value);
-        namakaryawan		=trim(document.getElementById('namakaryawan').value); 
-        tempatlahir		=trim(document.getElementById('tempatlahir').value);
-        tanggallahir		=trim(document.getElementById('tanggallahir').value);
-        noktp			=trim(document.getElementById('noktp').value);
-        nopassport		=trim(document.getElementById('nopassport').value);
-        npwp			=trim(document.getElementById('npwp').value);
-        bpjs			=trim(document.getElementById('bpjs').value);
-        kodepos			=trim(document.getElementById('kodepos').value);
-        alamataktif		=trim(document.getElementById('alamataktif').value);
-        kota			=trim(document.getElementById('kota').value);
-        noteleponrumah		=trim(document.getElementById('noteleponrumah').value);
-        nohp			=trim(document.getElementById('nohp').value);
-        norekeningbank		=trim(document.getElementById('norekeningbank').value);
-        namabank		=trim(document.getElementById('namabank').value);
-        tanggalmasuk		=trim(document.getElementById('tanggalmasuk').value);
-        tanggalpengangkatan		=trim(document.getElementById('tanggalpengangkatan').value);
-        tanggalkeluar		=trim(document.getElementById('tanggalkeluar').value);
-        tanggalmenikah		=trim(document.getElementById('tanggalmenikah').value);
-        jumlahanak		=trim(document.getElementById('jumlahanak').value);
-        jumlahtanggungan	=trim(document.getElementById('jumlahtanggungan').value);
-        tanggalmenikah		=trim(document.getElementById('tanggalmenikah').value);
-        notelepondarurat	=trim(document.getElementById('notelepondarurat').value);
-        email			=trim(document.getElementById('email').value);
-        method			=trim(document.getElementById('method').value);
-        karyawanid		=trim(document.getElementById('karyawanid').value);
-        jms			=trim(document.getElementById('jms').value);
-//get options value	
-        jeniskelamin		=document.getElementById('jeniskelamin');
-        jeniskelamin            =trim(jeniskelamin.options[jeniskelamin.selectedIndex].value);
-        agama			=document.getElementById('agama');
-        agama			=trim(agama.options[agama.selectedIndex].value);	
-        bagian			=document.getElementById('bagian');
-        bagian			=trim(bagian.options[bagian.selectedIndex].value);
-        kodejabatan		=document.getElementById('kodejabatan');
-        kodejabatan		=trim(kodejabatan.options[kodejabatan.selectedIndex].value);
-        kodegolongan		=document.getElementById('kodegolongan');
-        kodegolongan            =trim(kodegolongan.options[kodegolongan.selectedIndex].value);
-        lokasitugas		=document.getElementById('lokasitugas');
-        lokasitugas		=trim(lokasitugas.options[lokasitugas.selectedIndex].value);
-        kodeorganisasi		=document.getElementById('kodeorganisasi');
-        kodeorganisasi          =trim(kodeorganisasi.options[kodeorganisasi.selectedIndex].value);
-        tipekaryawan		=document.getElementById('tipekaryawan');
-        tipekaryawan            =trim(tipekaryawan.options[tipekaryawan.selectedIndex].value);
-        warganegara		=document.getElementById('warganegara');
-        warganegara		=trim(warganegara.options[warganegara.selectedIndex].value);
-        lokasipenerimaan	=document.getElementById('lokasipenerimaan');
-        lokasipenerimaan        =trim(lokasipenerimaan.options[lokasipenerimaan.selectedIndex].value);
-        statuspajak		=document.getElementById('statuspajak');
-        statuspajak		=trim(statuspajak.options[statuspajak.selectedIndex].value);
-        provinsi		=document.getElementById('provinsi');
-        try {
-                provinsi	=trim(provinsi.options[provinsi.selectedIndex].value);
-        } catch(e) {}
-		sistemgaji		=document.getElementById('sistemgaji');
-        sistemgaji		=trim(sistemgaji.options[sistemgaji.selectedIndex].value);
-        golongandarah		=document.getElementById('golongandarah');
-        golongandarah           =trim(golongandarah.options[golongandarah.selectedIndex].value);
-        alokasi                 =document.getElementById('alokasi');
-        alokasi                 =trim(alokasi.options[alokasi.selectedIndex].value);
-        alokasi                 =document.getElementById('alokasi');
-        alokasi         	=trim(alokasi.options[alokasi.selectedIndex].value);
-        subbagian               =document.getElementById('subbagian');
-        subbagian               =trim(subbagian.options[subbagian.selectedIndex].value);
-        catu                    =document.getElementById('catu');
-        catu                    =trim(catu.options[catu.selectedIndex].value);
-         while(golongandarah.indexOf("+")>-1)
-           {
-                golongandarah=golongandarah.replace("+","%2B");
-           }
-        statusperkawinan	=document.getElementById('statusperkawinan');
-        statusperkawinan        =trim(statusperkawinan.options[statusperkawinan.selectedIndex].value);
-        levelpendidikan		=document.getElementById('levelpendidikan');
-        levelpendidikan         =trim(levelpendidikan.options[levelpendidikan.selectedIndex].value);
-        dert                    =document.getElementById('dptPremi');
-        statPremi               =0;
-		statusakad		=document.getElementById('statusakad');
-		statusakad        =trim(statusakad.options[statusakad.selectedIndex].value);
-        if(dert.checked==true){
-            statPremi=1;
-        }
-        if(noktp=='' || nopassport=='' || alamataktif=='' || kota=='' || tempatlahir =='' || tanggallahir.length!=10 || tanggalmasuk.length!=10)
-        {
-                alert('ID.Num/KTP, No Induk Keluarga, Address/Alamat, City/Kota,\nPlace Of Birth/Tempat lahir, Birth.Date/Tgl.lahir,\nJoin.date/Tgl.Masuk \n are Obligatory');
-        }
-        else if((tipekaryawan=='6' || tipekaryawan=='2') && (tanggalkeluar=='' || tanggalkeluar=='00-00-0000')){
-            alert('ID: Karyawan kontrak harus diisi tanggal keluarnya sebagai tanggal akhir kontrak\nEN:Employee with Contract agreement must be filled discharge date as the end date of the contract');
-        }
-        else
-        {
-          param='nik='+nik+'&namakaryawan='+namakaryawan+'&tempatlahir='+tempatlahir;
-          param+='&tanggallahir='+tanggallahir+'&noktp='+noktp;	
-          param+='&nopassport='+nopassport+'&npwp='+npwp+'&bpjs='+bpjs+'&kodepos='+kodepos;
-          param+='&alamataktif='+alamataktif+'&kota='+kota+'&noteleponrumah='+noteleponrumah
-          param+='&nohp='+nohp+'&norekeningbank='+norekeningbank+'&namabank='+namabank+'&tanggalmasuk='+tanggalmasuk;
-          param+='&tanggalpengangkatan='+tanggalpengangkatan+'&tanggalkeluar='+tanggalkeluar+'&jumlahanak='+jumlahanak;
-          param+='&jumlahtanggungan='+jumlahtanggungan+'&tanggalmenikah='+tanggalmenikah;
-          param+='&notelepondarurat='+notelepondarurat+'&email='+email;
-          param+='&jeniskelamin='+jeniskelamin+'&agama='+agama;
-          param+='&bagian='+bagian+'&kodejabatan='+kodejabatan;
-          param+='&kodegolongan='+kodegolongan+'&lokasitugas='+lokasitugas;
-          param+='&kodeorganisasi='+kodeorganisasi+'&tipekaryawan='+tipekaryawan;
-          param+='&warganegara='+warganegara+'&lokasipenerimaan='+lokasipenerimaan;
-          param+='&statuspajak='+statuspajak+'&provinsi='+provinsi;
-          param+='&sistemgaji='+sistemgaji+'&golongandarah='+golongandarah;
-          param+='&statusperkawinan='+statusperkawinan+'&levelpendidikan='+levelpendidikan;	
-          param+='&method='+method+'&karyawanid='+karyawanid+'&alokasi='+alokasi;
-          param+='&subbagian='+subbagian+'&jms='+jms;
-          param+='&catu='+catu+'&statPremi='+statPremi+'&statusakad='+statusakad;
-//          alert(param);
-   tujuan='sdm_slave_save_datakaryawan.php';
-        if(confirm('Saving data for '+namakaryawan+', are you sure ?'))
-          post_response_text(tujuan, param, respog);
-        }		
-        function respog()
-        {
-                      if(con.readyState==4)
-                      {
-                                if (con.status == 200) {
-                                                busy_off();
-                                                if (!isSaveResponse(con.responseText)) {
-                                                        alert('ERROR TRANSACTION,\n' + con.responseText);
-                                                }
-                                                else {
-
-                                                        alert('Done');
-                                                        //alert(con.responseText);
-                                                        controlThisForm(con.responseText);
-                                                        enableOtherButton();
-                                                        //pendi();
-                                                }
-                                        }
-                                        else {
-                                                busy_off();
-                                                error_catch(con.status);
-                                        }
-                      }	
-         }	
+function simpanKaryawan(){
+	//get input text and textarea value	
+	nik					=trim(document.getElementById('nik').value);
+	namakaryawan		=trim(document.getElementById('namakaryawan').value); 
+	tempatlahir			=trim(document.getElementById('tempatlahir').value);
+	tanggallahir		=trim(document.getElementById('tanggallahir').value);
+	noktp				=trim(document.getElementById('noktp').value);
+	nopassport			=trim(document.getElementById('nopassport').value);
+	npwp				=trim(document.getElementById('npwp').value);
+	bpjs				=trim(document.getElementById('bpjs').value);
+	kodepos				=trim(document.getElementById('kodepos').value);
+	alamataktif			=trim(document.getElementById('alamataktif').value);
+	kota				=trim(document.getElementById('kota').value);
+	noteleponrumah		=trim(document.getElementById('noteleponrumah').value);
+	nohp				=trim(document.getElementById('nohp').value);
+	norekeningbank		=trim(document.getElementById('norekeningbank').value);
+	namabank			=trim(document.getElementById('namabank').value);
+	tanggalmasuk		=trim(document.getElementById('tanggalmasuk').value);
+	tanggalpengangkatan	=trim(document.getElementById('tanggalpengangkatan').value);
+	tanggalkeluar		=trim(document.getElementById('tanggalkeluar').value);
+	tanggalmenikah		=trim(document.getElementById('tanggalmenikah').value);
+	jumlahanak			=trim(document.getElementById('jumlahanak').value);
+	jumlahtanggungan	=trim(document.getElementById('jumlahtanggungan').value);
+	tanggalmenikah		=trim(document.getElementById('tanggalmenikah').value);
+	notelepondarurat	=trim(document.getElementById('notelepondarurat').value);
+	email				=trim(document.getElementById('email').value);
+	method				=trim(document.getElementById('method').value);
+	karyawanid			=trim(document.getElementById('karyawanid').value);
+	jms					=trim(document.getElementById('jms').value);
+	//get options value	
+	jeniskelamin		=document.getElementById('jeniskelamin');
+	jeniskelamin		=trim(jeniskelamin.options[jeniskelamin.selectedIndex].value);
+	agama				=document.getElementById('agama');
+	agama				=trim(agama.options[agama.selectedIndex].value);	
+	bagian				=document.getElementById('bagian');
+	bagian				=trim(bagian.options[bagian.selectedIndex].value);
+	kodejabatan			=document.getElementById('kodejabatan');
+	kodejabatan			=trim(kodejabatan.options[kodejabatan.selectedIndex].value);
+	kodegolongan		=document.getElementById('kodegolongan');
+	kodegolongan		=trim(kodegolongan.options[kodegolongan.selectedIndex].value);
+	lokasitugas			=document.getElementById('lokasitugas');
+	lokasitugas			=trim(lokasitugas.options[lokasitugas.selectedIndex].value);
+	kodeorganisasi		=document.getElementById('kodeorganisasi');
+	kodeorganisasi		=trim(kodeorganisasi.options[kodeorganisasi.selectedIndex].value);
+	tipekaryawan		=document.getElementById('tipekaryawan');
+	tipekaryawan		=trim(tipekaryawan.options[tipekaryawan.selectedIndex].value);
+	warganegara			=document.getElementById('warganegara');
+	warganegara			=trim(warganegara.options[warganegara.selectedIndex].value);
+	lokasipenerimaan	=document.getElementById('lokasipenerimaan');
+	lokasipenerimaan	=trim(lokasipenerimaan.options[lokasipenerimaan.selectedIndex].value);
+	statuspajak			=document.getElementById('statuspajak');
+	statuspajak			=trim(statuspajak.options[statuspajak.selectedIndex].value);
+	provinsi			=document.getElementById('provinsi');
+	try {
+		provinsi		=trim(provinsi.options[provinsi.selectedIndex].value);
+	} catch(e) {}
+	sistemgaji			=document.getElementById('sistemgaji');
+	sistemgaji			=trim(sistemgaji.options[sistemgaji.selectedIndex].value);
+	golongandarah		=document.getElementById('golongandarah');
+	golongandarah		=trim(golongandarah.options[golongandarah.selectedIndex].value);
+	alokasi				=document.getElementById('alokasi');
+	alokasi				=trim(alokasi.options[alokasi.selectedIndex].value);
+	alokasi				=document.getElementById('alokasi');
+	alokasi         	=trim(alokasi.options[alokasi.selectedIndex].value);
+	subbagian			=document.getElementById('subbagian');
+	subbagian			=trim(subbagian.options[subbagian.selectedIndex].value);
+	catu				=document.getElementById('catu');
+	catu				=trim(catu.options[catu.selectedIndex].value);
+	while(golongandarah.indexOf("+")>-1){
+		golongandarah	=golongandarah.replace("+","%2B");
+	}
+	statusperkawinan	=document.getElementById('statusperkawinan');
+	statusperkawinan	=trim(statusperkawinan.options[statusperkawinan.selectedIndex].value);
+	levelpendidikan		=document.getElementById('levelpendidikan');
+	levelpendidikan		=trim(levelpendidikan.options[levelpendidikan.selectedIndex].value);
+	dert				=document.getElementById('dptPremi');
+	statPremi			=0;
+	statusakad			=document.getElementById('statusakad');
+	statusakad			=trim(statusakad.options[statusakad.selectedIndex].value);
+	if(dert.checked==true){
+		statPremi		=1;
+	}
+	if(noktp=='' || nopassport=='' || alamataktif=='' || kota=='' || tempatlahir =='' || tanggallahir.length!=10 || tanggalmasuk.length!=10){
+		alert('ID.Num/KTP, No Induk Keluarga, Address/Alamat, City/Kota,\nPlace Of Birth/Tempat lahir, Birth.Date/Tgl.lahir,\nJoin.date/Tgl.Masuk \n are Obligatory');
+	}else if((tipekaryawan=='6' || tipekaryawan=='2') && (tanggalkeluar=='' || tanggalkeluar=='00-00-0000')){
+		alert('ID: Karyawan kontrak harus diisi tanggal keluarnya sebagai tanggal akhir kontrak\nEN:Employee with Contract agreement must be filled discharge date as the end date of the contract');
+	}else{
+		param='nik='+nik+'&namakaryawan='+namakaryawan+'&tempatlahir='+tempatlahir;
+		param+='&tanggallahir='+tanggallahir+'&noktp='+noktp;	
+		param+='&nopassport='+nopassport+'&npwp='+npwp+'&bpjs='+bpjs+'&kodepos='+kodepos;
+		param+='&alamataktif='+alamataktif+'&kota='+kota+'&noteleponrumah='+noteleponrumah
+		param+='&nohp='+nohp+'&norekeningbank='+norekeningbank+'&namabank='+namabank+'&tanggalmasuk='+tanggalmasuk;
+		param+='&tanggalpengangkatan='+tanggalpengangkatan+'&tanggalkeluar='+tanggalkeluar+'&jumlahanak='+jumlahanak;
+		param+='&jumlahtanggungan='+jumlahtanggungan+'&tanggalmenikah='+tanggalmenikah;
+		param+='&notelepondarurat='+notelepondarurat+'&email='+email;
+		param+='&jeniskelamin='+jeniskelamin+'&agama='+agama;
+		param+='&bagian='+bagian+'&kodejabatan='+kodejabatan;
+		param+='&kodegolongan='+kodegolongan+'&lokasitugas='+lokasitugas;
+		param+='&kodeorganisasi='+kodeorganisasi+'&tipekaryawan='+tipekaryawan;
+		param+='&warganegara='+warganegara+'&lokasipenerimaan='+lokasipenerimaan;
+		param+='&statuspajak='+statuspajak+'&provinsi='+provinsi;
+		param+='&sistemgaji='+sistemgaji+'&golongandarah='+golongandarah;
+		param+='&statusperkawinan='+statusperkawinan+'&levelpendidikan='+levelpendidikan;	
+		param+='&method='+method+'&karyawanid='+karyawanid+'&alokasi='+alokasi;
+		param+='&subbagian='+subbagian+'&jms='+jms;
+		param+='&catu='+catu+'&statPremi='+statPremi+'&statusakad='+statusakad;
+		//alert(param);
+		tujuan='sdm_slave_save_datakaryawan.php';
+		if(confirm('Saving data for '+namakaryawan+', are you sure ?'))
+			post_response_text(tujuan, param, respog);
+	}		
+	function respog(){
+		if(con.readyState==4){
+			if(con.status == 200){
+				busy_off();
+				if(!isSaveResponse(con.responseText)){
+					alert('ERROR TRANSACTION,\n' + con.responseText);
+				}else{
+					alert('Done');
+					//alert(con.responseText);
+					controlThisForm(con.responseText);
+					enableOtherButton();
+					//pendi();
+				}
+			}else{
+				busy_off();
+				error_catch(con.status);
+			}
+		}	
+	}	
 }
 
-
-
-
-function controlThisForm(tex)
-{
-        xml=tex.toString();
-        xmlobject = (new DOMParser()).parseFromString(xml, "text/xml");
-		getId=xmlobject.getElementsByTagName('karyawanid')[0].firstChild.nodeValue;
-        getNama=xmlobject.getElementsByTagName('namakaryawan')[0].firstChild.nodeValue;
-		getNik=xmlobject.getElementsByTagName('nik')[0].firstChild.nodeValue;
-        if (trim(getId) != '') {
-                //Change first Tab Caption
-                document.getElementById('tabFRM0').innerHTML = getNama;
-                //change to update method
-                document.getElementById('method').value = 'update';
-                document.getElementById('karyawanid').value = getId;
-				document.getElementById('nik').value = getNik;
-        }
-        else
-        {
-                alert('Last transaction has nothing affected');
-        }
-}
-function cancelDataKaryawan()
-{
-        document.getElementById('nik').value='';
-        document.getElementById('namakaryawan').value='';
-        document.getElementById('tempatlahir').value='';
-        document.getElementById('tanggallahir').value='';
-        document.getElementById('noktp').value='';
-        document.getElementById('nopassport').value='';
-        document.getElementById('npwp').value='';
-        document.getElementById('bpjs').value='';
-        document.getElementById('alamataktif').value='';
-        document.getElementById('kota').value='';
-        document.getElementById('provinsi').options[0].selected=true;
-        document.getElementById('kodepos').value='';
-        document.getElementById('noteleponrumah').value='';
-        document.getElementById('nohp').value='';
-        document.getElementById('norekeningbank').value='';
-        document.getElementById('namabank').value='';
-        document.getElementById('sistemgaji').options[0].selected=true;
-        document.getElementById('tanggalmasuk').value='';
-        document.getElementById('tanggalpengangkatan').value='';
-        document.getElementById('tanggalkeluar').value='';
-        document.getElementById('statusperkawinan').options[0].selected=true;
-        document.getElementById('tanggalmenikah').value='';
-        document.getElementById('jumlahanak').value='';
-        document.getElementById('jumlahtanggungan').value='';
-        document.getElementById('tanggalmenikah').value='';
-        document.getElementById('notelepondarurat').value='';
-        document.getElementById('karyawanid').value='';
-        document.getElementById('email').value='';
-        document.getElementById('dptPremi').checked=false;
-        document.getElementById('method').value='insert';
-        document.getElementById('tabFRM0').innerHTML='New';
-        document.getElementById('container').innerHTML='';
-        document.getElementById('containerpendidikan').innerHTML='';
-        document.getElementById('containertraining').innerHTML='';
-        document.getElementById('containerkeluarga').innerHTML='';
-        document.getElementById('containeralamat').innerHTML='';
-        document.getElementById('displayphoto').removeAttribute('src');
-        document.getElementById('displayphoto').setAttribute('src','');
-        document.getElementById('jms').value='';
-		document.getElementById('subbagian').options[0].selected=true;
-		document.getElementById('statusakad').options[0].selected=true;
-        
-        disableOtherButton();
-        cancelPhoto();
+function controlThisForm(tex){
+	xml=tex.toString();
+	xmlobject = (new DOMParser()).parseFromString(xml, "text/xml");
+	getId=xmlobject.getElementsByTagName('karyawanid')[0].firstChild.nodeValue;
+	getNama=xmlobject.getElementsByTagName('namakaryawan')[0].firstChild.nodeValue;
+	getNik=xmlobject.getElementsByTagName('nik')[0].firstChild.nodeValue;
+	if (trim(getId) != '') {
+		//Change first Tab Caption
+		document.getElementById('tabFRM0').innerHTML = getNama;
+		//change to update method
+		document.getElementById('method').value = 'update';
+		document.getElementById('karyawanid').value = getId;
+		document.getElementById('nik').value = getNik;
+	}else{
+		alert('Last transaction has nothing affected');
+	}
 }
 
-function enableOtherButton()
-{
-        //after success saving then activate sumbit button on each tab 
-        document.getElementById('btncv').disabled=false;
-        document.getElementById('btnpendidikan').disabled=false;
-        document.getElementById('btntraining').disabled=false;
-        document.getElementById('btnphoto').disabled=false;
-        document.getElementById('btnalamat').disabled=false;
-        document.getElementById('btnkeluarga').disabled=false;
+function cancelDataKaryawan(){
+	document.getElementById('nik').value='';
+	document.getElementById('namakaryawan').value='';
+	document.getElementById('tempatlahir').value='';
+	document.getElementById('tanggallahir').value='';
+	document.getElementById('noktp').value='';
+	document.getElementById('nopassport').value='';
+	document.getElementById('npwp').value='';
+	document.getElementById('bpjs').value='';
+	document.getElementById('alamataktif').value='';
+	document.getElementById('kota').value='';
+	document.getElementById('provinsi').options[0].selected=true;
+	document.getElementById('kodepos').value='';
+	document.getElementById('noteleponrumah').value='';
+	document.getElementById('nohp').value='';
+	document.getElementById('norekeningbank').value='';
+	document.getElementById('namabank').value='';
+	document.getElementById('sistemgaji').options[0].selected=true;
+	document.getElementById('tanggalmasuk').value='';
+	document.getElementById('tanggalpengangkatan').value='';
+	document.getElementById('tanggalkeluar').value='';
+	document.getElementById('statusperkawinan').options[0].selected=true;
+	document.getElementById('tanggalmenikah').value='';
+	document.getElementById('jumlahanak').value='';
+	document.getElementById('jumlahtanggungan').value='';
+	document.getElementById('tanggalmenikah').value='';
+	document.getElementById('notelepondarurat').value='';
+	document.getElementById('karyawanid').value='';
+	document.getElementById('email').value='';
+	document.getElementById('dptPremi').checked=false;
+	document.getElementById('method').value='insert';
+	document.getElementById('tabFRM0').innerHTML='New';
+	document.getElementById('container').innerHTML='';
+	document.getElementById('containerpendidikan').innerHTML='';
+	document.getElementById('containertraining').innerHTML='';
+	document.getElementById('containerkeluarga').innerHTML='';
+	document.getElementById('containeralamat').innerHTML='';
+	document.getElementById('displayphoto').removeAttribute('src');
+	document.getElementById('displayphoto').setAttribute('src','');
+	document.getElementById('jms').value='';
+	document.getElementById('subbagian').options[0].selected=true;
+	document.getElementById('statusakad').options[0].selected=true;
+	disableOtherButton();
+	cancelPhoto();
 }
 
-function disableOtherButton()
-{
-        //after success saving then activate sumbit button on each tab 
-        document.getElementById('btncv').disabled=true;
-        document.getElementById('btnpendidikan').disabled=true;
-        document.getElementById('btntraining').disabled=true;
-        document.getElementById('btnphoto').disabled=true;
-        document.getElementById('btnalamat').disabled=true;
-        document.getElementById('btnkeluarga').disabled=true;
+function enableOtherButton(){
+	//after success saving then activate sumbit button on each tab 
+	document.getElementById('btncv').disabled=false;
+	document.getElementById('btnpendidikan').disabled=false;
+	document.getElementById('btntraining').disabled=false;
+	document.getElementById('btnphoto').disabled=false;
+	document.getElementById('btnalamat').disabled=false;
+	document.getElementById('btnkeluarga').disabled=false;
 }
+
+function disableOtherButton(){
+	//after success saving then activate sumbit button on each tab 
+	document.getElementById('btncv').disabled=true;
+	document.getElementById('btnpendidikan').disabled=true;
+	document.getElementById('btntraining').disabled=true;
+	document.getElementById('btnphoto').disabled=true;
+	document.getElementById('btnalamat').disabled=true;
+	document.getElementById('btnkeluarga').disabled=true;
+}
+
 //========================tab pengalaman
-function simpanPengalaman()
-{
-         namaperusahaan =trim(document.getElementById('namaperusahaan').value);
-         bidangusaha	=(document.getElementById('bidangusaha').value);
-
-         blnmasuk		=document.getElementById('blnmasuk');
-       blnmasuk		=blnmasuk.options[blnmasuk.selectedIndex].value;
-         thnmasuk		=document.getElementById('thnmasuk');
-           thnmasuk		=thnmasuk.options[thnmasuk.selectedIndex].value;
-         blnkeluar		=document.getElementById('blnkeluar');
-           blnkeluar	=blnkeluar.options[blnkeluar.selectedIndex].value;
-         thnkeluar		=document.getElementById('thnkeluar');
-       thnkeluar	=thnkeluar.options[thnkeluar.selectedIndex].value;
-
-         jabatan		=trim(document.getElementById('pengalamanjabatan').value);
-         bagian			=document.getElementById('pengalamanbagian').value;
-         alamat	 		=document.getElementById('pengalamanalamat').value;
-         karyawanid		=document.getElementById('karyawanid').value;
-
-   if (blnmasuk == '' || thnmasuk == '' || blnkeluar == '' || thnkeluar == '') {
-        alert('Incorrect period');
-   }
-
-
-   else if(namaperusahaan=='' || bidangusaha=='' || jabatan=='')
-   {
-        alert('Data Incomplete');
-   }
-   else {
+function simpanPengalaman(){
+	namaperusahaan	=trim(document.getElementById('namaperusahaan').value);
+	bidangusaha		=(document.getElementById('bidangusaha').value);
+	blnmasuk		=document.getElementById('blnmasuk');
+	blnmasuk		=blnmasuk.options[blnmasuk.selectedIndex].value;
+	thnmasuk		=document.getElementById('thnmasuk');
+	thnmasuk		=thnmasuk.options[thnmasuk.selectedIndex].value;
+	blnkeluar		=document.getElementById('blnkeluar');
+	blnkeluar		=blnkeluar.options[blnkeluar.selectedIndex].value;
+	thnkeluar		=document.getElementById('thnkeluar');
+	thnkeluar		=thnkeluar.options[thnkeluar.selectedIndex].value;
+	jabatan			=trim(document.getElementById('pengalamanjabatan').value);
+	bagian			=document.getElementById('pengalamanbagian').value;
+	alamat	 		=document.getElementById('pengalamanalamat').value;
+	karyawanid		=document.getElementById('karyawanid').value;
+	if (blnmasuk == '' || thnmasuk == '' || blnkeluar == '' || thnkeluar == '') {
+		alert('Incorrect period');
+	}else if(namaperusahaan=='' || bidangusaha=='' || jabatan==''){
+		alert('Data Incomplete');
+   }else{
         param = 'namaperusahaan=' + namaperusahaan + '&bidangusaha=' + bidangusaha;
         param += '&blnmasuk=' + blnmasuk + '&thnmasuk=' + thnmasuk;
         param += '&blnkeluar=' + blnkeluar + '&thnkeluar=' + thnkeluar;
         param += '&jabatan=' + jabatan + '&bagian=' + bagian;
         param += '&alamat=' + alamat + '&karyawanid=' + karyawanid;
-
         tujuan = 'sdm_slave_save_riwayat_pekerjaan.php';
         post_response_text(tujuan, param, respog);
-   }	  	
-        function respog()
-        {
-                      if(con.readyState==4)
-                      {
-                                if (con.status == 200) {
-                                                busy_off();
-                                                if (!isSaveResponse(con.responseText)) {
-                                                        alert('ERROR TRANSACTION,\n' + con.responseText);
-                                                }
-                                                else {
-                          document.getElementById('container').innerHTML=con.responseText;
-                                                }
-                                        }
-                                        else {
-                                                busy_off();
-                                                error_catch(con.status);
-                                        }
-                      }	
-         }	
-
-
+	}	  	
+	function respog(){
+		if(con.readyState==4){
+			if (con.status == 200){
+				busy_off();
+				if (!isSaveResponse(con.responseText)){
+					alert('ERROR TRANSACTION,\n' + con.responseText);
+				}else{
+					document.getElementById('container').innerHTML=con.responseText;
+				}
+			}else{
+				busy_off();
+				error_catch(con.status);
+			}
+		}	
+	}	
 }
 
-function delPengalaman(karyawanid,nomor)
-{
-        param ='nomor=' + nomor + '&karyawanid=' + karyawanid+'&del=true';
-        tujuan = 'sdm_slave_save_riwayat_pekerjaan.php';
-        if (confirm('Deleting, are you sure..?')) {
-                post_response_text(tujuan, param, respog);
-        }  	
-        function respog()
-        {
-                      if(con.readyState==4)
-                      {
-                                if (con.status == 200) {
-                                                busy_off();
-                                                if (!isSaveResponse(con.responseText)) {
-                                                        alert('ERROR TRANSACTION,\n' + con.responseText);
-                                                }
-                                                else {
-                          document.getElementById('container').innerHTML=con.responseText;
-                                                }
-                                        }
-                                        else {
-                                                busy_off();
-                                                error_catch(con.status);
-                                        }
-                      }	
-         }	
+function delPengalaman(karyawanid,nomor){
+	param ='nomor=' + nomor + '&karyawanid=' + karyawanid+'&del=true';
+	tujuan = 'sdm_slave_save_riwayat_pekerjaan.php';
+	if (confirm('Deleting, are you sure..?')) {
+		post_response_text(tujuan, param, respog);
+	}  	
+	function respog(){
+		if(con.readyState==4){
+			if (con.status == 200) {
+				busy_off();
+				if (!isSaveResponse(con.responseText)) {
+					alert('ERROR TRANSACTION,\n' + con.responseText);
+				}else{
+					document.getElementById('container').innerHTML=con.responseText;
+				}
+			}else{
+				busy_off();
+				error_catch(con.status);
+			}
+		}	
+	}	
 }
+
 //=================tab pendidikan
-
-function updatelv()
-{
-        document.getElementById('levelpendidikan').value;
-        document.getElementById('levelpendidikan2').value;
-        if(levelpendidikan2 > levelpendidikan)
-        {
-                alert('Education level greater than listed in main data');
-                return;
-        }
+function updatelv(){
+	document.getElementById('levelpendidikan').value;
+	document.getElementById('levelpendidikan2').value;
+	if(levelpendidikan2 > levelpendidikan){
+		alert('Education level greater than listed in main data');
+		return;
+	}
 }
 
 function simpanPendidikan()
@@ -481,6 +426,8 @@ function simpanTraining()
                     sertifikat		=trim(sertifikat.options[sertifikat.selectedIndex].value);
             karyawanid			=document.getElementById('karyawanid').value;
             biaya			=document.getElementById('biaya').value;
+			berlakudari=document.getElementById('berlakudari').value;
+			berlakusampai=document.getElementById('berlakusampai').value;
  if(jenistraining=='' || judultraining=='' || penyelenggara=='')
  {
         alert('Data incomplete');
@@ -493,6 +440,7 @@ function simpanTraining()
 		param+='&tanggalmulai='+tanggalmulai+'&tanggalselesai='+tanggalselesai;
 		param+='&sertifikat='+sertifikat;
         param+='&karyawanid='+karyawanid+'&biaya='+biaya;
+		param+='&berlakudari='+berlakudari+'&berlakusampai='+berlakusampai;
                 tujuan = 'sdm_slave_save_riwayat_training.php';
                 post_response_text(tujuan, param, respog);	
  }	
@@ -507,6 +455,7 @@ function simpanTraining()
                                                 }
                                                 else {
                           document.getElementById('containertraining').innerHTML=con.responseText;
+						  BersihFormTraining()
                                                 }
                                         }
                                         else {
@@ -1535,137 +1484,119 @@ function cariKaryawanLaporan1(page)
          }	
 }
 
+function cariKaryawanLaporan(page){
+	schpt			=document.getElementById('schpt').options[document.getElementById('schpt').selectedIndex].value;
+	schregional		=document.getElementById('schregional').options[document.getElementById('schregional').selectedIndex].value;
+	txtsearch		=trim(document.getElementById('txtsearch').value);
+	schorg			=document.getElementById('schorg').options[document.getElementById('schorg').selectedIndex].value;
+	subunit			=document.getElementById('subunit').options[document.getElementById('subunit').selectedIndex].value;
+	schgolongan		=document.getElementById('schgolongan').options[document.getElementById('schgolongan').selectedIndex].value;
+	schtipe			=document.getElementById('schtipe').options[document.getElementById('schtipe').selectedIndex].value;
+	schstatus		=document.getElementById('schstatus').options[document.getElementById('schstatus').selectedIndex].value;
+	schjk			=document.getElementById('schjk').options[document.getElementById('schjk').selectedIndex].value;
+	schpendidikan	=document.getElementById('schpendidikan').options[document.getElementById('schpendidikan').selectedIndex].value;
+	tglmasuk1		=document.getElementById('tglmasuk1').value;
+	tglmasuk2		=document.getElementById('tglmasuk2').value;
+	tglkeluar1		=document.getElementById('tglkeluar1').value;
+	tglkeluar2		=document.getElementById('tglkeluar2').value;
+	umur1			=document.getElementById('umur1').value;
+	umur2			=document.getElementById('umur2').value;
 
-
-
-
-function cariKaryawanLaporan(page)
-{
-        //alert('MASUK');
-        thnmsk =trim(document.getElementById('thnmsk').value);	
-        blnmsk =trim(document.getElementById('blnmsk').value);
-        thnkel =trim(document.getElementById('thnkel').value);	
-        blnkel =trim(document.getElementById('blnkel').value);
-
-
-        schjk	  =document.getElementById('schjk');	
-        txtsearch =trim(document.getElementById('txtsearch').value);	
-        schpt	  =document.getElementById('schpt');
-        schorg	  =document.getElementById('schorg');
-        schtipe	  =document.getElementById('schtipe');
-        schstatus =document.getElementById('schstatus');	
-        schjk=schjk.options[schjk.selectedIndex].value;
-        schpt=schpt.options[schpt.selectedIndex].value;
-        schorg=schorg.options[schorg.selectedIndex].value;
-        schtipe=schtipe.options[schtipe.selectedIndex].value;
-    schstatus=schstatus.options[schstatus.selectedIndex].value;
-
-                param='txtsearch='+txtsearch;
-                param+='&schjk='+schjk;
-                param+='&thnmsk='+thnmsk;
-                param+='&blnmsk='+blnmsk;
-                param+='&thnkel='+thnkel;
-                param+='&blnkel='+blnkel;
-
-                param+='&ptsearch='+schpt;
-                param+='&orgsearch='+schorg;
-                param+='&tipesearch='+schtipe;
-                param+='&statussearch='+schstatus;
-                param+='&page='+page;
-
-//	alert(param);
-
-        tujuan = 'sdm_slave_load_employeeLaporan.php';
-        post_response_text(tujuan, param, respog);
-        function respog()
-        {
-                      if(con.readyState==4)
-                      {
-                                if (con.status == 200) {
-                                                busy_off();
-                                                if (!isSaveResponse(con.responseText)) {
-                                                        alert('ERROR TRANSACTION,\n' + con.responseText);
-                                                }
-                                                else {
-                          document.getElementById('searchplaceresult').innerHTML=con.responseText;
-                                                }
-                                        }
-                                        else {
-                                                busy_off();
-                                                error_catch(con.status);
-                                        }
-                      }	
-         }	
+	param='ptsearch='+schpt;
+	param+='&regional='+schregional;
+	param+='&txtsearch='+txtsearch;
+	param+='&orgsearch='+schorg;
+	param+='&subunit='+subunit;
+	param+='&kodegolongan='+schgolongan;
+	param+='&tipesearch='+schtipe;
+	param+='&statussearch='+schstatus;
+	param+='&schjk='+schjk;
+	param+='&levelpendidikan='+schpendidikan;
+	param+='&tanggalmasuk1='+tglmasuk1;
+	param+='&tanggalmasuk2='+tglmasuk2;
+	param+='&tanggalkeluar1='+tglkeluar1;
+	param+='&tanggalkeluar2='+tglkeluar2;
+	param+='&umur1='+umur1;
+	param+='&umur2='+umur2;
+	param+='&page='+page;
+	//alert(param);
+	tujuan = 'sdm_slave_load_employeeLaporan.php';
+	post_response_text(tujuan, param, respog);
+	function respog(){
+		if(con.readyState==4){
+			if (con.status == 200) {
+				busy_off();
+				if (!isSaveResponse(con.responseText)) {
+					alert('ERROR TRANSACTION,\n' + con.responseText);
+				}else {
+					document.getElementById('searchplaceresult').innerHTML=con.responseText;
+				}
+			}else {
+				busy_off();
+				error_catch(con.status);
+			}
+		}	
+	}	
 }
 
-function prefDatakaryawan1(btn,curval)
-{
-    cariKaryawanLaporan(curval); 
-        if(curval==0)
-        {
-        }
-        else
-          btn.value=parseInt(curval)-1;
-   document.getElementById('nextbtn').value=parseInt(btn.value)+2;	  
-
-}
-function nextDatakaryawan1(btn,curval)
-{
-      cariKaryawanLaporan(curval);
-          btn.value=parseInt(curval)+1;
-          document.getElementById('prefbtn').value=parseInt(btn.value)-2;	
+function prefDatakaryawan1(btn,curval){
+	cariKaryawanLaporan(curval); 
+	if(curval==0)
+	{
+	}
+	else
+		btn.value=parseInt(curval)-1;
+	document.getElementById('nextbtn').value=parseInt(btn.value)+2;	  
 }
 
-
-
-function datakaryawanExcel(ev,thnmsk,blnmsk,thnkel,blnkel,tujuan)
-{
-        txtsearch =trim(document.getElementById('txtsearch').value);
-		schpt	  =document.getElementById('schpt');
-        schorg	  =document.getElementById('schorg');
-        schtipe	  =document.getElementById('schtipe');
-        schstatus =document.getElementById('schstatus');
-        schpt=schpt.options[schpt.selectedIndex].value;
-        schorg=schorg.options[schorg.selectedIndex].value;
-
-        schjk =document.getElementById('schjk');
-        schjk=schjk.options[schjk.selectedIndex].value;
-
-        schtipe=schtipe.options[schtipe.selectedIndex].value;
-    schstatus=schstatus.options[schstatus.selectedIndex].value;
-
-        thnmsk=document.getElementById('thnmsk').value;
-        blnmsk=document.getElementById('blnmsk').value;
-        thnkel=document.getElementById('thnkel').value;
-        blnkel=document.getElementById('blnkel').value;
-
-        thnm=thnmsk;
-        blnm=blnmsk;
-        thnk=thnkel;
-        blnk=blnkel;
-
-                param='txtsearch='+txtsearch;
-                param+='&ptsearch='+schpt;
-                param+='&orgsearch='+schorg;
-                param+='&tipesearch='+schtipe;
-                param+='&statussearch='+schstatus;
-                param+='&schjk='+schjk;
-                param+='&thnmsk='+thnm;
-                param+='&blnmsk='+blnm;
-
-                param+='&thnkel='+thnk;
-                param+='&blnkel='+blnk;
-
-            
-        tujuan = 'sdm_slave_datakaryawan_Excel.php?'+param;	
-   title='Download';
-   width='500';
-   height='400';
-   content="<iframe frameborder=0 width=100% height=100% src='"+tujuan+"'></iframe>"
-   showDialog1(title,content,width,height,ev);		
+function nextDatakaryawan1(btn,curval){
+	cariKaryawanLaporan(curval);
+	btn.value=parseInt(curval)+1;
+	document.getElementById('prefbtn').value=parseInt(btn.value)-2;	
 }
 
+function datakaryawanExcel(ev,thnmsk,blnmsk,thnkel,blnkel,tujuan){
+	schpt			=document.getElementById('schpt').options[document.getElementById('schpt').selectedIndex].value;
+	schregional		=document.getElementById('schregional').options[document.getElementById('schregional').selectedIndex].value;
+	txtsearch		=trim(document.getElementById('txtsearch').value);
+	schorg			=document.getElementById('schorg').options[document.getElementById('schorg').selectedIndex].value;
+	subunit			=document.getElementById('subunit').options[document.getElementById('subunit').selectedIndex].value;
+	schgolongan		=document.getElementById('schgolongan').options[document.getElementById('schgolongan').selectedIndex].value;
+	schtipe			=document.getElementById('schtipe').options[document.getElementById('schtipe').selectedIndex].value;
+	schstatus		=document.getElementById('schstatus').options[document.getElementById('schstatus').selectedIndex].value;
+	schjk			=document.getElementById('schjk').options[document.getElementById('schjk').selectedIndex].value;
+	schpendidikan	=document.getElementById('schpendidikan').options[document.getElementById('schpendidikan').selectedIndex].value;
+	tglmasuk1		=document.getElementById('tglmasuk1').value;
+	tglmasuk2		=document.getElementById('tglmasuk2').value;
+	tglkeluar1		=document.getElementById('tglkeluar1').value;
+	tglkeluar2		=document.getElementById('tglkeluar2').value;
+	umur1			=document.getElementById('umur1').value;
+	umur2			=document.getElementById('umur2').value;
 
+	param='ptsearch='+schpt;
+	param+='&regional='+schregional;
+	param+='&txtsearch='+txtsearch;
+	param+='&orgsearch='+schorg;
+	param+='&subunit='+subunit;
+	param+='&kodegolongan='+schgolongan;
+	param+='&tipesearch='+schtipe;
+	param+='&statussearch='+schstatus;
+	param+='&schjk='+schjk;
+	param+='&levelpendidikan='+schpendidikan;
+	param+='&tanggalmasuk1='+tglmasuk1;
+	param+='&tanggalmasuk2='+tglmasuk2;
+	param+='&tanggalkeluar1='+tglkeluar1;
+	param+='&tanggalkeluar2='+tglkeluar2;
+	param+='&umur1='+umur1;
+	param+='&umur2='+umur2;
+	//alert(param);
+	tujuan = 'sdm_slave_datakaryawan_Excel.php?'+param;	
+	title='Download';
+	width='500';
+	height='400';
+	content="<iframe frameborder=0 width=100% height=100% src='"+tujuan+"'></iframe>"
+	showDialog1(title,content,width,height,ev);		
+}
 
 function delKaryawan(ki,nm)
 {
@@ -1724,5 +1655,87 @@ function filterlokasitugas(){
 				error_catch(con.status);
 			}
 		}	
+	}
+}
+
+function BersihFormTraining(){
+	//document.getElementById('jenistraining').value='';
+	document.getElementById('judultraining').value='';
+	document.getElementById('biaya').value=0;
+	document.getElementById('penyelenggara').value='';
+	document.getElementById('tanggalmulai').value='';
+	document.getElementById('tanggalselesai').value='';
+	document.getElementById('sertifikat').value=0;
+	document.getElementById('berlakudari').value='';
+	document.getElementById('berlakusampai').value='';
+	document.getElementById('berlakudari').disabled=true;
+	document.getElementById('berlakusampai').disabled=true;
+}
+
+function EditFormTraining(jenistraining,judultraining,biaya,penyelenggara,tanggalmulai,tanggalselesai,sertifikat,berlakudari,berlakusampai){
+	document.getElementById('jenistraining').value=jenistraining;
+	document.getElementById('judultraining').value=judultraining;
+	document.getElementById('biaya').value=biaya;
+	document.getElementById('penyelenggara').value=penyelenggara;
+	document.getElementById('tanggalmulai').value=tanggalmulai;
+	document.getElementById('tanggalselesai').value=tanggalselesai;
+	document.getElementById('sertifikat').value=sertifikat;
+	if(sertifikat==2){
+		document.getElementById('berlakudari').value=berlakudari;
+		document.getElementById('berlakusampai').value=berlakusampai;
+		document.getElementById('berlakudari').disabled=false;
+		document.getElementById('berlakusampai').disabled=false;
+	}else{
+		document.getElementById('berlakudari').value='';
+		document.getElementById('berlakusampai').value='';
+		document.getElementById('berlakudari').disabled=true;
+		document.getElementById('berlakusampai').disabled=true;
+	}
+}
+
+function getBerlaku(){
+	sertifikat=document.getElementById('sertifikat').value;
+	if(sertifikat==2){
+		document.getElementById('berlakudari').disabled=false;
+		document.getElementById('berlakusampai').disabled=false;
+	}else{
+		document.getElementById('berlakudari').disabled=true;
+		document.getElementById('berlakusampai').disabled=true;
+	}
+}
+
+function viewscan(nomor,namafile,ev){
+   //frame.location=namafile;
+   param='proses=viewfile'+'&nomor='+nomor+'&namafile='+namafile;
+   tujuan='sdm_training_slave.php'+"?"+param;
+   width='1200';
+   height='600';
+   content="<iframe frameborder=0 width=100% height=100% src='"+tujuan+"'></iframe>"
+   //alert(content);
+   showDialog1('File '+namafile,content,width,height,ev); 
+}
+
+nameV='winsertifikat';
+x=0;
+function editscan(nomor,ev){
+	x+=1;
+	nx=nameV+x;
+	nmkary=document.getElementById('namakaryawan').value;
+	tujuan='sdm_training_slave_sertifikat.php?nomor='+nomor;
+    content="<iframe name="+nx+" src="+tujuan+" frameborder=0 width=640px height=175px></iframe>";   
+    showDialog1("Edit Sertifikat : "+nmkary+' '+nomor,content,'675','200',ev);
+}
+
+function savescan(){
+	nx=nameV+x;
+	karyawanid=document.getElementById('karyawanid').value;
+	nomor=eval(nx+".document.getElementById('nomorx').value");
+	simpan(nomor,nx,karyawanid);
+	//loadKursus('queryonly',karyawanid);
+
+	function simpan(nomor,nx,karyawanid){
+		eval(nx+".document.getElementById('scanupload').action='sdm_training_slave_save_sertifikat.php'");	
+		eval(nx+".document.getElementById('scanupload').submit()");
+		loadKursus('queryonly',karyawanid);
 	}
 }

@@ -7,7 +7,7 @@ echo open_body();
 include('master_mainMenu.php');
 OPEN_BOX();
 
-$sOrg="select namaorganisasi,kodeorganisasi from ".$dbname.".organisasi where tipe='KEBUN'  order by kodeorganisasi";
+$sOrg="select namaorganisasi,kodeorganisasi from ".$dbname.".organisasi where tipe='KEBUN' order by namaorganisasi";
 
 $qOrg=mysql_query($sOrg) or die(mysql_error($conn));
 $optOrg="";

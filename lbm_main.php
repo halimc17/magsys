@@ -82,6 +82,28 @@ function getAfd(obj)
 	 }  
 }
 
+function getUnit(obj){
+	kodept=obj.options[obj.selectedIndex].value;
+	param='kodept='+kodept;
+	tujuan='lbm_rkp_cekancak_slave.php';
+	post_response_text(tujuan+'?proses=getUnit', param, respog);
+	function respog(){
+		if(con.readyState==4){
+			if (con.status == 200) {
+                busy_off();
+                if (!isSaveResponse(con.responseText)) {
+					alert('ERROR TRANSACTION,\n' + con.responseText);
+                }else {
+					document.getElementById('kodeunit').innerHTML=con.responseText;
+                }
+            }else {
+				busy_off();
+				error_catch(con.status);
+            }
+		}	
+	}  
+}
+
 function lihatDetail(kodept,periode,namakendaraan,gaji,lembur,bbm,sukucadang,reparasi,asuransi,pajak,penyusutan,hmkm,ev)
 {
    param='kodept='+kodept+'&periode='+periode+'&namakendaraan='+namakendaraan+'&gaji='+gaji;

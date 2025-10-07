@@ -139,8 +139,8 @@ $cposelisihsd=$cpobudgetsd-$cposd;
 // biaya bulan ini
 $aresta="SELECT noakun,sum(jumlah) as biaya FROM ".$dbname.".keu_jurnaldt_vw
     WHERE kodeorg like '".$unit."%' and tanggal like '".$periode."%' and 
-        (noakun like '7%' or noakun like '63%' or noakun like '64%' or noakun like '631%' or noakun like '632%' or noakun like '8%')
-    GROUP BY noakun";
+        (noakun like '7%' or noakun like '63%' or noakun like '64%' or noakun like '8%') and noakun not like '71502%'
+    GROUP BY noakun ORDER BY noakun";
  //echo $aresta;
 $query=mysql_query($aresta) or die(mysql_error($conn));
 while($res=mysql_fetch_assoc($query))
@@ -157,8 +157,8 @@ while($res=mysql_fetch_assoc($query))
 // budget bulan ini
 $aresta="SELECT noakun,sum(rp".$bulan.") as budget FROM ".$dbname.".bgt_budget_detail
     WHERE kodeorg like '".$unit."%' and tahunbudget = '".$tahun."' and 
-        (noakun like '7%' or noakun like '63%' or noakun like '64%' or noakun like '631%' or noakun like '632%' or noakun like '8%')
-    GROUP BY noakun";
+        (noakun like '7%' or noakun like '63%' or noakun like '64%' or noakun like '8%')
+    GROUP BY noakun ORDER BY noakun";
 //echo $aresta;
 $query=mysql_query($aresta) or die(mysql_error($conn));
 while($res=mysql_fetch_assoc($query))
@@ -175,8 +175,8 @@ while($res=mysql_fetch_assoc($query))
 // biaya sd bulan ini
 $aresta="SELECT noakun,sum(jumlah) as biaya FROM ".$dbname.".keu_jurnaldt_vw
     WHERE kodeorg like '".$unit."%' and tanggal between '".$tahun."-01-01' and LAST_DAY('".$periode."-15') and 
-        (noakun like '7%' or noakun like '63%' or noakun like '64%' or noakun like '631%' or noakun like '632%' or noakun like '8%')
-    GROUP BY noakun";
+        (noakun like '7%' or noakun like '63%' or noakun like '64%' or noakun like '8%') and noakun not like '71502%'
+    GROUP BY noakun ORDER BY noakun";
 //echo $aresta;
 $query=mysql_query($aresta) or die(mysql_error($conn));
 while($res=mysql_fetch_assoc($query))
@@ -203,8 +203,8 @@ $addstr.=")";
 // budget sd bulan ini
 $aresta="SELECT noakun,sum(".$addstr.") as budget FROM ".$dbname.".bgt_budget_detail
     WHERE kodeorg like '".$unit."%' and tahunbudget = '".$tahun."' and 
-        (noakun like '7%' or noakun like '63%' or noakun like '64%' or noakun like '631%' or noakun like '632%' or noakun like '8%')
-    GROUP BY noakun";
+        (noakun like '7%' or noakun like '63%' or noakun like '64%' or noakun like '8%')
+    GROUP BY noakun ORDER BY noakun";
 //echo $aresta;
 $query=mysql_query($aresta) or die(mysql_error($conn));
 while($res=mysql_fetch_assoc($query))

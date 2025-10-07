@@ -134,7 +134,8 @@ while($bar=mysql_fetch_assoc($qList))
 	
 	
 	
-	$selisih['months_total']=($tahun2*12)+$bulan2 - (($tahun1*12)+$bulan1);
+	$selisih['months_total']=(($tahun2*12)+$bulan2 - (($tahun1*12)+$bulan1))+1;
+    //$selisih['months_total']=($tahun2*12)+$bulan2 - (($tahun1*12)+$bulan1);
 	//$selisih['months_total']=(($tahun2*12)+$bulan2) - ((($tahun1*12)+$bulan1)+1);
 	
 	
@@ -166,6 +167,7 @@ while($bar=mysql_fetch_assoc($qList))
                 $data.="<td>Hilang</td>";
         }			
         $tgl1=$bar['awalpenyusutan']."-01";
+		$sisabln2=$bar['jlhblnpenyusutan']-$selisih['months_total'];
         if($selisih['months_total']>$bar['jlhblnpenyusutan'])
         {
             $selisih['months_total']=$bar['jlhblnpenyusutan'];
@@ -176,11 +178,10 @@ while($bar=mysql_fetch_assoc($qList))
         {
             $selisih['months_total']=0;
         }
-		
-		
-        $sisabln=$bar['jlhblnpenyusutan']-$selisih['months_total'];
-        
-        if($sisabln<1){
+
+		$sisabln=$bar['jlhblnpenyusutan']-$selisih['months_total'];
+
+		if($sisabln<1){
             $sisabln=0;
         }
         $akumulasiBulanan=$bar['bulanan']*$selisih['months_total'];
@@ -249,7 +250,7 @@ while($bar=mysql_fetch_assoc($qList))
 			$bar['bulanan']=$out;
         }
         
-		if($sisabln<1 || $bar['status']!=1)
+		if($sisabln2<0 || $bar['status']!=1)
 		{
 				$bar['bulanan']=0;
 				$nilai=0;
@@ -324,7 +325,9 @@ $data.="<td align=right><b>".$tpengurang."</b></td>";
 $data.="<td align=right><b>".$tsisa."</b></td>";
 $data.="<td align=right><b>".number_format($totHargaAkumul,2)."</b></td>";
 $data.="<td align=right><b>".number_format($totNilai,2)."</b></td>";
-$data.="<td colspan=6>&nbsp;</td>";
+$data.="<td colspan=2>&nbsp;</td>";
+$data.="<td align=right><b>".number_format($bulanan,2)."</b></td>";
+$data.="<td colspan=3>&nbsp;</td>";
 $data.="</tbody></table>";
 
 

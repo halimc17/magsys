@@ -48,7 +48,7 @@ $golkar=makeOption($dbname,'datakaryawan','karyawanid','kodegolongan');
 $namagol=makeOption($dbname,'sdm_5golongan','kodegolongan','namagolongan');
 $namatipe=makeOption($dbname,'sdm_5tipekaryawan','id,tipe');
 
-function dates_inbetween($date1, $date2){
+function dates_inbetwee($date1, $date2){
 
     $day = 60*60*24;
 
@@ -86,7 +86,7 @@ if($_SESSION['empl']['kodeorganisasi'] == 'DUKE' || $_SESSION['empl']['kodeorgan
 */
 if($_SESSION['empl']['lokasitugas'] == 'DUKE' || $_SESSION['empl']['lokasitugas'] == 'TEBE' || $_SESSION['empl']['lokasitugas'] == 'MESE')
 {
-    $pnntdkdpt=" and kodejabatan !='14' ";
+    $pnntdkdpt=" and kodejabatan !='13' and kodejabatan !='14' ";
 }
 
 
@@ -177,7 +177,8 @@ if($tipe==4) {$rupiah = 0;}
 		$tgl2=$tgl_2;
 	}
 */	
-	$test = dates_inbetween($tgl1, $tgl2);
+	//$test = dates_inbetwee($tgl1, $tgl2);
+	$test = rangeTanggal($tgl1, $tgl2);
 	if(($tgl2=="")&&($tgl1==""))
 	{
 		echo"warning: Periode Penggajian Belum Terinput";

@@ -303,7 +303,7 @@ switch($proses)
         <tbody>";
 
         $wherestatus="";
-        if($statusblok==('TB'||'TBM'||'TM'))$wherestatus="and statusblok in ('TB','TBM','TM')";
+        if($statusblok==('TB'||'TBM'||'TBM-01'||'TBM-02'||'TBM-03'||'TM'))$wherestatus="and statusblok in ('TB','TBM','TBM-01','TBM-02','TBM-03','TM')";
         if($statusblok==('BBT'))$wherestatus="and statusblok in ('BBT')";
         $str="select * from ".$dbname.".bgt_blok
             where kodeblok like '".substr($kodeblok,0,4)."%' ".$wherestatus." and kodeblok != '".$kodeblok."' and tahunbudget = '".$tahunbudget."'

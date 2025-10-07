@@ -78,7 +78,7 @@ for($ard=1;$ard<=$totBln['months_total'];$ard++)
 	if($sistemGaji=='Bulanan')$wherez=" and sistemgaji = 'Bulanan'";        
 	if($sistemGaji=='Harian')$wherez=" and sistemgaji = 'Harian'";        
 
-$sGetKary="select a.karyawanid,b.namajabatan,a.namakaryawan,c.nama,d.tipe from ".$dbname.".datakaryawan a 
+$sGetKary="select a.karyawanid,b.namajabatan,a.namakaryawan,c.nama,d.tipe,a.nik from ".$dbname.".datakaryawan a 
            left join ".$dbname.".sdm_5jabatan b on a.kodejabatan=b.kodejabatan
            left join ".$dbname.".sdm_5departemen c on a.bagian=c.kode
            left join ".$dbname.".sdm_5tipekaryawan d on a.tipekaryawan=d.id
@@ -88,6 +88,7 @@ $rGetkary=fetchData($sGetKary);
 foreach($rGetkary as $row => $kar)
 {
    // $resData[$kar['karyawanid']][]=$kar['karyawanid'];
+    $nikkar[$kar['karyawanid']]=$kar['nik'];
     $namakar[$kar['karyawanid']]=$kar['namakaryawan'];
     $nmJabatan[$kar['karyawanid']]=$kar['namajabatan'];
     $nmBagian[$kar['karyawanid']]=$kar['nama'];
@@ -136,9 +137,10 @@ else
 				}
 			
 			}
-			$sPrestasi="select substr(b.tanggal,1,4) as periode,a.jumlahhk,a.nik from ".$dbname.".kebun_prestasi a left join ".$dbname.".kebun_aktifitas b on a.notransaksi=b.notransaksi 
-                            where upahkerja>0 and b.notransaksi like '%PNN%' and substr(b.kodeorg,1,4)='".substr($kodeOrg,0,4)."' and substr(b.tanggal,1,7) between '".$tgl1."' and '".$tgl2."'";
-                       // exit("Error".$sPrestasi);
+			$sPrestasi="select substr(b.tanggal,1,4) as periode,a.jumlahhk,a.nik from ".$dbname.".kebun_prestasi a 
+				left join ".$dbname.".kebun_aktifitas b on a.notransaksi=b.notransaksi 
+				where upahkerja>0 and (b.notransaksi like '%PNN%' or b.notransaksi like '%/BM/%') and substr(b.kodeorg,1,4)='".substr($kodeOrg,0,4)."' and substr(b.tanggal,1,7) between '".$tgl1."' and '".$tgl2."'";
+			// exit("Error".$sPrestasi);
 			$rPrestasi=fetchData($sPrestasi);
 			foreach ($rPrestasi as $presBrs =>$resPres)
 			{
@@ -208,6 +210,7 @@ switch($proses)
 	<thead class=rowheader>
 	<tr>
 	<td>No</td>
+	<td>NIK</td>
 	<td>".$_SESSION['lang']['nama']."</td>
         <td>".$_SESSION['lang']['tipekaryawan']."</td>
         <td>".$_SESSION['lang']['bagian']."</td>
@@ -235,6 +238,7 @@ switch($proses)
 				$no+=1;
 				echo"<tr class=rowcontent><td>".$no."</td>";
 				echo"
+				<td>".$nikkar[$hslAkhir[0]]."</td>
 				<td>".$namakar[$hslAkhir[0]]."</td>
                                 <td>".$nmTipe[$hslAkhir[0]]."</td>
                                 <td>".$nmBagian[$hslAkhir[0]]."</td>
@@ -332,10 +336,11 @@ class PDF extends FPDF
                                 $this->SetFont('Arial','B',7);
                                 $this->SetFillColor(220,220,220);
 				$this->Cell(3/100*$width,$height,'No',1,0,'C',1);
+				$this->Cell(5/100*$width,$height,'NIK',1,0,'C',1);	
 				$this->Cell(15/100*$width,$height,$_SESSION['lang']['nama'],1,0,'C',1);	
-                                $this->Cell(10/100*$width,$height,$_SESSION['lang']['bagian'],1,0,'C',1);
+				$this->Cell(10/100*$width,$height,$_SESSION['lang']['bagian'],1,0,'C',1);
 				$this->Cell(10/100*$width,$height,$_SESSION['lang']['jabatan'],1,0,'C',1);	
-                                $this->Cell(8/100*$width,$height,$_SESSION['lang']['tmk'],1,0,'C',1);
+				$this->Cell(8/100*$width,$height,$_SESSION['lang']['tmk'],1,0,'C',1);
 				$sAbsen="select kodeabsen from ".$dbname.".sdm_5absensi order by kodeabsen";
 				$qAbsen=mysql_query($sAbsen) or die(mysql_error());
 				while($rAbsen=mysql_fetch_assoc($qAbsen))
@@ -370,10 +375,11 @@ class PDF extends FPDF
 			{
 				$no+=1;
 				$pdf->Cell(3/100*$width,$height,$no,1,0,'C',1);
+				$pdf->Cell(5/100*$width,$height,strtoupper($nikkar[$hslAkhir[0]]),1,0,'L',1);	
 				$pdf->Cell(15/100*$width,$height,strtoupper($namakar[$hslAkhir[0]]),1,0,'L',1);	
-                                $pdf->Cell(10/100*$width,$height,$nmBagian[$hslAkhir[0]],1,0,'L',1);
+				$pdf->Cell(10/100*$width,$height,$nmBagian[$hslAkhir[0]],1,0,'L',1);
 				$pdf->Cell(10/100*$width,$height,strtoupper($nmJabatan[$hslAkhir[0]]),1,0,'L',1);
-                                $pdf->Cell(8/100*$width,$height,$optTmk[$hslAkhir[0]],1,0,'L',1);
+				$pdf->Cell(8/100*$width,$height,$optTmk[$hslAkhir[0]],1,0,'L',1);
 				foreach($klmpkAbsn as $brsKet =>$hslKet)
 				{
 					setIt($hasilAbsn[$hslAkhir[0]][$thn[0]][$hslKet['kodeabsen']],0);
@@ -398,13 +404,14 @@ class PDF extends FPDF
 	$jmAbsen=mysql_num_rows($qAbsen);
 	$colSpan=intval($jmAbsen)+2;
 	setIt($jmlHari,0);
-	$colatas=$jmlHari+$colSpan+3;
-	$stream.="<table border='0'><tr><td colspan='".$colatas."' align=center>".strtoupper("Rekapitulasi Absensi Karyawan")." ".$sistemGaji."</td></tr>
+	$colatas=$jmlHari+$colSpan+6;
+	$stream.="<table border='0'><tr><td colspan='".$colatas."' align=center>".strtoupper("Rekapitulasi Absensi Karyawan"." ".$sistemGaji)."</td></tr>
 	<tr><td colspan='".$colatas."' align=center>".strtoupper($_SESSION['lang']['periode'])." :". substr(tanggalnormal($tgl1),1,7)." s.d. ". substr(tanggalnormal($tgl2),1,7)."</td></tr><tr><td colspan='".$colatas."'>&nbsp;</td></tr></table>";
 	$stream.="<table cellspacing='1' border='1' class='sortable'>
 	<thead class=rowheader>
 	<tr>
 	<td bgcolor=#DEDEDE align=center>No</td>
+	<td bgcolor=#DEDEDE align=center>NIK</td>
 	<td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['nama']."</td>
         <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['tipekaryawan']."</td>
         <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['bagian']."</td>
@@ -433,9 +440,10 @@ class PDF extends FPDF
 				$no+=1;
 				$stream.="<tr class=rowcontent><td>".$no."</td>";
 				$stream.="
+				<td>".$nikkar[$hslAkhir[0]]."</td>
 				<td>".$namakar[$hslAkhir[0]]."</td>
-                                <td>".$nmTipe[$hslAkhir[0]]."</td>
-                                <td>".$nmBagian[$hslAkhir[0]]."</td>
+				<td>".$nmTipe[$hslAkhir[0]]."</td>
+				<td>".$nmBagian[$hslAkhir[0]]."</td>
 				<td>".$nmJabatan[$hslAkhir[0]]."</td>
 				<td>".$optTmk[$hslAkhir[0]]."</td>";
 				foreach($klmpkAbsn as $brsKet =>$hslKet)

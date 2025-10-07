@@ -67,26 +67,49 @@ while($bar=mysql_fetch_object($res))
    else 
     $stpersetujuan=$_SESSION['lang']['wait_approve'];	
 
-   $str1="select sum(jumlah) as jumlah from ".$dbname.".sdm_pjdinasdt
+   $str1="select sum(jumlah) as jumlah,sum(jumlahdibayar) as jumlahdibayar from ".$dbname.".sdm_pjdinasdt
          where notransaksi='".$bar->notransaksi."'";
    $res1=mysql_query($str1);
+
    $usage=0;
+   $jumlahdibayar=0;
    while($bar1=mysql_fetch_object($res1))
    {
-         $usage=$bar1->jumlah;
-   }	
+   	 $usage=$bar1->jumlah;
+   	 $jumlahdibayar=$bar1->jumlahdibayar;
+   }	 	 
 
+  $tujuan=$bar->tujuan1;
+  if($bar->tujuan2!=''){
+	$tujuan=$bar->tujuan2;
+  }elseif($bar->tujuan3!=''){
+	$tujuan=$bar->tujuan3;
+  }elseif($bar->tujuanlain!=''){
+	$tujuan=$bar->tujuanlain;
+  }
+
+	if($usage==0 and $jumlahdibayar==0){
+		$dibayar='';
+	}else if($jumlahdibayar>0){
+		$dibayar='Sudah dibayar';
+	}else{
+		$dibayar='Belum dibayar';
+	}
 
         echo"<tr class=rowcontent>
           <td>".$no."</td>
           <td>".$bar->notransaksi."</td>
           <td>".$namakaryawan."</td>
           <td>".tanggalnormal($bar->tanggalbuat)."</td>
-          <td>".$bar->tujuan1."</td>
-          <td align=right>".number_format($bar->dibayar,2,'.',',')."</td>
-          <td align=right>".number_format($usage,2,'.',',')."</td>	  
-          <td>".$stpersetujuan."</td>
-          <td align=center>
+          <td>".$tujuan."</td>
+          <td align=right>".number_format($usage,2,'.',',')."</td>
+          <td align=right>".number_format($jumlahdibayar,2,'.',',')."</td>	  
+          <td>".$stpersetujuan."</td>";
+			//if(substr($bar->notransaksi,2,2)=='HO'){
+			if($_SESSION['empl']['tipelokasitugas']=='HOLDING'){
+				echo"<td>".$dibayar."</td>";
+			}
+		echo"<td align=center>
              <img src=images/pdf.jpg class=resicon  title='".$_SESSION['lang']['pdf']."' onclick=\"previewPJD('".$bar->notransaksi."',event);\"> 
             <img src=images/pdf.jpg class=resicon  title='".$_SESSION['lang']['pdf']." (Task Result Description)' onclick=\"previewPJDUraian('".$bar->notransaksi."',event);\">                  
        ".$add."

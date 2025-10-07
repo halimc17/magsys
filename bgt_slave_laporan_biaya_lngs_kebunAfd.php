@@ -43,7 +43,7 @@ while($bar=mysql_fetch_object($res))
 }
 //ambil luas planted per tahuntanam TBM
 $str="select sum(hathnini) as luas,left(kodeblok,6) as afdeling from ".$dbname.".bgt_blok 
-      where kodeblok like '".$kodeOrg."%' and statusblok ='TBM' and tahunbudget='".$thnBudget."'
+      where kodeblok like '".$kodeOrg."%' and statusblok like 'TBM%' and tahunbudget='".$thnBudget."'
       group by left(kodeblok,6)";
 $res=mysql_query($str);
 while($bar=mysql_fetch_object($res))
@@ -98,8 +98,9 @@ while($rNoakunRupiah=mysql_fetch_assoc($qNoakunRupiah))
         $dtNoakunRup2[$thnBudget][$rNoakunRupiah['aknKpala']]+=$rNoakunRupiah['rupiah'];
     }
 }
-$sAkunRupiah="select distinct substr(noakun,1,3) as aknKpala,sum(rupiah) as  rupiah,tahunbudget,substr(kodeorg,1,6) as thntnm from ".$dbname.".bgt_budget_kebun_perblok_vw
+$sAkunRupiah="select substr(noakun,1,3) as aknKpala,sum(rupiah) as  rupiah,tahunbudget,substr(kodeorg,1,6) as thntnm from ".$dbname.".bgt_budget_kebun_perblok_vw
               where kodeorg like '".$kodeOrg."%' and tahunbudget='".$thnBudget."' and tipebudget='ESTATE' and kodebudget!='UMUM' group by substr(kodeorg,1,6),noakun";
+//exit('Warning: '.$sAkunRupiah);
 $qAkunRupiah=mysql_query($sAkunRupiah) or die(mysql_error($conn));
 while($rAkunRupiah=mysql_fetch_assoc($qAkunRupiah))
 {
@@ -219,7 +220,7 @@ if($jmhThn==0||$jmhThn=='')
                         {
                             @$hasilBagiRup[$ktKrgng]=$dtNoakunRup2[$thnBudget][$ktKrgng]/$ttlLuastm;
                             $tab.="<tr class='rowcontent'>";
-                            $tab.="<td colspan=2><b>".$_SESSION['lang']['total']." TM</b></td>";
+                            $tab.="<td colspan=2><b>".$_SESSION['lang']['total']." TM ".(substr($barisNoakun,0,3)=='611' ? 'Panen' : 'Rawat')."</b></td>";
                             
                             //indra
                             

@@ -126,9 +126,9 @@ $where = "";
 if(substr($_SESSION['empl']['lokasitugas'],2,2) != "HO") {
 	$where = " and t1.blok like '".$_SESSION['empl']['lokasitugas']."%' ";
 }
-$str1="select t1.*, t2.deskripsi from ".$dbname.".kebun_rencanasisip t1
-	left join ".$dbname.".kebun_5alasanrencanasisip t2
-	on t1.keterangan=t2.kodealasanrencanasisip 
+$str1="select t1.*, t2.deskripsi, t3.namaorganisasi from ".$dbname.".kebun_rencanasisip t1
+	left join ".$dbname.".kebun_5alasanrencanasisip t2 on t1.keterangan=t2.kodealasanrencanasisip
+	left join ".$dbname.".organisasi t3 on t1.blok=t3.kodeorganisasi 
 	where t1.periode like '".$periode2."%' ".$where." order by t1.periode desc, t1.blok";
 $res1=mysql_query($str1);
 echo"<table class=sortable cellspacing=1 border=0 style='width:800px;'>
@@ -150,7 +150,7 @@ while($bar1=mysql_fetch_object($res1))
     $no+=1;
     echo"<tr class=rowcontent>
         <td>".$bar1->periode."</td>
-        <td>".$bar1->blok."</td>
+        <td>".$bar1->namaorganisasi."</td>
         <td align=right>".number_format($bar1->pokok)."</td>
         <td align=right>".number_format($bar1->sph,2)."</td>
         <td align=right>".number_format($bar1->pokokmati)."</td>

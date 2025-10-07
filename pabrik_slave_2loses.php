@@ -39,7 +39,7 @@ $dzArr=array();
 $kmrn=strtotime ('-1 day',strtotime ($tgl_1));
 $kmrn=date ('Y-m-d', $kmrn );
 
-function dates_inbetween($date1, $date2)
+function dates_inbetwee($date1, $date2)
 {
     $day = 60*60*24;
     $date1 = strtotime($date1);
@@ -60,7 +60,8 @@ function dates_inbetween($date1, $date2)
 		$tgl1=tanggalsystem($tgl1);
 		$tgl22=tanggalsystem($tgl22);
 	}
-	$test = dates_inbetween($tgl1, $tgl22);
+	//$test = dates_inbetwee($tgl1, $tgl22);
+	$test = rangeTanggal($tgl1, $tgl22);
          
 $sData="select distinct * from ".$dbname.".pabrik_produksi where 
         kodeorg='".$kdPabrik."' and tanggal between '".$tgl_1."' and '".$tgl_2."' order by tanggal asc";

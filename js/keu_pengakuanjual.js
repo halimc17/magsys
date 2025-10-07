@@ -25,20 +25,21 @@ function list() {
 }
 function showDetail(noTiket,millCode,ev){
         title="Detail Nokontrak";
-        content="<fieldset><legend>"+noTiket+"</legend><div id=contDetail style='overflow:auto; width:330px; height:80px;' ></div></fieldset><input type=hidden id=tanggal_"+noTiket+" name=tanggal_"+noTiket+" value="+getValue('tanggal_'+noTiket)+" />";
-        width='350px';
-        height='100px';
+        content="<fieldset><legend>"+noTiket+"</legend><div id=contDetail style='overflow:auto; width:350px; height:100px;' ></div></fieldset><input type=hidden id=tanggal_"+noTiket+" name=tanggal_"+noTiket+" value="+getValue('tanggal_'+noTiket)+" />";
+        width='450px';
+        height='250px';
         showDialog1(title,content,width,height,ev);	
 }
 function pilKontrak(obj,noTiket,millCode,rw,event){
-if(rw==0){
-	post(obj,noTiket,millCode,rw);//jika tidak ada detail dari nokontrak langsung terposting
-}else{
-	showDetail(noTiket,millCode,event);//memunculkan pilihan kontrak 
-	var param='proses=getForm';
-	param+='&notiket='+noTiket+'&millcode='+millCode+'&tanggal='+getValue('tanggal_'+noTiket)+'&obc='+obj+'&rw='+rw,
-	tujuan = 'keu_slave_pengakuanjual.php?proses=pilKontrak';
-	post_response_text(tujuan, param, respog);
+	if(rw==0){
+		post(obj,noTiket,millCode,rw);//jika tidak ada detail dari nokontrak langsung terposting
+	}else{
+		showDetail(noTiket,millCode,event);//memunculkan pilihan kontrak 
+		var param='proses=getForm';
+		param+='&notiket='+noTiket+'&millcode='+millCode+'&tanggal='+getValue('tanggal_'+noTiket)+'&obc='+obj+'&rw='+rw,
+		tujuan = 'keu_slave_pengakuanjual.php?proses=pilKontrak';
+		post_response_text(tujuan, param, respog);
+	}
 	function respog(){
 		if (con.readyState == 4) {
 			if (con.status == 200) {
@@ -56,7 +57,6 @@ if(rw==0){
 			}
 		}
 	}
-}
 }
 
 function post(obj,noTiket,millCode,rw) {
@@ -131,6 +131,7 @@ function getPtkntrk(){
 		}
 	}
 }
+
 
 
 function getExcel(ev,tujuan){

@@ -480,8 +480,8 @@ function formHeader($mode,$data) {
     
     
     $whereKaryAst=" lokasitugas='".$_SESSION['empl']['lokasitugas']."' and tanggalkeluar='0000-00-00' and "
-            . " kodejabatan in (select kodejabatan from ".$dbname.".sdm_5jabatan "
-            . " where namajabatan like '%Head%' or namajabatan like '%Coordinator%') ";
+			. " kodejabatan in (select kodejabatan from ".$dbname.".sdm_5jabatan "
+			. " where namajabatan like '%Head%' or namajabatan like '%Coordinator%' or namajabatan like '%Senior Process%' or namajabatan like '%Senior Support%' or kodejabatan='46' or kodejabatan='194') ";
     $optKaryAst = makeOption($dbname,'datakaryawan','karyawanid,namakaryawan',$whereKaryAst);
 
     

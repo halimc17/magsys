@@ -15,33 +15,51 @@ $_POST['bagId']!=''?$bagian=$_POST['bagId']:$bagian=$_GET['bagId'];
 $_POST['karyawanId']!=''?$karyawanId=$_POST['karyawanId']:$karyawanId=$_GET['karyawanId'];
 $_POST['stat']!=''?$stat=$_POST['stat']:$stat=$_GET['stat'];
 
-$sKd="select kodeorganisasi from ".$dbname.".organisasi where induk='".$kdPt."'";
-$qKd=mysql_query($sKd) or die(mysql_error($conn));
-while($rKd=mysql_fetch_assoc($qKd))
+if($kdPt!='')
 {
-    $aro+=1;
-    if($aro==1)
-    {
-        $kodear="'".$rKd['kodeorganisasi']."'";
-    }
-    else
-    {
-        $kodear.=",'".$rKd['kodeorganisasi']."'";
-    }
+	$sKd="select kodeorganisasi from ".$dbname.".organisasi where induk='".$kdPt."'";
+	$qKd=mysql_query($sKd) or die(mysql_error($conn));
+	while($rKd=mysql_fetch_assoc($qKd))
+	{
+		$aro+=1;
+		if($aro==1)
+		{
+			$kodear="'".$rKd['kodeorganisasi']."'";
+		}
+		else
+		{
+			$kodear.=",'".$rKd['kodeorganisasi']."'";
+		}
+	}
 }
 
 //ambil query untuk data karyawan
-        if($kdPt=='')
-        {
-
-           exit("Error: Working unit required");
-        }
-        else
-        {
-            $where.=" karyawanid in (select distinct karyawanid from ".$dbname.".sdm_pjdinasht 
-                      where kodeorg in(".$kodear.")) and (tanggalkeluar = '0000-00-00' or tanggalkeluar > '".date("Y-m-d")."') and tipekaryawan in ('0','7','8')";
-            $add.=" and kodeorg in (".$kodear.")";
-        }
+//        if($kdPt=='')
+//        {
+//           exit("Error: Working unit required");
+//        }
+//        else
+//        {
+			$add="";
+			$where="";
+			if($kdPt!='')
+			{
+				$add.=" and kodeorg in (".$kodear.")";
+			}
+			if($periode!='')
+			{
+				//$add=" and substring(tglpertanggungjawaban,1,7)='".$periode."'";
+				$add.=" and tanggalperjalanan like '".$periode."%'";
+			}
+			if($stat!='')
+			{
+				$add.=" and lunas='".$stat."'";
+			}
+			//$where.=" karyawanid in (select distinct karyawanid from ".$dbname.".sdm_pjdinasht 
+			//          where kodeorg in(".$kodear.")) and (tanggalkeluar = '0000-00-00' or tanggalkeluar > '".date("Y-m-d")."') and tipekaryawan in ('0','7','8')";
+            $where.=" and karyawanid in (select distinct karyawanid from ".$dbname.".sdm_pjdinasht 
+                      where statushrd='1' ".$add.")";
+ //       }
         if($karyawanId!='')
         {
             $where.=" and karyawanid='".$karyawanId."'";
@@ -50,14 +68,15 @@ while($rKd=mysql_fetch_assoc($qKd))
         {
             $where.=" and bagian='".$bagian."'";
         }
-            $sGetKary="select a.karyawanid,b.namajabatan,a.namakaryawan,a.lokasitugas from ".$dbname.".datakaryawan a 
-           left join ".$dbname.".sdm_5jabatan b on a.kodejabatan=b.kodejabatan where 
-            ".$where." order by namakaryawan asc";    
- //exit("Error".$sGetKary."__".$where);
+            $sGetKary="select a.nik,a.karyawanid,b.namajabatan,a.namakaryawan,a.lokasitugas from ".$dbname.".datakaryawan a 
+           left join ".$dbname.".sdm_5jabatan b on a.kodejabatan=b.kodejabatan where 1=1
+            ".$where." order by namakaryawan asc"; 
+//exit("Error: ".$sGetKary."__".$where);
 $rGetkary=fetchData($sGetKary);
 foreach($rGetkary as $row => $kar)
 {
     $resData[$kar['karyawanid']][]=$kar['karyawanid'];
+    $nikkar[$kar['karyawanid']]=$kar['nik'];
     $namakar[$kar['karyawanid']]=$kar['namakaryawan'];
     $nmJabatan[$kar['karyawanid']]=$kar['namajabatan'];
     $lokTugas[$kar['karyawanid']]=$kar['lokasitugas'];
@@ -69,12 +88,12 @@ switch($proses)
 {
         case'getKaryawan':
             //exit("Error:masuk");
-            if($kdPt=='')
-            {
-                exit("Error:Working unit required");
-            }
+            //if($kdPt=='')
+            //{
+            //    exit("Error:Working unit required");
+            //}
             $optKary="<option value=''>".$_SESSION['lang']['all']."</option>";
-            $sKary="select karyawanid,namakaryawan from ".$dbname.".datakaryawan where 
+            $sKary="select karyawanid,namakaryawan from ".$dbname.".datakaryawan where 1=1 
                     ".$where." order by namakaryawan asc";
             //exit("Error".$sKary);
             $qKary=mysql_query($sKary) or die(mysql_error($conn));
@@ -85,17 +104,12 @@ switch($proses)
             echo $optKary;
         break;
         case'preview':
-            if($periode!='')
-            {
-            $add=" and substring(tglpertanggungjawaban,1,7)='".$periode."'";
-            }
             if($stat!='')
             {
             $add.=" and lunas='".$stat."'";
             }
-
             #ambil biaya tiket
-            $stro="select notransaksi,bytiket,dibayar from ".$dbname.".sdm_pjdinasht where 1=1 ".$add;
+            $stro="select notransaksi,bytiket,dibayar from ".$dbname.".sdm_pjdinasht where statushrd='1' ".$add;
             //exit("Error:".$stro);
             $bytiket=Array();
             $reso=mysql_query($stro) or die(mysql_error($conn));
@@ -115,82 +129,100 @@ switch($proses)
                     <table cellspacing='1' border='0' class='sortable'>
         <thead class=rowheader>
         <tr>
+        <td>".$_SESSION['lang']['nik']."</td>
         <td>".$_SESSION['lang']['nama']."</td>
         <td>".$_SESSION['lang']['jabatan']."</td>
         <td>".$_SESSION['lang']['notransaksi']."</td>
         <td>".$_SESSION['lang']['tanggaldinas']."</td>
         <td>".$_SESSION['lang']['tanggalkembali']."</td>
-
         <td>".$_SESSION['lang']['tanggalRelease']."</td>
-
+        <td>".$_SESSION['lang']['kodeorg']."</td>
         <td>".$_SESSION['lang']['tujuan']." 1</td>
         <td>".$_SESSION['lang']['tujuan']." 2</td>
-        <td>".$_SESSION['lang']['tujuan']." 3</td>
-        <td>".$_SESSION['lang']['tujuan']." ".$_SESSION['lang']['uangmuka']."</td> 
-        <td>".$_SESSION['lang']['uangmuka']."</td>
-        <td>".$_SESSION['lang']['sudahdipakai']."</td>
-        <td>".$_SESSION['lang']['biaya']." Ticket</td>";
+        <td>".$_SESSION['lang']['tujuan']." ".$_SESSION['lang']['lain']."</td> 
+        <td align=right>".$_SESSION['lang']['uangmuka']."</td>
+        <td align=right>Reimburse</td>
+        <td align=right>".$_SESSION['lang']['biaya']." Ticket</td>
+        <td align=right>".$_SESSION['lang']['total']."</td>";
         $tab.="</tr></thead>
         <tbody>";
  foreach($resData as $brsDt =>$rData)
         {
-            $sPjd="select a.*,sum(b.jumlah) as jmlhPjd,sum(b.jumlahhrd) as jmlhSetuju from ".$dbname.".sdm_pjdinasdt b left join ".$dbname.".sdm_pjdinasht a on a.notransaksi=b.notransaksi
-                where statushrd=1   ".$add." and a.karyawanid='".$rData[0]."' group by notransaksi";
+/*
+			$sPjd="select a.*,sum(b.jumlah) as jmlhPjd,sum(b.jumlahhrd) as jmlhSetuju from ".$dbname.".sdm_pjdinasdt b 
+					left join ".$dbname.".sdm_pjdinasht a on a.notransaksi=b.notransaksi
+					where statushrd=1 ".$add." and a.karyawanid='".$rData[0]."' 
+					group by notransaksi";
+*/
+			$sPjd="select a.*,sum(b.jumlah) as jmlhPjd,sum(b.jumlahhrd) as jmlhSetuju from ".$dbname.".sdm_pjdinasht a 
+					left join ".$dbname.".sdm_pjdinasdt b on a.notransaksi=b.notransaksi
+					where a.statushrd=1 ".$add." and a.karyawanid='".$rData[0]."' 
+					group by notransaksi";
             //exit("Error".$sPjd);
             $qPjd=mysql_query($sPjd) or die(mysql_error($conn));
             while($rPjd=mysql_fetch_assoc($qPjd))
             {
             $tab.="<tr class=rowcontent>";
+            $tab.="<td style='width:60px'>".$nikkar[$rData[0]]."</td>";
             $tab.="<td>".$namakar[$rData[0]]."</td>";
             $tab.="<td>".$nmJabatan[$rData[0]]."</td>";
             $tab.="<td>".$rPjd['notransaksi']."</td>";
             $tab.="<td>".tanggalnormal($rPjd['tanggalperjalanan'])."</td>";
             $tab.="<td>".tanggalnormal($rPjd['tanggalkembali'])."</td>";
             $tab.="<td>".tanggalnormal($rPjd['tglpertanggungjawaban'])."</td>";
-            $tab.="<td>".$optOrg[$rPjd['tujuan1']]."</td>";
-            $tab.="<td>".$optOrg[$rPjd['tujuan2']]."</td>";
-            $tab.="<td>".$optOrg[$rPjd['tujuan3']]."</td>";
-            $tab.="<td>".$optOrg[$rPjd['tujuanlain']]."</td>";
+            $tab.="<td>".$rPjd['kodeorg']."</td>";
+            $tab.="<td>".$rPjd['tujuan2']."</td>";
+            $tab.="<td>".$rPjd['tujuan3']."</td>";
+            $tab.="<td>".$rPjd['tujuanlain']."</td>";
             $tab.="<td align=right>".number_format($byum[$rPjd['notransaksi']],2)."</td>";
             $tab.="<td align=right>".number_format(($rPjd['jmlhSetuju']),2)."</td>";
-             $tab.="<td align=right>".number_format(($bytiket[$rPjd['notransaksi']]),2)."</td>";
+            $tab.="<td align=right>".number_format(($bytiket[$rPjd['notransaksi']]),2)."</td>";
+            $tab.="<td align=right>".number_format(($byum[$rPjd['notransaksi']]+$rPjd['jmlhSetuju']+$bytiket[$rPjd['notransaksi']]),2)."</td>";
             $tab.="</tr>";
             $jmlTot[$rPjd['karyawanid']]+=$rPjd['jmlhSetuju'];
             $jmlTiket[$rPjd['karyawanid']]+=$bytiket[$rPjd['notransaksi']];
             $jmlhUm[$rPjd['karyawanid']]+=$byum[$rPjd['notransaksi']];
             }
-            if($jmlTot[$rData[0]]!='' || $jmlTot[$rData[0]]!=0)
-            {
-            $tab.="<tr class=rowcontent style='font-weight:bold;'><td colspan=10>Total ".$namakar[$rData[0]]."</td><td  align=right>".number_format($jmlhUm[$rData[0]],2)."</td><td  align=right>".number_format($jmlTot[$rData[0]],2)."</td><td  align=right>".number_format( $jmlTiket[$rData[0]],2)."</td></tr>";
-            }
+            //if($jmlTot[$rData[0]]!='' || $jmlTot[$rData[0]]!=0)
+            //{
+            $tab.="<tr class=rowcontent style='font-weight:bold;'>
+					<td colspan=11>Total ".$namakar[$rData[0]]."</td>
+					<td  align=right>".number_format($jmlhUm[$rData[0]],2)."</td>
+					<td  align=right>".number_format($jmlTot[$rData[0]],2)."</td>
+					<td  align=right>".number_format($jmlTiket[$rData[0]],2)."</td>
+					<td  align=right>".number_format($jmlhUm[$rData[0]]+$jmlTot[$rData[0]]+$jmlTiket[$rData[0]],2)."</td>
+					</tr>";
+            //}
              $grandTot+=$jmlTot[$rData[0]];
              $grandUm+=$jmlhUm[$rData[0]];
              $grandTi+=$jmlTiket[$rData[0]];
         }
-        $tab.="<tr class=rowcontent><td colspan=10>Grand Total </td><td  align=right>".number_format($grandUm,2)."</td><td  align=right>".number_format($grandTot,2)."</td><td  align=right>".number_format($grandTi,2)."</td></tr>";
+        $tab.="<tr class=rowcontent style='font-weight:bold;'>
+				<td colspan=11>Grand Total </td>
+				<td  align=right>".number_format($grandUm,2)."</td>
+				<td  align=right>".number_format($grandTot,2)."</td>
+				<td  align=right>".number_format($grandTi,2)."</td>
+				<td  align=right>".number_format($grandUm+$grandTot+$grandTi,2)."</td>
+				</tr>";
         $tab.="</tbody></table>";
 
         echo $tab;
         }
         break;
         case'pdf':
-           if($periode!='')
-            {
-            $add=" and substring(tglpertanggungjawaban,1,7)='".$periode."'";
-            }
             if($stat!='')
             {
             $add.=" and lunas='".$stat."'";
             }
-
             #ambil biaya tiket
-            $stro="select notransaksi,bytiket from ".$dbname.".sdm_pjdinasht where 1=1 ".$add;
+            $stro="select notransaksi,bytiket,dibayar from ".$dbname.".sdm_pjdinasht where statushrd='1' ".$add;
             //exit("Error:".$stro);
             $bytiket=Array();
             $reso=mysql_query($stro) or die(mysql_error($conn));
             while($baro=  mysql_fetch_object($reso))
             {
             $bytiket[$baro->notransaksi]=$baro->bytiket;
+            $byum[$baro->notransaksi]=$baro->dibayar;
             }
 
         //+++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -253,17 +285,18 @@ class PDF extends FPDF
                 $this->Cell(3/100*$width,$height,'No',1,0,'C',1);
                 $this->Cell(11/100*$width,$height,$_SESSION['lang']['nama'],1,0,'C',1);		
                 //$this->Cell(10/100*$width,$height,$_SESSION['lang']['jabatan'],1,0,'C',1);	
-                $this->Cell(10/100*$width,$height,$_SESSION['lang']['notransaksi'],1,0,'C',1);
-                $this->Cell(7/100*$width,$height,$_SESSION['lang']['tanggaldinas'],1,0,'C',1);
+                $this->Cell(8/100*$width,$height,$_SESSION['lang']['notransaksi'],1,0,'C',1);
+                $this->Cell(6/100*$width,$height,$_SESSION['lang']['tanggaldinas'],1,0,'C',1);
                 $this->Cell(7/100*$width,$height,$_SESSION['lang']['tanggalkembali'],1,0,'C',1);
-                $this->Cell(7/100*$width,$height,$_SESSION['lang']['tanggalRelease'],1,0,'C',1);
-                $this->Cell(7/100*$width,$height,$_SESSION['lang']['tujuan']."1",1,0,'C',1);
-                $this->Cell(7/100*$width,$height,$_SESSION['lang']['tujuan']."2",1,0,'C',1);
-                $this->Cell(6/100*$width,$height,$_SESSION['lang']['tujuan']."3",1,0,'C',1);
-                $this->Cell(13/100*$width,$height,$_SESSION['lang']['tujuan']."  ".$_SESSION['lang']['lain'],1,0,'C',1);
+                $this->Cell(7/100*$width,$height,$_SESSION['lang']['tanggal'].' Release',1,0,'C',1);
+                $this->Cell(4/100*$width,$height,$_SESSION['lang']['unit'],1,0,'C',1);
+                $this->Cell(4/100*$width,$height,$_SESSION['lang']['tujuan']."1",1,0,'C',1);
+                $this->Cell(4/100*$width,$height,$_SESSION['lang']['tujuan']."2",1,0,'C',1);
+                $this->Cell(13/100*$width,$height,$_SESSION['lang']['tujuan']." ".$_SESSION['lang']['lain'],1,0,'C',1);
                 $this->Cell(8/100*$width,$height,$_SESSION['lang']['uangmuka'],1,0,'C',1);
-                $this->Cell(8/100*$width,$height,$_SESSION['lang']['sudahdipakai'],1,0,'C',1);
-                $this->Cell(7/100*$width,$height,'Ticket',1,1,'C',1);
+                $this->Cell(8/100*$width,$height,'Reimburse',1,0,'C',1);
+                $this->Cell(8/100*$width,$height,$_SESSION['lang']['biaya'].'Ticket',1,0,'C',1);
+                $this->Cell(8/100*$width,$height,$_SESSION['lang']['total'].$_SESSION['lang']['biaya'],1,1,'C',1);
             }
 
             function Footer()
@@ -279,21 +312,13 @@ class PDF extends FPDF
                 $pdf->AddPage();
                 $pdf->SetFillColor(255,255,255);
                 $pdf->SetFont('Arial','',7);
-                #ambil biaya tiket
-            $stro="select notransaksi,bytiket,dibayar from ".$dbname.".sdm_pjdinasht where 1=1 ".$add;
-            //exit("Error:".$stro);
-            $bytiket=Array();
-            $reso=mysql_query($stro) or die(mysql_error($conn));
-            while($baro=  mysql_fetch_object($reso))
-            {
-            $bytiket[$baro->notransaksi]=$baro->bytiket;
-            $byum[$baro->notransaksi]=$baro->dibayar;
-            }
-        foreach($resData as $brsDt =>$rData)
+
+		foreach($resData as $brsDt =>$rData)
         {
-            $sPjd="select a.*,sum(b.jumlah) as jmlhPjd,sum(b.jumlahhrd) as jmlhSetuju from ".$dbname.".sdm_pjdinasht a left join ".$dbname.".sdm_pjdinasdt b on a.notransaksi=b.notransaksi
-                where  statushrd=1  ".$add." and a.karyawanid='".$rData[0]."'group by notransaksi";
-            //exit("Error".$sPjd);
+			$sPjd="select a.*,sum(b.jumlah) as jmlhPjd,sum(b.jumlahhrd) as jmlhSetuju from ".$dbname.".sdm_pjdinasht a 
+					left join ".$dbname.".sdm_pjdinasdt b on a.notransaksi=b.notransaksi
+					where a.statushrd=1 ".$add." and a.karyawanid='".$rData[0]."' 
+					group by notransaksi";
             $qPjd=mysql_query($sPjd) or die(mysql_error($conn));
             while($rPjd=mysql_fetch_assoc($qPjd))
             {
@@ -302,72 +327,66 @@ class PDF extends FPDF
                 $pdf->Cell(3/100*$width,$height,$no,1,0,'C',1);
                 $pdf->Cell(11/100*$width,$height,$namakar[$rData[0]],1,0,'L',1);		
                 //$this->Cell(10/100*$width,$height,$_SESSION['lang']['jabatan'],1,0,'C',1);	
-                $pdf->Cell(10/100*$width,$height,$rPjd['notransaksi'],1,0,'C',1);
-                $pdf->Cell(7/100*$width,$height,tanggalnormal($rPjd['tanggalperjalanan']),1,0,'C',1);
+                $pdf->Cell(8/100*$width,$height,$rPjd['notransaksi'],1,0,'C',1);
+                $pdf->Cell(6/100*$width,$height,tanggalnormal($rPjd['tanggalperjalanan']),1,0,'C',1);
                 $pdf->Cell(7/100*$width,$height,tanggalnormal($rPjd['tanggalkembali']),1,0,'C',1);
                 $pdf->Cell(7/100*$width,$height,tanggalnormal($rPjd['tglpertanggungjawaban']),1,0,'C',1);
-                $pdf->Cell(7/100*$width,$height,$rPjd['tujuan1'],1,0,'C',1);
-                $pdf->Cell(7/100*$width,$height,$rPjd['tujuan2'],1,0,'C',1);
-                $pdf->Cell(6/100*$width,$height,$rPjd['tujuan3'],1,0,'C',1);
+                $pdf->Cell(4/100*$width,$height,$rPjd['kodeorg'],1,0,'C',1);
+                $pdf->Cell(4/100*$width,$height,$rPjd['tujuan2'],1,0,'C',1);
+                $pdf->Cell(4/100*$width,$height,$rPjd['tujuan3'],1,0,'C',1);
                 $pdf->Cell(13/100*$width,$height,$rPjd['tujuanlain'],1,0,'L',1);
-
                 $pdf->Cell(8/100*$width,$height,number_format($byum[$rPjd['notransaksi']],2),1,0,'R',1);
                 $pdf->Cell(8/100*$width,$height,number_format(($rPjd['jmlhSetuju']),2),1,0,'R',1);
-                $pdf->Cell(7/100*$width,$height,number_format(( $bytiket[$rPjd['notransaksi']]),2),1,1,'R',1);
+                $pdf->Cell(8/100*$width,$height,number_format(($bytiket[$rPjd['notransaksi']]),2),1,0,'R',1);
+                $pdf->Cell(8/100*$width,$height,number_format(($byum[$rPjd['notransaksi']]+$rPjd['jmlhSetuju']+$bytiket[$rPjd['notransaksi']]),2),1,1,'R',1);
 
                 $jmlTot[$rPjd['karyawanid']]+=$rPjd['jmlhSetuju'];
                 $jmlhUm[$rPjd['karyawanid']]+=$byum[$rPjd['notransaksi']];
                 $jmlTiket[$rPjd['karyawanid']]+=$bytiket[$rPjd['notransaksi']];                
 
             }
-            if($jmlTot[$rData[0]]!=''||$jmlTot[$rData[0]]!=0)
-            {
+            //if($jmlTot[$rData[0]]!=''||$jmlTot[$rData[0]]!=0)
+            //{
                 $pdf->SetFillColor(220,220,220);
-                $pdf->Cell(78/100*$width,$height,"Total ".$namakar[$rData[0]],1,0,'L',1);
+                $pdf->Cell(67/100*$width,$height,"Total ".$namakar[$rData[0]],1,0,'L',1);
                 $pdf->Cell(8/100*$width,$height,number_format($jmlhUm[$rData[0]],2),1,0,'R',1);
                 $pdf->Cell(8/100*$width,$height,number_format($jmlTot[$rData[0]],2),1,0,'R',1);
-                $pdf->Cell(7/100*$width,$height,number_format($jmlTiket[$rData[0]],2),1,1,'R',1);
+                $pdf->Cell(8/100*$width,$height,number_format($jmlTiket[$rData[0]],2),1,0,'R',1);
+                $pdf->Cell(8/100*$width,$height,number_format($jmlhUm[$rData[0]]+$jmlTot[$rData[0]]+$jmlTiket[$rData[0]],2),1,1,'R',1);
                 $no=0;
             //$tab.="<tr class=rowcontent><td colspan=10 align=right>Total ".$namakar[$rData[0]]."</td><td  align=right>".number_format($jmlTot[$rData[0]],2)."</td></tr>";
-            }
+            //}
             $grandTot+=$jmlTot[$rData[0]];
-             $grandUm+=$jmlhUm[$rData[0]];
-             $grandTi+=$jmlTiket[$rData[0]];            
+            $grandUm+=$jmlhUm[$rData[0]];
+            $grandTi+=$jmlTiket[$rData[0]];            
         }
-        $pdf->Cell(78/100*$width,$height,"Grand Total ",1,0,'R',1);
+        $pdf->Cell(67/100*$width,$height,"Grand Total ",1,0,'R',1);
         $pdf->Cell(8/100*$width,$height,number_format($grandUm,2),1,0,'R',1);
         $pdf->Cell(8/100*$width,$height,number_format($grandTot,2),1,0,'R',1);
-        $pdf->Cell(7/100*$width,$height,number_format($grandTi,2),1,1,'R',1);
+        $pdf->Cell(8/100*$width,$height,number_format($grandTi,2),1,0,'R',1);
+        $pdf->Cell(8/100*$width,$height,number_format($grandUm+$grandTot+$grandTi,2),1,1,'R',1);
         $pdf->Output();
 
         break;
         case'excel':
-                        if($periode!='')
-            {
-            $add=" and substring(tglpertanggungjawaban,1,7)='".$periode."'";
-            }
             if($stat!='')
             {
             $add.=" and lunas='".$stat."'";
             }
-
             #ambil biaya tiket
-            $stro="select notransaksi,bytiket,dibayar from ".$dbname.".sdm_pjdinasht where 1=1 ".$add;
+            $stro="select notransaksi,bytiket,dibayar from ".$dbname.".sdm_pjdinasht where statushrd='1' ".$add;
             //exit("Error:".$stro);
             $bytiket=Array();
             $reso=mysql_query($stro) or die(mysql_error($conn));
             while($baro=  mysql_fetch_object($reso))
             {
-                $bytiket[$baro->notransaksi]=$baro->bytiket;
-                $byum[$baro->notransaksi]=$baro->dibayar;
+            $bytiket[$baro->notransaksi]=$baro->bytiket;
+            $byum[$baro->notransaksi]=$baro->dibayar;
             }
-        if($periode!='')
+
+		if(empty($resData))
         {
-            $add=" and substring(tglpertanggungjawaban,1,7)='".$periode."'";
-        }
-         if(empty($resData))
-        {
-        exit("Error: Not Found");
+		exit("Error: Not Found");
         }
         else
         {
@@ -375,58 +394,75 @@ class PDF extends FPDF
                    <table cellspacing='1' border='1' class='sortable'>
         <thead class=rowheader>
         <tr>
+        <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['nik']."</td>
         <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['nama']."</td>
         <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['jabatan']."</td>
         <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['notransaksi']."</td>
         <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['tanggaldinas']."</td>
         <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['tanggalkembali']."</td>
         <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['tanggalRelease']."</td>
-
+        <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['kodeorg']."</td>
         <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['tujuan']." 1</td>
         <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['tujuan']." 2</td>
-        <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['tujuan']." 3</td>
         <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['tujuan']." ".$_SESSION['lang']['lain']."</td>
         <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['uangmuka']."</td>
-        <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['dipakai']."</td>
-        <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['biaya']." Ticket</td>";
+        <td bgcolor=#DEDEDE align=center>Reimburse</td>
+        <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['biaya']." Ticket</td>
+        <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['total']." Ticket</td>";
         $tab.="</tr></thead>
         <tbody>";
         foreach($resData as $brsDt =>$rData)
         {
-            $sPjd="select a.*,sum(b.jumlah) as jmlhPjd,sum(b.jumlahhrd) as jmlhSetuju from ".$dbname.".sdm_pjdinasht a left join ".$dbname.".sdm_pjdinasdt b on a.notransaksi=b.notransaksi
-                where  statushrd=1 ".$add." and a.karyawanid='".$rData[0]."'group by notransaksi";
+			$sPjd="select a.*,sum(b.jumlah) as jmlhPjd,sum(b.jumlahhrd) as jmlhSetuju from ".$dbname.".sdm_pjdinasht a 
+					left join ".$dbname.".sdm_pjdinasdt b on a.notransaksi=b.notransaksi
+					where a.statushrd=1 ".$add." and a.karyawanid='".$rData[0]."' 
+					group by notransaksi";
             //exit("Error".$sPjd);
             $qPjd=mysql_query($sPjd) or die(mysql_error($conn));
             while($rPjd=mysql_fetch_assoc($qPjd))
             {
             $tab.="<tr class=rowcontent>";
+            $tab.="<td>".$nikkar[$rData[0]]."</td>";
             $tab.="<td>".$namakar[$rData[0]]."</td>";
             $tab.="<td>".$nmJabatan[$rData[0]]."</td>";
             $tab.="<td>".$rPjd['notransaksi']."</td>";
-            $tab.="<td>".$rPjd['tanggalperjalanan']."</td>";
-            $tab.="<td>".$rPjd['tanggalkembali']."</td>";
-            $tab.="<td>".$rPjd['tglpertanggungjawaban']."</td>";
-            $tab.="<td>".$optOrg[$rPjd['tujuan1']]."</td>";
-            $tab.="<td>".$optOrg[$rPjd['tujuan2']]."</td>";
-            $tab.="<td>".$optOrg[$rPjd['tujuan3']]."</td>";
-            $tab.="<td>".$optOrg[$rPjd['tujuanlain']]."</td>";
+            $tab.="<td>".tanggalnormal($rPjd['tanggalperjalanan'])."</td>";
+            $tab.="<td>".tanggalnormal($rPjd['tanggalkembali'])."</td>";
+            $tab.="<td>".tanggalnormal($rPjd['tglpertanggungjawaban'])."</td>";
+            $tab.="<td>".$rPjd['kodeorg']."</td>";
+            $tab.="<td>".$rPjd['tujuan2']."</td>";
+            $tab.="<td>".$rPjd['tujuan3']."</td>";
+            $tab.="<td>".$rPjd['tujuanlain']."</td>";
             $tab.="<td align=right>".number_format($byum[$rPjd['notransaksi']],2)."</td>";
             $tab.="<td align=right>".number_format(($rPjd['jmlhSetuju']),2)."</td>";
-             $tab.="<td align=right>".number_format(($bytiket[$rPjd['notransaksi']]),2)."</td>";
+            $tab.="<td align=right>".number_format(($bytiket[$rPjd['notransaksi']]),2)."</td>";
+            $tab.="<td align=right>".number_format(($byum[$rPjd['notransaksi']]+$rPjd['jmlhSetuju']+$bytiket[$rPjd['notransaksi']]),2)."</td>";
             $tab.="</tr>";
-             $jmlTot[$rPjd['karyawanid']]+=$rPjd['jmlhSetuju'];
+            $jmlTot[$rPjd['karyawanid']]+=$rPjd['jmlhSetuju'];
             $jmlTiket[$rPjd['karyawanid']]+=$bytiket[$rPjd['notransaksi']];
             $jmlhUm[$rPjd['karyawanid']]+=$byum[$rPjd['notransaksi']];
             }
-            if($jmlTot[$rData[0]]!='' || $jmlTot[$rData[0]]!=0)
-            {
-            $tab.="<tr style='font-weight:bold;' bgcolor=#DEDEDE ><td colspan=10>Total ".$namakar[$rData[0]]."</td><td  align=right>".number_format($jmlhUm[$rData[0]],2)."</td><td  align=right>".number_format($jmlTot[$rData[0]],2)."</td><td  align=right>".number_format( $jmlTiket[$rData[0]],2)."</td></tr>";
-            }
+            //if($jmlTot[$rData[0]]!='' || $jmlTot[$rData[0]]!=0)
+            //{
+            $tab.="<tr class=rowcontent style='font-weight:bold;'>
+					<td colspan=11>Total ".$namakar[$rData[0]]."</td>
+					<td  align=right>".number_format($jmlhUm[$rData[0]],2)."</td>
+					<td  align=right>".number_format($jmlTot[$rData[0]],2)."</td>
+					<td  align=right>".number_format($jmlTiket[$rData[0]],2)."</td>
+					<td  align=right>".number_format($jmlhUm[$rData[0]]+$jmlTot[$rData[0]]+$jmlTiket[$rData[0]],2)."</td>
+					</tr>";
+            //}
              $grandTot+=$jmlTot[$rData[0]];
              $grandUm+=$jmlhUm[$rData[0]];
              $grandTi+=$jmlTiket[$rData[0]];
         }
-        $tab.="<tr bgcolor=#DEDEDE ><td colspan=10>Grand Total </td><td  align=right>".number_format($grandUm,2)."</td><td  align=right>".number_format($grandTot,2)."</td><td  align=right>".number_format($grandTi,2)."</td></tr>";
+        $tab.="<tr class=rowcontent style='font-weight:bold;'>
+				<td colspan=11>Grand Total </td>
+				<td  align=right>".number_format($grandUm,2)."</td>
+				<td  align=right>".number_format($grandTot,2)."</td>
+				<td  align=right>".number_format($grandTi,2)."</td>
+				<td  align=right>".number_format($grandUm+$grandTot+$grandTi,2)."</td>
+				</tr>";
         $tab.="</tbody></table>";
         }
 

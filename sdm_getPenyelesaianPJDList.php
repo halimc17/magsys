@@ -11,11 +11,31 @@ $page=0;
    if(isset($_POST['tex']))
   {
   	$notransaksi.=" and notransaksi like '%".$_POST['tex']."%' ";
-  } 
-$str="select count(*) as jlhbrs from ".$dbname.".sdm_pjdinasht 
-        where statuspertanggungjawaban=1 and lunas=0
+  }
+if(substr($_SESSION['empl']['lokasitugas'],2,2)=='HO'){
+/*
+	$str="select count(*) as jlhbrs from ".$dbname.".sdm_pjdinasht 
+        where 
+		kodeorg like '%HO'
+		and statuspertanggungjawaban=1 and lunas=0
 		".$notransaksi."
 		order by jlhbrs desc";
+*/
+	$str="select count(*) as jlhbrs from ".$dbname.".sdm_pjdinasht 
+        where 
+		kodeorg like '%HO'
+		and lunas=0
+		".$notransaksi."
+		order by jlhbrs desc";
+}else{
+	$str="select count(*) as jlhbrs from ".$dbname.".sdm_pjdinasht 
+        where 
+		kodeorg not like '%HO'
+		and kodeorg in (select kodeorganisasi from ".$dbname.".organisasi where induk='".$_SESSION['empl']['induk']."')
+		and lunas=0
+		".$notransaksi."
+		order by jlhbrs desc";
+}
 $res=mysql_query($str);
 while($bar=mysql_fetch_object($res))
 {
@@ -32,12 +52,22 @@ while($bar=mysql_fetch_object($res))
 	 
   
   $offset=$page*$limit;
-  
-
-  $str="select * from ".$dbname.".sdm_pjdinasht 
-        where  statuspertanggungjawaban=1 and lunas=0
+if(substr($_SESSION['empl']['lokasitugas'],2,2)=='HO'){
+	$str="select * from ".$dbname.".sdm_pjdinasht 
+        where
+		kodeorg like '%HO'
+		and lunas=0
 		".$notransaksi."
-		order by tanggalbuat desc  limit ".$offset.",20";	
+		order by tanggalbuat desc,notransaksi desc limit ".$offset.",20";	
+}else{
+	$str="select * from ".$dbname.".sdm_pjdinasht 
+        where
+		kodeorg not like '%HO'
+		and kodeorg in (select kodeorganisasi from ".$dbname.".organisasi where induk='".$_SESSION['empl']['induk']."')
+		and lunas=0
+		".$notransaksi."
+		order by tanggalbuat desc,notransaksi desc limit ".$offset.",20";	
+}
   $res=mysql_query($str);
   $no=$page*$limit;
   while($bar=mysql_fetch_object($res))
@@ -52,20 +82,7 @@ while($bar=mysql_fetch_object($res))
 	  {
 	  	$namakaryawan=$barx->namakaryawan;
 	  }
-	  
-	//==================ambil jumlah pertanggungjawaban
-	$strv="select sum(jumlahhrd) as vali from ".$dbname.".sdm_pjdinasdt
-	       where notransaksi='".$bar->notransaksi."'";
-	$vali=0;
-	$resv=mysql_query($strv);
-	while($barv=mysql_fetch_object($resv))
-	{
-		$vali=$barv->vali;
-	}	   
-	 //sisa adalah dp diterima kurang penggunaan
-	 $vali=$bar->dibayar-$vali;
-	  
-	//===============================================  
+
    if($bar->statuspertanggungjawaban==2)
      $stpersetujuan=$_SESSION['lang']['ditolak'];
    else if($bar->statuspertanggungjawaban==1)
@@ -73,24 +90,40 @@ while($bar=mysql_fetch_object($res))
    else 
     $stpersetujuan=$_SESSION['lang']['wait_approve'];	  
    
-   $str1="select sum(jumlah) as jumlah from ".$dbname.".sdm_pjdinasdt
+   $str1="select sum(jumlah) as jumlah, sum(jumlahhrd) as jumlahhrd from ".$dbname.".sdm_pjdinasdt
          where notransaksi='".$bar->notransaksi."'";
    $res1=mysql_query($str1);
 
    $usage=0;
+   $usagehrd=0;
    while($bar1=mysql_fetch_object($res1))
    {
    	 $usage=$bar1->jumlah;
+	 $usagehrd=$bar1->jumlahhrd;
    }	 	 
-	  
+	 //sisa adalah dp diterima kurang penggunaan
+	 $vali=($bar->uangmuka+$usage)-($bar->dibayar+$usagehrd);
+	//===============================================  
+
+  $tujuan=$bar->tujuan1;
+  if($bar->tujuan2!=''){
+	$tujuan=$bar->tujuan2;
+  }elseif($bar->tujuan3!=''){
+	$tujuan=$bar->tujuan3;
+  }elseif($bar->tujuanlain!=''){
+	$tujuan=$bar->tujuanlain;
+  }
+
 	echo"<tr class=rowcontent>
 	  <td>".$no."</td>
 	  <td>".$bar->notransaksi."</td>
 	  <td>".$namakaryawan."</td>
 	  <td>".tanggalnormal($bar->tanggalbuat)."</td>
-	  <td>".$bar->tujuan1."</td>
+	  <td>".$tujuan."</td>
+	  <td align=right>".number_format($bar->uangmuka,2,'.',',')."</td>
 	  <td align=right>".number_format($bar->dibayar,2,'.',',')."</td>
 	  <td align=right>".number_format($usage,2,'.',',')."</td>
+	  <td align=right>".number_format($usagehrd,2,'.',',')."</td>
 	  <td>".$stpersetujuan."</td>
 	  <td align=right>".number_format($vali,2,'.',',')."</td>
                       <td align=right><input type=text class=myinputtextnumber size=14 onkeypress=\"return angka_doang(event);\" value=".($bar->notransaksi!=0?$bar->byticket:0)." id=t".$bar->notransaksi."></td>	  <td align=center>

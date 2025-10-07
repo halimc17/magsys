@@ -44,7 +44,9 @@ switch($proses) {
 	
 
         //$optDwnStat=array(''=>'','breakdown'=>'Breakdown','stagnasi'=>'Stagnasi','emergency'=>'Emergency');
-        $optDwnStat=array(''=>'','EDT'=>'EDT : Breakdown','SDT'=>'SDT : Stagnasi','CDT'=>'CDT : Commercial Downtime');
+        //$optDwnStat=array(''=>'','EDT'=>'EDT : Breakdown','SDT'=>'SDT : Stagnasi','CDT'=>'CDT : Commercial Downtime');
+        $optDwnStat=array(''=>'','EDT'=>'EDT : Breakdown','SDT'=>'SDT : Stagnasi','CDT'=>'CDT : Preventive Maintenance'
+								,'PDT'=>'PDT : Persiapan Olah','TDT'=>'TDT : Tunggu Buah','HDT'=>'HDT : Habis Buah');
 	
 	
         

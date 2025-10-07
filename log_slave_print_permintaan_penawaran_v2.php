@@ -40,6 +40,7 @@ $kdPt=makeOption($dbname,'log_prapoht','nopp,kodeorg');
 
         $iOrder="select * from ".$dbname.".log_perintaanhargaht a left join "
                 . " ".$dbname.".log_permintaanhargadt b on a.nomor=b.nomor where a.nomor='".$nodph."' and a.flag=1 ";
+		//print_r($iOrder);exit;		
         /*$iOrder="select * from ".$dbname.".log_perintaanhargaht  "
                 . "where nomor='".$nodph."' and flag=1 ";*/
         $nOrder=  mysql_query($iOrder) or die(mysql_error($conn));
@@ -52,7 +53,8 @@ $kdPt=makeOption($dbname,'log_prapoht','nopp,kodeorg');
         $nOrderJum=  mysql_query($iOrderJum) or die(mysql_error($conn));
         $dOrderJum=  mysql_fetch_assoc($nOrderJum);
         
-                
+        $kodept = $kdPt[$dOrder['nopp']];
+       
         
         
         
@@ -63,7 +65,25 @@ $kdPt=makeOption($dbname,'log_prapoht','nopp,kodeorg');
         
      
         
-        $path='images/logo.jpg';
+				if($kodept=='AMP'){
+					$path='images/logo_amp.jpg';
+				}else if($kodept=='CKS'){
+					$path='images/logo_cks.jpg';
+				}else if($kodept=='KAA'){
+					$path='images/logo_kaa.jpg';
+				}else if($kodept=='KAL'){
+					$path='images/logo_kal.jpg';
+				}else if($kodept=='MPA'){
+					$path='images/logo_mpa.jpg';
+				}else if($kodept=='MHS'){
+					$path='images/logo_mhs.jpg';
+				}else if($kodept=='MEA'){
+					$path='images/logo_mea.jpg';
+				}else if($kodept=='SMA'){
+					$path='images/logo_sma.jpg';
+				}else{
+					$path='images/logo.jpg';
+				}
 	    $pdf->Image($path,15,3,20);	
 	
        
@@ -135,7 +155,7 @@ $kdPt=makeOption($dbname,'log_prapoht','nopp,kodeorg');
         $pdf->Cell(35,5,'Basic Price',1,0,'C');
         
         $awalXjudulppn=$pdf->GetX();
-        $pdf->Cell(30,5,'PPN 10%',1,0,'C');
+        $pdf->Cell(30,5,'PPN',1,0,'C');
         
         $awalXjudulfp=$pdf->GetX();
         $pdf->Cell(35,5,'Final Price',1,0,'C');
@@ -313,8 +333,8 @@ $kdPt=makeOption($dbname,'log_prapoht','nopp,kodeorg');
         
         if($_SESSION['empl']['tipelokasitugas']=='HOLDING')
         {
-            $manager="Manager Proc";
-            $dir="Dir. HR GA";
+            $manager="Corp. Procurement Manager";
+            $dir="Director";
         }
         else
         {
@@ -330,32 +350,46 @@ $kdPt=makeOption($dbname,'log_prapoht','nopp,kodeorg');
 		
           
             
-        if($panjangunit==3)//berarti dph pusat
+		if($panjangunit==3)//berarti dph pusat
         {
-            if($dOrder['nilaipermintaan'] >= 100000000)
+			if($dOrder['nilaipermintaan'] < 50000000)
             {
-                $pdf->Cell(30,30,'','0',0,'C');
+                $pdf->Cell(60,30,'','1',0,'C');
                 $pdf->Cell(60,30,'','1',0,'C');
                 $pdf->Cell(60,30,'','1',1,'C');
-                $pdf->Cell(30,30,'','0',0,'C');
                 $pdf->Cell(60,5,'Purchaser','1',0,'C');
-                $pdf->Cell(60,5,'Manager Proc','1',1,'C');
-                $pdf->Ln(5);
-
+				$pdf->Cell(60,5,'Corp. Procurement & GA Manager','1',0,'C');
+				$pdf->Cell(60,5,'Head of HR & GS','1',1,'C');
+				if($kodept == 'MPA'){
+	                $pdf->Ln(5);
+		            $pdf->Cell(60,30,'','0',0,'C');
+			        $pdf->Cell(60,30,'','1',1,'C');
+				    $pdf->Cell(60,30,'','0',0,'C');
+					$pdf->Cell(60,5,'Director','1',1,'C');
+				}
+			}
+			else if($dOrder['nilaipermintaan'] < 500000000)
+            {
                 $pdf->Cell(60,30,'','1',0,'C');
                 $pdf->Cell(60,30,'','1',0,'C');
                 $pdf->Cell(60,30,'','1',1,'C');
-                $pdf->Cell(60,5,'Dir. HR GS','1',0,'C');
-                $pdf->Cell(60,5,'Dir. Operasional','1',0,'C');
-                $pdf->Cell(60,5,'Dir. Keuangan','1',1,'C');
-
+                $pdf->Cell(60,5,'Purchaser','1',0,'C');
+				$pdf->Cell(60,5,'Corp. Procurement & GA Manager','1',0,'C');
+				$pdf->Cell(60,5,'Head of HR & GS','1',1,'C');
                 $pdf->Ln(5);
-                $pdf->Cell(60,30,'','0',0,'C');
-
-                $pdf->Cell(60,30,'','1',1,'C');
-                $pdf->Cell(60,5,'','0',0,'C');
-                $pdf->Cell(60,5,'Direktur Utama','1',0,'C');
-
+				if($kodept == 'MPA'){
+		            $pdf->Cell(30,30,'','0',0,'C');
+	                $pdf->Cell(60,30,'','1',0,'C');
+	                $pdf->Cell(60,30,'','1',1,'C');
+		            $pdf->Cell(30,30,'','0',0,'C');
+			        $pdf->Cell(60,5,'Director','1',0,'C');
+				    $pdf->Cell(60,5,'Finance Director','1',1,'C');
+				}else{
+		            $pdf->Cell(60,30,'','0',0,'C');
+			        $pdf->Cell(60,30,'','1',1,'C');
+				    $pdf->Cell(60,30,'','0',0,'C');
+					$pdf->Cell(60,5,'Director','1',1,'C');
+				}
             }
             else
             {
@@ -363,36 +397,56 @@ $kdPt=makeOption($dbname,'log_prapoht','nopp,kodeorg');
                 $pdf->Cell(60,30,'','1',0,'C');
                 $pdf->Cell(60,30,'','1',1,'C');
                 $pdf->Cell(60,5,'Purchaser','1',0,'C');
-                $pdf->Cell(60,5,'Manager Proc','1',0,'C');
-                $pdf->Cell(60,5,'Dir. HR GS','1',1,'C');
-            }
-        }
+				$pdf->Cell(60,5,'Corp. Procurement & GA Manager','1',0,'C');
+				$pdf->Cell(60,5,'Head of HR & GS','1',1,'C');
+                $pdf->Ln(5);
+				if($kodept == 'MPA'){
+		            $pdf->Cell(60,30,'','1',0,'C');
+	                $pdf->Cell(60,30,'','1',0,'C');
+			        $pdf->Cell(60,30,'','1',1,'C');
+				    $pdf->Cell(60,5,'Director','1',0,'C');
+					$pdf->Cell(60,5,'Finance Director','1',0,'C');
+					$pdf->Cell(60,5,'Commissioner','1',1,'C');
+				}else{
+		            $pdf->Cell(30,30,'','0',0,'C');
+	                $pdf->Cell(60,30,'','1',0,'C');
+	                $pdf->Cell(60,30,'','1',1,'C');
+		            $pdf->Cell(30,30,'','0',0,'C');
+			        $pdf->Cell(60,5,'Director','1',0,'C');
+				    $pdf->Cell(60,5,'Commissioner','1',1,'C');
+				}
+			}
+		}
         else
         {
             if($dOrder['nilaipermintaan'] >= 100000000)
             {
-                $pdf->Cell(30,30,'','0',0,'C');
-                $pdf->Cell(60,30,'','1',0,'C');
-                $pdf->Cell(60,30,'','1',1,'C');
-                $pdf->Cell(30,30,'','0',0,'C');
-                $pdf->Cell(60,5,'Purchaser','1',0,'C');
-                $pdf->Cell(60,5,'Manager Proc','1',1,'C');
-                $pdf->Ln(5);
+                $pdf->Cell(45,30,'','1',0,'C');
+                $pdf->Cell(45,30,'','1',0,'C');
+                $pdf->Cell(45,30,'','1',0,'C');
+                $pdf->Cell(45,30,'','1',1,'C');
+                $pdf->Cell(45,5,'Purchaser','1',0,'C');
+				if($kodept == 'MPA'){
+	                $pdf->Cell(45,5,'KTU','1',0,'C');
+	                $pdf->Cell(45,5,'Kepala Project','1',0,'C');
+				}else{
+	                $pdf->Cell(45,5,'ROA','1',0,'C');
+	                $pdf->Cell(45,5,'General Manager','1',0,'C');
+				}
+                $pdf->Cell(45,5,'Head of Operation','1',1,'C');
 
-                $pdf->Cell(60,30,'','1',0,'C');
-                $pdf->Cell(60,30,'','1',0,'C');
-                $pdf->Cell(60,30,'','1',1,'C');
-                $pdf->Cell(60,5,'ROA','1',0,'C');
-                $pdf->Cell(60,5,'General Manager','1',0,'C');
-                $pdf->Cell(60,5,'Dir. HR GS','1',1,'C');
-
                 $pdf->Ln(5);
                 $pdf->Cell(60,30,'','1',0,'C');
                 $pdf->Cell(60,30,'','1',0,'C');
                 $pdf->Cell(60,30,'','1',1,'C');
-                $pdf->Cell(60,5,'Dir. Operasional','1',0,'C');
-                $pdf->Cell(60,5,'Dir. Keuangan','1',0,'C');
-                $pdf->Cell(60,5,'Dir. Utama','1',1,'C');
+				if($kodept == 'MPA'){
+					$pdf->Cell(60,5,'Director','1',0,'C');
+					$pdf->Cell(60,5,'Finance Director','1',0,'C');
+				}else{
+					$pdf->Cell(60,5,'Head of HR & GS','1',0,'C');
+					$pdf->Cell(60,5,'Director','1',0,'C');
+                }
+                $pdf->Cell(60,5,'President Director','1',1,'C');
 
             }
             else
@@ -401,8 +455,14 @@ $kdPt=makeOption($dbname,'log_prapoht','nopp,kodeorg');
                 $pdf->Cell(60,30,'','1',0,'C');
                 $pdf->Cell(60,30,'','1',1,'C');
                 $pdf->Cell(60,5,'Purchaser','1',0,'C');
-                $pdf->Cell(60,5,'ROA','1',0,'C');
-                $pdf->Cell(60,5,'General Manager','1',1,'C');
+				if($kodept == 'MPA'){
+	                $pdf->Cell(60,5,'FAO','1',0,'C');
+	                //$pdf->Cell(60,5,'Kepala Project','1',1,'C');
+		            $pdf->Cell(60,5,'General Manager','1',1,'C');
+				}else{
+	                $pdf->Cell(60,5,'FAO','1',0,'C');
+		            $pdf->Cell(60,5,'General Manager','1',1,'C');
+				}
             }
         }
         
@@ -446,10 +506,10 @@ $kdPt=makeOption($dbname,'log_prapoht','nopp,kodeorg');
 		$pdf->Cell(27,4,'','LR',0,'C');
 
 		$pdf->ln();
-		$pdf->Cell(27,4,'Purchase','TBLR',0,'C');
+		$pdf->Cell(27,4,'Purchaser','TBLR',0,'C');
 		$pdf->Cell(27,4,$manager,'TBR',0,'C');
 		$pdf->Cell(27,4,$dir,'TBR',0,'C');
-		$pdf->Cell(27,4,'Dir. Utama','TBR',0,'C');
+		$pdf->Cell(27,4,'President Director','TBR',0,'C');
 	 }else{
 		
 		$pdf->Cell(27,4,'','TL',0,'C');

@@ -5,7 +5,7 @@ require_once('lib/nangkoelib.php');
 require_once('lib/zLib.php');
 require_once('lib/fpdf.php');
 require_once('lib/terbilang.php');
-function dates_inbetween($date1, $date2){
+function dates_inbetwee($date1, $date2){
 
     $day = 60*60*24;
 
@@ -41,7 +41,7 @@ $arrBln=array(1=>"Jan",2=>"Feb",3=>"Mar",4=>"Apr",5=>"Mei",6=>"Jun",7=>"Jul",8=>
 
 if($periode!='-'&&$kdBag!='')
 {
-    $where="a.sistemgaji='HARIAN' and a.periodegaji='".$periode."' and a.kodeorg='".$_SESSION['empl']['lokasitugas']."'
+    $where="a.sistemgaji='Harian' and a.periodegaji='".$periode."' and a.kodeorg='".$_SESSION['empl']['lokasitugas']."'
             and b.bagian='".$kdBag."'";
 }
 elseif($periode!='-')
@@ -56,7 +56,7 @@ else
     {
         $periode=$period;
     }
-    $where="a.sistemgaji='Harian' and a.periodegaji='".$periode."' and a.karyawanid='".$idKry."'";
+    $where="a.sistemgaji='Harian' and a.periodegaji='".$periode."' and a.karyawanid='".$idKry."' and a.kodeorg='".$_SESSION['empl']['lokasitugas']."'";
 }
 if($tPkary!='')
 {
@@ -69,7 +69,8 @@ $sTgl="select distinct tanggalmulai,tanggalsampai from ".$dbname.".sdm_5periodeg
 $qTgl=mysql_query($sTgl) or die(mysql_error($conn));
 $rTgl=mysql_fetch_assoc($qTgl);
 
-$test = dates_inbetween($rTgl['tanggalmulai'], $rTgl['tanggalsampai']);
+//$test = dates_inbetwee($rTgl['tanggalmulai'], $rTgl['tanggalsampai']);
+$test = rangeTanggal($rTgl['tanggalmulai'], $rTgl['tanggalsampai']);
 	
 $sAbsn="select absensi,tanggal,karyawanid from ".$dbname.".sdm_absensidt 
 		where tanggal like '".$periode."%' and kodeorg like '".$_SESSION['empl']['lokasitugas']."%'";
@@ -93,7 +94,7 @@ foreach ($rkehadiran as $khdrnBrs =>$resKhdrn){
 
 $sPrestasi="select a.nik,b.tanggal from ".$dbname.".kebun_prestasi a 
 			left join ".$dbname.".kebun_aktifitas b on a.notransaksi=b.notransaksi 
-			where b.notransaksi like '%PNN%' and b.kodeorg like '".$_SESSION['empl']['lokasitugas']."%' and b.tanggal like '".$periode."%'";
+			where (b.notransaksi like '%PNN%' or b.notransaksi like '%/BM/%') and b.kodeorg like '".$_SESSION['empl']['lokasitugas']."%' and b.tanggal like '".$periode."%'";
 $rPrestasi=fetchData($sPrestasi);
 foreach ($rPrestasi as $presBrs =>$resPres){
 	$hasilAbsn[$resPres['nik']][$resPres['tanggal']][]=array('absensi'=>'H');
@@ -553,7 +554,7 @@ function AcceptPageBreak()
            }
            $str3="select jumlah,idkomponen,a.karyawanid,c.plus from ".$dbname.".sdm_gaji_vw a 
                   left join ".$dbname.".sdm_ho_component c on a.idkomponen=c.id
-                 where a.sistemgaji='Harian' and a.periodegaji='".$periode."' group by a.karyawanid,idkomponen";
+                 where a.kodeorg='".$_SESSION['empl']['lokasitugas']."' and a.sistemgaji='Harian' and a.periodegaji='".$periode."' group by a.karyawanid,idkomponen";
            //exit("Error:".$str3);
            $res3=mysql_query($str3,$conn);
            while($bar3=mysql_fetch_assoc($res3))
@@ -834,6 +835,7 @@ else
                                 <td bgcolor=#DEDEDE align=center rowspan='2'>".$_SESSION['lang']['namakaryawan']."</td>
                                 <td bgcolor=#DEDEDE align=center rowspan='2'>".$_SESSION['lang']['nik']."/".$_SESSION['lang']['tmk']."</td>
                                 <td bgcolor=#DEDEDE align=center rowspan='2'>".$_SESSION['lang']['unit']."/".$_SESSION['lang']['bagian']."</td>
+                                <td bgcolor=#DEDEDE align=center rowspan='2'>".$_SESSION['lang']['subbagian']."</td>
                                 <td bgcolor=#DEDEDE align=center rowspan='2'>No. Rekening</td>
                                 <td bgcolor=#DEDEDE align=center rowspan='2'>".$_SESSION['lang']['totLembur']."</td>
                                 <td bgcolor=#DEDEDE align=center rowspan='2'>".$_SESSION['lang']['tipekaryawan']."</td>
@@ -893,8 +895,8 @@ else
                       $stream.="<td bgcolor=#DEDEDE align=center >".$_SESSION['lang']['totalPotongan']."</td></tr>";
 
                          //prepare array data gaji karyawan,nama,jabatan,tmk dan bagian
-         $sSlip="select distinct a.*,b.tipekaryawan,b.statuspajak,b.tanggalmasuk,b.nik,b.namakaryawan,b.bagian,c.namajabatan,d.nama,
-                b.norekeningbank from ".$dbname.".sdm_gaji_vw a  left join ".$dbname.".datakaryawan b on a.karyawanid=b.karyawanid
+         $sSlip="select distinct a.*,b.tipekaryawan,b.statuspajak,b.tanggalmasuk,b.nik,b.namakaryawan,b.bagian,c.namajabatan,d.nama,b.subbagian
+               ,b.norekeningbank from ".$dbname.".sdm_gaji_vw a  left join ".$dbname.".datakaryawan b on a.karyawanid=b.karyawanid
                left join ".$dbname.".sdm_5jabatan c on b.kodejabatan=c.kodejabatan 
                left join ".$dbname.".sdm_5departemen d on b.bagian=d.kode where ".$where."  ".$dtTipe."";	
         // exit("Error:".$sSlip);
@@ -913,6 +915,7 @@ else
                         $arrNik[$rSlip['karyawanid']]=$rSlip['nik'];
                         $arrNmKary[$rSlip['karyawanid']]=$rSlip['namakaryawan'];
                         $arrBag[$rSlip['karyawanid']]=$rSlip['bagian'];
+                        $arrSubBag[$rSlip['karyawanid']]=$rSlip['subbagian'];
                         $arrJbtn[$rSlip['karyawanid']]=$rSlip['namajabatan'];
                         $arrTipekary[$rSlip['karyawanid']]=$rSlip['tipekaryawan'];
                         $arrStatPjk[$rSlip['karyawanid']]=$rSlip['statuspajak'];
@@ -943,6 +946,7 @@ else
                                 <td>".$arrNmKary[$dtKary]."</td>
                                 <td>".$arrNik[$dtKary]."</td>
                                 <td>".$arrDept[$dtKary]."</td>
+                                <td>".$arrSubBag[$dtKary]."</td>
                                 <td>".$arrRek[$dtKary]."</td>
                                 <td>".$jumTot[$dtKary]."</td>
                                 <td>".$rNmTipe[$arrTipekary[$dtKary]]."</td> 
@@ -1011,7 +1015,7 @@ else
                                 $stream.="<td align=right>".number_format($gajiBersih,0)."</td></tr>";	
 
                                 }
-                                $stream.="<tr><td colspan=".(9+$rowabs+$rowabs2+2)." align=right>".$_SESSION['lang']['total']."</td>";
+                                $stream.="<tr><td colspan=".(10+$rowabs+$rowabs2+2)." align=right>".$_SESSION['lang']['total']."</td>";
 
                                 $s=0;
                                 $brsPlus2=0;

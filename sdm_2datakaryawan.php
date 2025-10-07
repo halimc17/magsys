@@ -33,7 +33,7 @@ while ($data=mysql_fetch_assoc($qry))
 //KELUAR
 //thn
 $optthnkel="<option value=''>".$_SESSION['lang']['all']."</option>";
-$sql="SELECT distinct left(tanggalkeluar,4) as thnkel FROM ".$dbname.".datakaryawan order by tanggalkeluar desc";
+$sql="SELECT distinct left(tanggalkeluar,4) as thnkel FROM ".$dbname.".datakaryawan where tanggalkeluar<>'0000-00-00' order by tanggalkeluar desc";
 
 $qry = mysql_query($sql) or die ("SQL ERR : ".mysql_error());
 while ($data=mysql_fetch_assoc($qry))
@@ -42,7 +42,7 @@ while ($data=mysql_fetch_assoc($qry))
                         }		
 //bln
 $optblnkel="<option value=''>".$_SESSION['lang']['all']."</option>";
-$sql = "SELECT distinct mid(tanggalkeluar,6,2) as blnkel FROM ".$dbname.".datakaryawan order by mid(tanggalkeluar,6,2) desc";
+$sql = "SELECT distinct mid(tanggalkeluar,6,2) as blnkel FROM ".$dbname.".datakaryawan where tanggalkeluar<>'0000-00-00' order by mid(tanggalkeluar,6,2) desc";
 //exit($sql);
 $qry = mysql_query($sql) or die ("SQL ERR : ".mysql_error());
 while ($data=mysql_fetch_assoc($qry))
@@ -56,6 +56,7 @@ OPEN_BOX('',$_SESSION['lang']['inputdatakaryawan']);
 //lokasi tugas
 $optpt='';
 $optlokasitugas='';
+$optsubunit='';
 //if(user is under holding)
 $saveable='';
 $str="select 1=1";
@@ -70,19 +71,20 @@ if(trim($_SESSION['empl']['tipelokasitugas'])=='HOLDING')//user holding dapat me
         }
         //$str="select namaorganisasi,kodeorganisasi from ".$dbname.".organisasi where tipe not in('BLOK','PT','STENGINE','STATION') order by namaorganisasi";
         $str="select distinct a.lokasitugas as kodeorganisasi,namaorganisasi from ".$dbname.".datakaryawan a 
-              left join ".$dbname.".organisasi b on a.lokasitugas=b.kodeorganisasi order by namaorganisasi asc";
+              inner join ".$dbname.".organisasi b on a.lokasitugas=b.kodeorganisasi order by namaorganisasi asc";
         $res=mysql_query($str);
         while($bar=mysql_fetch_object($res))
         {
-                        $optlokasitugas.="<option value='".$bar->kodeorganisasi."'>".$bar->namaorganisasi."</option>";	
+                        $optlokasitugas.="<option value='".$bar->kodeorganisasi."'>".$bar->kodeorganisasi.' - '.$bar->namaorganisasi."</option>";	
         }
-        /*$str="select distinct a.subbagian as kodeorganisasi,namaorganisasi from ".$dbname.".datakaryawan a 
+
+        $str="select distinct a.subbagian as kodeorganisasi,namaorganisasi from ".$dbname.".datakaryawan a 
               inner join ".$dbname.".organisasi b on a.subbagian=b.kodeorganisasi order by namaorganisasi asc";
         $res=mysql_query($str);
         while($bar=mysql_fetch_object($res))
         {
-                        $optlokasitugas.="<option value='".$bar->kodeorganisasi."'>".$bar->namaorganisasi."</option>";	
-        }*/
+                        $optsubunit.="<option value='".$bar->kodeorganisasi."'>".$bar->kodeorganisasi.' - '.$bar->namaorganisasi."</option>";	
+        }
 }
 else if(trim($_SESSION['empl']['tipelokasitugas'])!='HOLDING')
 {
@@ -93,6 +95,15 @@ else if(trim($_SESSION['empl']['tipelokasitugas'])!='HOLDING')
     while($bar=mysql_fetch_object($res))
     {
         $optlokasitugas.="<option value='".$bar->kodeorganisasi."'>".$bar->namaorganisasi."</option>";	
+    }
+
+    $str="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi "
+            . " where induk like '".$_SESSION['empl']['kodeorganisasi']."%' and tipe !='HOLDING' "
+            . "  order by namaorganisasi asc";
+    $res=mysql_query($str);
+    while($bar=mysql_fetch_object($res))
+    {
+        $optsubunit.="<option value='".$bar->kodeorganisasi."'>".$bar->namaorganisasi."</option>";	
     }
 }
 
@@ -146,7 +157,7 @@ while($bar=mysql_fetch_object($res))
 {
       $opttipekaryawan.="<option value='".$bar->id."'>".$bar->tipe."</option>";	
 }	
-$opttipekaryawan.="<option value=100>Kecuali BHL/KHL</option>";	
+$opttipekaryawan.="<option value=100>Kecuali BHL/PHL</option>";	
 
 //===========get jeniskeamin enum
 //get Golongan darah from enum
@@ -157,36 +168,69 @@ foreach($arrenum as $key=>$val)
 
         $optJK.="<option value='".$key."'>".$val."</option>";
 }
+// Pilihan Pendidikan
+$optpendidikan="<option value=''>".$_SESSION['lang']['all']."</option>";
+$str= "select levelpendidikan,kelompok from ".$dbname.".sdm_5pendidikan order by levelpendidikan";
+$res=mysql_query($str) or die(mysql_error($conn));
+while($bar=mysql_fetch_assoc($res)){
+	$optpendidikan.="<option value=".$bar['levelpendidikan'].">".$bar['kelompok']."</option>";
+}
+// Pilihan Golongan
+$optgolongan="<option value=''>".$_SESSION['lang']['all']."</option>";
+$str= "select kodegolongan,namagolongan from ".$dbname.".sdm_5golongan order by kodegolongan";
+$res=mysql_query($str) or die(mysql_error($conn));
+while($bar=mysql_fetch_assoc($res)){
+	$optgolongan.="<option value=".$bar['kodegolongan'].">".$bar['namagolongan']."</option>";
+}
+// Pilihan Regional
+$optregional="";
+$str= "select regional from ".$dbname.".bgt_regional order by regional";
+$res=mysql_query($str) or die(mysql_error($conn));
+while($bar=mysql_fetch_assoc($res)){
+	$optregional.="<option value=".$bar['regional'].">".$bar['regional']."</option>";
+}
+
 
 echo"<table>
-     <tr valign=middle>
-         <td><fieldset><legend>".$_SESSION['lang']['find']."</legend>"; 
-						if($_SESSION['empl']['tipelokasitugas'] == 'HOLDING'){
-							echo $_SESSION['lang']['perusahaan']." : <select id=schpt style='width:150px' onchange='filterlokasitugas()'><option value=''>".$_SESSION['lang']['all']."</option>".$optpt."</select><p />";
-						}else{
-							echo "<select id=schpt style='width:150px;display:none' onchange='filterlokasitugas()'><option value=''>".$_SESSION['lang']['all']."</option></select>";
-						}
-						
-                        echo" ".$_SESSION['lang']['caripadanama']." : <input type=text id=txtsearch  style='width:120px' size=25 maxlength=30 class=myinputtext> &nbsp";
-						
-                        echo $_SESSION['lang']['lokasitugas']." : <select id=schorg  style='width:150px' onchange=changeCaption(this.options[this.selectedIndex].text);><option value=''>".$_SESSION['lang']['all']."</option>".$optlokasitugas."</select> &nbsp ";
+		<tr valign=middle>
+			<td><fieldset><legend>".$_SESSION['lang']['find']."</legend>"; 
+				if($_SESSION['empl']['tipelokasitugas'] == 'HOLDING'){
+					echo $_SESSION['lang']['perusahaan']." : <select id=schpt style='width:220px' onchange='filterlokasitugas()'><option value=''>".$_SESSION['lang']['all']."</option>".$optpt."</select> &nbsp ";
+					echo $_SESSION['lang']['regional']." : <select id=schregional style='width:105px' onchange=changeCaption(this.options[this.selectedIndex].text);><option value=''>".$_SESSION['lang']['all']."</option>".$optregional."</select> &nbsp ";
+				}else{
+					echo "<select id=schpt style='width:220px;display:none' onchange='filterlokasitugas()'><option value=''>".$_SESSION['lang']['all']."</option></select>";
+					echo "<select id=schregional style='width:105px;display:none' onchange=changeCaption(this.options[this.selectedIndex].text);><option value=''>".$_SESSION['lang']['all']."</option></select>";
+				}
+				echo" ".$_SESSION['lang']['caripadanama']." : <input type=text id=txtsearch  style='width:125px' size=25 maxlength=30 class=myinputtext><p />";
 
-                        echo $_SESSION['lang']['tipekaryawan']." : <select id=schtipe  onchange=changeCaption1(this.options[this.selectedIndex].text);><option value=''>".$_SESSION['lang']['all']."</option>".$opttipekaryawan."</select> &nbsp ";
+				echo $_SESSION['lang']['lokasitugas']." : <select id=schorg style='width:80px' onchange=changeCaption(this.options[this.selectedIndex].text);> <option value=''>".$_SESSION['lang']['all']."</option>".$optlokasitugas."</select> &nbsp ";
 
-                        echo $_SESSION['lang']['status']." : <select id=schstatus  style='width:75px' onchange=changeCaption(this.options[this.selectedIndex].text);><option value=''>".$_SESSION['lang']['all']."</option><option value='0000-00-00'>".$_SESSION['lang']['aktif']."</option><option value='*'>".$_SESSION['lang']['tidakaktif']."</select> &nbsp ";
+				echo $_SESSION['lang']['subunit']." : <select id=subunit style='width:80px' onchange=changeCaption(this.options[this.selectedIndex].text);> <option value=''>".$_SESSION['lang']['all']."</option>".$optsubunit."</select> &nbsp ";
 
-                        echo $_SESSION['lang']['jeniskelamin']." : <select id=schjk  style='width:150px' onchange=changeCaption(this.options[this.selectedIndex].text);>".$optJK."</select> &nbsp ";
+				echo $_SESSION['lang']['levelname']." : <select id=schgolongan style='width:150px' onchange=changeCaption(this.options[this.selectedIndex].text);>".$optgolongan."</select> &nbsp ";
 
-                //echo "<td align=right>".$_SESSION['lang']['jeniskelamin']."</td><td><select id=jeniskelamin  style='width:150px;'>".$optJK."</select></td>";
+				echo $_SESSION['lang']['tipekaryawan']." : <select id=schtipe style='width:150px' onchange=changeCaption1(this.options[this.selectedIndex].text);><option value=''>".$_SESSION['lang']['all']."</option>".$opttipekaryawan."</select> &nbsp ";
 
-                        echo"<button class=mybutton onclick=cariKaryawanLaporan(1)>".$_SESSION['lang']['find']."</button>";
-echo"</fieldset></td>
-     </tr>
-         </table> "; 
+				echo $_SESSION['lang']['status']." : <select id=schstatus style='width:80px' onchange=changeCaption(this.options[this.selectedIndex].text);><option value=''>".$_SESSION['lang']['all']."</option><option value='0000-00-00'>".$_SESSION['lang']['aktif']."</option><option value='*'>".$_SESSION['lang']['tidakaktif']."</select> &nbsp <p />";
+
+				echo $_SESSION['lang']['jeniskelamin']." : <select id=schjk  style='width:80px' onchange=changeCaption(this.options[this.selectedIndex].text);>".$optJK."</select> &nbsp ";
+
+				echo $_SESSION['lang']['pendidikan']." : <select id=schpendidikan  style='width:80px' onchange=changeCaption(this.options[this.selectedIndex].text);>".$optpendidikan."</select> &nbsp ";
+
+				echo $_SESSION['lang']['tanggal']." ".$_SESSION['lang']['masuk']." : <input type='text' class='myinputtext' id='tglmasuk1' onmousemove='setCalendar(this.id)' onkeypress='return false;'  size='9' maxlength='10' > s/d <input type='text' class='myinputtext' id='tglmasuk2' onmousemove='setCalendar(this.id)' onkeypress='return false;'  size='9' maxlength='10' > &nbsp ";
+
+				echo $_SESSION['lang']['tanggal']." ".$_SESSION['lang']['keluar']." : <input type='text' class='myinputtext' id='tglkeluar1' onmousemove='setCalendar(this.id)' onkeypress='return false;'  size='9' maxlength='10' > s/d <input type='text' class='myinputtext' id='tglkeluar2' onmousemove='setCalendar(this.id)' onkeypress='return false;'  size='9' maxlength='10' > &nbsp ";
+
+				echo $_SESSION['lang']['umur']." : <input type=text id=umur1 class=myinputtextnumber maxlength=3 size=2 onkeypress='return angka_doang(event);'> s/d <input type=text id=umur2 class=myinputtextnumber maxlength=3 size=2 onkeypress='return angka_doang(event);'> &nbsp ";
+
+				echo"<button class=mybutton onclick=cariKaryawanLaporan(1)>".$_SESSION['lang']['find']."</button>";
+echo"		</fieldset></td>
+		</tr>
+	</table> "; 
 
 
          ///////////////////
-
+/*
          echo"<table>
      <tr valign=middle>
          <td><fieldset><legend>Find by period</legend>"; 
@@ -204,12 +248,12 @@ echo"</fieldset></td>
 echo"</fieldset></td>
      </tr>
          </table> "; 
+*/
 
-
-
-
-
-
+$thnm='';
+$blnm='';
+$thnk='';
+$blnk='';
 
 
 echo"<div id='searchplace'>".$_SESSION['lang']['daftarkaryawan'].":<span id=cap1></span>-<span id=cap2></span>

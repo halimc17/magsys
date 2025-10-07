@@ -114,16 +114,25 @@ if(isTransactionPeriod()) {//check if transaction period is normal
             $saldoakhirqty=0;
             $nilaisaldoakhir=0;
             $hargarata=0;
+
+			// Cek Nilai Ppn di PO
+			$qPO = selectQuery($dbname,'log_poht',"*","nopo='".$nopo."'");
+			$resPO = fetchData($qPO);
+			if(empty($resPO)) exit("Warning: PO ".$nopo." tidak terdaftar");
+			$nilaiPpn  = $resPO[0]['ppn']   * $resPO[0]['kurs'] * ($nilaitotal / ($resPO[0]['kurs'] * ($resPO[0]['subtotal']-$resPO[0]['nilaidiskon'])));
+			$pbbkb     = $resPO[0]['pbbkb'] * $resPO[0]['kurs'] * ($nilaitotal / ($resPO[0]['kurs'] * ($resPO[0]['subtotal']-$resPO[0]['nilaidiskon'])));
+
 			$str="select saldoakhirqty,hargarata,nilaisaldoakhir,qtymasuk,qtymasukxharga from ".$dbname.".log_5saldobulanan where periode='".$periode."'
 				  and kodegudang='".$gudang."' and kodebarang='".$kodebarang."' and kodeorg='".$kodept."'"; 
             $res=mysql_query($str);
             if(mysql_numrows($res)<1)//jika belum ada penerimaan sebelumnya
             {
-                $newhargarata=$hargasatuan;
                 $newqtymasuk=$jumlah;
-                $newqtymasukxharga=$nilaitotal;
+                $newqtymasukxharga=$nilaitotal+$pbbkb;
+                //$newhargarata=$hargasatuan;
+                $newhargarata=($nilaitotal+$pbbkb)/$jumlah;
                 $newsaldoakhirqty=$jumlah;
-                $newnilaisaldoakhir=$nilaitotal;
+                $newnilaisaldoakhir=$nilaitotal+$pbbkb;
                 $strupdate="insert into ".$dbname.".log_5saldobulanan (
 					kodeorg, kodebarang, saldoakhirqty, hargarata, lastuser,
 					periode, nilaisaldoakhir, kodegudang, qtymasuk, qtykeluar, qtymasukxharga, 
@@ -140,9 +149,9 @@ if(isTransactionPeriod()) {//check if transaction period is normal
                     $qtymasukxharga=$bar->qtymasukxharga;
                     $hargarata=$bar->hargarata; 
                 }
-                @$newhargarata=($nilaitotal+$nilaisaldo)/($jumlah+$cursaldo);
                 $newqtymasuk=$qtymasuk+$jumlah;
-                @$newqtymasukxharga=$qtymasukxharga+$nilaitotal;
+                @$newqtymasukxharga=$qtymasukxharga+$nilaitotal+$pbbkb;
+                @$newhargarata=($nilaitotal+$pbbkb+$nilaisaldo)/($jumlah+$cursaldo);
                 $newsaldoakhirqty=$jumlah+$cursaldo;
                 $newnilaisaldoakhir=$newhargarata*$newsaldoakhirqty;
                 if($newhargarata==0)
@@ -206,7 +215,11 @@ if(isTransactionPeriod()) {//check if transaction period is normal
 			$qPO = selectQuery($dbname,'log_poht',"*","nopo='".$nopo."'");
 			$resPO = fetchData($qPO);
 			if(empty($resPO)) exit("Warning: PO ".$nopo." tidak terdaftar");
-			$nilaiPpn = $resPO[0]['ppn'] * $resPO[0]['kurs'] * ($nilaitotal / ($resPO[0]['kurs'] * ($resPO[0]['subtotal']-$resPO[0]['nilaidiskon'])));
+
+			//$nilaitotal=($resPO[0]['subtotal']-$resPO[0]['nilaidiskon']);
+			$nilaiPpn  = $resPO[0]['ppn']   * $resPO[0]['kurs'] * ($nilaitotal / ($resPO[0]['kurs'] * ($resPO[0]['subtotal']-$resPO[0]['nilaidiskon'])));
+			$pbbkb     = $resPO[0]['pbbkb'] * $resPO[0]['kurs'] * ($nilaitotal / ($resPO[0]['kurs'] * ($resPO[0]['subtotal']-$resPO[0]['nilaidiskon'])));
+			//$nilaitotal=$nilaitotal+$pbbkb;
 			// $nilaiPpn = $resPO[0]['ppn'] * $resPO[0]['kurs'];
 			// exit("warning : \nNilai Total : ".number_format($nilaitotal,2)."\nSubtotal : ".number_format($resPO[0]['subtotal'],2)."\nDiskon : ".number_format($resPO[0]['nilaidiskon'],2)."\nPPN : ".number_format($resPO[0]['ppn'],2)."\nPPN Result : ".number_format($nilaiPpn,2));
 			
@@ -233,8 +246,8 @@ if(isTransactionPeriod()) {//check if transaction period is normal
 				'tanggal'=>tanggalsystem($tanggal),
 				'tanggalentry'=>date('Ymd'),
 				'posting'=>1,
-				'totaldebet'=>$nilaitotal,
-				'totalkredit'=>-1*$nilaitotal,
+				'totaldebet'=>($nilaitotal+$nilaiPpn+$pbbkb),
+				'totalkredit'=>-1*($nilaitotal+$nilaiPpn+$pbbkb),
 				'amountkoreksi'=>'0',
 				'noreferensi'=>$notransaksi,
 				'autojurnal'=>'1',
@@ -307,6 +320,35 @@ if(isTransactionPeriod()) {//check if transaction period is normal
 				$noUrut++;
 			}
 
+			// Debet PBBKB
+			if($pbbkb>0) {
+				$dataRes['detail'][] = array(
+				'nojurnal'=>$nojurnal,
+				'tanggal'=>tanggalsystem($tanggal),
+				'nourut'=>$noUrut,
+				'noakun'=>$akunbarang,
+				'keterangan'=>'PBBKB barang '.$namabarang.' '.$jumlah." ".$satuan,
+				'jumlah'=>$pbbkb,
+				'matauang'=>'IDR',
+				'kurs'=>'1',
+				'kodeorg'=>substr($gudang,0,4),
+				'kodekegiatan'=>'',
+				'kodeasset'=>'',
+				'kodebarang'=>$kodebarang,
+				'nik'=>'',
+				'kodecustomer'=>'',
+				'kodesupplier'=>$supplier,
+				'noreferensi'=>$notransaksi,
+				'noaruskas'=>'',
+				'kodevhc'=>'',
+				'nodok'=>$nopo,
+				'kodeblok'=>'',
+				'revisi'=>'0',
+				'kodesegment' => $segment
+				);
+				$noUrut++;
+			}
+
 			# Kredit
 			$dataRes['detail'][] = array(
 				'nojurnal'=>$nojurnal,
@@ -314,7 +356,7 @@ if(isTransactionPeriod()) {//check if transaction period is normal
 				'nourut'=>$noUrut,
 				'noakun'=>$akunspl,
 				'keterangan'=>'Pembelian barang '.$namabarang.' '.$jumlah." ".$satuan,
-				'jumlah'=>(-1*$nilaitotal) - $nilaiPpn,
+				'jumlah'=>-1*($nilaitotal+$nilaiPpn+$pbbkb),
 				'matauang'=>'IDR',
 				'kurs'=>'1',
 				'kodeorg'=>substr($gudang,0,4),
@@ -612,8 +654,8 @@ if(isTransactionPeriod()) {//check if transaction period is normal
                     'tanggal'=>tanggalsystem($tanggal),
                     'tanggalentry'=>date('Ymd'),
                     'posting'=>1,
-                    'totaldebet'=>$nilaitotal,
-                    'totalkredit'=>-1*$nilaitotal,
+                    'totaldebet'=>($nilaitotal+$nilaiPpn),
+                    'totalkredit'=>-1*($nilaitotal+$nilaiPpn),
                     'amountkoreksi'=>'0',
                     'noreferensi'=>$notransaksi,
                     'autojurnal'=>'1',
@@ -632,7 +674,7 @@ if(isTransactionPeriod()) {//check if transaction period is normal
                     'nourut'=>$noUrut,
                     'noakun'=>$akunspl,
                     'keterangan'=>'ReturSupplier '.$namabarang.' '.$jumlah." ".$satuan,
-                    'jumlah'=>$nilaitotal,
+                    'jumlah'=>($nilaitotal+$nilaiPpn),
                     'matauang'=>'IDR',
                     'kurs'=>'1',
                     'kodeorg'=>substr($gudang,0,4),
@@ -1006,13 +1048,20 @@ else if($tipetransaksi=='2')
          $statustm=$bar->statusblok;
      }
          $str="select noakun from ".$dbname.".setup_kegiatan where 
-                kodekegiatan='".$kodekegiatan."'";
+                kodekegiatan like '".$kodekegiatan."%'";
      $akunpekerjaan='';
      $res=mysql_query($str);
      while($bar=mysql_fetch_object($res)){
          $akunpekerjaan=$bar->noakun;
      }
-     #jika akun kegiatan tidak ada maka exit
+     #untuk project aktiva dalam konstruksi maka akun diambil dari kolom kodekegiatan
+     $kodeasset='';
+     if(substr($blok,0,2)=='AK' or substr($blok,0,2)=='PB'){
+            $akunpekerjaan=substr($kodekegiatan,0,7);
+            $kodeasset=$blok;
+            //$blok="";#pemindahan kodeblok ke kode asset
+     }
+	 #jika akun kegiatan tidak ada maka exit
      if($akunpekerjaan=='')
 //         exit("Error: Akun pekerjaan belum ada untuk kegiatan ".$kodekegiatan);
          exit("Error: Account not available yet for activity ".$kodekegiatan);
@@ -1108,7 +1157,7 @@ else if($tipetransaksi=='2')
                             'kurs'=>'1',
                             'kodeorg'=>substr($gudang,0,4),
                             'kodekegiatan'=>$kodekegiatan,
-                            'kodeasset'=>'',
+                            'kodeasset'=>$kodeasset,
                             'kodebarang'=>$kodebarang,
                             'nik'=>'',
                             'kodecustomer'=>'',

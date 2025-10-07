@@ -591,7 +591,7 @@ switch($proses)
 		break;
         case'getBlok':
 		
-		$sAlokasi = "select b.kelompok as kelompok from ".$dbname.".vhc_kegiatan a 
+		$sAlokasi = "select distinct(b.kelompok) as kelompok from ".$dbname.".vhc_kegiatan a 
 					left join ".$dbname.".setup_kegiatan b 
 					on a.noakun = b.noakun 
 					where a.kodekegiatan='".$jnsPekerjaan."'";
@@ -600,21 +600,27 @@ switch($proses)
 		
 		// if($rAlokasi['kelompok'] != ''){
 			if($rAlokasi['kelompok']=='PNN'){
-				$statusblok = " and statusblok = 'TM'";
+				$statusblok = " and statusblok = 'TM' and luasareaproduktif>0";
 			}else if($rAlokasi['kelompok']=='TB'){
-				$statusblok = " and statusblok IN ('LC','TB','TBM')";
+				$statusblok = " and statusblok IN ('LC','TB','TBM','TBM-01','TBM-02','TBM-03')";
+			}else if($rAlokasi['kelompok']=='TBM'){
+				$statusblok = " and statusblok IN ('TB','TBM','TBM-01','TBM-02','TBM-03')";
 			}else{
-				$statusblok = " and statusblok = '".$rAlokasi['kelompok']."'";
+				$statusblok = " and luasareaproduktif>0";
+				//$statusblok = " and statusblok = '".$rAlokasi['kelompok']."' and luasareaproduktif>0";
+				//$statusblok = " and statusblok = '".$rAlokasi['kelompok']."'";
 			}
-		// }else{
-			// $statusblok = " and statusblok = '".$rAlokasi['kelompok']."'";
-		// }
 		
 		$optBlok="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
+		/*
         $sBlok="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi 
                 where induk like '%".$lokKerja."%' and (tipe='BLOK' OR tipe='BIBITAN')
                 and kodeorganisasi in (select distinct kodeorg from ".$dbname.".setup_blok where left(kodeorg,4)='".$lokKerja."' and luasareaproduktif>0 ".$statusblok.")";
-				// exit('error : '.$sBlok);
+		*/
+        $sBlok="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi 
+                where detail=1 and induk like '%".$lokKerja."%' and (tipe='BLOK' OR tipe='BIBITAN')
+                and kodeorganisasi in (select distinct kodeorg from ".$dbname.".setup_blok where left(kodeorg,4)='".$lokKerja."' ".$statusblok.")";
+		// exit('error : '.$sBlok);
         $qBlok=mysql_query($sBlok) or die(mysql_error());
         while($rBlok=mysql_fetch_assoc($qBlok))
         {

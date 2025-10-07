@@ -68,7 +68,9 @@ $tab.="<td ".$bgdt.">".$_SESSION['lang']['luasareaproduktif']."</td>";
 $tab.="<td ".$bgdt.">".$_SESSION['lang']['jumlahpokok']."</td>";
 $tab.="</tr><tbody>";
 $tglTemp='';
-$sData="select distinct * from ".$dbname.".kebun_spb_vw where tanggal like '%".$periode."%' ".$where." ".$inplas." order by tanggal,blok asc";
+//$sData="select distinct * from ".$dbname.".kebun_spb_vw where tanggal like '%".$periode."%' ".$where." ".$inplas." order by tanggal,blok asc";
+$sData="select a.*,b.namaorganisasi from (select distinct * from ".$dbname.".kebun_spb_vw where tanggal like '%".$periode."%' ".$where." ".$inplas.") a 
+		left join ".$dbname.".organisasi b on a.blok=b.kodeorganisasi order by a.tanggal,a.blok asc";
 $qData=mysql_query($sData) or die(mysql_error($sData));
 $rowDta=mysql_num_rows($qData);
 if($rowDta>0)
@@ -129,7 +131,7 @@ if($rowDta>0)
                 $tab.="<td>".tanggalnormal($rData['tanggal'])."</td>";
             }
             $tab.="<td>".$rData['nospb']."</td>";
-            $tab.="<td>".$rData['blok']."</td>";
+            $tab.="<td>".$rData['namaorganisasi']."</td>";
             $tab.="<td align=center>".$rDtBlok['tahuntanam']."</td>";
             $tab.="<td>".$rData['nokendaraan']."</td>";
             $tab.="<td>".$rData['notiket']."</td>";
@@ -250,8 +252,10 @@ switch($proses)
                 $pdf->SetFont('Arial','',6);
 		$pdf->SetFillColor(255,255,255);
 		// select distinct * from ".$dbname.".kebun_spb_vw where tanggal like '%".$periode."%' ".$where." ".$inplas." order by tanggal,blok asc
-        $sData="select distinct * from ".$dbname.".kebun_spb_vw where tanggal like '%".$periode."%' ".$where." ".$inplas." order by tanggal,blok asc";
-        $qData=mysql_query($sData) or die(mysql_error($sData));
+        //$sData="select distinct * from ".$dbname.".kebun_spb_vw where tanggal like '%".$periode."%' ".$where." ".$inplas." order by tanggal,blok asc";
+		$sData="select a.*,b.namaorganisasi from (select distinct * from ".$dbname.".kebun_spb_vw where tanggal like '%".$periode."%' ".$where." ".$inplas.") a 
+		left join ".$dbname.".organisasi b on a.blok=b.kodeorganisasi order by a.tanggal,a.blok asc";
+		$qData=mysql_query($sData) or die(mysql_error($sData));
         $rowDta=mysql_num_rows($qData);
 		$dtr=0;
         if($rowDta>0)
@@ -266,7 +270,7 @@ switch($proses)
                 $pdf->Cell(3/100*$width,$height,$dtr,1,0,'C',1);
                 $pdf->Cell(8/100*$width,$height,tanggalnormal($rData['tanggal']),1,0,'C',1);		
                 $pdf->Cell(15/100*$width,$height,$rData['nospb'],1,0,'L',1);		
-                $pdf->Cell(10/100*$width,$height,$rData['blok'],1,0,'L',1);
+                $pdf->Cell(10/100*$width,$height,$rData['namaorganisasi'],1,0,'L',1);
                 $pdf->Cell(8/100*$width,$height,$rDtBlok['tahuntanam'],1,0,'C',1);
                 $pdf->Cell(8/100*$width,$height,$rData['nokendaraan'],1,0,'L',1);
                 $pdf->Cell(8/100*$width,$height,$rData['notiket'],1,0,'L',1);

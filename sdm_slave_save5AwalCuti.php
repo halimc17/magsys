@@ -17,8 +17,8 @@ while($bar=mysql_fetch_object($res))
 {
     $sisalalu=$bar->sisa; // -10
 }
-if($sisalalu<0)#jika saldolalu minus maka dibawa
-     $hak=$hak+$sisalalu;// 5
+//if($sisalalu<0)#jika saldolalu minus maka dibawa
+//   $hak=$hak+$sisalalu;// 5
 
 //ambil sum jumlah diambil dan update table header
     $strx="select sum(jumlahcuti) as diambil from ".$dbname.".sdm_cutidt
@@ -32,7 +32,7 @@ if($sisalalu<0)#jika saldolalu minus maka dibawa
             $diambil=0+$barx->diambil; // 5
     }
 $sisa=0+$hak-$diambil;
-        
+/*
 $str="update ".$dbname.".sdm_cutiht 
       set dari=".$dari.",
 	  sampai=".$sampai.",
@@ -42,15 +42,25 @@ $str="update ".$dbname.".sdm_cutiht
      where 
       kodeorg='".$lokasitugas."'
 	  and karyawanid=".$karyawanid."
-	  and periodecuti='".$periode."'";	
+	  and periodecuti='".$periode."'";
+*/
+$str="update ".$dbname.".sdm_cutiht 
+      set dari=".$dari.",
+	  sampai=".$sampai.",
+	  hakcuti=".$hak.",
+	  diambil=".$diambil.",
+	  sisa=hakcuti-".$diambil."
+     where
+	  karyawanid=".$karyawanid."
+	  and periodecuti='".$periode."'";
 mysql_query($str);
 if(mysql_affected_rows($conn)<1)
 {	  
 $str="insert into ".$dbname.".sdm_cutiht(kodeorg,`karyawanid`,
-      `periodecuti`,`dari`,`sampai`,`hakcuti`,`sisa`,`diambil`)
+      `periodecuti`,`dari`,`sampai`,`hakcuti`,`sisa`,`diambil`,`keterangan`)
 	  values(
 	  '".$lokasitugas."',".$karyawanid.",'".$periode."',
-	  ".$dari.",".$sampai.",".$hak.",".$sisa.",".$diambil."
+	  ".$dari.",".$sampai.",".$hak.",".$sisa.",".$diambil.",'".$_SESSION['standard']['username']."'
 	  )";
   if(mysql_query($str))
   {

@@ -107,7 +107,7 @@ else if($periode!='' and $gudang!='')
 
 if($kdKel!='')
 {
-   $kdKelSch=" and a.nojurnal like '%".$kdKel."%'  "; 
+   $kdKelSch=" and a.nojurnal like '%/".$kdKel."/%'  "; 
 }
 
 if($regional=='' && $gudang=='')

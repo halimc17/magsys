@@ -243,8 +243,8 @@ function simpanJ()
 	else
 	{
 		if((outstanding - diambilJ) < 0){
-			alert("Gagal. Jumlah hari cuti sudah melebihi hak cuti untuk periode ini.");
-			return false;
+			alert("Jumlah hari cuti sudah melebihi hak cuti untuk periode ini.");
+			//return false;
 		}
 		param='kodeorgJ='+kodeorgJ+'&karyawanidJ='+karyawanidJ+'&periodeJ='+periodeJ;
 		param+='&dariJ='+dariJ+'&sampaiJ='+sampaiJ+'&method=insert';
@@ -355,6 +355,18 @@ function cutiToExcel(kodeorg,periode,karyawan,ev)
    title='Download';
    width='500';
    height='400';
+   content="<iframe frameborder=0 width=100% height=100% src='"+tujuan+"'></iframe>"
+   showDialog1(title,content,width,height,ev);		
+}
+
+function cutiToPDF(kodeorg,periode,karyawan,ev)
+{
+	param='kodeorg='+kodeorg+'&periode='+periode+'&karyawan='+karyawan+'&method=pdf';
+	tujuan = 'sdm_slave_cuti_PDF.php?'+param;	
+ //display window
+   title='PDF';
+   width='1000';
+   height='500';
    content="<iframe frameborder=0 width=100% height=100% src='"+tujuan+"'></iframe>"
    showDialog1(title,content,width,height,ev);		
 }

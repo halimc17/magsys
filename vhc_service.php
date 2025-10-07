@@ -55,8 +55,8 @@ while($rvhc23=mysql_fetch_assoc($qvhc23))
 $optKaryawan="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
 $iKar="select a.karyawanid,a.namakaryawan,a.nik from ".$dbname.".datakaryawan a
 		left join ".$dbname.".sdm_5jabatan b on a.kodejabatan=b.kodejabatan
-		where a.lokasitugas='".$_SESSION['empl']['lokasitugas']."' and
-			b.namajabatan like '%Mechanic%'";
+		where a.lokasitugas='".$_SESSION['empl']['lokasitugas']."' and 
+		(b.namajabatan like '%Mechanic%' or a.bagian='MILM')";
 $nKar=mysql_query($iKar) or die(mysql_error($conn));
 while($dKar=mysql_fetch_assoc($nKar))
 {

@@ -21,13 +21,22 @@ $arr0="##tanggal";
 <?php
 $title[1]=$_SESSION['lang']['rekap']." ".$_SESSION['lang']['perjalanandinas'];
 
-$sTgl="select distinct substr(tanggalsisa,1,7) as periode from ".$dbname.".sdm_pjdinasht where tanggalsisa != '0000-00-00' order by tanggalsisa desc";
+$sTgl="select distinct substr(tanggalperjalanan,1,7) as periode from ".$dbname.".sdm_pjdinasht where tanggalperjalanan != '0000-00-00' order by tanggalperjalanan desc";
 $qTgl=mysql_query($sTgl) or die(mysql_error());
+$no=0;
 $optPeriode="";
 while($rTgl=mysql_fetch_assoc($qTgl))
 {
-   $optPeriode.="<option value='".$rTgl['periode']."'>".substr($rTgl['periode'],5,2)."-".substr($rTgl['periode'],0,4)."</option>";
+	//$no+=1;
+	//if($no==1){
+	//	$optPeriode.="<option value='".substr($rTgl['periode'],0,4)."'>".substr($rTgl['periode'],0,4)."</option>";
+	//}else
+	//if(substr($rTgl['periode'],5,2)=='12'){
+	//	$optPeriode.="<option value='".substr($rTgl['periode'],0,4)."'>".substr($rTgl['periode'],0,4)."</option>";
+	//}
+    $optPeriode.="<option value='".$rTgl['periode']."'>".substr($rTgl['periode'],5,2)."-".substr($rTgl['periode'],0,4)."</option>";
 }
+$optPeriode2=$optPeriode;
 
 $sLoc="select kodeorganisasi,namaorganisasi,alokasi from ".$dbname.".organisasi 
       where length(kodeorganisasi)=4 
@@ -39,18 +48,18 @@ while($rLoc=mysql_fetch_assoc($qLoc))
    $optLoc.="<option value='".$rLoc['kodeorganisasi']."'>".$rLoc['kodeorganisasi']."-".$rLoc['namaorganisasi']."</option>";
 }
 
-$arr="##periode##lokasitugas##namakaryawan";
+$arr="##periode##periode2##lokasitugas##namakaryawan";
 echo"<fieldset style=\"float: left;\">
 <legend><b>".$title[1]."</b></legend>
 <table cellspacing=\"1\" border=\"0\" >";
 echo"<tr><td>".$_SESSION['lang']['periode']."</td>";
-echo"<td><select id=periode style=width:150px;>".$optPeriode."</select></td>";
+echo"<td><select id=periode style=width:80px;>".$optPeriode."</select> s/d <select id=periode2 style=width:80px;>".$optPeriode2."</select></td>";
 echo"</tr>";
 echo"<tr><td>".$_SESSION['lang']['lokasitugas']."</td>
-          <td><select id=lokasitugas style=width:150px;>".$optLoc."</select></td>
+          <td><select id=lokasitugas>".$optLoc."</select></td>
           </tr>";
 echo"<tr><td>".$_SESSION['lang']['namakaryawan']."</td>
-          <td><input type=text id=namakaryawan class=myinputtext style=width:150px;></td>
+          <td><input type=text id=namakaryawan class=myinputtext style=width:250px;></td>
           </tr>";
 echo"<tr height=\"20\">
     <td colspan=\"2\">&nbsp;</td>

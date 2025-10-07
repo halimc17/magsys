@@ -12,7 +12,7 @@ $kdOrg=checkPostGet('kdOrg','');
 $per=checkPostGet('per','');
 
 
-function dates_inbetween($date1, $date2){
+function dates_inbetwee($date1, $date2){
 
     $day = 60*60*24;
 
@@ -45,7 +45,8 @@ $dTgl=mysql_fetch_assoc($nTgl);
 
 
 
-$test = dates_inbetween($tgl1, $tgl2);
+//$test = dates_inbetwee($tgl1, $tgl2);
+$test = rangeTanggal($tgl1, $tgl2);
 
 /*echo"<pre>";
 print_r($test);
@@ -53,7 +54,7 @@ echo"</pre>";*/
 
 $nmOrg=makeOption($dbname,'organisasi','kodeorganisasi,namaorganisasi');
 $noAfd=0;
-$iAfd="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi where induk='".$kdOrg."' and tipe='afdeling' ";
+$iAfd="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi where induk='".$kdOrg."' and tipe='AFDELING' and substr(kodeorganisasi,5,2)<80";
 $nAfd=  mysql_query($iAfd) or die (mysql_error($conn));
 while($dAfd=  mysql_fetch_array($nAfd))
 {
@@ -152,7 +153,7 @@ switch($proses)
 	case 'excel':
 		//$stream.="Print Time : ".date('H:i:s, d/m/Y')."<br>By : ".$_SESSION['empl']['name'];	
 		$tglSkrg=date("Ymd");
-		$nop_="lapora_Rekap_Gaji_".$pt."_".$per;
+		$nop_="BJR_Harian_".$pt."_".$per;
 		if(strlen($stream)>0)
 		{
 			if ($handle = opendir('tempExcel')) {

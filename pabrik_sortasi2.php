@@ -104,12 +104,11 @@ $optPotFraksi = makeOption($dbname,'pabrik_5pot_fraksi','kodefraksi,potongan');
 </tr>
 </table>
 </div><br />
-<br />
 
 <div id="formInput" style="display:none">
 <?php 
-echo $_SESSION['lang']['noTiket'];
-echo $_SESSION['lang']['cancel']
+//echo $_SESSION['lang']['noTiket'];
+//echo $_SESSION['lang']['cancel']
 ?>
 </div>
 <input type="hidden" id="proses" name="proses" value="insert"  />
@@ -117,12 +116,12 @@ echo $_SESSION['lang']['cancel']
 <div id="showFormBwh" style="display:none;">
     <fieldset>
         <legend><?php echo $_SESSION['lang']['detail']?></legend>
-        <div id="formDetail" style=" width:1100px;overflow:scroll;"></div>
+        <div id="formDetail" style=" width:1130px;overflow:scroll;"></div>
     </fieldset>
     <br />
     <fieldset>
         <legend><?php echo $_SESSION['lang']['data'];?> : <span id="tanggalForm"></span></legend>
-        <div id="isiDetail" style=" width:1100px;height:400px;overflow:scroll;">
+        <div id="isiDetail" style=" width:1130px;height:400px;overflow:scroll;">
 
         </div>
     </fieldset>

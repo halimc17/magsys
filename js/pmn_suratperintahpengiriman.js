@@ -217,9 +217,12 @@ function saveData(fileTarget,passParam) {
 }
 
 function fillField(nodo){
+  
     param='proses=getData'+'&nodo='+nodo;
     tujuan='pmn_slave_suratperintahpengiriman.php';
-    post_response_text(tujuan, param, respog);
+   
+	post_response_text(tujuan, param, respog);
+	
     function respog()
     {
       if(con.readyState==4)

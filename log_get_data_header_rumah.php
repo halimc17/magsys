@@ -36,12 +36,31 @@
 		$optOrg.="<option value=".$res['blok'].">".$res['blok']."</option>";
 		
 	}
-	
-	$skary="select karyawanid,namakaryawan,lokasitugas,subbagian 
+
+	$sql="select tipe,induk from ".$dbname.".organisasi where kodeorganisasi='".$org_code."'";
+	$query=mysql_query($sql) or die(mysql_error());
+	$ctipe='';
+	$cinduk='';
+	while($res=mysql_fetch_assoc($query)){
+		$ctipe=$res['tipe'];
+		$cinduk=$res['induk'];
+	}
+if($ctipe=='HOLDING'){
+	$skary="select karyawanid,namakaryawan,lokasitugas,subbagian,nik 
+                from ".$dbname.".datakaryawan 
+                where (tanggalkeluar = '0000-00-00' or tanggalkeluar > '".date("Y-m-d")."')";
+}elseif($ctipe=='KANWIL'){
+	$skary="select karyawanid,namakaryawan,lokasitugas,subbagian,nik 
+                from ".$dbname.".datakaryawan 
+                where (tanggalkeluar = '0000-00-00' or tanggalkeluar > '".date("Y-m-d")."') 
+                and kodeorganisasi = '".$cinduk."' and lokasitugas not like '%HO' and tipekaryawan<>4";
+}else{
+	$skary="select karyawanid,namakaryawan,lokasitugas,subbagian,nik 
                 from ".$dbname.".datakaryawan 
                 where (tanggalkeluar = '0000-00-00' or tanggalkeluar > '".date("Y-m-d")."') 
                 and lokasitugas = '".$org_code."'";
-//        exit("error: ".$skary);
+}
+//exit("error: ".$skary);
         $qkary=mysql_query($skary) or die(mysql_error());
         while($rkary=mysql_fetch_assoc($qkary))
         {
@@ -53,7 +72,7 @@
                 {
                         $rkary['lokasitugas']=$rkary['subbagian'];
                 }
-                $optKary.="<option value=".$rkary['karyawanid'].">".$rkary['namakaryawan']."&nbsp;[".$rkary['karyawanid']."]&nbsp;[".$rkary['lokasitugas']."]</option>";
+                $optKary.="<option value=".$rkary['karyawanid'].">".$rkary['namakaryawan']."&nbsp;[".$rkary['nik']."]&nbsp;[".$rkary['lokasitugas']."]</option>";
         }
 	echo $optOrg."###".$optKary;
 	break;	

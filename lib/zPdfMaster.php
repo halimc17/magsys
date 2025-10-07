@@ -44,7 +44,28 @@ class zPdfMaster extends FPDF {
 			$this->Ln();
 			//$this->Line($this->lMargin,$this->GetY(),$this->w - $this->rMargin,$this->GetY());
 		} else {
-			$path='images/logo.jpg';
+				$kodept=$_SESSION['org']['kodeorganisasi'];
+				if($kodept=='AMP'){
+					$path='images/logo_amp.jpg';
+				}else if($kodept=='CKS'){
+					$path='images/logo_cks.jpg';
+				}else if($kodept=='KAA'){
+					$path='images/logo_kaa.jpg';
+				}else if($kodept=='KAL'){
+					$path='images/logo_kal.jpg';
+				}else if($kodept=='LKA'){
+					$path='images/logo_lka.jpg';
+				}else if($kodept=='MPA'){
+					$path='images/logo_mpa.jpg';
+				}else if($kodept=='MHS'){
+					$path='images/logo_mhs.jpg';
+				}else if($kodept=='MEA'){
+					$path='images/logo_mea.jpg';
+				}else if($kodept=='SMA'){
+					$path='images/logo_sma.jpg';
+				}else{
+					$path='images/logo.jpg';
+				}
 			$this->Image($path,$this->lMargin,$this->tMargin,0,45);	
 			$this->SetFont('Arial','B',9);
 			$this->SetFillColor(255,255,255);	

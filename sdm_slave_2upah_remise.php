@@ -14,6 +14,10 @@ $_GET['proses']==''?$proses=$_POST['proses']: $proses=$_GET['proses'];
 $optNmKar=makeOption($dbname,'datakaryawan','karyawanid,namakaryawan');
 $optTipeId=makeOption($dbname,'datakaryawan','karyawanid,tipekaryawan');
 $optTipe=makeOption($dbname, 'sdm_5tipekaryawan', 'id,tipe');
+$optNikKar=makeOption($dbname,'datakaryawan','karyawanid,nik');
+$optSbagKar=makeOption($dbname,'datakaryawan','karyawanid,subbagian');
+$optJabatanId=makeOption($dbname,'datakaryawan','karyawanid,kodejabatan');
+$optJabatan=makeOption($dbname, 'sdm_5jabatan', 'kodejabatan,namajabatan');
 
 if($kdOrg=='')
 {
@@ -24,7 +28,7 @@ if($tglDari==''||$tglSmp=='')
     exit("Error: Date required");
 }
 
-function dates_inbetween($date1, $date2){
+function dates_inbetwee($date1, $date2){
 
     $day = 60*60*24;
 
@@ -45,7 +49,8 @@ function dates_inbetween($date1, $date2){
 
     return $dates_array;
 }
-$test = dates_inbetween($tglDari, $tglSmp);
+//$test = dates_inbetwee($tglDari, $tglSmp);
+$test = rangeTanggal($tglDari, $tglSmp);
 $jmlhHari=count($test);
 $sAbsen="select kodeabsen from ".$dbname.".sdm_5absensi order by kodeabsen";
 	$qAbsen=mysql_query($sAbsen) or die(mysql_error($conn));
@@ -87,7 +92,10 @@ if($proses=='excel')
     <tr>
     <td ".$bgDt.">No</td>
     <td ".$bgDt.">".$_SESSION['lang']['nama']."</td>
+    <td ".$bgDt.">".$_SESSION['lang']['nik']."</td>
+    <td ".$bgDt.">".$_SESSION['lang']['jabatan']."</td>
     <td ".$bgDt.">".$_SESSION['lang']['tipekaryawan']."</td>
+    <td ".$bgDt.">".$_SESSION['lang']['subbagian']."</td>
     <td ".$bgDt.">".$_SESSION['lang']['gaji']."</td>";
     foreach($test as $ar => $isi)
     {
@@ -113,7 +121,10 @@ if($proses=='excel')
         $tab.="<tr class=rowcontent>";
         $tab.="<td>".$no."</td>";
         $tab.="<td>".$optNmKar[$lstKary]."</td>";
+        $tab.="<td>".$optNikKar[$lstKary]."</td>";
+        $tab.="<td>".$optJabatan[$optJabatanId[$lstKary]]."</td>";
         $tab.="<td>".$optTipe[$optTipeId[$lstKary]]."</td>";
+        $tab.="<td>".$optSbagKar[$lstKary]."</td>";
         $tab.="<td align=right>".number_format($dtGaji[$lstKary],0)."</td>";
         $totGaji+=$dtGaji[$lstKary];
         foreach($test as $barisTgl =>$isiTgl)

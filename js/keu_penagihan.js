@@ -89,15 +89,29 @@ function getPage(){
 // }
 
 function cariData(pg){
-    ntrs=document.getElementById('txtsearch').value;
-    tglcr=document.getElementById('tgl_cari').value;
+   
+	ntrs=document.getElementById('txtsearch').value;
+    nktr=document.getElementById('txtnokont').value;
+	tglcr=document.getElementById('tgl_cari').value;
+	kdbar=document.getElementById('ptKomoditi').value;
+	ncust=document.getElementById('ptCust').value;
     param='proses=loadData'+'&page='+pg;
     if(ntrs!=''){
         param+='&noinvoice='+ntrs;
     }
+	if(nktr!=''){
+        param+='&nokontrak='+nktr;
+    }
     if(tglcr!=''){
         param+='&tanggalCr='+tglcr;
     }
+    if(kdbar!=''){
+        param+='&kodebarang='+kdbar;
+    }
+    if(ncust!=''){
+        param+='&kodecustomer='+ncust;
+    }
+	
     tujuan='keu_slave_penagihan.php';
     post_response_text(tujuan, param, respog);
     function respog()
@@ -127,14 +141,27 @@ function cariData(pg){
 }
 function loadData(page){
     ntrs=document.getElementById('txtsearch').value;
-    tglcr=document.getElementById('tgl_cari').value;
+	nktr=document.getElementById('txtnokont').value;
+	tglcr=document.getElementById('tgl_cari').value;
+	kdbar=document.getElementById('ptKomoditi').value;
+	ncust=document.getElementById('ptCust').value;
     param='proses=loadData'+'&page='+page;
     if(ntrs!=''){
         param+='&noinvoice='+ntrs;
     }
+	if(nktr!=''){
+        param+='&nokontrak='+nktr;
+    }
     if(tglcr!=''){
         param+='&tanggalCr='+tglcr;
     }
+    if(kdbar!=''){
+        param+='&kodebarang='+kdbar;
+    }
+    if(ncust!=''){
+        param+='&kodecustomer='+ncust;
+    }
+
     tujuan='keu_slave_penagihan.php';
     post_response_text(tujuan, param, respog);
     function respog()
@@ -535,6 +562,7 @@ document.getElementById('nilaiinvoice').value='';
 document.getElementById('debet').value='';
 document.getElementById('kredit').value='';
 document.getElementById('txtsearch').value="";
+//document.getElementById('nokontrak').value="";
 document.getElementById('tgl_cari').value="";
 document.getElementById('rupiah1').value="0";
 document.getElementById('rupiah2').value="0";

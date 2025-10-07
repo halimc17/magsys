@@ -42,7 +42,7 @@ echo"<fieldset>
 		<tr><td>".$_SESSION['lang']['hargasatuan']."(Rp)</td><td><input type=text id=harga class=myinputtextnumber value=0 onkeypress=\"return angka_doang(event);\" size=12><div id='divChkNol' style='display:none'><input type=checkbox id=chkNol onchange='checkChkNol();'>* Beri tanda checklist untuk untuk membuat harga satuan menjadi 0 (nol)</div></td></tr>
 		<tr>
 			<td>No Transaksi Referensi</td>
-			<td><input type=text id=notransreferensi maxlength=25 size=25 class=myinputtext></td>
+			<td><input type=text id=notransreferensi maxlength=30 size=30 class=myinputtext></td>
 		</tr>
 		<tr>
 			<td>".$_SESSION['lang']['keterangan']."</td>

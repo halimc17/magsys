@@ -210,7 +210,8 @@ switch ($method){
 
 													$strx="update ".$dbname.".log_prapoht set persetujuan".$i."='".$user_id."',
 														  ".$kolom_persetujuan."='1',komentar".$kolom."='".$comment."',
-														  tglp".$kolom."='".$tglSkrng."' where `nopp`='".$nopp."'"; 					
+														  tglp".$kolom."=now() where `nopp`='".$nopp."'";
+														  //tglp".$kolom."='".$tglSkrng."' where `nopp`='".$nopp."'"; 					
 
 													//echo "warning:".$strx;exit();
 													if($res=mysql_query($strx))
@@ -249,7 +250,8 @@ switch ($method){
 											elseif($res['persetujuan5']!='')
 											{
 													$strx="update ".$dbname.".log_prapoht set hasilpersetujuan5='1',komentar5='".$comment."',
-														   close='2',tglp5='".$tglSkrng."' where `nopp`='".$nopp."'";	
+														   close='2',tglp5=now() where `nopp`='".$nopp."'";	
+														   //close='2',tglp5='".$tglSkrng."' where `nopp`='".$nopp."'";	
 													if($res=mysql_query($strx))
 													{
 															//echo $stat;
@@ -281,7 +283,8 @@ switch ($method){
 
                 if(($res['persetujuan5']!='')&&($user_id==$res['persetujuan5']))
                 {
-                        $sql2="update ".$dbname.".log_prapoht set `close`=2,komentar5='".$comment."',hasilpersetujuan5=1,tglp5='".$tglSkrng."' where nopp='".$nopp."'";	
+                        //$sql2="update ".$dbname.".log_prapoht set `close`=2,komentar5='".$comment."',hasilpersetujuan5=1,tglp5='".$tglSkrng."' where
+						$sql2="update ".$dbname.".log_prapoht set `close`=2,komentar5='".$comment."',hasilpersetujuan5=1,tglp5=now() where nopp='".$nopp."'";	
                         if($query2=mysql_query($sql2))
                         {
                             exit();
@@ -300,7 +303,8 @@ switch ($method){
                                         if($res['persetujuan'.$kolom]==$user_id)
                                         {
                                                         $sql2="update ".$dbname.".log_prapoht set `close`=2,
-                                                        komentar".$kolom."='".$comment."',".$kolom_persetujuan."=1,tglp".$kolom."='".$tglSkrng."' where nopp='".$nopp."'";				                           // echo "warning:".$sql2."___".$i."___".$_SESSION['standard']['userid']; exit();
+                                                        komentar".$kolom."='".$comment."',".$kolom_persetujuan."=1,tglp".$kolom."=now() where nopp='".$nopp."'";
+														// echo "warning:".$sql2."___".$i."___".$_SESSION['standard']['userid']; exit();
                                                         if($query2=mysql_query($sql2))
                                                         {
                                                                 exit();
@@ -364,8 +368,11 @@ switch ($method){
                             {
                                 if(($res['hasilpersetujuan'.$c]=='' or $res['hasilpersetujuan'.$c]==0000000000)&&($res['persetujuan'.$c]==$_SESSION['standard']['userid']))
                                     {
+//                                              $sql2="update ".$dbname.".log_prapoht set
+//												close='".$hasil."',komentar".$c."='".$comment."',".$kolom_persetujuan."='3',tglp".$c."='".$tglSkrng."' where
+//												nopp='".$nopp."'" ;					//echo "Warning:".$sql2; exit();
 
-                                                  $sql2="update ".$dbname.".log_prapoht set close='".$hasil."',komentar".$c."='".$comment."',".$kolom_persetujuan."='3',tglp".$c."='".$tglSkrng."' where nopp='".$nopp."'" ;					//echo "Warning:".$sql2; exit();
+                                                  $sql2="update ".$dbname.".log_prapoht set close='".$hasil."',komentar".$c."='".$comment."',".$kolom_persetujuan."='3',tglp".$c."=now() where nopp='".$nopp."'" ;					//echo "Warning:".$sql2; exit();
                                                   if(mysql_query($sql2))
                                                     {
                                                         $sql3="update ".$dbname.".log_prapodt set status='3',ditolakoleh='".$user_id."' where nopp='".$nopp."'";
@@ -429,7 +436,7 @@ switch ($method){
                                     $body.="</ul><br>
                                                <br>
                                                Regards,<br>
-                                               Owl-Plantation System.
+                                               Medco Agro System.
                                              </body>
                                              </head>
                                            </html>
@@ -868,7 +875,7 @@ function mailCoy($userid)
                                <br>
                                <br>
                                Regards,<br>
-                               Owl-Plantation System.
+                               Medco Agro System.
                              </body>
                              </head>
                            </html>
@@ -886,7 +893,7 @@ function mailCoy($userid)
                                <br>
                                <br>
                                Regards,<br>
-                               Owl-Plantation System.
+                               Medco Agro System.
                              </body>
                              </head>
                            </html>

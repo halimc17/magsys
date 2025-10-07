@@ -130,9 +130,10 @@ function fisikKeExcel(ev,tujuan,kdProj){
 $optKelompok=makeOption($dbname, 'log_5klbarang', 'kode,kelompok');
 $optNmOrg=makeOption($dbname, 'organisasi', 'kodeorganisasi,namaorganisasi');
 
-$optOrg=$optPeriode="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
+$optOrg="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
+$optPeriode="<option value=''>".$_SESSION['lang']['all']."</option>";
 
-$sPeriodeCari="select distinct substr(tanggalmulai,1,4) as tahun from ".$dbname.".project order by substr(tanggalmulai,1,4) desc limit 10";
+$sPeriodeCari="select distinct substr(tanggalmulai,1,4) as tahun from ".$dbname.".project order by substr(tanggalmulai,1,4) desc";
 //$sPeriodeCari="select distinct substr(periode,1,4) as tahun from ".$dbname.".setup_periodeakuntansi order by substr(periode,1,4) desc";
 
 $qPeriodeCari=mysql_query($sPeriodeCari) or die(mysql_error());

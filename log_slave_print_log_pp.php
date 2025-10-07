@@ -21,19 +21,22 @@ $hsl=mysql_fetch_assoc($pq);
 $kdr=$hsl['kodeorg'];
 $unit=substr($column,15,4);
 
-
-
 $sNmKry="select namakaryawan from ".$dbname.".datakaryawan where karyawanid='".$hsl['dibuat']."'";
 $qNmKry=mysql_query($sNmKry) or die(mysql_error());
 $rNmKry=mysql_fetch_assoc($qNmKry);
 $dibuat=$rNmKry['namakaryawan'];
-
 
 $sNmkntr="select namaorganisasi from ".$dbname.".organisasi where kodeorganisasi='".$kdr."'";
 $qNmkntr=mysql_query($sNmkntr) or die(mysql_error());
 $rNmkntr=mysql_fetch_assoc($qNmkntr);
 $nmKntr=$rNmkntr['namaorganisasi'];
 $tgl=tanggalnormal($hsl['tanggal']);
+
+$whrper="kodeorg like '".$unit."%' and tutupbuku='0' ORDER BY kodeorg, periode DESC LIMIT 1";
+$sqlper="select periode from ".$dbname.".`setup_periodeakuntansi` where ".$whrper;
+$qryper=mysql_query($sqlper) or die(mysql_error());
+$assper=mysql_fetch_assoc($qryper);
+$persto=$assper['periode'];
 
 $query="select a.*,b.*,c.namabarang,c.satuan,d.spesifikasi from ".$dbname.".".$table." a inner join ".$dbname.".`log_prapodt` b on a.nopp=b.nopp inner join ".$dbname.".`log_5masterbarang` c on b.kodebarang=c.kodebarang  left join ".$dbname.".`log_5photobarang` d on c.kodebarang=d.kodebarang where a.nopp='".$column."'"; //echo $query; exit();
 $result = fetchData($query);
@@ -46,15 +49,39 @@ class masterpdf extends FPDF {
                 global $column;
                 global $dbname;
                 global $tgl;
+                 global $kdr;
                  global $nmKntr;
                 global $dibuat;
                 global $unit;
                 global $nmOrg;
                 global $column;
         # Panjang, Lebar
+		$kodept=$kdr;
+				if($kodept=='AMP'){
+					$path='images/logo_amp.jpg';
+				}else if($kodept=='CKS'){
+					$path='images/logo_cks.jpg';
+				}else if($kodept=='KAA'){
+					$path='images/logo_kaa.jpg';
+				}else if($kodept=='KAL'){
+					$path='images/logo_kal.jpg';
+				}else if($kodept=='LKA'){
+					$path='images/logo_lka.jpg';
+				}else if($kodept=='MPA'){
+					$path='images/logo_mpa.jpg';
+				}else if($kodept=='MHS'){
+					$path='images/logo_mhs.jpg';
+				}else if($kodept=='MEA'){
+					$path='images/logo_mea.jpg';
+				}else if($kodept=='SMA'){
+					$path='images/logo_sma.jpg';
+				}else{
+					$path='images/logo.jpg';
+				}
+
         $width = $this->w - $this->lMargin - $this->rMargin;
                 $height = 12;
-                $a=$this->Image('images/logo.jpg',$this->lMargin,10,0,75,'jpg','');
+                $a=$this->Image($path,$this->lMargin,10,0,75,'jpg','');
                 
                 $this->SetFont('Arial','B',10);
                
@@ -117,10 +144,11 @@ $pdf->AddPage();
     
         $awalXjudulno=$pdf->GetX();
         $awalYjudulatas=$pdf->GetY();
-        $pdf->Cell(20,1.5*$height,'No.','TBLR',0,'C');
+        $pdf->Cell(18,1.5*$height,'No.','TBLR',0,'C');
         
         $awalXkdbrg=$pdf->GetX();
-        $pdf->Cell(60,1.5*$height,$_SESSION['lang']['kodebarang'],'TBLR',0,'L');
+        //$pdf->Cell(55,1.5*$height,$_SESSION['lang']['kodebarang'],'TBLR',0,'L');
+        $pdf->Cell(37,1.5*$height,'Kode','TBLR',0,'C');
         
         $awalXnmbrgjudul=$pdf->GetX();
         $pdf->Cell(165,1.5*$height,$_SESSION['lang']['namabarang'],'TBLR',0,'C');
@@ -129,13 +157,15 @@ $pdf->AddPage();
         $pdf->Cell(35,1.5*$height,$_SESSION['lang']['jumlah'],'TBLR',0,'L');
         
         $awalXsat=$pdf->GetX();
-        $pdf->Cell(35,1.5*$height,$_SESSION['lang']['satuan'],'TBLR',0,'C');
+        $pdf->Cell(30,1.5*$height,$_SESSION['lang']['satuan'],'TBLR',0,'C');
         
         $awalXreq=$pdf->GetX();
         $pdf->Cell(40,1.5*$height,'Required','TBLR',0,'C');
         
-        $awalXket=$pdf->GetX();
-        
+        $awalXsto=$pdf->GetX();
+        $pdf->Cell(35,1.5*$height,$_SESSION['lang']['stock'],'TBLR',0,'C');
+
+		$awalXket=$pdf->GetX();
         $pdf->Cell(190,1.5*$height,$_SESSION['lang']['keterangan'],'TBLR',0,'C');
         $akhirXket=$pdf->GetX();
         
@@ -147,14 +177,27 @@ $pdf->AddPage();
         $no=0;
         
         foreach($result as $data) {
+			
+			$kdbar=$data['kodebarang'];
+			$whrsto="LEFT(kodegudang,4)='".$unit."' and periode='".$persto."' and kodebarang='".$kdbar."' GROUP BY kodebarang";
+			$sqlsto="select sum(saldoakhirqty) as stockakhir from ".$dbname.".`log_5saldobulanan` where ".$whrsto;
+			$qrysto=mysql_query($sqlsto) or die(mysql_error());
+			$jmlsto=0;
+			if(!empty($qrysto)){
+				while($rowsto=mysql_fetch_assoc($qrysto))
+				{
+					$jmlsto=$rowsto['stockakhir'];
+				}          
+			}
+
             $pdf->SetFont('Arial','',7);
             
                 $awalXno=$pdf->GetX();
                 $no++;
                 $pdf->SetY($awalYbanget);
                 
-                $pdf->Cell(20,$height,$no,0,0,'L');
-                $pdf->Cell(60,$height,$data['kodebarang'],0,0,'L');
+                $pdf->Cell(18,$height,$no,0,0,'C');
+                $pdf->Cell(37,$height,$data['kodebarang'],0,0,'L');
                 
                 $awalYnmbrg=$pdf->GetY();
                 $awalXnmbrg=$pdf->GetX()+165;
@@ -165,20 +208,21 @@ $pdf->AddPage();
                 
                 //$pdf->Cell(80,$height,$data['spesifikasi'],'TBLR',0,'L');
                 $pdf->Cell(35,$height,number_format($data['jumlah'],2),0,0,'C');
-                $pdf->Cell(35,$height,$data['satuan'],'0',0,'C');
+                $pdf->Cell(30,$height,trim($data['satuan']),'0',0,'C');
                 $pdf->Cell(40,$height,tanggalnormal($data['tgl_sdt']),'0',0,'L');
+                $pdf->Cell(35,$height,number_format($jmlsto,2),0,0,'C');
                 //$pdf->SetFont('Arial','',6.5);
                 //$height=12;
-                $akhirXket=$pdf->getX()+190;
+                $akhirXket=$pdf->GetX()+190;
                 $pdf->MultiCell(190, $height, $data['keterangan'], '0', 'L');
                 
                 $pdf->SetFont('Arial','I',7);
                 if($data['keteranganubah']!='') 
                 {
 					
-                                        $pdf->SetX(385);
+                                        $pdf->SetX(390);
                                         $pdf->SetFillColor(240,240,240);
-                                        $pdf->MultiCell(150, $height, "- Barang diatas diubah dengan catatan: ".$data['keteranganubah'], '0', 'L');
+                                        $pdf->MultiCell(190, $height, "- Barang diatas diubah dengan catatan: ".$data['keteranganubah'], '0', 'L');
 					//$pdf->Cell(545,$height,"Barang diatas diubah oleh Purchasing dengan catatan: ".$data['keteranganubah'],1,1,'L',1);
                 }
                 $whKartolak="karyawanid='".$data['ditolakoleh']."'";
@@ -186,9 +230,9 @@ $pdf->AddPage();
                 if($data['status']=='3') 
                 {
 					
-                                        $pdf->SetX(385);
+                                        $pdf->SetX(390);
                                         $pdf->SetFillColor(240,240,240);
-                                        $pdf->MultiCell(150, $height, '- Barang telah ditolak oleh : '.$nmKartolak[$data['ditolakoleh']], '0', 'L');
+                                        $pdf->MultiCell(190, $height, '- Barang telah ditolak oleh : '.$nmKartolak[$data['ditolakoleh']], '0', 'L');
 					//$pdf->Cell(545,$height,"Barang diatas diubah oleh Purchasing dengan catatan: ".$data['keteranganubah'],1,1,'L',1);
                 }
                 
@@ -220,6 +264,7 @@ $pdf->AddPage();
         $pdf->Line($awalXsat, $awalYjudulatas, $awalXsat, $akhirYloop);
         
         $pdf->Line($awalXreq, $awalYjudulatas, $awalXreq, $akhirYloop);
+        $pdf->Line($awalXsto, $awalYjudulatas, $awalXsto, $akhirYloop);
         $pdf->Line($awalXket, $awalYjudulatas, $awalXket, $akhirYloop);
         $pdf->Line($akhirXket, $awalYjudulatas, $akhirXket, $akhirYloop);
         
@@ -270,7 +315,13 @@ $pdf->AddPage();
                                         {
                                                 $sql="select * from ".$dbname.".`datakaryawan` where `karyawanid`='".$hsl['persetujuan'.$i]."'"; //echo $sql;//exit();
                                                 $keterangan=$hsl['komentar'.$i];
-                                                $tanggal=tanggalnormal($hsl['tglp'.$i]);
+												if(empty($hsl['tglp'.$i]) or $hsl['tglp'.$i]=='0000-00-00' or $hsl['tglp'.$i]=='' or is_null($hsl['tglp'.$i])){
+	                                                $tanggal="";
+		                                            $jam="";
+												}else{
+	                                                $tanggal=tanggalnormal($hsl['tglp'.$i]);
+		                                            $jam=date('H:i:s',strtotime($hsl['tglp'.$i]));
+												}
                                                 $query=mysql_query($sql) or die(mysql_error());
                                                 $res3=mysql_fetch_object($query);
 
@@ -292,7 +343,7 @@ $pdf->AddPage();
 												
                                                 $pdf->SetFont('Arial','',7);
                                                 $pdf->Cell(20,$height2,$i,'TLR',0,'C');
-                                                $pdf->Cell(120,$height2,$res3->namakaryawan." (".$tanggal.") ",'TLR',0,'L');
+                                                $pdf->Cell(120,$height2,$res3->namakaryawan,'TLR',0,'L');
                                                 $pdf->Cell(70,$height2,$res3->lokasitugas,'TLR',0,'C');
                                                 $pdf->Cell(100,$height2,$b['status'],'TLR',0,'L');
                                                 $pdf->MultiCell(240,$height,$keterangan,'TLR','J');
@@ -301,7 +352,7 @@ $pdf->AddPage();
                                                 $pdf->Cell(20,1.5*$height,'','BLR',0,'C');
                                                 $pdf->Cell(120,1.5*$height,$res2->namajabatan,'BLR',0,'L');
                                                 $pdf->Cell(70,1.5*$height,'','BLR',0,'C');
-                                                $pdf->Cell(100,1.5*$height,'','BLR',0,'C');
+                                                $pdf->Cell(100,1.5*$height,$tanggal.' '.$jam,'BLR',0,'L');
                                                 $pdf->Cell(240,1.5*$height,'','BLR',1,'L');
                                                	
                                         }

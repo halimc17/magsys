@@ -512,14 +512,16 @@ function getLaporanPanen_3()
 {
     pt=document.getElementById('pt_3');
     unit=document.getElementById('unit_3');
+    divisi=document.getElementById('divisi_3');
     intiplasma=document.getElementById('intiplasma_3');
     tgl1=document.getElementById('tgl1_3').value;
     tgl2=document.getElementById('tgl2_3').value;
     ptV	=pt.options[pt.selectedIndex].value;
     unitV=unit.options[unit.selectedIndex].value;
+    divisiV=divisi.options[divisi.selectedIndex].value;
     intiplasmaV=intiplasma.options[intiplasma.selectedIndex].value;
 
-    param='pt='+ptV+'&unit='+unitV+'&tgl1='+tgl1+'&tgl2='+tgl2+'&intiplasma='+intiplasmaV;
+    param='pt='+ptV+'&unit='+unitV+'&divisi='+divisiV+'&tgl1='+tgl1+'&tgl2='+tgl2+'&intiplasma='+intiplasmaV;
     tujuan='kebun_laporanPanen_spbwb.php';
 
     jumlahhari=days_between(tgl1,tgl2);
@@ -762,7 +764,7 @@ function postingData(numRow) {
                     x=document.getElementById('tr_'+numRow);
                     x.cells[8].innerHTML='';
                     x.cells[9].innerHTML='';
-                    x.cells[10].innerHTML="<img class=\"zImgOffBtn\" title=\"Posting\" src=\"images/skyblue/posted.png\">";
+                    x.cells[13].innerHTML="<img class=\"zImgOffBtn\" title=\"Posting\" src=\"images/skyblue/posted.png\">";
  
                 }
             } else {
@@ -1085,8 +1087,8 @@ function detailData(numRow,ev,tipe)
 var notransaksi = document.getElementById('notransaksi_'+numRow).getAttribute('value');
 param = "proses=html&tipe="+tipe+"&notransaksi="+notransaksi;
 title="Data Detail";
-showDialog1(title,"<iframe frameborder=0 style='width:795px;height:400px'"+
-" src='kebun_slave_operasional_print_detail_panen.php?"+param+"'></iframe>",'800','400',ev);
+showDialog1(title,"<iframe frameborder=0 style='width:895px;height:400px'"+
+" src='kebun_slave_operasional_print_detail_panen.php?"+param+"'></iframe>",'900','400',ev);
 var dialog = document.getElementById('dynamic1');
 dialog.style.top = '50px';
 dialog.style.left = '15%';
@@ -1206,9 +1208,33 @@ function getKbn_3()
             }
         }
     }
-    
     post_response_text(tujuan, param, respon);
-    
+}
+
+function getDiv_3()
+{
+//    alert('masuk');
+    unit=document.getElementById('unit_3').options[document.getElementById('unit_3').selectedIndex].value;
+    param='unit='+unit+'&proses=getDiv';
+    tujuan='kebun_slave_2panen.php';
+     function respon() {
+        if (con.readyState == 4) {
+            if (con.status == 200) {
+                busy_off();
+                if (!isSaveResponse(con.responseText)) {
+                    alert('ERROR TRANSACTION,\n' + con.responseText);
+                } else {
+                    //=== Success Response
+                   document.getElementById('divisi_3').innerHTML = con.responseText;
+                   bersih_3();
+                }
+            } else {
+                busy_off();
+                error_catch(con.status);
+            }
+        }
+    }
+    post_response_text(tujuan, param, respon);
 }
 
 function zDetail(ev,tujuan,passParam)
@@ -1332,6 +1358,7 @@ function countPremi() {
 		param += "&penalti[M3]="+getValue('penalti9');
 		param += "&penalti[BT]="+getValue('penalti10');
 		param += "&nik="+getValue('nik');
+		param += "&luaspanen="+getValue('luaspanen');
 		
 		if(hasilkerja>0 || getValue('brondolan')>0)
 			post_response_text('kebun_slave_panen_detail.php?proses=countPremi', param, respon);

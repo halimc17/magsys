@@ -5,41 +5,31 @@ require_once('lib/nangkoelib.php');
 require_once('lib/zLib.php');
 require_once('lib/fpdf.php');
 
-
-
-
 //$proses=$_GET['proses'];
-
 $proses = checkPostGet('proses','');
 $pabrik = checkPostGet('pabrikv','');
 $station = checkPostGet('stationv','');
+$machine = checkPostGet('mesinv','');
 $tgl1 = tanggalsystemn(checkPostGet('tgl1v',''));
 $tgl2 = tanggalsystemn(checkPostGet('tgl2v',''));
+$perbaikantipe = checkPostGet('tipeperbaikanv','');
+$stsketuntasan = checkPostGet('statusketuntasanv','');
 
 $nmOrg=makeOption($dbname,'organisasi','kodeorganisasi,namaorganisasi');
 $nmBrg=makeOption($dbname,'log_5masterbarang','kodebarang,namabarang');
 $stBrg=makeOption($dbname,'log_5masterbarang','kodebarang,satuan');
 $arrPost=array("0"=>"Not Posted","1"=>"Posting");
 
-
-
-if($tgl1v=='--')
-{
+if($tgl1v=='--'){
     $tgl1v='';
 }
-if($tgl2v=='--')
-{
+if($tgl2v=='--'){
     $tgl2v='';
 }
 
-
-
-if($proses=='excel')
-{
+if($proses=='excel'){
     $border="border=1";
-}
-else
-{
+}else{
     $border="border=0";
 }
 
@@ -53,28 +43,31 @@ else
         </tr></thead>
       <tbody>";*/
 
-      
-      
-      
-if($station!='')
-{
-    $stationTambah="and statasiun='".$station."'";
+$stationTambah='';
+if($station!=''){
+    $stationTambah.="and statasiun='".$station."'";
 }
-      
-      
+if($machine!=''){
+    $stationTambah.=" and mesin='".$machine."'";
+}
+if($perbaikantipe!=''){
+    $stationTambah.=" and tipeperbaikan='".$perbaikantipe."'";
+}
+if($stsketuntasan!=''){
+    $stationTambah.=" and statusketuntasan='".$stsketuntasan."'";
+}
+
 $iSta="SELECT distinct(statasiun) as statasiun  FROM ".$dbname.".pabrik_rawatmesinht where tanggal between '".$tgl1."' and '".$tgl2."' and"
         . " pabrik='".$pabrik."' ".$stationTambah." order by statasiun asc";
 $nSta=  mysql_query($iSta) or die (mysql_error($conn));
-while($dSta= mysql_fetch_assoc($nSta))
-{
+while($dSta= mysql_fetch_assoc($nSta)){
     $liststasiun[$dSta['statasiun']]=$dSta['statasiun'];
 }
 
 $iList="SELECT * FROM ".$dbname.".pabrik_rawatmesinht where tanggal between '".$tgl1."' and '".$tgl2."' and"
         . " pabrik='".$pabrik."' ".$stationTambah." order by statasiun,mesin asc";
 $nList=mysql_query($iList) or die (mysql_error($conn));	
-while($dList=mysql_fetch_assoc($nList))
-{
+while($dList=mysql_fetch_assoc($nList)){
     $listmesin[$dList['statasiun']][$dList['mesin']][$dList['notransaksi']] = $dList;
 }
 
@@ -87,8 +80,22 @@ while($dBarang=  mysql_fetch_assoc($nBarang))
 {
     $listbarang[$dBarang['kodebarang']]=$dBarang['kodebarang'];
     $barang[$dBarang['notransaksi']][]=$dBarang['kodebarang'];
-    $satuanbarang[$dBarang['notransaksi']][]=$dBarang['satuan'];
-    $jumlahbarang[$dBarang['notransaksi']][]=$dBarang['jumlah'];
+    $satuanbarang[$dBarang['notransaksi']][$dBarang['kodebarang']]=$dBarang['satuan'];
+    $jumlahbarang[$dBarang['notransaksi']][$dBarang['kodebarang']]=$dBarang['jumlah'];
+	$hargabarang[$dBarang['notransaksi']][$dBarang['kodebarang']]=$dBarang['harga'];
+}
+
+#karyawan
+$iKar="select * from ".$dbname.".pabrik_rawatmesindt_karyawan "
+        . " where notransaksi in (SELECT notransaksi FROM ".$dbname.".pabrik_rawatmesinht where "
+        . " tanggal between '".$tgl1."' and '".$tgl2."' and"
+        . " pabrik='".$pabrik."' ".$stationTambah.") group by notransaksi,karyawanid";
+
+$nKar=  mysql_query($iKar) or die (mysql_error($conn));
+while($dKar=  mysql_fetch_assoc($nKar))
+{
+    $listkar[$dKar['karyawanid']]=$dKar['karyawanid'];
+    $kar[$dKar['notransaksi']][]=$dKar['karyawanid'];
 }
 
 if(is_array($listmesin)){
@@ -106,63 +113,70 @@ if(is_array($listmesin)){
 	$listmesin='';
 }
 
-$nmBrg=makeOption($dbname,'log_5masterbarang','kodebarang,namabarang');
-$nmKar=  makeOption($dbname, 'datakaryawan', 'karyawanid,namakaryawan');
-$nikKar=  makeOption($dbname, 'datakaryawan', 'karyawanid,nik');
-$nmOrg=  makeOption($dbname, 'organisasi', 'kodeorganisasi,namaorganisasi');
+$nmOrg = makeOption($dbname,'organisasi','kodeorganisasi,namaorganisasi');
+$nmBrg = makeOption($dbname,'log_5masterbarang','kodebarang,namabarang');
+$nmKar = makeOption($dbname,'datakaryawan','karyawanid,namakaryawan');
+$nikKar= makeOption($dbname,'datakaryawan','karyawanid,nik');
 
-$arrTipePerbaikan=array("prev"=>"Preventive Maintenance","kalibrasi"=>"Kalibrasi","project"=>"Project",
-    "pabrikasi"=>"Pabrikasi","corrective"=>"Corrective Maintenance","service"=>"Service");
+//$arrTipePerbaikan=array("prev"=>"Preventive Maintenance","kalibrasi"=>"Kalibrasi","project"=>"Project",
+//    "pabrikasi"=>"Pabrikasi","corrective"=>"Corrective Maintenance","service"=>"Service");
+$arrTipePerbaikan=array("prev"=>"Preventive","kalibrasi"=>"Kalibrasi","project"=>"Project",
+    "pabrikasi"=>"Pabrikasi","corrective"=>"Corrective","service"=>"Service");
 
 $noList=0;
 
 if(is_array($listmesin)){
+	$gtjmlharga=0;
 	foreach ($listmesin as $stasiun=>$row)
 	{
-		
-		$stream.="<thead><tr class=rowheader>";
-
 		if(in_array($stasiun, $liststasiun)) 
 		{
-			
-			$stream.="<td align=left colspan=6><b>Station : ".$stasiun." - ".$nmOrg[$stasiun]."</td>
-				</tr>";
-			$stream.="<td align=left colspan=6><b>Pabrik : ".$pabrik." - ".$nmOrg[$pabrik]."</td>
-				</tr></thead>";
+			$ttjmlharga=0;
+			$stream.="<thead>";
+			$stream.="<tr class=rowheader><td align=left colspan=12><b>Station : ".$stasiun." - ".$nmOrg[$stasiun]."</td></tr>";
+			$stream.="<tr class=rowheader><td align=left colspan=12><b>Pabrik : ".$pabrik." - ".$nmOrg[$pabrik]."</td></tr>";
+			$stream.="</thead><tbody>";
 			/*
 			$stream.="<td align=left>Station : ".$stasiun."</td>
 					<td colspan=7></td></tr>";
 			$stream.="<td align=left>Pabrik : ".$pabrik."</td>
 					<td colspan=7></td></tr></thead>";
 					  */
-		   
 			foreach($row as $mesin=>$row2)
 			{
-				 
 				$stream.="<tr class=rowcontent>";
-				$stream.="<td align=center colspan=6><b>".$mesin." - ".$nmOrg[$mesin]."</td>";
+				$stream.="<td align=center colspan=12><b>".$mesin." - ".$nmOrg[$mesin]."</td>";
 				$stream.="</tr>";
-				
 				//No.	Tanggal	Uraian Kerusakan / Kegiatan	Bagian yang diganti / rusak	
-
 				$stream.="<tr class=rowcontent>";
-				$stream.="<td align=center></td>";
+				$stream.="<td align=center><b>".$_SESSION['lang']['notransaksi']."</td>";
 				$stream.="<td align=center><b>No</td>";
 				$stream.="<td align=center><b>Tanggal</td>";
 				$stream.="<td align=center><b>Uraian Kerusakan / Kegiatan</td>";
 				$stream.="<td align=center><b>Bagian yang diganti / rusak</td>";
+				$stream.="<td align=center><b>Jumlah</td>";
+				$stream.="<td align=center><b>Satuan</td>";
+				$stream.="<td align=center><b>Harga</td>";
+				$stream.="<td align=center><b>Jumlah Harga</td>";
+				$stream.="<td align=center><b>Mekanik</td>";
+				$stream.="<td align=center><b>Type</td>";
 				$stream.="<td align=center><b>Status</td>";
 				$stream.="</tr>";
 				
-				
+				$stjmlharga=0;
 				$no=0;
 				foreach($row2 as $notransaksi=>$list)
 				{
 					$no+=1;
 					$i=0;
-					$rowspan = count($list['barang']);
+					if(count($list['barang'])>=count($kar[$notransaksi])){
+						$rowspan=count($list['barang']);
+					}else{
+						$rowspan=count($kar[$notransaksi]);
+					}
+					$rowspan=$rowspan==0 ? 1 : $rowspan;
 					$stream.="<tr class=rowcontent>";
-					$stream.="<td rowspan='".$rowspan."'></td>";
+					$stream.="<td rowspan='".$rowspan."'>".$notransaksi."</td>";
 					$stream.="<td rowspan='".$rowspan."'>".$no."</td>";
 					$stream.="<td rowspan='".$rowspan."'>".$list['tanggal']."</td>";
 					$stream.="<td rowspan='".$rowspan."'>".$list['kegiatan']."</td>";
@@ -171,63 +185,119 @@ if(is_array($listmesin)){
 					//$stream.="<td rowspan='".$colspan."'>".$notransaksi."</td>";
 					//$stream.="<td rowspan='".$colspan."'>".$list['kegiatan']."</td>";
 					
-					if(empty($list['barang']))
+					if(empty($list['barang']) and empty($kar[$notransaksi]))
 					{
 						$stream.="<td rowspan='".$rowspan."'></td>";
 						$stream.="<td rowspan='".$rowspan."'></td>";
+						$stream.="<td rowspan='".$rowspan."'></td>";
+						$stream.="<td rowspan='".$rowspan."'></td>";
+						$stream.="<td rowspan='".$rowspan."'></td>";
+						$stream.="<td rowspan='".$rowspan."'></td>";
+						$stream.="<td rowspan='".$rowspan."'>".$arrTipePerbaikan[$list['tipeperbaikan']]."</td>";
+						$stream.="<td rowspan='".$rowspan."'>".$list['statusketuntasan']."</td>";
+						$stream.="</tr>";
 					}
 					else 
 					{
-						foreach ($list['barang'] as $brg) {
-							if($i>0) 
-							 {
-								$stream.="<tr class=rowcontent>";
-
-							}
-
-							$stream.="<td>".$nmBrg[$brg]."</td>";
-							$i++;
-							if($i==1)
-							{
-								$stream.="<td rowspan='".$rowspan."'>".$list['statusketuntasan']."</td>";
+						if(count($list['barang'])>0){
+							foreach ($list['barang'] as $brg) {
+								if($i>0){
+									$stream.="<tr class=rowcontent>";
+								}
+								$jmlharga=$jumlahbarang[$notransaksi][$brg]*$hargabarang[$notransaksi][$brg];
+								$stream.="<td>".$nmBrg[$brg]."</td>";
+								$stream.="<td align='right'>".$jumlahbarang[$notransaksi][$brg]."</td>";
+								$stream.="<td>".$satuanbarang[$notransaksi][$brg]."</td>";
+								$stream.="<td align='right'>".number_format($hargabarang[$notransaksi][$brg],2)."</td>";
+								$stream.="<td align='right'>".number_format($jmlharga,2)."</td>";
+								$stream.="<td align='right'>".$nmKar[$kar[$notransaksi][$i]]."</td>";
+								$stjmlharga+=$jmlharga;
+								$ttjmlharga+=$jmlharga;
+								$gtjmlharga+=$jmlharga;
+								$i++;
+								if($i==1){
+									$stream.="<td rowspan='".$rowspan."'>".$arrTipePerbaikan[$list['tipeperbaikan']]."</td>";
+									$stream.="<td rowspan='".$rowspan."'>".$list['statusketuntasan']."</td>";
+								}
+								if($i>0){
+									$stream.="</tr>";
+								}
 							}
 						}
-					//$nmBrg
+						if(count($kar[$notransaksi])>count($list['barang'])){
+							$sisa=count($kar[$notransaksi])-count($list['barang']);
+							for($x=0;$x<$sisa;$x++){
+								if($x>0){
+									$stream.="<tr class=rowcontent>";
+								}
+								$stream.="<td class=rowcontent></td>";
+								$stream.="<td class=rowcontent></td>";
+								$stream.="<td class=rowcontent></td>";
+								$stream.="<td class=rowcontent></td>";
+								$stream.="<td class=rowcontent></td>";
+								if(count($list['barang'])==0){
+									$stream.="<td class=rowcontent align='right'>".$nmKar[$kar[$notransaksi][$x]]."</td>";
+									$stream.="<td class=rowcontent>".$arrTipePerbaikan[$list['tipeperbaikan']]."</td>";
+									$stream.="<td class=rowcontent>".$list['statusketuntasan']."</td>";
+								}else{
+									$stream.="<td class=rowcontent align='right'>".$nmKar[$kar[$notransaksi][$x+$i]]."</td>";
+								}
+								if($x>0){
+									$stream.="</tr>";
+								}
+							}
+						}
 					}
+				}
+				if($no>0){
+					$stream.="<tr class=rowcontent>";
+					$stream.="<td></td>";
+					$stream.="<td colspan=7 align='center'>Sub Total</td>";
+					$stream.="<td align='right'>".number_format($stjmlharga,2)."</td>";
+					$stream.="<td></td>";
+					$stream.="<td></td>";
+					$stream.="<td></td>";
 					$stream.="</tr>";
 				}
-				
-				
+			}
+			if($no>0){
+				$stream.="<tr class=rowcontent>";
+				$stream.="<td></td>";
+				$stream.="<td colspan=7 align='center'>Total</td>";
+				$stream.="<td align='right'>".number_format($ttjmlharga,2)."</td>";
+				$stream.="<td></td>";
+				$stream.="<td></td>";
+				$stream.="<td></td>";
+				$stream.="</tr>";
 			}
 		}
+	}
+	if($no>0){
+		$stream.="<tr class=rowcontent>";
+		$stream.="<td></td>";
+		$stream.="<td colspan=7 align='center'>Grand Total</td>";
+		$stream.="<td align='right'>".number_format($gtjmlharga,2)."</td>";
+		$stream.="<td></td>";
+		$stream.="<td></td>";
+		$stream.="<td></td>";
+		$stream.="</tr>";
 	}
 }
 else{
   echo "No data found";
 }
-
-
-   		
-	
 $stream.="</tbody></table>";
-
-
-
-  
-
+//exit('Warning: '.$stream);
 
 #######################################################################
 ############PANGGGGGGGGGGGGGGGGGGILLLLLLLLLLLLLLLLLLLLLLLLLL###########   
 #######################################################################
-  
+ 
 switch($proses)
 {
-    
     case'getStationv':
-     
         $optStation="<option value=''>".$_SESSION['lang']['all']."</option>";
         $iStation="select kodeorganisasi, namaorganisasi from ".$dbname.".organisasi where induk='".$pabrik."' ";     
-      
         $nStation=mysql_query($iStation) or die(mysql_error($conn));
         while($dStation=mysql_fetch_assoc($nStation))
         {
@@ -235,28 +305,22 @@ switch($proses)
         }  
         echo $optStation;
     break;
-    
-    
-    
+
 ######HTML
 	case 'preview':
-            
             if($tgl1=='' || $tgl2=='' || $pabrik=='')
             {
                 exit("Please Complate the form");
             }
-            
             echo $stream;
     break;
 
 ######EXCEL	
 	case 'excel':
-            
                 if($tgl1=='' || $tgl2=='' || $pabrik=='')
                 {
                     exit("Please Complate the form");
                 }
-            
 		$stream.="Print Time : ".date('H:i:s, d/m/Y')."<br>By : ".$_SESSION['empl']['name'];	
 		$tglSkrg=date("Ymd");
 		$nop_="LAPORAN_PERAWATAN_MESIN_V2_".$tglSkrg;
@@ -287,11 +351,8 @@ switch($proses)
 			fclose($handle);
 		}           
 		break;
-	
-	
-	
+
 	default:
 	break;
 }
-
 ?>

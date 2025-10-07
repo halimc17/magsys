@@ -10,128 +10,134 @@ $where=$whr=$tab=$stream="";
 
 function OPEN_BODY($title='MAG.SYS')
 {
-echo"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">
-<html>
+echo"<!DOCTYPE html>
+<html lang=\"id\">
 	<head>
-		<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\">
+		<meta charset=\"utf-8\">
+		<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
 		<meta http-equiv='Cache-Control' CONTENT='no-cache'>
 		<meta http-equiv='Pragma' CONTENT='no-cache'>
-		<title>".$title."</title>";
-echo" 
-    <script language=JavaScript1.2 src=js/menuscript.js></script>
-	 <script language=JavaScript1.2 src=js/calendar.js></script>
-    <script language=JavaScript1.2 src=js/drag.js></script>
-    <script language=JavaScript1.2 src=js/generic.js></script>
-    <script language=JavaScript1.2 src=js/nangkoelsort.js></script>
-	<link rel=stylesheet type=text/css href=style/menu.css>
-	<link rel=stylesheet type=text/css href=style/generic.css>	
-	<link rel=stylesheet type=text/css href=style/calendarblue.css>
+		<title>".$title."</title>
+
+		<!-- Google Fonts - Inter -->
+		<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">
+		<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>
+		<link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap\" rel=\"stylesheet\">
+
+		<!-- Bootstrap CSS -->
+		<link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css\" rel=\"stylesheet\">
+		<link href=\"https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css\" rel=\"stylesheet\">
+
+		<!-- Custom CSS -->
+		<link rel=stylesheet type=text/css href=style/menu.css>
+		<link rel=stylesheet type=text/css href=style/generic.css>
+		<link rel=stylesheet type=text/css href=style/calendarblue.css>
+		<link rel=stylesheet type=text/css href=style/bootstrap-custom.css>
+
+		<!-- JavaScript Libraries -->
+		<script language=JavaScript1.2 src=js/menuscript.js></script>
+		<script language=JavaScript1.2 src=js/calendar.js></script>
+		<script language=JavaScript1.2 src=js/drag.js></script>
+		<script language=JavaScript1.2 src=js/generic.js></script>
+		<script language=JavaScript1.2 src=js/nangkoelsort.js></script>
     </head>
-<body  style='margin:30px;margin-top:0px;background-color:#E8F4F4;' onload=verify()>
-<img id='smallOwl' src='images/OWL_OV.png' width='300px'
-	style='position:absolute;top:20%;left:35%;z-index:-998'>
-<noscript>
-	<span style='font-size:13px;font-family:arial;'>
-		<span style='color:#dd3300'>Warning!</span>
-			&nbsp&nbsp; QuickMenu may have been blocked by IE-SP2's active 
-			content option. This browser feature blocks JavaScript from running 
-			locally on your computer.<br>
-			<br>This warning will not display once the menu is on-line.  
-			To enable the menu locally, click the yellow bar above, and select 
-			<span style='color:#0033dd;'>'Allow Blocked Content'
-		</span>.
-	<br><br>To permanently enable active content locally...
-		<div style=padding:0px 0px 30px 10px;color:#0033dd;'>
-			<br>1: Select 'Tools' --> 'Internet Options' from the IE menu.
-			<br>2: Click the 'Advanced' tab.
-			<br>3: Check the 2nd option under 'Security' in the tree 
-			(Allow active content to run in files on my computer.)
+<body class=\"bg-light-custom\" onload=verify()>
+	<noscript>
+		<div class=\"alert alert-warning\" role=\"alert\">
+			<strong>Warning!</strong> JavaScript is disabled in your browser.
+			This application requires JavaScript to function properly.
 		</div>
-	</span>
-</noscript>
-<div style='height:30px'><img src='images/owl2.png' style='height:30px'>
-</div>
+	</noscript>
 ";
 }
 function OPEN_BODY_BI($title='OWL System')
 {
-echo"<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">
-<html>
+echo"<!DOCTYPE html>
+<html lang=\"id\">
 	<head>
-		<meta http-equiv=\"Content-Type\" content=\"text/html; charset=iso-8859-1\">
+		<meta charset=\"utf-8\">
+		<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">
 		<meta http-equiv='Cache-Control' CONTENT='no-cache'>
 		<meta http-equiv='Pragma' CONTENT='no-cache'>
-		<title>".$title."</title>";
-echo" 
-    <script language=JavaScript1.2 src=js/menuscript.js></script>
-	 <script language=JavaScript1.2 src=js/calendar.js></script>
-    <script language=JavaScript1.2 src=js/drag.js></script>
-    <script language=JavaScript1.2 src=js/generic.js></script>
-    <script language=JavaScript1.2 src=js/nangkoelsort.js></script>
-	<link rel=stylesheet type=text/css href=style/menu.css>
-	<link rel=stylesheet type=text/css href=style/generic.css>	
-	<link rel=stylesheet type=text/css href=style/calendarblue.css>
+		<title>".$title."</title>
+
+		<!-- Google Fonts - Inter -->
+		<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">
+		<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>
+		<link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap\" rel=\"stylesheet\">
+
+		<!-- Bootstrap CSS -->
+		<link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css\" rel=\"stylesheet\">
+		<link href=\"https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css\" rel=\"stylesheet\">
+
+		<!-- Custom CSS -->
+		<link rel=stylesheet type=text/css href=style/menu.css>
+		<link rel=stylesheet type=text/css href=style/generic.css>
+		<link rel=stylesheet type=text/css href=style/calendarblue.css>
+		<link rel=stylesheet type=text/css href=style/bootstrap-custom.css>
+
+		<!-- JavaScript Libraries -->
+		<script language=JavaScript1.2 src=js/menuscript.js></script>
+		<script language=JavaScript1.2 src=js/calendar.js></script>
+		<script language=JavaScript1.2 src=js/drag.js></script>
+		<script language=JavaScript1.2 src=js/generic.js></script>
+		<script language=JavaScript1.2 src=js/nangkoelsort.js></script>
     </head>
-<body  style='margin-top:10px;margin-left:2px;margin-right:2px;background-color:#E8F4F4;' onload=verify()>
-<div id='progress' style='display:none;border:orange solid 1px;width:150px;position:fixed;right:20px;top:65px;color:#ff0000;font-family:Tahoma;font-size:13px;font-weight:bolder;text-align:center;background-color:#FFFFFF;z-index:10000;'>
-Please wait.....! <br>
-<img src='images/progress.gif'>
-</div>
-<img id='smallOwl' src='images/OWL_OV.png' width='300px' style='position:absolute;top:20%;left:35%;z-index:-998'>
-<noscript>
-	<span style='font-size:13px;font-family:arial;'>
-		<span style='color:#dd3300'>Warning!</span>
-			&nbsp&nbsp; QuickMenu may have been blocked by IE-SP2's active 
-			content option. This browser feature blocks JavaScript from running 
-			locally on your computer.<br>
-			<br>This warning will not display once the menu is on-line.  
-			To enable the menu locally, click the yellow bar above, and select 
-			<span style='color:#0033dd;'>'Allow Blocked Content'
-		</span>.
-	<br><br>To permanently enable active content locally...
-		<div style=padding:0px 0px 30px 10px;color:#0033dd;'>
-			<br>1: Select 'Tools' --> 'Internet Options' from the IE menu.
-			<br>2: Click the 'Advanced' tab.
-			<br>3: Check the 2nd option under 'Security' in the tree 
-			(Allow active content to run in files on my computer.)
+<body class=\"bg-light-custom p-2\" onload=verify()>
+	<div id='progress' style='display:none;'>
+		Please wait.....! <br>
+		<img src='images/progress.gif'>
+	</div>
+	<noscript>
+		<div class=\"alert alert-warning\" role=\"alert\">
+			<strong>Warning!</strong> JavaScript is disabled in your browser.
+			This application requires JavaScript to function properly.
 		</div>
-	</span>
-</noscript>
-<img src='images/owl2.png'  style='height:50px;position:absolute;right:0px;top:0px;;z-index:-998'>
+	</noscript>
 ";
 }
 
 function CLOSE_BODY()
 {
 	require_once('master_footer.php');
-	echo "</body></html>";
+	echo "
+	</div><!-- Close container-fluid -->
+
+	<!-- Bootstrap Bundle with Popper -->
+	<script src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js\"></script>
+
+	<!-- Bootstrap Init Script -->
+	<script src=\"js/bootstrap-init.js\"></script>
+
+	</body>
+	</html>";
 }
 
 function OPEN_BOX($style='',$title='',$id='',$contentId='')
 {
-	echo"<div  id='".$id."' class=\"x-box-blue\" style='".$style."'><div class=\"x-box-tl\"><div class=\"x-box-tr\">
-		<div class=\"x-box-tc\"></div></div></div><div class=\"x-box-ml\"><div class=\"x-box-mr\">
-		<div class=\"x-box-mc\" id='contentBox".$contentId."' style='overflow:auto;'>
-		".$title;
+	$cardHeader = $title ? "<div class=\"card-header\">".$title."</div>" : "";
+	echo"<div id='".$id."' class=\"card mb-3\" style='".$style."'>
+		".$cardHeader."
+		<div class=\"card-body\" id='contentBox".$contentId."'>
+		";
 }
 function OPEN_BOX2($style='',$title='',$id='',$contentId='')
 {
-	return "<div  id='".$id."' class=\"x-box-blue\" style='".$style."'><div class=\"x-box-tl\"><div class=\"x-box-tr\">
-		<div class=\"x-box-tc\"></div></div></div><div class=\"x-box-ml\"><div class=\"x-box-mr\">
-		<div class=\"x-box-mc\" id='contentBox".$contentId."' style='overflow:auto;'>
-		".$title;
+	$cardHeader = $title ? "<div class=\"card-header\">".$title."</div>" : "";
+	return "<div id='".$id."' class=\"card mb-3\" style='".$style."'>
+		".$cardHeader."
+		<div class=\"card-body\" id='contentBox".$contentId."'>
+		";
 }
 function CLOSE_BOX()
 {
-	echo"</div></div></div>
-        <div class=\"x-box-bl\"><div class=\"x-box-br\"><div class=\"x-box-bc\"></div></div></div>
-        </div>";
+	echo"</div><!-- card-body -->
+	</div><!-- card -->";
 }
 function CLOSE_BOX2()
 {
-	return "</div></div></div>
-        <div class=\"x-box-bl\"><div class=\"x-box-br\"><div class=\"x-box-bc\"></div></div></div>
-        </div>";
+	return "</div><!-- card-body -->
+	</div><!-- card -->";
 }
 function drawTab($tabId='T',$arrHeader,$arrContent,$tabLength,$contentLength='300')
 {
@@ -454,7 +460,8 @@ function  kirimEmail($to,$cc = "",$subject,$body,$mailType='text/html')//multipl
     #mailType posible value 'text/html' or 'text/text'
     
      require_once "Mail.php";   
-     $from = "Magsys<noreply@magsys.medcoagro.co.id>";
+     //$from = "Magsys<noreply@magsys.medcoagro.co.id>";
+     $from = "Magsys<magsys@medcoagro.co.id>";
      $headers = array ('From' => $from,
        'To' => $to,
        'Cc' => $cc,  
@@ -469,9 +476,15 @@ function  kirimEmail($to,$cc = "",$subject,$body,$mailType='text/html')//multipl
      
      if($mailType=='text/html')
      {
+		 /*
          $body.="<br><br>
                  <i style='font-size:10pt'>Follow <a href='http://192.168.0.200/magsys'>this link</a> to connect to MAGSYS.<br>
-                 Or <a href='http://medcogroup.co.id'>this link</a> from public network.
+                 Or <a href='http://www.medcoagro.co.id'>this link</a> from public network.
+                 </i>";
+		*/
+         $body.="<br><br>
+                 <i style='font-size:10pt'>Follow <a href='http://app.medcoagro.co.id/magsys'>this link</a> to connect to MAGSYS.<br>
+                 Or <a href='http://www.medcoagro.co.id'>this link</a> from public network.
                  </i>";
      }    
 	 $toto=explode(",",$to);
@@ -666,7 +679,7 @@ function hitungHrMinggu($bln1,$tgl1,$thn1,$date2,$hrLbr){
     return $sum; 
 }
 
-function rangeTanggal($date1, $date2){
+function rangeTangga($date1, $date2){
 
     $day = 60*60*24;
 
@@ -688,6 +701,19 @@ function rangeTanggal($date1, $date2){
         $dates_array[] = date('Y-m-d',$date1);        
     }
     return $dates_array;
+}
+
+function rangeTanggal($date1, $date2){ //function Baru
+	$date1 = date('Y-m-d',strtotime($date1));
+	$date2 = date('Y-m-d',strtotime($date2));
+	$dates_array = array();
+	$dates_array[] = $date1;
+	$tgl = $date1;
+	while($tgl<$date2){
+		$dates_array[]=date('Y-m-d',strtotime('+1 days',strtotime(substr($tgl,0,10))));
+		$tgl=date('Y-m-d',strtotime('+1 days',strtotime(substr($tgl,0,10))));
+	}
+	return $dates_array;
 }
 
 /**

@@ -189,12 +189,12 @@ function createTabDetail($id,$data) {
 			
 			
          	$whre=" kodeorg='".$row['kodeorg']."'";
-			$optShift=makeOption('owl','pabrik_5shift','shift',$whre) ;
+			$optShift=makeOption($dbname,'pabrik_5shift','shift',$whre) ;
 			
-			$optAbsen=makeOption('owl','sdm_5absensi','kodeabsen,keterangan') ;
+			$optAbsen=makeOption($dbname,'sdm_5absensi','kodeabsen,keterangan') ;
 			
 			 //echo"warning:".$where;exit();
-			$optKry=makeOption('owl','datakaryawan','karyawanid,namakaryawan',$where);
+			$optKry=makeOption($dbname,'datakaryawan','karyawanid,namakaryawan',$where);
 			$jmr=explode(':',$row['jam']); //echo "warning".$jm[0];
 			for($t=0;$t<24;)
 			{
@@ -250,11 +250,11 @@ function createTabDetail($id,$data) {
 	}
 	//$where=" lokasitugas='".$idAbn[0]."' or subbagian='".$idAbn[0]."'"; 
 	//echo"warning:".$where."__".$sPil."___".$idAbn[0]."___=".$rPil['subbagian'];exit();
-	$optKry=makeOption('owl','datakaryawan','karyawanid,namakaryawan',$where);
+	$optKry=makeOption($dbname,'datakaryawan','karyawanid,namakaryawan',$where);
 		//$_SESSION['temp']['OrgKd']=$idAbn[0];
 	$whre=" kodeorg='".$idAbn[0]."'";
-	$optShift=makeOption('owl','pabrik_5shift','shift',$whre) ;
-	$optAbsen=makeOption('owl','sdm_5absensi','kodeabsen,keterangan') ;
+	$optShift=makeOption($dbname,'pabrik_5shift','shift',$whre) ;
+	$optAbsen=makeOption($dbname,'sdm_5absensi','kodeabsen,keterangan') ;
 	for($t=0;$t<24;)
 	{
 		if(strlen($t)<2)
@@ -290,7 +290,7 @@ function createTabDetail($id,$data) {
 
 	/*$kodeOrg=substr($id,8,6);
 	$where=" induk='".$kodeOrg."' and tipe='BLOK'"; //echo"warning:".$where;exit();
-	$optBlok=makeOption('owl','organisasi','kodeorganisasi,namaorganisasi',$where);
+	$optBlok=makeOption($dbname,'organisasi','kodeorganisasi,namaorganisasi',$where);
 	$table .= "<tr id='detail_tr_".$i."' class='rowcontent'>";
 	$table .= "<td>".makeElement("blok_".$i."",'select','',
 	array('style'=>'width:150px','onchange'=>"getBjr('".$i."')"),$optBlok)."<input type=hidden id=oldBlok_".$i." /></td>";

@@ -16,7 +16,7 @@ while($rOrg=mysql_fetch_assoc($qOrg))
 	$optOrg.="<option value=".$rOrg['kodeorganisasi'].">".$rOrg['namaorganisasi']."</option>";
 }
 $optThn="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
-$sThn="select distinct  tahunbudget from ".$dbname.".bgt_budget order by tahunbudget desc";
+$sThn="select distinct  tahunbudget from ".$dbname.".bgt_produksi_kebun order by tahunbudget desc";
 $qThn=mysql_query($sThn) or die(mysql_error($conn));
 while($rThn=mysql_fetch_assoc($qThn))
 {

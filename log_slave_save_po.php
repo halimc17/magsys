@@ -38,6 +38,31 @@ $batal=			isset($_POST['batal'])? $_POST['batal']: '';
 
 if($tanggl_kirim=='----:00' or $tanggl_kirim=='--:00') $tanggl_kirim = "00000000";
 
+		$sPO="select kodeorg from ".$dbname.".log_poht where nopo='".$nopo."'";
+		$qPO=mysql_query($sPO) or die(mysql_error());
+		$rKodeorg=mysql_fetch_assoc($qPO);
+		//exit('Warning: '.$rKodeorg['kodeorg']);
+		if($rKodeorg['kodeorg']=='MPA'){
+			if($nilai_po<50000000){
+				$persetujuan=190;	//Eni Kusuma
+				$ttd2=12608;		//Abiwara Arifin
+			}else{
+				$persetujuan=12608;	//Abiwara Arifin
+				$ttd2=132;			//Rizki Hernanda Daslia
+			}
+		}else{
+			if($nilai_po<50000000){
+				$persetujuan=0;	//209=Rudolf Widjaya
+				$ttd2=190;			//Eni Kusuma
+			}else if($nilai_po<500000000){
+				$persetujuan=190;	//Eni Kusuma
+				$ttd2=132;			//Rizki Hernanda Daslia
+			}else{
+				$persetujuan=132;	//Rizki Hernanda Daslia
+				$ttd2=138;			//Yana Sofyan Panigoro
+			}
+		}
+
 switch($proses)
 {
 	case 'cek_supplier':
@@ -731,7 +756,7 @@ switch($proses)
 				</tr><tbody>
 				";
 		 $sSupplier="select namasupplier,supplierid from ".$dbname.".log_5supplier 
-					 where namasupplier like '%".$nmSupplier."%' and kodekelompok='S001' and status=1";
+					 where namasupplier like '%".$nmSupplier."%' and kodekelompok in ('S001','S002') and status=1";
 		 $qSupplier=mysql_query($sSupplier) or die(mysql_error($conn));
 		 while($rSupplier=mysql_fetch_assoc($qSupplier))
 		 {

@@ -135,16 +135,19 @@ class PDF extends FPDF
 
                         $this->Cell(35,5,$_SESSION['lang']['kodeorg'],'',0,'L');
                         $this->Cell(2,5,':','',0,'L');
-                        $this->Cell(75,5,$rIsi['kodeorg'],'',0,'L');		
+                        //$this->Cell(75,5,$rIsi['kodeorg'],'',0,'L');		
+                        $this->Cell(75,5,$kdOrg,'',0,'L');		
                         $this->Cell(25,5,$_SESSION['lang']['nm_perusahaan'],'',0,'L');
                         $this->Cell(2,5,':','',0,'L');
-                        $this->Cell(35,5,$rOrg['namaorganisasi'],0,1,'L');
+                        //$this->Cell(35,5,$rOrg['namaorganisasi'],0,1,'L');
+                        $this->Cell(35,5,$nama,0,1,'L');
                         $this->Cell(35,5,$_SESSION['lang']['tanggal'],'',0,'L');
                         $this->Cell(2,5,':','',0,'L');
                         $this->Cell(75,5,$tgl,'',0,'L');		
                         $this->Cell(25,5,$_SESSION['lang']['periode'],'',0,'L');
                         $this->Cell(2,5,':','',0,'L');
-                        $this->Cell(35,5,substr(tanggalnormal($rIsi['periode']),1,7),0,1,'L');	
+                        //$this->Cell(35,5,substr(tanggalnormal($rIsi['periode']),1,7),0,1,'L');	
+                        $this->Cell(35,5,substr($tgl,3,7),0,1,'L');	
      $this->Ln();
 
         }
@@ -170,13 +173,16 @@ class PDF extends FPDF
         $pdf->Ln();	
         $pdf->SetFont('Arial','B',8);	
         $pdf->SetFillColor(220,220,220);
-        $pdf->Cell(8,5,'No',1,0,'L',1);
-        $pdf->Cell(30,5,$_SESSION['lang']['namakaryawan'],1,0,'L',1);	
-        $pdf->Cell(25,5,$_SESSION['lang']['tipelembur'],1,0,'L',1);
-        $pdf->Cell(28,5,$_SESSION['lang']['jamaktual'],1,0,'C',1);
-        $pdf->Cell(30,5,$_SESSION['lang']['uangmakan'],1,0,'C',1);
-        $pdf->Cell(38,5,$_SESSION['lang']['penggantiantransport'],1,0,'C',1);
-        $pdf->Cell(33,5,$_SESSION['lang']['uangkelebihanjam'],1,1,'C',1);		
+        $pdf->Cell(6,5,'No',1,0,'C',1);
+        $pdf->Cell(30,5,$_SESSION['lang']['namakaryawan'],1,0,'C',1);	
+        $pdf->Cell(17,5,$_SESSION['lang']['tipe'],1,0,'C',1);
+        $pdf->Cell(8,5,$_SESSION['lang']['jam'].'1',1,0,'C',1);
+        $pdf->Cell(8,5,$_SESSION['lang']['jam'].'2',1,0,'C',1);
+        $pdf->Cell(23,5,$_SESSION['lang']['beban'],1,0,'C',1);
+        $pdf->Cell(18,5,$_SESSION['lang']['uangmakan'],1,0,'C',1);
+        $pdf->Cell(23,5,$_SESSION['lang']['penggantiantransport'],1,0,'C',1);
+        $pdf->Cell(20,5,$_SESSION['lang']['uangkelebihanjam'],1,0,'C',1);		
+        $pdf->Cell(42,5,'No. BA',1,1,'C',1);		
 
 
         //$pdf->Cell(25,5,'Total',1,1,'C',1);
@@ -195,13 +201,16 @@ class PDF extends FPDF
 
 
                         $no+=1;
-                        $pdf->Cell(8,5,$no,1,0,'L',1);
+                        $pdf->Cell(6,5,$no,1,0,'C',1);
                         $pdf->Cell(30,5,$rKry['namakaryawan'],1,0,'L',1);	
-                        $pdf->Cell(25,5,$arrTipeLembur[$res['tipelembur']],1,0,'L',1);
-                        $pdf->Cell(28,5,$res['jamaktual'],1,0,'C',1);
-                        $pdf->Cell(30,5,number_format($res['uangmakan'],2),1,0,'C',1);
-                        $pdf->Cell(38,5,number_format($res['uangtransport'],2),1,0,'C',1);
-                        $pdf->Cell(33,5,number_format($res['uangkelebihanjam'],2),1,1,'C',1);	
+                        $pdf->Cell(17,5,$arrTipeLembur[$res['tipelembur']],1,0,'L',1);
+                        $pdf->Cell(8,5,$res['jamaktual'],1,0,'C',1);
+                        $pdf->Cell(8,5,$res['jamaktual2'],1,0,'C',1);
+                        $pdf->Cell(23,5,$res['beban'],1,0,'L',1);
+                        $pdf->Cell(18,5,number_format($res['uangmakan'],2),1,0,'R',1);
+                        $pdf->Cell(23,5,number_format($res['uangtransport'],2),1,0,'R',1);
+                        $pdf->Cell(20,5,number_format($res['uangkelebihanjam'],2),1,0,'R',1);	
+                        $pdf->Cell(42,5,$res['noba'],1,1,'L',1);
                 }
         $pdf->Output();
 ?>

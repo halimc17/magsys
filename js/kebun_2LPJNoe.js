@@ -1,0 +1,27 @@
+function preview(){
+	periode=document.getElementById('periode').options[document.getElementById('periode').selectedIndex].value;
+	namakud=document.getElementById('namakud').options[document.getElementById('namakud').selectedIndex].value;
+	kodept=document.getElementById('kodept').options[document.getElementById('kodept').selectedIndex].value;
+    param='kodept='+kodept+'&periode='+periode+'&namakud='+namakud+'&proses=preview';
+   
+	tujuan='kebun_slave_2LPJNoe.php';
+	post_response_text(tujuan, param, respon);
+	
+	function respon() {
+        if (con.readyState == 4) {
+            if (con.status == 200) {
+                busy_off();
+                if (!isSaveResponse(con.responseText)) {
+                    alert('ERROR TRANSACTION,\n' + con.responseText);
+                } else {
+                    document.getElementById('printContainer').innerHTML=con.responseText;
+                }
+            } else {
+                busy_off();
+                error_catch(con.status);
+            }
+        }
+    }
+}
+
+

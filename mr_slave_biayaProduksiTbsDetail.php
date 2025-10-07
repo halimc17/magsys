@@ -91,7 +91,7 @@ if($proses=='getkebun'||$proses=='getafdeling'){
 
     // noakun pemeliharaan tm 1
     $str="SELECT noakun, namaakun FROM ".$dbname.".keu_5akun
-        WHERE substr(noakun,1,5) between '62101' and '62102' order by noakun";
+        WHERE substr(noakun,1,5) between '62101' and '62107' order by noakun";
     $query=mysql_query($str) or die(mysql_error($conn));
     while($res=mysql_fetch_assoc($query))
     {
@@ -102,7 +102,7 @@ if($proses=='getkebun'||$proses=='getafdeling'){
     
     // noakun pemeliharaan tm 2
     $str="SELECT noakun, namaakun FROM ".$dbname.".keu_5akun
-        WHERE substr(noakun,1,5) between '62104' and '62111' order by noakun";
+        WHERE substr(noakun,1,5) between '62109' and '62190' order by noakun";
     $query=mysql_query($str) or die(mysql_error($conn));
     while($res=mysql_fetch_assoc($query))
     {
@@ -113,7 +113,7 @@ if($proses=='getkebun'||$proses=='getafdeling'){
     
     // noakun pemupukan
     $str="SELECT noakun, namaakun FROM ".$dbname.".keu_5akun
-        WHERE substr(noakun,1,5) between '62103' and '62103' order by noakun";
+        WHERE substr(noakun,1,5) between '62108' and '62108' order by noakun";
     $query=mysql_query($str) or die(mysql_error($conn));
     while($res=mysql_fetch_assoc($query))
     {
@@ -1760,7 +1760,7 @@ $str="select ".$addstr." as rp,substr(noakun,1,7) as noakun,rupiah as rupiah fro
             $tab.="</tr>";                  
         }        
         if($akun=='62101'){
-            // Biaya Panen  ====================================================
+            // Biaya Rawat  ====================================================
             $tab.="<tr class=rowtitle>
             <td align=left colspan=3 ".$bg.">Pemeliharaan TM</td>";
             $pmtal=0;
@@ -1935,7 +1935,7 @@ $str="select ".$addstr." as rp,substr(noakun,1,7) as noakun,rupiah as rupiah fro
                 ";
             $tab.="</tr>";                  
         }                
-        if($akun=='62103'){
+        if($akun=='62108'){
             // Biaya Pemupukan =================================================
             $tab.="<tr class=rowtitle>
             <td align=left colspan=3 ".$bg.">Pemupukan TM</td>";

@@ -17,7 +17,7 @@ $optCurr = makeOption($dbname,'setup_matauang','kode,matauang');
 $optTipeAkun = array(
   'Aktiva'=>$_SESSION['lang']['aktiva'],
   'Passiva'=>'Passiva',
-  'Modal'=>$_SESSION['lang']['penjualan'],
+  'Modal'=>$_SESSION['lang']['modal'],
   'Penjualan'=>$_SESSION['lang']['penjualan'],
   'Biaya'=>$_SESSION['lang']['biaya'],
   'Lain-lain'=>$_SESSION['lang']['lain']
@@ -25,6 +25,29 @@ $optTipeAkun = array(
 $optFieldAktif = array(
 	'Kegiatan','Asset','Barang','Karyawan','Pelanggan','Supplier','Kendaraan'
 );
+$optOrgpemilik=array('GLOBAL'=>'GLOBAL');
+/*
+$tipepemilik='';
+$str = "select kodeorganisasi,namaorganisasi,tipe from ".$dbname.".organisasi where length(kodeorganisasi)=4 order by tipe,namaorganisasi";
+$res = mysql_query($str);
+while($bar=mysql_fetch_object($res)){
+	$optOrgpemilik[$bar->kodeorganisasi] .=$bar->namaorganisasi;
+	if ($tipepemilik!=$bar->tipe){
+		$tipepemilik=$bar->tipe;
+		$optOrgpemilik[$bar->tipe] .=$bar->tipe;
+	}
+}
+*/
+$str = "select distinct(tipe) from ".$dbname.".organisasi where length(kodeorganisasi)=4";
+$res = mysql_query($str);
+while($bar=mysql_fetch_object($res)){
+	$optOrgpemilik[$bar->tipe] .=$bar->tipe;
+}
+$str = "select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi where length(kodeorganisasi)=4 order by namaorganisasi";
+$res = mysql_query($str);
+while($bar=mysql_fetch_object($res)){
+	$optOrgpemilik[$bar->kodeorganisasi] .=$bar->namaorganisasi;
+}
 #======End Select Prep======
 #=======Form============
 echo "<div style='margin-bottom:30px'>";
@@ -75,10 +98,16 @@ $els[] = array(
   makeElement('fieldaktif','multichk','0000000',array('style'=>'width:80px','maxlength'=>'7',
     'onkeypress'=>'return angka_doang(event)'),$optFieldAktif)
 );
+/**
 $els[] = array(
   makeElement('pemilik','label',$_SESSION['lang']['namapemilik']),
   makeElement('pemilik','text','',array('style'=>'width:150px','maxlength'=>'7',
     'onkeypress'=>'return angka_doang(event)'))
+);**/
+
+$els[] = array(
+  makeElement('pemilik','label',$_SESSION['lang']['namapemilik']),
+  makeElement('pemilik','select','',array('style'=>'width:155px'),$optOrgpemilik)
 );
 
 # Fields

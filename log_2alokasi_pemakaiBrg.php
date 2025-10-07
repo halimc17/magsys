@@ -1,5 +1,4 @@
-<?
-//@Copy nangkoelframework
+<?//@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 include_once('lib/zLib.php');
@@ -9,7 +8,14 @@ OPEN_BOX();
 ?>
 <?php
 $optOrg="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
-$sOrg="select namaorganisasi,kodeorganisasi from ".$dbname.".organisasi where tipe like 'GUDANG%'";
+if(($_SESSION['empl']['tipelokasitugas']!='HOLDING')&&($_SESSION['empl']['tipelokasitugas']!='KANWIL')){
+    $sOrg="select namaorganisasi,kodeorganisasi from ".$dbname.".organisasi where tipe like 'GUDANG%' and left(kodeorganisasi,4)='".$_SESSION['empl']['lokasitugas']."'";    
+}else if($_SESSION['empl']['tipelokasitugas']=='KANWIL'){
+    $sOrg="select namaorganisasi,kodeorganisasi from ".$dbname.".organisasi where tipe like 'GUDANG%' and left(kodeorganisasi,4) in (select kodeunit from ".$dbname.".bgt_regional_assignment where regional='".$_SESSION['empl']['regional']."')";    
+}else if($_SESSION['empl']['tipelokasitugas']=='HOLDING'){
+    $sOrg="select namaorganisasi,kodeorganisasi from ".$dbname.".organisasi where tipe like 'GUDANG%'";    
+}
+
 $qOrg=mysql_query($sOrg) or die(mysql_error($conn));
 while($rOrg=mysql_fetch_assoc($qOrg))
 {
@@ -58,7 +64,7 @@ function getPeriode()
 <legend><b><?php echo $_SESSION['lang']['lapAlokasiBrg']?></b></legend>
 <table cellspacing="1" border="0" >
 <tr><td><label><?php echo $_SESSION['lang']['pilihgudang']?></label></td><td><select id="kdGudang" name="kdGudang" style="width:150px" onchange="getPeriode()"><?php echo $optOrg?></select></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['periode']?></label></td><td><select id="periode" name="periode" style="width:150px"><option value=''><? echo $_SESSION['lang']['all']?></option></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['periode']?></label></td><td><select id="periode" name="periode" style="width:150px"><option value=''><? echo $_SESSION['lang']['pilihdata']?></option></select></td></tr>
 <tr height="20"><td colspan="2">&nbsp;</td></tr>
 <tr><td colspan="2"><button onclick="zPreview('log_slave_2alokasi_pemakaiBrg','<?php echo $arr?>','printContainer')" class="mybutton" name="preview" id="preview">Preview</button><button onclick="zPdf('log_slave_2alokasi_pemakaiBrg','<?php echo $arr?>','printContainer')" class="mybutton" name="preview" id="preview">PDF</button><button onclick="zExcel(event,'log_slave_2alokasi_pemakaiBrg.php','<?php echo $arr?>')" class="mybutton" name="preview" id="preview">Excel</button></td></tr>
 

@@ -10,7 +10,7 @@ OPEN_BOX();
 <?php
 $optPeriode="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
 $lksiTugas=substr($_SESSION['empl']['lokasitugas'],0,4);
-$sPeriode="select distinct periode from ".$dbname.".sdm_5periodegaji where kodeorg='".$lksiTugas."'";
+$sPeriode="select distinct periode from ".$dbname.".sdm_5periodegaji where kodeorg='".$lksiTugas."' order by periode desc";
 $qPeriode=mysql_query($sPeriode) or die(mysql_error());
 while($rPeriode=mysql_fetch_assoc($qPeriode))
 {
@@ -210,7 +210,7 @@ echo"</table>
 <div style="margin-bottom: 30px;">
 </div>
 <fieldset style='clear:both'><legend><b>Print Area</b></legend>
-<div id='printContainer' style='overflow:auto;height:350px;max-width:1220px'>
+<div id='printContainer' style='overflow:auto;height:350px;max-width:1235px'>
 <?php
 //echo"<pre>";
 //print_r($_SESSION);

@@ -96,7 +96,11 @@ switch($proses) {
         foreach($dataShow as $key=>$row) {    
             $i=0;
             foreach($row as $cont) {
-                $pdf->Cell($length[$i]/100*$width,$height,$cont,1,0,$align[$i],1);
+				if($i==5){
+					$pdf->Cell($length[$i]/100*$width,$height,number_format($cont,2),1,0,$align[$i],1);
+				}else{
+					$pdf->Cell($length[$i]/100*$width,$height,$cont,1,0,$align[$i],1);
+				}
                 $i++;
             }
             $pdf->Ln();

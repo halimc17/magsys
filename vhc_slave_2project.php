@@ -22,6 +22,10 @@ $kdOrg = checkPostGet('kdOrg','');
 $thnId = checkPostGet('thnId','');
 $kdProj = checkPostGet('kdProj','');
 
+if($kdOrg==''){
+	//exit('Warning: Kode Organisasi tidak boleh kosong...!');
+}
+
 ///$unitId=$_SESSION['lang']['all'];
 $dktlmpk=$_SESSION['lang']['all'];
 
@@ -52,17 +56,24 @@ if($proses=='excel')
         <td ".$bgcoloraja." align=center>".$_SESSION['lang']['nama']."</td>
         <td ".$bgcoloraja." align=center>".$_SESSION['lang']['tanggalmulai']."</td>
         <td ".$bgcoloraja." align=center>".$_SESSION['lang']['tanggalselesai']."</td>
-        <td ".$bgcoloraja." align=center>".$_SESSION['lang']['biaya']."</td></tr>";
+        <td ".$bgcoloraja." align=center>".$_SESSION['lang']['biaya']."</td>
+        <td ".$bgcoloraja." align=center>".$_SESSION['lang']['posting']."</td></tr>";
         $tab.="</tr></thead><tbody>";
         $sData="select distinct * from ".$dbname.".project
-        where substr(tanggalmulai,1,4)='".$thnId."' and kodeorg='".$kdOrg."'";
+        where true ".($thnId=="" ? "" : "and substr(tanggalmulai,1,4)='".$thnId."'")." and kodeorg='".$kdOrg."'";
+		//exit('Warning: '.$sData);
         $qData=mysql_query($sData) or die(mysql_error($conn));
 		$nor=0;
         while($rData=  mysql_fetch_assoc($qData))
         {
+		   if($rData['posting']=='1'){
+				$stspost='Sudah Posting';
+		   }else{
+				$stspost='Belum Posting';
+		   }
            $nor+=1;
            $sBiaya="select distinct sum(jumlah) as biaya from ".$dbname.".keu_jurnaldt
-                   where kodeasset='".$rData['kode']."'";
+                   where (noakun like '127%' or noakun like '12813%') and kodeasset='".$rData['kode']."'";
            $qBiaya=mysql_query($sBiaya) or die(mysql_error($conn));
            $rBiaya=mysql_fetch_assoc($qBiaya);
            $tab.="<tr class=rowcontent style='cursor:pointer;' onclick=getDetail('".$rData['kode']."')><td align=center>".$nor."</td>";
@@ -70,12 +81,13 @@ if($proses=='excel')
            $tab.="<td>".$rData['kode']."</td>";
            $tab.="<td>".$rData['nama']."</td>";
            $tab.="<td>".$rData['tanggalmulai']."</td>";
-            $tab.="<td>".$rData['tanggalselesai']."</td>";
+           $tab.="<td>".$rData['tanggalselesai']."</td>";
            $tab.="<td  align=right>".number_format($rBiaya['biaya'],2)."</td>";
+           $tab.="<td>".$stspost."</td>";
            $tbiaya+=$rBiaya['biaya'];
         }
         $tab.="<tr class=rowcontent><td  colspan=6 align=center><b>".$_SESSION['lang']['total']."</b></td>";
-        $tab.="<td align=right><b>".number_format($tbiaya,2)."</b></td></tr>";
+        $tab.="<td align=right><b>".number_format($tbiaya,2)."</b></td><td></td></tr>";
         $tab.="</tbody></table>";
         
 }

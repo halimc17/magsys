@@ -37,7 +37,7 @@ function writeFile($path)
           $ext=split('[.]', basename( $_FILES['photo']['name']));
               $ext=$ext[count($ext)-1];
               $ext=strtolower($ext);
-              if($ext=='zip' or $ext=='rar' or $ext=='gz' or $ext=='tgz' or $ext=='7z' or $ext=='tar' or $ext=='png' or $ext=='jpg' or $ext=='jpeg')
+              if($ext=='zip' or $ext=='rar' or $ext=='gz' or $ext=='tgz' or $ext=='7z' or $ext=='tar' or $ext=='png' or $ext=='jpg' or $ext=='jpeg' or $ext=='pdf')
               {
               $path = $dir."/".basename( $_FILES['photo']['name']);
               try{

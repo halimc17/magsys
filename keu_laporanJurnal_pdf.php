@@ -114,7 +114,7 @@ if($gudang!=''){
 $kdKelSch="";
 if($kdKel!='')
 {
-   $kdKelSch=" and a.nojurnal like '%".$kdKel."%'  "; 
+   $kdKelSch=" and a.nojurnal like '%/".$kdKel."/%'  "; 
 }
 
 if($regional=='' && $gudang=='')

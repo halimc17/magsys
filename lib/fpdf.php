@@ -1719,8 +1719,70 @@ function _enddoc()
 	$this->_out('%%EOF');
 	$this->state=3;
 }
+//function Cell($w, $h=0, $txt='', $border=0, $ln=0, $align='', $fill=false, $link='')
+function vcell($c_width,$c_height,$x_axis,$text,$l_split){
+$w_w=$c_height/3;
+$w_w_1=$w_w+2;
+$w_w1=$w_w+$w_w+$w_w+3;
+// $w_w2=$w_w+$w_w+$w_w+$w_w+3;// for 3 rows wrap
+$len=strlen($text);// check the length of the cell and splits the text into 80 character each and saves in a array 
+	if($len>$l_split){
+		$w_text=str_split($text,$l_split);// splits the text into length of 80 and saves in a array since we need wrap cell of two cell we took $w_text[0], $w_text[1] alone.
+		// if we need wrap cell of 3 row then we can go for    $w_text[0],$w_text[1],$w_text[2]
+		$this->SetX($x_axis);
+		$this->Cell($c_width,$w_w_1,$w_text[0],0,'','');
+		$this->SetX($x_axis+4);
+		$this->Cell($c_width,$w_w1,$w_text[1],0,'','');
+		//$this->SetX($x_axis);
+		// $this->Cell($c_width,$w_w2,$w_text[2],'','','');// for 3 rows wrap but increase the $c_height it is very important.
+		$this->SetX($x_axis);
+		$this->Cell($c_width,$c_height,'',0,0,'L',0);
+	}
+	else
+	{
+		$this->SetX($x_axis);
+		$this->Cell($c_width,$c_height,$text,0,0,'L',0);
+	}
+ }
 //End of class
+
+
+function vcell2($c_width,$c_height,$x_axis,$text,$l_split,$border=0,$ln=0,$align=''){
+$w_w=$c_height/3;
+//$w_w=$c_height;
+$w_w_1=$w_w+3;
+$w_w1=$w_w+$w_w+$w_w+4;
+// $w_w2=$w_w+$w_w+$w_w+$w_w+3;// for 3 rows wrap
+//function Cell($w, $h=0, $txt='', $border=0, $ln=0, $align='', $fill=false, $link='')
+$len=strlen($text);// check the length of the cell and splits the text into 80 character each and saves in a array 
+	if($len>$l_split){
+		$w_text=str_split($text,$l_split);// splits the text into length of 80 and saves in a array since we need wrap cell of two cell we took $w_text[0], $w_text[1] alone.
+		// if we need wrap cell of 3 row then we can go for    $w_text[0],$w_text[1],$w_text[2]
+		$this->SetX($x_axis);
+		$this->Cell($c_width,$w_w_1+1,$w_text[0],0,$ln,$align);
+		//$this->SetX($x_axis+4);
+		$this->SetX($x_axis);
+		//$this->Cell($c_width,$w_w1,$w_text[1],0,'','');
+		$this->Cell($c_width,$w_w1+3,$w_text[1],0,$ln,$align);
+		//$this->SetX($x_axis);
+		// $this->Cell($c_width,$w_w2,$w_text[2],'','','');// for 3 rows wrap but increase the $c_height it is very important.
+		$this->SetX($x_axis);
+		$this->Cell($c_width,$c_height,'',$border,$ln,'L');
+	}
+	else
+	{
+		$this->SetX($x_axis);
+		$this->Cell($c_width,$c_height,$text,$border,$ln,'L');
+	}
+ }
+ 
+ 
+//End of class
+
+
 }
+
+
 
 //Handle special IE contype request
 if(isset($_SERVER['HTTP_USER_AGENT']) && $_SERVER['HTTP_USER_AGENT']=='contype')

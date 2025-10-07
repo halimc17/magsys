@@ -13,7 +13,7 @@ echo"<fieldset>
 	   <legend>".$_SESSION['lang']['list']."</legend>
 	  <fieldset><legend></legend>
 	  ".$_SESSION['lang']['cari_transaksi']."
-	  <input type=text id=txtbabp size=25 class=myinputtext onkeypress=\"return tanpa_kutip(event);\" maxlength=9>
+	  <input type=text id=txtbabp size=25 class=myinputtext onkeypress=\"return tanpa_kutip(event);\" maxlength=13>
 	  <button class=mybutton onclick=cariPJD(0)>".$_SESSION['lang']['find']."</button>
 	  </fieldset>
 	  <table class=sortable cellspacing=1 border=0>
@@ -42,12 +42,19 @@ $page=0;
   {
   	$notransaksi.=" and notransaksi like '%".$_POST['tex']."%' ";
   }
-$lokasitugas=substr($_SESSION['empl']['lokasitugas'],0,4);  
-$str="select count(*) as jlhbrs from ".$dbname.".sdm_pjdinasht 
+$lokasitugas=substr($_SESSION['empl']['lokasitugas'],0,4);
+if(substr($_SESSION['empl']['lokasitugas'],2,2)=='HO'){
+	$str="select count(*) as jlhbrs from ".$dbname.".sdm_pjdinasht 
+        where kodeorg like '%HO'
+		".$notransaksi."
+		order by jlhbrs desc";
+}else{
+	$str="select count(*) as jlhbrs from ".$dbname.".sdm_pjdinasht 
         where
 		kodeorg='".$lokasitugas."'
 		".$notransaksi."
 		order by jlhbrs desc";
+}
 $res=mysql_query($str);
 while($bar=mysql_fetch_object($res))
 {
@@ -65,12 +72,19 @@ while($bar=mysql_fetch_object($res))
   
   $offset=$page*$limit;
   
-
-  $str="select * from ".$dbname.".sdm_pjdinasht 
+if(substr($_SESSION['empl']['lokasitugas'],2,2)=='HO'){
+	$str="select * from ".$dbname.".sdm_pjdinasht 
+        where kodeorg like '%HO'
+		".$notransaksi."
+		order by tanggalbuat desc,notransaksi desc limit ".$offset.",20";	
+}else{
+	$str="select * from ".$dbname.".sdm_pjdinasht 
         where
         kodeorg='".$lokasitugas."'
 		".$notransaksi."
-		order by tanggalbuat desc  limit ".$offset.",20";	
+		order by tanggalbuat desc,notransaksi desc limit ".$offset.",20";	
+}  
+
   $res=mysql_query($str);
   $no=$page*$limit;
   while($bar=mysql_fetch_object($res))
@@ -121,13 +135,21 @@ while($bar=mysql_fetch_object($res))
   
   if($bar->lunas==1)
      $dissa=' disabled ';
-	 
+
+  $tujuan=$bar->tujuan1;
+  if($bar->tujuan2!=''){
+	$tujuan=$bar->tujuan2;
+  }elseif($bar->tujuan3!=''){
+	$tujuan=$bar->tujuan3;
+  }elseif($bar->tujuanlain!=''){
+	$tujuan=$bar->tujuanlain;
+  }
 	echo"<tr class=rowcontent>
 	  <td>".$no."</td>
 	  <td>".$bar->notransaksi."</td>
 	  <td>".$namakaryawan."</td>
 	  <td>".tanggalnormal($bar->tanggalbuat)."</td>
-	  <td>".$bar->tujuan1."</td>
+	  <td>".$tujuan."</td>
 	  <td>".$stpersetujuan."</td>
 	  <td>".$sthrd."</td>
 	  <td align=right>".number_format($bar->uangmuka,2,',','.')."</td>	
@@ -135,9 +157,11 @@ while($bar=mysql_fetch_object($res))
 		                  <input ".$dissa." type=text id=bayar".$no." class=myinputtextnumber onkeypress=\"return angka_doang(event);\" maxlength=12 onblur=change_number(this) size=12 value='".number_format($bar->dibayar,2,'.',',')."'></td>
 		  <td align=right><input ".$dissa." type=text id=tglbayar".$no." class=myinputtext onkeypress=\"return false;\" maxlength=10  size=10 onmouseover=setCalendar(this) value='".tanggalnormal($bar->tglbayar)."'></td>
 		  <td><img src='images/save.png' title='Save' class=resicon onclick=saveBayarPJD('".$no."','".$bar->notransaksi."')>
-		      <img src=images/pdf.jpg class=resicon  title='".$_SESSION['lang']['pdf']."' onclick=\"previewPJD('".$bar->notransaksi."',event);\"> 
-		  </td>
-
+		      <img src=images/pdf.jpg class=resicon  title='".$_SESSION['lang']['pdf']."' onclick=\"previewPJD('".$bar->notransaksi."',event);\">"; 
+	if($dissa!= ' disabled '){
+		      echo "<img src=images/pdf.jpg class=resicon  title='".$_SESSION['lang']['pdf']." BKU' onclick=\"previewPUKPJDPDF('".$bar->notransaksi."',event);\">";
+	}
+	echo"  </td>
 	  </tr>";
   }
 echo"<tr><td colspan=11 align=center>

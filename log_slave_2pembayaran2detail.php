@@ -34,7 +34,7 @@ $dktlmpk=$_SESSION['lang']['all'];
     $jenisId2=='0'?$dr="k":$dr="p";
     $whre=" and tipeinvoice='".$dr."'";
     $rhd=" and c.tanggal between '".$tgl_cari."' and  '".$tgl_cari2."'";
-    
+    /*
     $sTagi="select distinct a.noinvoicesupplier,a.uangmuka as uangmuka,a.nopo as nopo,sum(a.nilaiinvoice) as jumlah,
             a.noinvoice as noinvoice,a.kodesupplier as kodesupplier,a.tanggal as tanggal,
             a.jatuhtempo as jatuhtempo,a.tipeinvoice as tipeinvoice,a.matauang as matauang,a.kurs as kurs,
@@ -44,9 +44,22 @@ $dktlmpk=$_SESSION['lang']['all'];
 			left join ".$dbname.".keu_tagihandt c on a.noinvoice=c.noinvoice
             where a.posting=1 and a.tanggal between '".$tgl_cari."' and  '".$tgl_cari2."' and a.kodeorg like '%".$kdUnit."%'
             and a.kodesupplier='".$suppId2."' and a.nopo like '%".$cariNopo."%' ".$whre."
-            group by a.nopo,a.noinvoice";
-    
-   // echo $sTagi;
+            group by a.nopo,a.noinvoice
+			order by a.kodesupplier,a.noinvoice";
+    */
+    $sTagi="select distinct a.noinvoicesupplier,a.uangmuka as uangmuka,a.nopo as nopo,sum(a.nilaiinvoice) as jumlah,
+            a.noinvoice as noinvoice,a.kodesupplier as kodesupplier,a.tanggal as tanggal,
+            a.jatuhtempo as jatuhtempo,a.tipeinvoice as tipeinvoice,a.matauang as matauang,a.kurs as kurs,
+            b.matauang as mt,b.kurs as krs,b.nilaipo as nilaipo, sum(c.nilai) as ppn,d.nopp
+            from ".$dbname.".keu_tagihanht a
+            left join ".$dbname.".log_poht b on a.nopo=b.nopo
+            left join (select DISTINCT nopo,nopp from ".$dbname.".log_podt) d on d.nopo=b.nopo
+			left join ".$dbname.".keu_tagihandt c on a.noinvoice=c.noinvoice
+            where a.posting=1 and a.tanggal between '".$tgl_cari."' and  '".$tgl_cari2."' and a.kodeorg like '%".$kdUnit."%'
+            and a.kodesupplier='".$suppId2."' and a.nopo like '%".$cariNopo."%' ".$whre."
+            group by a.nopo,a.noinvoice
+			order by a.kodesupplier,a.noinvoice";
+    //echo $sTagi;
     
 //    exit("Error:".$sTagi);
     $qTagi=mysql_query($sTagi) or die(mysql_error($conn));
@@ -56,6 +69,7 @@ $dktlmpk=$_SESSION['lang']['all'];
 //            if($rTagi['tipeinvoice']=="k"){
 //               $optKurs[$rTagi['nopo']]=1;
 //            }
+        $dtNopp[$rTagi['noinvoice']]=$rTagi['nopp'];
         $dtNopo[$rTagi['noinvoice']]=$rTagi['nopo'];
         $dtNoInvSup[$rTagi['noinvoice']]=$rTagi['noinvoicesupplier'];
         $dtNotrans[$rTagi['noinvoice']]=$rTagi['noinvoice'];
@@ -124,8 +138,13 @@ if($proses=='excelgetDetail2')
         <td ".$bgcoloraja." rowspan=2 align=center>No.</td>
         <td ".$bgcoloraja." rowspan=2 align=center>".$_SESSION['lang']['noinvoice']."</td>
         <td ".$bgcoloraja." rowspan=2 align=center>".$_SESSION['lang']['tanggal']."</td>
-        <td ".$bgcoloraja." rowspan=2 align=center>".$_SESSION['lang']['jatuhtempo']."</td>
-        <td ".$bgcoloraja." colspan=8 align=center>".$_SESSION['lang']['tagihan']."</td>
+        <td ".$bgcoloraja." rowspan=2 align=center>".$_SESSION['lang']['jatuhtempo']."</td>";
+        if($jenisId2==1){
+			$tab.= "<td ".$bgcoloraja." colspan=9 align=center>".$_SESSION['lang']['tagihan']."</td>";
+		}else{
+			$tab.= "<td ".$bgcoloraja." colspan=8 align=center>".$_SESSION['lang']['tagihan']."</td>";
+		}
+		$tab.= "
         <td ".$bgcoloraja." colspan=3 align=center>".$_SESSION['lang']['dibayar']."</td>
         <td ".$bgcoloraja." rowspan=2 align=center>".$_SESSION['lang']['sisa']."</td>
         <td ".$bgcoloraja." rowspan=2 align=center>Ost</td></tr>";
@@ -134,6 +153,9 @@ if($proses=='excelgetDetail2')
         $tab.= "<td ".$bgcoloraja." align=center>".$_SESSION['lang']['kodesupplier']."</td>";
         $tab.= "<td ".$bgcoloraja." align=center>".$_SESSION['lang']['namasupplier']."</td>";
         $tab.= "<td ".$bgcoloraja." align=center>".$_SESSION['lang']['noinvoicesupplier']."</td>";
+        if($jenisId2==1){
+			$tab.= "<td ".$bgcoloraja." align=center>".$_SESSION['lang']['nopp']."</td>";
+		}
         $tab.= "<td ".$bgcoloraja." align=center>".$_SESSION['lang']['nopo']."/ ".$_SESSION['lang']['nospk']."</td>";        
         $tab.= "<td ".$bgcoloraja." align=center>".$_SESSION['lang']['total']." ".$_SESSION['lang']['tagihan']."</td>";
         $tab.= "<td ".$bgcoloraja." align=center>".$_SESSION['lang']['uangmuka']."</td>";
@@ -153,7 +175,8 @@ if($proses=='excelgetDetail2')
 			if(!isset($penambah[$hutang])) $penambah[$hutang]=0;
 			if(!isset($pengurang[$hutang])) $pengurang[$hutang]=0;
             $dibayarsmp[$hutang]=$penambah[$hutang]-$pengurang[$hutang];
-            $sis[$hutang]=$dtInvoice[$hutang]-$dibayarsmp[$hutang];
+            //$sis[$hutang]=$dtInvoice[$hutang]-$dibayarsmp[$hutang];
+            $sis[$hutang]=$dtInvoice[$hutang]+$uangmuka[$hutang]-$dibayarsmp[$hutang];
             if($jenisId2==1){
                $tab.= "<tr class=rowcontent onclick=masterPDF('log_poht','".$dtNopo[$hutang]."','','log_slave_2pembayaran2cetakPO',event);>";
              
@@ -197,6 +220,9 @@ if($proses=='excelgetDetail2')
             
             $tab.= "<td>".$optSupp[$dtSupp[$hutang]]."</td>";
             $tab.= "<td>".$dtNoInvSup[$hutang]."</td>";
+			if($jenisId2==1){
+				$tab.= "<td>".$dtNopp[$hutang]."</td>";
+			}
             $tab.= "<td>".$dtNopo[$hutang]."</td>";
             $tab.= "<td align=right>".number_format($dtInvoice[$hutang],0)."</td>";
             $tab.= "<td align=right>".number_format($uangmuka[$hutang])."</td>";
@@ -212,15 +238,20 @@ if($proses=='excelgetDetail2')
             $tab.= "</tr>";
             
 			$tothutang+=$dtInvoice[$hutang];
+			$totuangmuka+=$uangmuka[$hutang];
             $totdibayar+=$dibayarsmp[$hutang];
             $totsisa+=$sis[$hutang];
         }
        } 
             $tab.="<tr class=rowcontent>";
-            $tab.="<td colspan=8 align=right>".$_SESSION['lang']['total']."</td>";
+			if($jenisId2==1){
+				$tab.="<td colspan=9 align=right>".$_SESSION['lang']['total']."</td>";
+			}else{
+				$tab.="<td colspan=8 align=right>".$_SESSION['lang']['total']."</td>";
+			}
             $tab.="<td align=right>".number_format($tothutang,0)."</td>";
-//            $tab.="<td align=right>".number_format($totinvoice,0)."</td>";
-            $tab.="<td align=right colspan=6>".number_format($totdibayar,0)."</td>";
+            $tab.="<td align=right>".number_format($totuangmuka,0)."</td>";
+            $tab.="<td align=right colspan=5>".number_format($totdibayar,0)."</td>";
             $tab.="<td align=right>".number_format($totsisa,0)."</td>";
             $tab.="<td align=right></td>";
             

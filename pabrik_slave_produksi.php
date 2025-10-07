@@ -49,13 +49,13 @@ switch($method)
         $tglKmrnJamKirim=$tglKmrn.' 06:59:59';
         $tglSkrgJamKirim=$tgl.' 07:00:00';
         
-        #cpo kirim
-        $iCpoKirim="select sum(beratbersih) as beratbersih from ".$dbname.".pabrik_timbangan where"
-                . " kodebarang='40000001' and millcode='".$kodeorg."' "
-                . " and tanggal > '".$tglKmrnJamKirim."' and tanggal < '".$tglSkrgJamKirim."'  "; 
-        $nCpoKirim=  mysql_query($iCpoKirim) or die (mysql_error($conn));
-        $dCpoKirim=  mysql_fetch_assoc($nCpoKirim);
-            $zCpo=$dCpoKirim['beratbersih'];
+  //      #cpo kirim
+  //      $iCpoKirim="select sum(beratbersih) as beratbersih from ".$dbname.".pabrik_timbangan where"
+  //              . " kodebarang='40000001' and millcode='".$kodeorg."' "
+  //              . " and tanggal > '".$tglKmrnJamKirim."' and tanggal < '".$tglSkrgJamKirim."'  "; 
+  //      $nCpoKirim=  mysql_query($iCpoKirim) or die (mysql_error($conn));
+  //      $dCpoKirim=  mysql_fetch_assoc($nCpoKirim);
+  //          $zCpo=$dCpoKirim['beratbersih'];
         //exit("Error:$iCpoKirim");
             //and a.tanggal>='".$tanggal1."' and a.tanggal<='".$tanggal2."'  
         
@@ -67,7 +67,8 @@ switch($method)
         $dBa=  mysql_fetch_assoc($nBa);
             $azCpo=$dBa['jumlah'];
             
-        $kgCpo=$xCpo+$zCpo+$azCpo-$yCpo;
+        //$kgCpo=$xCpo+$zCpo+$azCpo-$yCpo;
+        $kgCpo=$xCpo-$yCpo;
         echo $kgCpo;
         
         //echo 3;
@@ -98,13 +99,13 @@ switch($method)
         $tglKmrnJamKirim=$tglKmrn.' 06:59:59';
         $tglSkrgJamKirim=$tgl.' 07:00:00';
         
-        #kernel kirim
-        $iKerKirim="select sum(beratbersih) as beratbersih from ".$dbname.".pabrik_timbangan where"
-                . " kodebarang='40000002' and millcode='".$kodeorg."' "
-                . " and tanggal > '".$tglKmrnJamKirim."' and tanggal < '".$tglSkrgJamKirim."'  "; 
-        $nKerKirim=  mysql_query($iKerKirim) or die (mysql_error($conn));
-        $dKerKirim=  mysql_fetch_assoc($nKerKirim);
-            $zKer=$dKerKirim['beratbersih'];
+  //      #kernel kirim
+  //      $iKerKirim="select sum(beratbersih) as beratbersih from ".$dbname.".pabrik_timbangan where"
+  //              . " kodebarang='40000002' and millcode='".$kodeorg."' "
+  //              . " and tanggal > '".$tglKmrnJamKirim."' and tanggal < '".$tglSkrgJamKirim."'  "; 
+  //      $nKerKirim=  mysql_query($iKerKirim) or die (mysql_error($conn));
+  //      $dKerKirim=  mysql_fetch_assoc($nKerKirim);
+  //          $zKer=$dKerKirim['beratbersih'];
             
         #pembersihan tangki
         $iBa="select sum(jumlah) as jumlah from ".$dbname.".pabrik_pembersihantangki where "
@@ -114,7 +115,8 @@ switch($method)
         $dBa=  mysql_fetch_assoc($nBa);
             $azKer=$dBa['jumlah'];
             
-        $kgKer=$xKer+$zKer+$azKer-$yKer;
+        //$kgKer=$xKer+$zKer+$azKer-$yKer;
+        $kgKer=$xKer-$yKer;
         echo $kgKer;
     break;
 
@@ -129,17 +131,23 @@ switch($method)
         #ambil sisa tbs kemarin
         $iSisa="select sisahariini from ".$dbname.".pabrik_produksi where kodeorg='".$_POST['kodeorg']."' and "
                 . " tanggal='".$tglKmrn."' ";
+		
         $nSisa=mysql_query($iSisa) or die (mysql_errno($conn));
         $dSisa=mysql_fetch_assoc($nSisa);
             $tbsKmrn=$dSisa['sisahariini'];
             
         #ambil produksi hari ini
+		$tanggalmulai=date('Y-m-d h:i:s',strtotime(substr($tgl,0,4).'-'.substr($tgl,4,2).'-'.substr($tgl,6,2).' 07:00:00'));
+		$tanggalakhir=date('Y-m-d h:i:s',strtotime('+1 days',strtotime(substr($tgl,0,4).'-'.substr($tgl,4,2).'-'.substr($tgl,6,2).' 06:59:59')));
         $iTbs="select sum(beratbersih) as beratbersih  from ".$dbname.".pabrik_timbangan where millcode='".$_POST['kodeorg']."' and "
-                . " tanggal like '%".tanggalsystemn($_POST['tanggal'])."%' and kodebarang='40000003'"; 
-        $nTbs=  mysql_query($iTbs) or die (mysql_errno($conn));
+                . " tanggal between '".$tanggalmulai."' and '".$tanggalakhir."' and kodebarang='40000003'"; 
+		//$iTbs="select sum(beratbersih) as beratbersih  from ".$dbname.".pabrik_timbangan where millcode='".$_POST['kodeorg']."' and "
+        //        . " tanggal like '%".tanggalsystemn($_POST['tanggal'])."%' and kodebarang='40000003'"; 
+		//exit('Warning :'.$iTbs);
+		$nTbs=  mysql_query($iTbs) or die (mysql_errno($conn));
         $dTbs=  mysql_fetch_assoc($nTbs);
             $tbsHr=$dTbs['beratbersih'];
-            
+          
         if($tbsKmrn!='')
             $tbsKmrn=$tbsKmrn;
         else

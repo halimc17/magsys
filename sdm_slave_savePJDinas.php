@@ -32,7 +32,8 @@ if($uangmuka=='')
 if($method=='insert')
 {
 //get number
-$potSK=substr($_SESSION['empl']['lokasitugas'],0,4).date('Y');
+//$potSK=substr($_SESSION['empl']['lokasitugas'],0,4).date('Y');
+$potSK=substr($kodeorg,0,4).date('Y');
 $str="select notransaksi from ".$dbname.".sdm_pjdinasht
       where  notransaksi like '".$potSK."%'
 	  order by notransaksi desc limit 1";
@@ -58,7 +59,7 @@ $notrx=$potSK.$notrx;
 		  `hrd`,`persetujuan`,`statuspersetujuan`
 		  ) values(
 				'".$notrx."',".$karyawanid.",".date('Ymd').",
-				".$tanggalperjalanan.",'".$kodeorg."','".$tujuan1."',
+				".$tanggalperjalanan.",'".$kodeorg."','".$kodeorg."',
 				'".$tugas1."','".$tujuan2."','".$tugas2."','".$tujuan3."',
 				'".$tugas3."','".$tugaslain."','".$tujuanlain."',
 				".$pesawat.",".$darat.",".$laut.",
@@ -79,7 +80,7 @@ else if($method=='update')
 	$str="update ".$dbname.".sdm_pjdinasht set
 		  `tanggalperjalanan`=".$tanggalperjalanan.",
 		  `kodeorg`='".$kodeorg."',
-		  `tujuan1`='".$tujuan1."',
+		  `tujuan1`='".$kodeorg."',
 		  `tugas1`='".$tugas1."',
 		  `tujuan2`='".$tujuan2."',
 		  `tugas2`='".$tugas2."',

@@ -52,7 +52,8 @@ while ($data=mysql_fetch_assoc($qry))
 
 
 $optTipe="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
-$iTipe="select * from ".$dbname.".sdm_5tipekaryawan where id in ('1','3') ";
+//$iTipe="select * from ".$dbname.".sdm_5tipekaryawan where id in ('1','3') ";
+$iTipe="select * from ".$dbname.".sdm_5tipekaryawan where id in ('1','2','3') ";
 $nTipe=  mysql_query($iTipe) or die (mysql_errno($conn));
 while($dTipe=   mysql_fetch_assoc($nTipe))
 {

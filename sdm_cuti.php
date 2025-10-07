@@ -9,20 +9,21 @@ include('master_mainMenu.php');
 <?
 OPEN_BOX('',$_SESSION['lang']['cuti']);
 $optlokasitugas="";
-if(trim($_SESSION['org']['tipeinduk'])=='HOLDING')//user holding dapat menempatkan dimana saja
+if(trim($_SESSION['empl']['tipelokasitugas'])=='HOLDING')//user holding dapat menempatkan dimana saja
 {
     $str="select namaorganisasi,kodeorganisasi from ".$dbname.".organisasi where tipe not in('BLOK','PT','STENGINE','STATION') 
 	      and length(kodeorganisasi)=4 order by namaorganisasi";
 	$res=mysql_query($str);
 	while($bar=mysql_fetch_object($res))
 	{
-			$optlokasitugas.="<option value='".$bar->kodeorganisasi."'>".$bar->namaorganisasi."</option>";	
+			$optlokasitugas.="<option value='".$bar->kodeorganisasi."'>".$bar->namaorganisasi."</option>";
 	}
 }
-else if(trim($_SESSION['org']['induk']!=''))//user unit hanya dapat menempatkan pada unitnya dan anak unitnya
+else 
+//if(trim($_SESSION['org']['induk']!=''))//user unit hanya dapat menempatkan pada unitnya dan anak unitnya
 {
-     $str="select namaorganisasi,kodeorganisasi from ".$dbname.".organisasi where tipe not in('BLOK','PT','STENGINE','STATION') 
-	      and kodeorganisasi='".$_SESSION['empl']['lokasitugas']."' order by namaorganisasi";
+    $str="select namaorganisasi,kodeorganisasi from ".$dbname.".organisasi where tipe not in('BLOK','PT','STENGINE','STATION') 
+	      and length(kodeorganisasi)=4 and kodeorganisasi not like '%HO' and induk='".$_SESSION['empl']['induk']."' order by namaorganisasi";
 	$res=mysql_query($str);
 	#echo mysql_error($conn);
 	while($bar=mysql_fetch_object($res))
@@ -30,8 +31,17 @@ else if(trim($_SESSION['org']['induk']!=''))//user unit hanya dapat menempatkan 
 			$optlokasitugas.="<option value='".$bar->kodeorganisasi."'>".$bar->namaorganisasi."</option>";	
 	}
 }
-$optperiode='';
-for($x=-1;$x<3;$x++)
+if(date('m')>=11){
+	$dt=date('Y')+1;
+	$optperiode="<option value='".$dt."'>".$dt."</option>";
+}elseif(date('m')==1){
+	$dt=date('Y')-1;
+	$optperiode="<option value='".$dt."'>".$dt."</option>";
+}else{
+	$optperiode="";
+}
+//for($x=0;$x<3;$x++)
+for($x=0;$x<1;$x++)
 {
 	$dt=date('Y')-$x;
 	$optperiode.="<option value='".$dt."'>".$dt."</option>";

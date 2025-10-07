@@ -8,13 +8,13 @@ echo open_body();
 include('master_mainMenu.php');
 OPEN_BOX('',"UPLOAD FILE");
 echo"
-		 <fieldset style='width:500px;'><legend>Upload.file (Max.512Kb)</legend>
-		 <iframe frameborder=0 width=500px height=130px name=winForm id=winForm src=rencana_gis_uploadFile.php>
+		 <fieldset style='width:98%;'><legend>Upload.file (Max.512Kb)</legend>
+		 <iframe frameborder=0 width=98% height=145px name=winForm id=winForm src=rencana_gis_uploadFile.php>
 		 </iframe>
 		 <button id=btnphoto  class=mybutton onclick=simpanPhoto()>".$_SESSION['lang']['save']."</button>
 		 <button  class=mybutton onclick=cancelPhoto()>".$_SESSION['lang']['cancel']."</button>                  
-		 </fieldset>                
-		 <iframe name=frame id=frame  frameborder=0 width=600px height=50px></iframe><br>";
+		 </fieldset>
+		 <iframe name=frame id=frame frameborder=0 width=100% height=100px></iframe><br>";
 #ambil kode
 if($_SESSION['empl']['bagian']=='HRD'){
     $str="select * from ".$dbname.".rencana_gis_jenis where left(namajenis,3) in ('HRD','SOP')   order by namajenis";
@@ -91,9 +91,9 @@ if($res1=mysql_query($str1))
                     <td>".$bar1->namakaryawan."</td>
                     <td>";
             if($bar1->karyawanid==$_SESSION['standard']['userid']){
-            echo"<img class='zImgBtn' src='images/skyblue/delete.png' title='Edit' onclick=\"delFile('".$bar1->unit."','".$bar1->kode."','".$bar1->namafile."');\"> &nbsp  &nbsp  &nbsp"; 
+            echo"<img class=resicon src='images/skyblue/delete.png' title='Edit' onclick=\"delFile('".$bar1->unit."','".$bar1->kode."','".$bar1->namafile."');\"> &nbsp  &nbsp  &nbsp"; 
             }                
-            echo "<img class='zImgBtn'  src='images/skyblue/save.png'  title='Save' onclick=\"download('".$bar1->namafile."');\"></td></tr>";
+            echo "<img class=resicon src='images/skyblue/zoom.png' title='Open' onclick=\"download('".$bar1->namafile."');\"></td></tr>";
     }	 
 }	  
 echo "</tbody>

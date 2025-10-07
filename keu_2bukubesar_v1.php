@@ -171,28 +171,30 @@ echo"<span id=printPanel style='display:none;'>
      <img onclick=jurnalv1KeExcel(event,'keu_laporanBukuBesarv1_Excel.php') src=images/excel.jpg class=resicon title='MS.Excel'> 
 	 <img onclick=jurnalv1KePDF(event,'keu_laporanBukuBesarv1_pdf.php') title='PDF' class=resicon src=images/pdf.jpg>
 	 </span>    
-         <div style='width:2200px;display:fixed;'>
+         <div style='width:2460px;display:fixed;'>
        <table class=sortable cellspacing=1 border=0>
 	     <thead>
 		    <tr>
 			  <td align=center width=30px>".$_SESSION['lang']['nourut']."</td>
-			  <td align=center width=80px>".$_SESSION['lang']['nojurnal']."</td>
-			  <td align=center width=100px>".$_SESSION['lang']['tanggal']."</td>
+			  <td align=center width=150px>".$_SESSION['lang']['nojurnal']."</td>
+			  <td align=center width=70px>".$_SESSION['lang']['tanggal']."</td>
 			  <td align=center width=80px>".$_SESSION['lang']['noakun']."</td>
 			  <td align=center width=150px>".$_SESSION['lang']['namakaryawan']."</td>
 			  <td align=center width=160px>".$_SESSION['lang']['nmcust']."</td>
 			  <td align=center width=160px>".$_SESSION['lang']['namasupplier']."</td>
 			  <td align=center width=160px>".$_SESSION['lang']['noreferensi']."</td>
 			  <td align=center width=160px>".$_SESSION['lang']['nodok']."</td>
-			  <td align=center width=160px>No Cek/Giro</td>
+			  <td align=center width=100px>No Cek/Giro</td>
 			  <td align=center width=200px>".$_SESSION['lang']['keterangan']."</td>
 			  <td align=center width=150px>".$_SESSION['lang']['debet']."</td>
 			  <td align=center width=150px>".$_SESSION['lang']['kredit']."</td>
 			  <td align=center width=150px>".$_SESSION['lang']['saldo']."</td>
-			  <td align=center width=80px>".$_SESSION['lang']['kodeorg']."</td>
+			  <td align=center width=60px>".$_SESSION['lang']['kodeorg']."</td>
 			  <td align=center width=80px>".$_SESSION['lang']['kodeblok']."</td>
 			  <td align=center style='max-width:80px;'>".$_SESSION['lang']['tahuntanam']."</td>
-			</tr>  
+			  <td align=center width=100px>".$_SESSION['lang']['project']."</td>
+			  <td align=center width=200px>".$_SESSION['lang']['project']."</td>
+			</tr>
 		 </thead>
 		 <tbody>
 		 </tbody>
@@ -200,7 +202,7 @@ echo"<span id=printPanel style='display:none;'>
 		 </tfoot>		 
 	   </table>
      </div>
-     <div style='width:2200px;height:359px;overflow-y:scroll;'>
+     <div style='width:2460px;height:359px;overflow-y:scroll;'>
            <table class=sortable cellspacing=1 border=0>
                  <thead>
 					 <tr>

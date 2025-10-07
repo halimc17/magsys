@@ -59,8 +59,16 @@ switch($proses) {
 			$tmpTgl = explode(' ',$row['tanggal']);
 			$scek="select nokontrak from ".$dbname.".pmn_kontrakjualdt where nokontrak_ref='".$row['nokontrak']."'";
 			$qcek=mysql_query($scek) or die(mysql_error($conn));
-			$rcek=mysql_num_rows($qcek);
-			
+			$optNm=makeOption($dbname, 'organisasi', 'kodeorganisasi,induk');
+			if($optNm[$row['millcode']]==substr($row['nokontrak'],4,3)){
+				$rcek=0;
+			}else{
+				//$rcek=mysql_num_rows($qcek);
+				$rcek=1;
+			}
+			//if($row['notransaksi']=='CBS20221201'){
+			//	exit('Warning: '.$row['notransaksi'].' '.$optNm[$row['millcode']].'=='.substr($row['nokontrak'],4,3).' => '.$rcek.' '.$scek);
+			//}
 			$scek2="select notransaksi,posting,tanggalpengakuan from ".$dbname.".keu_pengakuanjual where notransaksi='".$row['notransaksi']."'";
 			$qcek2=mysql_query($scek2) or die(mysql_error($conn));
 			$rcek2=mysql_fetch_assoc($qcek2);
@@ -120,6 +128,7 @@ switch($proses) {
 			LEFT JOIN ".$dbname.".log_5supplier b on a.kodecustomer = b.kodetimbangan
 			LEFT JOIN ".$dbname.".log_5masterbarang c on a.kodebarang = c.kodebarang 
 			WHERE left(a.tanggal,10) between '".$tanggal1."' and '".$tanggal2."'  ".$whdt." and a.millcode like '%".$param['pabrik']."%'";
+			
 		$resData = fetchData($qData);
 	 
 		$tab = "<table class=data border=1 cellspacing=1 cellpadding=3>";
@@ -262,6 +271,21 @@ switch($proses) {
 			case '40000003':
 				$kodeApp = 'STBS';
 				break;
+			case '40000004':
+				$kodeApp = 'SJJK';
+				break;
+			case '40000005':
+				$kodeApp = 'SCGK';
+				break;
+			case '40000011':
+				$kodeApp = 'SSLD';
+				break;
+			case '40000016':
+				$kodeApp = 'SFBR';
+				break;
+			case '40000029':
+				$kodeApp = 'SSLU';
+				break;
 			default:
 				$kodeApp = "SEXT";
 		}
@@ -304,14 +328,14 @@ switch($proses) {
 		// Jumlah
                 #jika include ppn maka nilai hargasatuan di kurangi dengan hargasatuan*10/100
                 if($data['ppn']==1){
-                    $data['hargasatuan']=$data['hargasatuan']/1.1;
+                    $data['hargasatuan']=$data['hargasatuan']/1.11;
                 }
 		$jumlah = $data['beratbersih'] * $data['hargasatuan'];
 		if(!empty($param['nokontrakDt'])){
 			//jika nokontrak menjadi induk,maka kontrak detailnya di buatkan jurnal
                         #jika include ppn maka nilai hargasatuan di kurangi dengan hargasatuan*10/100
                         if($dataDet['ppn']==1){
-                            $dataDet['hargasatuan']=$dataDet['hargasatuan']/1.1;
+                            $dataDet['hargasatuan']=$dataDet['hargasatuan']/1.11;
                         }
 			$jumlah2 = $data['beratbersih'] * $dataDet['hargasatuan'];
 		}
@@ -523,8 +547,12 @@ switch($proses) {
                         }
                         
                         #ngitung ulang yang dah di terima terakhir brp
-                        $sCek="select sum(beratbersih) as totaltrima from ".$dbname.".pabrik_timbangan where left(notransaksi,7) in (select notransaksi from ".$dbname.".pabrik_timbangan where nokontrak='".$data['nokontrak']."') "
-                                 . " and nokontrak='".$param['nokontrakDt']."' and char_length(notransaksi)=11";
+                        //$sCek="select sum(beratbersih) as totaltrima from ".$dbname.".pabrik_timbangan where left(notransaksi,7) in (select notransaksi from //".$dbname.".pabrik_timbangan where nokontrak='".$data['nokontrak']."') "
+                        //         . " and nokontrak='".$param['nokontrakDt']."' and char_length(notransaksi)=11";
+                        //$sCek="select sum(beratbersih) as totaltrima from ".$dbname.".pabrik_timbangan where left(notransaksi,7) in (select //left(notransaksi,7) from ".$dbname.".pabrik_timbangan where nokontrak='".$data['nokontrak']."') "
+                        //         . " and nokontrak='".$param['nokontrakDt']."'";
+                        $sCek="select sum(terpenuhi) as totaltrima from ".$dbname.".pmn_kontrakjualdt where nokontrak_ref='".$data['nokontrak']."'"
+							. " and nokontrak='".$param['nokontrakDt']."'";
                         $qCek=  mysql_query($sCek) or die(mysql_error($conn));
                         $rCek=  mysql_fetch_assoc($qCek);
                         $supdate="update ".$dbname.".pmn_kontrakjualdt set terpenuhi='".($rCek['totaltrima']+$data['beratbersih'])."' where nokontrak='".$param['nokontrakDt']."' and nokontrak_ref='".$data['nokontrak']."'";

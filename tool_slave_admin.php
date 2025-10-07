@@ -819,9 +819,9 @@ case 'openCloseMethod':
       break;
       case'unpostingGudang':
 			#================================
-			  //unposting gudang dilarang
-			  echo "Gagal: Maaf, unposting gudang tidak dapat digunakan, menjaga konsistensi harga rata2";
-			  exit();
+			  //--- unposting gudang dilarang
+			  //echo "Gagal: Maaf, unposting gudang tidak dapat digunakan, menjaga konsistensi harga rata2";
+			  //exit();
 			#================================
           switch($pilUn_5){
           case'1':

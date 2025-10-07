@@ -71,6 +71,14 @@ if($error1!='') {
 $kodeJurnal = 'SPK1';
 $optKeg = makeOption($dbname,'setup_kegiatan','kodekegiatan,noakun',
     "kodekegiatan='".$param['kodekegiatan']."'");
+$optKeg2 = makeOption($dbname,'setup_kegiatan','kodekegiatan,namakegiatan',
+    "kodekegiatan='".$param['kodekegiatan']."'");
+$volsat='';
+if($param['hasilkerjarealisasi']!='' and $param['hasilkerjarealisasi']!='0'){
+	$optSatKeg = makeOption($dbname,'setup_kegiatan','kodekegiatan,satuan',
+    "kodekegiatan='".$param['kodekegiatan']."'");
+	$volsat=' '.$param['hasilkerjarealisasi'].' '.$optSatKeg[$param['kodekegiatan']];
+}
 $optSupp = makeOption($dbname,'log_5klsupplier','kode,noakun',
     "kode='".substr($param['koderekanan'],0,4)."'");
 
@@ -121,6 +129,43 @@ if(substr($param['blokalokasi'],0,2)=='AK' or substr($param['blokalokasi'],0,2)=
 	} 
 }
 
+
+
+
+
+
+
+## cek kurs jika bukan idr
+
+$str="select matauang,keterangan from ".$dbname.".log_spkht where notransaksi='".$param['notransaksi']."' ";
+$res=mysql_query($str) or die (mysql_error($conn));
+$bar=mysql_fetch_assoc($res);
+	$mtuang=$bar['matauang'];
+	$ketSPK=$bar['keterangan'];
+
+$str="select kurs from ".$dbname.".setup_matauangrate where daritanggal='".$tgl."' and kode='".$mtuang."' ";
+$res=mysql_query($str) or die (mysql_error($conn));
+$bar=mysql_fetch_assoc($res);
+	$kurs=$bar['kurs'];
+
+if($mtuang!='IDR'){
+	if($kurs==0 || $kurs==''){
+		exit("Warning : Please Input Kurs ".$kode." in ".tanggalnormal($tgl)." ");
+	}else{
+		$kurs=$kurs;
+	}
+}else{
+	$kurs=1;
+}	
+
+$param['jumlahrealisasi']=$param['jumlahrealisasi']*$kurs;
+
+
+
+
+
+
+
 // Get Akun Ppn
 $qAkun = selectQuery($dbname,'setup_parameterappl',"nilai",
 					 "kodeaplikasi='TX' and kodeparameter='PPNINV'");
@@ -143,6 +188,8 @@ foreach($optPajak as $noakun=>$nilai) {
 		$pph += $nilai * $proporsi;
 	}
 }
+
+
 $hutang = $param['jumlahrealisasi'] + $ppn - $pph;
 
 # Prep Header
@@ -166,12 +213,13 @@ $dataRes['header'] = array(
 $noUrut = 1;
 
 # Debet
+//    'keterangan'=>$optKeg2[$param['kodekegiatan']].$volsat.' Realisasi SPK '.$param['notransaksi'].' '.$ketSPK,
 $dataRes['detail'][] = array(
     'nojurnal'=>$nojurnal,
     'tanggal'=>$tgl,
     'nourut'=>$noUrut,
     'noakun'=>$optKeg[$param['kodekegiatan']],
-    'keterangan'=>'Realisasi SPK '.$param['kodeorg'].'/'.$param['notransaksi'],
+    'keterangan'=>'BA SPK '.$optKeg2[$param['kodekegiatan']].$volsat.' '.$ketSPK,
     'jumlah'=>$param['jumlahrealisasi'],
     'matauang'=>'IDR',
     'kurs'=>'1',
@@ -185,7 +233,7 @@ $dataRes['detail'][] = array(
     'noreferensi'=>$param['notransaksi'],
     'noaruskas'=>'',
     'kodevhc'=>'',
-    'nodok'=>'',
+    'nodok'=>$param['notransaksi'],
     'kodeblok'=>$blok,
     'revisi'=>'0',
 	'kodesegment' => $param['kodesegment']
@@ -198,7 +246,7 @@ $dataRes['detail'][] = array(
     'tanggal'=>$tgl,
     'nourut'=>$noUrut,
     'noakun'=>$optSupp[substr($param['koderekanan'],0,4)],
-    'keterangan'=>'Realisasi SPK '.$param['kodeorg'].'/'.$param['notransaksi'],
+    'keterangan'=>'BA SPK '.$optKeg2[$param['kodekegiatan']].$volsat.' '.$ketSPK,
     'jumlah'=>-1*$hutang,
     'matauang'=>'IDR',
     'kurs'=>'1',
@@ -212,7 +260,7 @@ $dataRes['detail'][] = array(
     'noreferensi'=>$param['notransaksi'],
     'noaruskas'=>'',
     'kodevhc'=>'',
-    'nodok'=>'',
+    'nodok'=>$param['notransaksi'],
     'kodeblok'=>$blok,
     'revisi'=>'0',
 	'kodesegment' => $param['kodesegment']
@@ -227,13 +275,13 @@ foreach($optPajak as $noakun=>$nilai) {
 		$strPajak = 'PPn';
 	}
 	$nilai = $nilai * $proporsi;
-	
+	if($nilai!=0){
 	$dataRes['detail'][] = array(
 		'nojurnal'=>$nojurnal,
 		'tanggal'=>$tgl,
 		'nourut'=>$noUrut,
 		'noakun'=>$noakun,
-		'keterangan'=>$strPajak.' BASPK '.$param['kodeorg'].'/'.$param['notransaksi'],
+		'keterangan'=>$strPajak.' BA SPK '.$optKeg2[$param['kodekegiatan']].$volsat.' '.$ketSPK,
 		'jumlah'=>$nilai,
 		'matauang'=>'IDR',
 		'kurs'=>'1',
@@ -247,12 +295,13 @@ foreach($optPajak as $noakun=>$nilai) {
 		'noreferensi'=>$param['notransaksi'],
 		'noaruskas'=>'',
 		'kodevhc'=>'',
-		'nodok'=>'',
+		'nodok'=>$param['notransaksi'],
 		'kodeblok'=>$blok,
 		'revisi'=>'0',
 		'kodesegment' => $param['kodesegment']
 	);
 	$noUrut++;
+	}
 }
 
 # Total D/K

@@ -69,22 +69,47 @@ foreach($dataShow as $key=>$row) {
 }
 
 #====================== Realisasi =========================
-$col2 = "tanggal,kodeblok,kodekegiatan,hkrealisasi,hasilkerjarealisasi,jumlahrealisasi";
-$cols2 = explode(',',$col2);
+$col2 = "tanggal,kodeblok,kodekegiatan,hkrealisasi,hasilkerjarealisasi,jumlahrealisasi,ppn,pph,totalrealisasi";
+$kol2 = "tanggal,kodeblok,kodekegiatan,hk,hasilkerjajumlah,jumlahrp,ppn,pph,total";
+$cols2 = explode(',',$kol2);
 $cols[1] = 'kegiatan';
-$where2 = "notransaksi='".$param['notransaksi']."' and kodekegiatan in (";
+$where2 = "a.notransaksi='".$param['notransaksi']."' and a.kodekegiatan in (";
+$where3 = "noreferensi='".$param['notransaksi']."' and kodekegiatan in (";
 foreach($data as $key=>$row) {
     if($key==0) {
         $where2 .= "'".$row['kodekegiatan']."'";
+        $where3 .= "'".$row['kodekegiatan']."'";
     } else {
         $where2 .= ",'".$row['kodekegiatan']."'";
+        $where3 .= ",'".$row['kodekegiatan']."'";
     }
 }
 $where2 .= ")";
-$query2 = selectQuery($dbname,'log_baspk',$col2,$where2);
+$where3 .= ")";
+//$query2 = selectQuery($dbname,'log_baspk',$col2,$where2);
+//$query2 = "SELECT a.tanggal,a.kodeblok,a.kodekegiatan,a.hkrealisasi,a.hasilkerjarealisasi,a.jumlahrealisasi,if(isnull(b.jumlah),0,b.jumlah) as ppn
+//		,if(isnull(c.jumlah),0,c.jumlah) as pph,a.jumlahrealisasi+if(isnull(b.jumlah),0,b.jumlah)+if(isnull(c.jumlah),0,c.jumlah) as totalrealisasi
+//		FROM ".$dbname.".log_baspk a
+//		left JOIN ".$dbname.".keu_jurnaldt b on b.noreferensi=a.notransaksi and b.kodekegiatan=a.kodekegiatan and b.tanggal=a.tanggal and left(b.noakun,3) ='116'
+//		left JOIN ".$dbname.".keu_jurnaldt c on c.noreferensi=a.notransaksi and c.kodekegiatan=a.kodekegiatan and b.tanggal=a.tanggal and left(c.noakun,3) ='212'
+//		where ".$where2."";
+$query2 = "SELECT a.tanggal,a.kodeblok,a.kodekegiatan,a.hkrealisasi,a.hasilkerjarealisasi,a.jumlahrealisasi
+		,if(isnull(b.ppn),0,b.ppn) as ppn
+		,if(isnull(b.pph),0,b.pph) as pph
+		,a.jumlahrealisasi+if(isnull(b.ppn),0,b.ppn)+if(isnull(b.pph),0,b.pph) as totalrealisasi
+		FROM ".$dbname.".log_baspk a
+		left JOIN (SELECT noreferensi,kodekegiatan,tanggal
+						,sum(if(left(noakun,3)='116',jumlah,0)) as ppn 
+						,sum(if(left(noakun,3)='212',jumlah,0)) as pph
+					from ".$dbname.".keu_jurnaldt 
+					where ".$where3." and left(noakun,3) in ('116','212')
+					GROUP BY noreferensi,kodekegiatan,tanggal) b on b.noreferensi=a.notransaksi and b.kodekegiatan=a.kodekegiatan and b.tanggal=a.tanggal
+		where ".$where2."";
+//exit('Warning: '.$query2);
 $data2 = fetchData($query2);
-$align2 = explode(",","L,L,L,R,R,R");
-$length2 = explode(",","10,20,25,10,15,20");
+$align2 = explode(",","L,L,L,R,R,R,R,R,R");
+//$length2 = explode(",","10,20,25,10,15,20");
+$length2 = explode(",","7,18,25,6,7,10,9,8,10");
 
 if(empty($data2)) {
     echo "Data Realisasi belum ada";
@@ -144,8 +169,17 @@ switch($proses) {
         $pdf->Cell($width,$height,$titleDetail[0],0,1,'L',1);
         $pdf->SetFillColor(220,220,220);
         $i=0;
-        foreach($cols as $column) {
-            $pdf->Cell($length[$i]/100*$width,$height,$_SESSION['lang'][$column],1,0,'C',1);
+        foreach($cols as $column) 
+		{
+			if($column=='jumlahrp')
+			{
+				$optKurs = makeOption($dbname,"log_spkht","notransaksi,matauang","notransaksi='".$param['notransaksi']."'");
+				$pdf->Cell($length[$i]/100*$width,$height,str_replace("(Rp)","",$_SESSION['lang'][$column])."(".$optKurs[$param['notransaksi']].")",1,0,'C',1);
+			}
+			else
+			{
+				$pdf->Cell($length[$i]/100*$width,$height,$_SESSION['lang'][$column],1,0,'C',1);
+			}
             $i++;
         }
         $pdf->Ln();
@@ -172,7 +206,20 @@ switch($proses) {
         $pdf->SetFillColor(220,220,220);
         $i=0;
         foreach($cols2 as $column) {
-            $pdf->Cell($length2[$i]/100*$width,$height,$_SESSION['lang'][$column],1,0,'C',1);
+			//echo $column."<br>";
+			if($column == 'jumlahrealisasi')
+			{
+				$optKurs = makeOption($dbname,"log_spkht","notransaksi,matauang","notransaksi='".$param['notransaksi']."'");
+				$pdf->Cell($length2[$i]/100*$width,$height,str_replace("(Rp.)","",$_SESSION['lang'][$column])."(".$optKurs[$param['notransaksi']].")",1,0,'C',1);
+			}
+			else if($column == 'total')
+			{
+				$pdf->Cell($length2[$i]/100*$width,$height,$_SESSION['lang'][$column].' (Rp.)',1,0,'C',1);
+			}
+			else
+			{
+				$pdf->Cell($length2[$i]/100*$width,$height,$_SESSION['lang'][$column],1,0,'C',1);
+			}
             $i++;
         }
         $pdf->Ln();
@@ -183,7 +230,7 @@ switch($proses) {
         foreach($dataShow2 as $key=>$row) {    
             $i=0;
             foreach($row as $attr=>$cont) {
-				if($attr=='jumlahrealisasi') $cont = number_format($cont,2);
+				if($attr=='jumlahrealisasi' or $attr=='ppn' or $attr=='pph' or $attr=='totalrealisasi') $cont = number_format($cont,2);
                 $pdf->Cell($length2[$i]/100*$width,$height,$cont,1,0,$align2[$i],1);
                 $i++;
             }

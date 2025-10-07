@@ -333,7 +333,7 @@ foreach($optSpbdt as $blok=>$row) {
  ***************************************************/
 
 // Masking
-$optOrg = makeOption($dbname,'organisasi','kodeorganisasi,kodeorganisasi',
+$optOrg = makeOption($dbname,'organisasi','kodeorganisasi,namaorganisasi',
 	"kodeorganisasi like '".$param['kebun']."%'");
 
 // Rearrange Data

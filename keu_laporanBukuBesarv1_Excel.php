@@ -134,7 +134,7 @@ while($bar=mysql_fetch_object($res))
 
 // ambil data
 $isidata=array();
-$str="select *, (SELECT t3.nocek FROM ".$dbname.".keu_kasbankht t3 WHERE t3.notransaksi = t1.noreferensi) as nocekgiro  from ".$dbname.".keu_jurnaldt_vw t1 where t1.noakun != '".$clm."' and t1.tanggal >= '".$tanggal1."' and t1.tanggal <= '".$tanggal2."' and t1.noakun >= '".$akundari."' and t1.noakun <= '".$akunsampai."' ".$wheregudang." order by t1.noakun, t1.tanggal";
+$str="select t1.*, (SELECT t3.nocek FROM ".$dbname.".keu_kasbankht t3 WHERE t3.notransaksi = t1.noreferensi) as nocekgiro,IF(t1.kodeasset='','',(SELECT t4.nama FROM ".$dbname.".project t4 WHERE t4.kode=t1.kodeasset)) as namaasset from ".$dbname.".keu_jurnaldt_vw t1 where t1.noakun != '".$clm."' and t1.tanggal >= '".$tanggal1."' and t1.tanggal <= '".$tanggal2."' and t1.noakun >= '".$akundari."' and t1.noakun <= '".$akunsampai."' ".$wheregudang." order by t1.noakun, t1.tanggal";
 $res=mysql_query($str);
 while($bar= mysql_fetch_object($res))
 {
@@ -154,6 +154,8 @@ while($bar= mysql_fetch_object($res))
 	$isidata[$qwe][namacustomer]=$optNmCust[$bar->kodecustomer];
     $isidata[$qwe][kosup]=$bar->kodesupplier;
     $isidata[$qwe][nodok]=$bar->nodok;
+    $isidata[$qwe][kodeasset]=$bar->kodeasset;
+    $isidata[$qwe][namaasset]=$bar->namaasset;
     $isidata[$qwe][nocekgiro]=$bar->nocekgiro;
     $aqun[$bar->noakun]=$bar->noakun;
 }
@@ -220,9 +222,11 @@ $stream=strtoupper($_SESSION['lang']['laporanbukubesar'])." : ".$namapt." ".$nam
         <td align=center>".$_SESSION['lang']['noreferensi']."</td>
         <td align=center>".$_SESSION['lang']['nmcust']."</td>
         <td align=center>".$_SESSION['lang']['namasupplier']."</td>
-            <td align=center>".$_SESSION['lang']['namakaryawan']."</td>
+        <td align=center>".$_SESSION['lang']['namakaryawan']."</td>
         <td align=center>".$_SESSION['lang']['nodok']."</td>
         <td align=center>No Cek/Giro</td>
+        <td align=center>".$_SESSION['lang']['project']."</td>
+        <td align=center>".$_SESSION['lang']['project']."</td>
     </tr>  
     </thead>
     <tbody id=container>";
@@ -252,7 +256,7 @@ if(!empty($aqun))foreach($aqun as $akyun){
         $stream.="<td>".$akyun."</td>";
         $stream.="<td colspan=3>".$namaakun[$akyun]."</td>";
         $stream.="<td align=right>".number_format($salwal,2)."</td>";
-        $stream.="<td colspan=9></td>";
+        $stream.="<td colspan=11></td>";
     $stream.="</tr>";
 // tampilin jurnal daftar akun    
     if(!empty($isidata))foreach($isidata as $baris)
@@ -261,7 +265,8 @@ if(!empty($aqun))foreach($aqun as $akyun){
             $no+=1;
             $stream.="<tr>";
             $stream.="<td>".$no."</td>";
-            $stream.="<td>".substr($baris[nojur],14,8)."</td>";
+            $stream.="<td>".$baris[nojur]."</td>";
+            //$stream.="<td>".substr($baris[nojur],14,8)."</td>";
             $stream.="<td>".$baris[tangg]."</td>";
             $stream.="<td>".$baris[noaku]."</td>";
             $stream.="<td>".$baris[keter]."</td>";
@@ -281,9 +286,11 @@ if(!empty($aqun))foreach($aqun as $akyun){
             $stream.="<td>".$baris[noref]."</td>";
             $stream.="<td>".$baris[namacustomer]."</td>";
             $stream.="<td>".$namasupplier[$baris[kosup]]."</td>";
-             $stream.="<td>".$nmKar[$baris[nik]]."</td>";
-            $stream.="<td>".$baris[nodok]."</td>";
+            $stream.="<td>".($nmKar[$baris[nik]]=='' ? $baris[nik] : $nmKar[$baris[nik]])."</td>";
+			$stream.="<td>".$baris[nodok]."</td>";
             $stream.="<td>".$baris[nocekgiro]."</td>";
+            $stream.="<td>".$baris[kodeasset]."</td>";
+            $stream.="<td>".$baris[namaasset]."</td>";
             
             $stream.="</tr>";
             $subsalak=$salwal;
@@ -296,7 +303,7 @@ if(!empty($aqun))foreach($aqun as $akyun){
         $stream.="<td align=right>".number_format($totaldebet,2)."</td>";
         $stream.="<td align=right>".number_format($totalkredit,2)."</td>";
         $stream.="<td align=right>".number_format($subsalak,2)."</td>";
-        $stream.="<td colspan=9></td>";
+        $stream.="<td colspan=11></td>";
      $stream.="</tr>";
 }
 
@@ -308,7 +315,7 @@ if(!empty($aqun))foreach($aqun as $akyun){
         $stream.="<td align=right>".number_format($grandtotaldebet,2)."</td>";
         $stream.="<td align=right>".number_format($grandtotalkredit,2)."</td>";
         $stream.="<td align=right>".number_format($grandsalak,2)."</td>";
-        $stream.="<td colspan=9></td>";
+        $stream.="<td colspan=11></td>";
      $stream.="</tr>";
 
 $stream.="</tbody>

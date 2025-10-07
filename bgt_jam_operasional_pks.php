@@ -28,30 +28,75 @@ $optws="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
 ?>
 
 <?php
-echo"<fieldset style='width:300px;'>
-	  <legend><b>".$_SESSION['lang']['jamoperasional']."</b></legend><table> 	
-     
-	     <tr><td width=110>".$_SESSION['lang']['budgetyear']."<td width=10>:</td></td><td><input type=text id=tahunbudget size=10 onkeypress=\"return angka(event,'0123456789');validatefn(event);\" class=myinputtext maxlength=4 style=\"width:150px;\"></td></tr>
-		 <tr><td>".$_SESSION['lang']['unit']."</td><td>:</td><td><select id=kodeorg name=kodeorg style=\"width:150px;\">".$optOrg."</select></td></tr>
-		 <tr><td>".$_SESSION['lang']['totJamThn']."</td><td>:</td><td><input type=text class=myinputtextnumber id=jamo name=jmo onkeypress=\"return angka_doang(event);\" style=\"width:150px;\"  /></td></tr>
-		 <tr><td>".$_SESSION['lang']['totbreak']."</td><td>:</td><td><input type=text class=myinputtextnumber id=jamb name=jamb onkeypress=\"return angka_doang(event);\" style=\"width:150px;\"  /></td></tr>
-     </table> 
-	 <table>
-	  <tr>
-		 <td style='width:122px;'></td>
-			 <input type=hidden id=method value='insert'>
-				<input type=hidden id=oldtahunbudget value='insert'>
-				<input type=hidden id=oldkodeorg value='insert'>
-		 <td>
-			 <button class=mybutton onclick=simpanpks()>".$_SESSION['lang']['save']."</button>
-			 <button class=mybutton onclick=batalpks()>".$_SESSION['lang']['cancel']."</button>
-		 <td>
-	  <tr>
-	 </table>
-	 </fieldset>";
-	 
-	 
-	 
+echo"<fieldset style='width:920px;'><legend><b>".$_SESSION['lang']['jamoperasional']."</b></legend>
+		<table>
+			<tr>
+				<td width=100>".$_SESSION['lang']['budgetyear']."</td><td width=10>:</td>
+				<td><input type=text id=tahunbudget size=10 onkeypress=\"return angka(event,'0123456789');validatefn(event);\" class=myinputtext maxlength=4 style=\"width:100px;\"></td>
+			</tr>
+			<tr>
+				<td>".$_SESSION['lang']['unit']."</td><td>:</td>
+				<td><select id=kodeorg name=kodeorg style=\"width:100px;\">".$optOrg."</select></td>
+				<td align='center' style='width:50px'>Jan</td>
+				<td align='center' style='width:50px'>Feb</td>
+				<td align='center' style='width:50px'>Mar</td>
+				<td align='center' style='width:50px'>Apr</td>
+				<td align='center' style='width:50px'>May</td>
+				<td align='center' style='width:50px'>Jun</td>
+				<td align='center' style='width:50px'>Jul</td>
+				<td align='center' style='width:50px'>Aug</td>
+				<td align='center' style='width:50px'>Sep</td>
+				<td align='center' style='width:50px'>Okt</td>
+				<td align='center' style='width:50px'>Nov</td>
+				<td align='center' style='width:50px'>Des</td>
+			</tr>
+			<tr>
+				<td>".$_SESSION['lang']['totJamThn']."</td><td>:</td>
+				<td><input type=text class=myinputtextnumber id=jamo name=jmo disabled onkeypress=\"return angka_doang(event);\" style=\"width:100px;\"  /></td>
+				<td><input type=text class=myinputtextnumber id=jamo01 name=jamo01 onchange=calcJam(1) onkeypress=\"return angka_doang(event);\" style=\"width:50px;\"  /></td>
+				<td><input type=text class=myinputtextnumber id=jamo02 name=jamo02 onchange=calcJam(1) onkeypress=\"return angka_doang(event);\" style=\"width:50px;\"  /></td>
+				<td><input type=text class=myinputtextnumber id=jamo03 name=jamo03 onchange=calcJam(1) onkeypress=\"return angka_doang(event);\" style=\"width:50px;\"  /></td>
+				<td><input type=text class=myinputtextnumber id=jamo04 name=jamo04 onchange=calcJam(1) onkeypress=\"return angka_doang(event);\" style=\"width:50px;\"  /></td>
+				<td><input type=text class=myinputtextnumber id=jamo05 name=jamo05 onchange=calcJam(1) onkeypress=\"return angka_doang(event);\" style=\"width:50px;\"  /></td>
+				<td><input type=text class=myinputtextnumber id=jamo06 name=jamo06 onchange=calcJam(1) onkeypress=\"return angka_doang(event);\" style=\"width:50px;\"  /></td>
+				<td><input type=text class=myinputtextnumber id=jamo07 name=jamo07 onchange=calcJam(1) onkeypress=\"return angka_doang(event);\" style=\"width:50px;\"  /></td>
+				<td><input type=text class=myinputtextnumber id=jamo08 name=jamo08 onchange=calcJam(1) onkeypress=\"return angka_doang(event);\" style=\"width:50px;\"  /></td>
+				<td><input type=text class=myinputtextnumber id=jamo09 name=jamo09 onchange=calcJam(1) onkeypress=\"return angka_doang(event);\" style=\"width:50px;\"  /></td>
+				<td><input type=text class=myinputtextnumber id=jamo10 name=jamo10 onchange=calcJam(1) onkeypress=\"return angka_doang(event);\" style=\"width:50px;\"  /></td>
+				<td><input type=text class=myinputtextnumber id=jamo11 name=jamo11 onchange=calcJam(1) onkeypress=\"return angka_doang(event);\" style=\"width:50px;\"  /></td>
+				<td><input type=text class=myinputtextnumber id=jamo12 name=jamo12 onchange=calcJam(1) onkeypress=\"return angka_doang(event);\" style=\"width:50px;\"  /></td>
+			</tr>
+			<tr>
+				<td>".$_SESSION['lang']['totbreak']."</td><td>:</td>
+				<td><input type=text class=myinputtextnumber id=jamb name=jamb disabled onkeypress=\"return angka_doang(event);\" style=\"width:100px;\"  /></td>
+				<td><input type=text class=myinputtextnumber id=jamb01 name=jamb01 onchange=calcJam(0) onkeypress=\"return angka_doang(event);\" style=\"width:50px;\"  /></td>
+				<td><input type=text class=myinputtextnumber id=jamb02 name=jamb02 onchange=calcJam(0) onkeypress=\"return angka_doang(event);\" style=\"width:50px;\"  /></td>
+				<td><input type=text class=myinputtextnumber id=jamb03 name=jamb03 onchange=calcJam(0) onkeypress=\"return angka_doang(event);\" style=\"width:50px;\"  /></td>
+				<td><input type=text class=myinputtextnumber id=jamb04 name=jamb04 onchange=calcJam(0) onkeypress=\"return angka_doang(event);\" style=\"width:50px;\"  /></td>
+				<td><input type=text class=myinputtextnumber id=jamb05 name=jamb05 onchange=calcJam(0) onkeypress=\"return angka_doang(event);\" style=\"width:50px;\"  /></td>
+				<td><input type=text class=myinputtextnumber id=jamb06 name=jamb06 onchange=calcJam(0) onkeypress=\"return angka_doang(event);\" style=\"width:50px;\"  /></td>
+				<td><input type=text class=myinputtextnumber id=jamb07 name=jamb07 onchange=calcJam(0) onkeypress=\"return angka_doang(event);\" style=\"width:50px;\"  /></td>
+				<td><input type=text class=myinputtextnumber id=jamb08 name=jamb08 onchange=calcJam(0) onkeypress=\"return angka_doang(event);\" style=\"width:50px;\"  /></td>
+				<td><input type=text class=myinputtextnumber id=jamb09 name=jamb09 onchange=calcJam(0) onkeypress=\"return angka_doang(event);\" style=\"width:50px;\"  /></td>
+				<td><input type=text class=myinputtextnumber id=jamb10 name=jamb10 onchange=calcJam(0) onkeypress=\"return angka_doang(event);\" style=\"width:50px;\"  /></td>
+				<td><input type=text class=myinputtextnumber id=jamb11 name=jamb11 onchange=calcJam(0) onkeypress=\"return angka_doang(event);\" style=\"width:50px;\"  /></td>
+				<td><input type=text class=myinputtextnumber id=jamb12 name=jamb12 onchange=calcJam(0) onkeypress=\"return angka_doang(event);\" style=\"width:50px;\"  /></td>
+			</tr>
+		</table> 
+		<table>
+			<tr>
+				<td style='width:50px;'>
+					<input type=hidden id=method value='insert'>
+					<input type=hidden id=oldtahunbudget value='insert'>
+					<input type=hidden id=oldkodeorg value='insert'>
+				</td>
+				<td>
+					<button class=mybutton onclick=simpanpks()>".$_SESSION['lang']['save']."</button>
+					<button class=mybutton onclick=batalpks()>".$_SESSION['lang']['cancel']."</button>
+				</td>
+			</tr>
+		</table>
+	</fieldset>";
 	 
 echo open_theme($_SESSION['lang']['datatersimpan']);
 
@@ -61,12 +106,41 @@ echo open_theme($_SESSION['lang']['datatersimpan']);
 	echo"<table class=sortable cellspacing=1 border=0>
 	     <thead>
 		 <tr class=rowheader>
-		     <td style='width:5px'>".substr($_SESSION['lang']['nomor'],0,2)."</td>
-			 <td style='width:100px;'>".$_SESSION['lang']['budgetyear']."</td>
-			 <td style='width:100px'>".$_SESSION['lang']['unit']."</td>
-			 <td style='width:100px'>".$_SESSION['lang']['totJamThn']."</td>
-			 <td style='width:125px'>".$_SESSION['lang']['totbreak']."</td>
-			 <td style='width:30px;'>".$_SESSION['lang']['edit']."</td>
+		     <td rowspan=2 style='width:5px'>".substr($_SESSION['lang']['nomor'],0,2)."</td>
+			 <td rowspan=2 style='width:85px;'>".$_SESSION['lang']['budgetyear']."</td>
+			 <td rowspan=2 style='width:50px'>".$_SESSION['lang']['unit']."</td>
+			 <td rowspan=2 style='width:105px'>".$_SESSION['lang']['totJamThn']."</td>
+			 <td rowspan=2 style='width:105px'>".$_SESSION['lang']['totbreak']."</td>
+			 <td colspan=12 style='width:105px'>".$_SESSION['lang']['totJamThn']."</td>
+			 <td colspan=12 style='width:105px'>".$_SESSION['lang']['totbreak']."</td>
+			 <td rowspan=2 style='width:50px;'>".$_SESSION['lang']['edit']."</td>
+		 </tr>
+		 <tr class=rowheader>
+				<td align='center' style='width:50px'>Jan</td>
+				<td align='center' style='width:50px'>Feb</td>
+				<td align='center' style='width:50px'>Mar</td>
+				<td align='center' style='width:50px'>Apr</td>
+				<td align='center' style='width:50px'>May</td>
+				<td align='center' style='width:50px'>Jun</td>
+				<td align='center' style='width:50px'>Jul</td>
+				<td align='center' style='width:50px'>Aug</td>
+				<td align='center' style='width:50px'>Sep</td>
+				<td align='center' style='width:50px'>Okt</td>
+				<td align='center' style='width:50px'>Nov</td>
+				<td align='center' style='width:50px'>Des</td>
+				<td align='center' style='width:50px'>Jan</td>
+				<td align='center' style='width:50px'>Feb</td>
+				<td align='center' style='width:50px'>Mar</td>
+				<td align='center' style='width:50px'>Apr</td>
+				<td align='center' style='width:50px'>May</td>
+				<td align='center' style='width:50px'>Jun</td>
+				<td align='center' style='width:50px'>Jul</td>
+				<td align='center' style='width:50px'>Aug</td>
+				<td align='center' style='width:50px'>Sep</td>
+				<td align='center' style='width:50px'>Okt</td>
+				<td align='center' style='width:50px'>Nov</td>
+				<td align='center' style='width:50px'>Des</td>
+		 </tr>
 		 </thead>
 		 <tbody id='containerData'><script>loadData()</script>";
         

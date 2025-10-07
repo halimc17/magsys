@@ -4,24 +4,15 @@ require_once('master_validation.php');
 include('lib/nangkoelib.php');
 include_once('lib/zLib.php');
 echo open_body();
-
-
-
 ?>
-
 <script language=javascript src=js/zTools.js></script>
 <script language=javascript src='js/zReport.js'></script>
 <script language=javascript src='js/pabrik_perbaikan.js'></script>
 <link rel=stylesheet type=text/css href=style/zTable.css>
 <script language="javascript" src="js/zMaster.js"></script>
-
-
 <?
-
-
 $frm[0]='';
 $frm[1]='';
-
 
 ##untuk pilihan pabrik 	
 $optPabrik="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
@@ -38,50 +29,78 @@ $optStation.="<option value=''>".$_SESSION['lang']['all']."</option>";
 //while($dStation=mysql_fetch_assoc($nStation))
 //{
 //    $optStation.="<option value=".$dStation['kodeorganisasi'].">".$dStation['namaorganisasi']."</option>";
-//}                       
-			
-?>
+//}
+$optMesin.="<option value=''>".$_SESSION['lang']['all']."</option>";
 
+#buat Status Ketuntasan
+$optTuntas="<option value=''>".$_SESSION['lang']['all']."</option>";
+$optTuntas.="<option value='Lanjut'>Lanjut</option>";
+$optTuntas.="<option value='Selesai'>Selesai</option>";
+$optTuntas.="<option value='Tunda'>Tunda</option>";
+
+#buat tipe perbaikan
+//8. Type Perbaikan ( default value = Prev. Maintenance, Kalibrasi, Project, Pabrikasi )
+$optPerbaikan="<option value=''>".$_SESSION['lang']['all']."</option>";
+$optPerbaikan.="<option value='prev'>Preventive Maintenance</option>";
+$optPerbaikan.="<option value='kalibrasi'>Kalibrasi</option>";
+$optPerbaikan.="<option value='project'>Project</option>";
+$optPerbaikan.="<option value='pabrikasi'>Pabrikasi</option>";
+$optPerbaikan.="<option value='corrective'>Corrective Maintenance</option>";
+$optPerbaikan.="<option value='service'>Service</option>";
+?>
 
 <?
 include('master_mainMenu.php');
 $frm[0]='';
 $frm[1]='';
 
-
 OPEN_BOX();
-$arr="##pabrik##station##tgl1##tgl2";	
-$arrv="##pabrikv##stationv##tgl1v##tgl2v";	
+$arr="##pabrik##station##mesin##tgl1##tgl2##tipeperbaikan##statusketuntasan";	
+$arrv="##pabrikv##stationv##mesinv##tgl1v##tgl2v##tipeperbaikanv##statusketuntasanv";	
 
 $frm[0].="<fieldset style='float:left;'><legend><b>Form I</b></legend>
 <table>
-        <tr>
-            <td>".$_SESSION['lang']['pabrik']."</td>
-            <td>:</td>
-            <td><select id=pabrik onchange=getStation() style=\"width:155px;\" >".$optPabrik."</select></td>
-        </tr>
 	<tr>
-            <td>".$_SESSION['lang']['station']."</td>
-            <td>:</td>
-            <td><select id=station style=\"width:155px;\">".$optStation."</select></td>
-        </tr>
+		<td>".$_SESSION['lang']['pabrik']."</td>
+		<td>:</td>
+		<td><select id=pabrik onchange=getStation() style=\"width:155px;\" >".$optPabrik."</select></td>
+	</tr>
 	<tr>
-            <td>".$_SESSION['lang']['tanggal']."</td>
-            <td>:</td>
-            <td><input type='text' class='myinputtext' id='tgl1' onmousemove='setCalendar(this.id)' onkeypress='return false;'  size='7' maxlength='10' >
-            s/d
-            <input type='text' class='myinputtext' id='tgl2' onmousemove='setCalendar(this.id)' onkeypress='return false;'  size='7' maxlength='10' ></td>
+		<td>".$_SESSION['lang']['station']."</td>
+		<td>:</td>
+		<td><select id=station onchange=getMachine() style=\"width:155px;\">".$optStation."</select></td>
+	</tr>
+	<tr>
+		<td>".$_SESSION['lang']['mesin']."</td>
+		<td>:</td>
+		<td><select id=mesin style=\"width:155px;\">".$optMesin."</select></td>
+	</tr>
+	<tr>
+		<td>".$_SESSION['lang']['tipeperbaikan']."</td>
+		<td>:</td>
+		<td><select id=tipeperbaikan style=\"width:155px;\">".$optPerbaikan."</select></td>
+	</tr>
+	<tr>
+		<td>".$_SESSION['lang']['statusketuntasan']."</td>
+		<td>:</td>
+		<td><select id=statusketuntasan style=\"width:155px;\">".$optTuntas."</select></td>
+	</tr>
+	<tr>
+		<td>".$_SESSION['lang']['tanggal']."</td>
+		<td>:</td>
+		<td><input type='text' class='myinputtext' id='tgl1' onmousemove='setCalendar(this.id)' onkeypress='return false;'  size='7' maxlength='10' >
+			s/d
+            <input type='text' class='myinputtext' id='tgl2' onmousemove='setCalendar(this.id)' onkeypress='return false;'  size='7' maxlength='10' >
+		</td>
 	</tr>	
-
 	<tr>
 		<td colspan=100>&nbsp;</td>
 	</tr>
 	<tr>
 		<td colspan=100>
-		<button onclick=zPreview('pabrik_slave_2perbaikan','".$arr."','printContainer') class=mybutton name=preview id=preview>".$_SESSION['lang']['preview']."</button>
-		<button onclick=zExcel(event,'pabrik_slave_2perbaikan.php','".$arr."') class=mybutton name=preview id=preview>".$_SESSION['lang']['excel']."</button>
-
-		<button onclick=batalLaporan() class=mybutton name=btnBatal id=btnBatal>".$_SESSION['lang']['cancel']."</button>
+			<button onclick=zPreview('pabrik_slave_2perbaikan','".$arr."','printContainer') class=mybutton name=preview id=preview>".$_SESSION['lang']['preview']."</button>
+			<button onclick=zExcel(event,'pabrik_slave_2perbaikan.php','".$arr."') class=mybutton name=preview id=preview>".$_SESSION['lang']['excel']."</button>
+			<button onclick=batalLaporan() class=mybutton name=btnBatal id=btnBatal>".$_SESSION['lang']['cancel']."</button>
 		</td>
 	</tr>
 </table>
@@ -93,41 +112,52 @@ $frm[0].="
 </div></fieldset>";
 
 
-
-
 ###form input II
 ################
 
-
 $frm[1].="<fieldset style='float:left;'><legend><b>Form II</b></legend>
 <table>
-        <tr>
-            <td>".$_SESSION['lang']['pabrik']."</td>
-            <td>:</td>
-            <td><select id=pabrikv onchange=getStationv() style=\"width:155px;\" >".$optPabrik."</select></td>
-        </tr>
 	<tr>
-            <td>".$_SESSION['lang']['station']."</td>
-            <td>:</td>
-            <td><select id=stationv style=\"width:155px;\">".$optStation."</select></td>
-        </tr>
+		<td>".$_SESSION['lang']['pabrik']."</td>
+		<td>:</td>
+		<td><select id=pabrikv onchange=getStationv() style=\"width:155px;\" >".$optPabrik."</select></td>
+	</tr>
 	<tr>
-            <td>".$_SESSION['lang']['tanggal']."</td>
-            <td>:</td>
-            <td><input type='text' class='myinputtext' id='tgl1v' onmousemove='setCalendar(this.id)' onkeypress='return false;'  size='7' maxlength='10' >
-            s/d
-            <input type='text' class='myinputtext' id='tgl2v' onmousemove='setCalendar(this.id)' onkeypress='return false;'  size='7' maxlength='10' ></td>
+		<td>".$_SESSION['lang']['station']."</td>
+		<td>:</td>
+		<td><select id=stationv onchange=getMachinev() style=\"width:155px;\">".$optStation."</select></td>
+	</tr>
+	<tr>
+		<td>".$_SESSION['lang']['mesin']."</td>
+		<td>:</td>
+		<td><select id=mesinv style=\"width:155px;\">".$optMesin."</select></td>
+	</tr>
+	<tr>
+		<td>".$_SESSION['lang']['tipeperbaikan']."</td>
+		<td>:</td>
+		<td><select id=tipeperbaikanv style=\"width:155px;\">".$optPerbaikan."</select></td>
+	</tr>
+	<tr>
+		<td>".$_SESSION['lang']['statusketuntasan']."</td>
+		<td>:</td>
+		<td><select id=statusketuntasanv style=\"width:155px;\">".$optTuntas."</select></td>
+	</tr>
+	<tr>
+		<td>".$_SESSION['lang']['tanggal']."</td>
+		<td>:</td>
+		<td><input type='text' class='myinputtext' id='tgl1v' onmousemove='setCalendar(this.id)' onkeypress='return false;'  size='7' maxlength='10' >
+			s/d
+            <input type='text' class='myinputtext' id='tgl2v' onmousemove='setCalendar(this.id)' onkeypress='return false;'  size='7' maxlength='10' >
+		</td>
 	</tr>	
-
 	<tr>
 		<td colspan=100>&nbsp;</td>
 	</tr>
 	<tr>
 		<td colspan=100>
-		<button onclick=zPreview('pabrik_slave_2perbaikan_v2','".$arrv."','printContainerv') class=mybutton name=preview id=preview>".$_SESSION['lang']['preview']."</button>
-		<button onclick=zExcel(event,'pabrik_slave_2perbaikan_v2.php','".$arrv."') class=mybutton name=preview id=preview>".$_SESSION['lang']['excel']."</button>
-
-		<button onclick=batalLaporan() class=mybutton name=btnBatal id=btnBatal>".$_SESSION['lang']['cancel']."</button>
+			<button onclick=zPreview('pabrik_slave_2perbaikan_v2','".$arrv."','printContainerv') class=mybutton name=preview id=preview>".$_SESSION['lang']['preview']."</button>
+			<button onclick=zExcel(event,'pabrik_slave_2perbaikan_v2.php','".$arrv."') class=mybutton name=preview id=preview>".$_SESSION['lang']['excel']."</button>
+			<button onclick=batalLaporan() class=mybutton name=btnBatal id=btnBatal>".$_SESSION['lang']['cancel']."</button>
 		</td>
 	</tr>
 </table>
@@ -138,7 +168,6 @@ $frm[1].="
 <div id='printContainerv' style='overflow:auto;height:350px;max-width:1220px'; >
 </div></fieldset>";
 
-
 $hfrm[0]=$_SESSION['lang']['laporan'].' I';
 $hfrm[1]=$_SESSION['lang']['laporan'].' II';
 
@@ -148,6 +177,4 @@ drawTab('FRM',$hfrm,$frm,300,1150);
 
 CLOSE_BOX();
 echo close_body();
-
-
 ?>

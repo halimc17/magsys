@@ -101,35 +101,41 @@ switch($proses) {
         $pdf->Cell($width,$height,$_SESSION['lang']['notransaksi']." : ".$param['notransaksi'],0,1,'L',1);
         //'tanggal,kodekegiatan,a.kodeorg,hasilkerja,jumlahhk,upahkerja,upahpremi,umr';
        
-        $sPres="select distinct sum(a.insentif) as upahpremi, sum(a.umr) as umr,sum(a.jhk) as jumlahhk,kodekegiatan,
-                tanggal,b.kodeorg,b.hasilkerja from ".$dbname.".kebun_kehadiran a left join ".$dbname.".kebun_prestasi b on a.notransaksi=b.notransaksi
-                left join ".$dbname.".kebun_aktifitas c on a.notransaksi=c.notransaksi where a.notransaksi='".$param['notransaksi']."' group by a.notransaksi";
+        $sPres="select a.*,d.namaorganisasi from (select distinct sum(a.insentif) as upahpremi,sum(a.umr) as umr,sum(a.denda) as denda,sum(a.jhk) as jumlahhk
+				,kodekegiatan,tanggal,b.kodeorg,b.hasilkerja 
+				from ".$dbname.".kebun_kehadiran a left join ".$dbname.".kebun_prestasi b on a.notransaksi=b.notransaksi
+                left join ".$dbname.".kebun_aktifitas c on a.notransaksi=c.notransaksi where a.notransaksi='".$param['notransaksi']."' group by a.notransaksi) a
+				left join ".$dbname.".organisasi d on a.kodeorg=d.kodeorganisasi";
        
         $pdf->Ln();
         $pdf->SetFont('Arial','B',8);
         $pdf->Cell($width,$height,$titleDetail[0],0,1,'L',1);
         $pdf->SetFillColor(220,220,220);
         $pdf->SetFont('Arial','B',8);
-        $pdf->Cell(10/100*$width,$height,$_SESSION['lang']['tanggal'],1,0,'C',1);
+        $pdf->Cell(8/100*$width,$height,$_SESSION['lang']['tanggal'],1,0,'C',1);
         $pdf->Cell(25/100*$width,$height,$_SESSION['lang']['kodekegiatan'],1,0,'C',1);
-        $pdf->Cell(13/100*$width,$height,$_SESSION['lang']['kodeorg'],1,0,'C',1);
-        $pdf->Cell(10/100*$width,$height,$_SESSION['lang']['hasilkerjad'],1,0,'C',1);
+        $pdf->Cell(12/100*$width,$height,$_SESSION['lang']['blok'],1,0,'C',1);
+        $pdf->Cell(9/100*$width,$height,$_SESSION['lang']['hasilkerjad'],1,0,'C',1);
         $pdf->Cell(6/100*$width,$height,$_SESSION['lang']['satuan'],1,0,'C',1);
-        $pdf->Cell(15/100*$width,$height,$_SESSION['lang']['upahpremi'],1,0,'C',1);
-        $pdf->Cell(15/100*$width,$height,$_SESSION['lang']['umr'],1,1,'C',1);
+        $pdf->Cell(10/100*$width,$height,$_SESSION['lang']['umr'],1,0,'C',1);
+        $pdf->Cell(10/100*$width,$height,$_SESSION['lang']['upahpremi'],1,0,'C',1);
+        $pdf->Cell(10/100*$width,$height,$_SESSION['lang']['denda'],1,0,'C',1);
+        $pdf->Cell(10/100*$width,$height,$_SESSION['lang']['jumlah'],1,1,'C',1);
         $qPres=mysql_query($sPres) or die(mysql_error($conn));
         $rPres=mysql_fetch_assoc($qPres);
 		setIt($optKegiatan[$rPres['kodekegiatan']],'');
 		setIt($optSatKegiatan[$rPres['kodekegiatan']],'');
         $pdf->SetFont('Arial','',7);
         $pdf->SetFillColor(255,255,255);
-        $pdf->Cell(10/100*$width,$height,tanggalnormal($rPres['tanggal']),1,0,'C',1);
+        $pdf->Cell(8/100*$width,$height,tanggalnormal($rPres['tanggal']),1,0,'C',1);
         $pdf->Cell(25/100*$width,$height,$optKegiatan[$rPres['kodekegiatan']],1,0,'L',1);
-        $pdf->Cell(13/100*$width,$height,$rPres['kodeorg'],1,0,'L',1);
-        $pdf->Cell(10/100*$width,$height,$rPres['hasilkerja'],1,0,'R',1);
+        $pdf->Cell(12/100*$width,$height,$rPres['namaorganisasi'],1,0,'C',1);
+        $pdf->Cell(9/100*$width,$height,$rPres['hasilkerja'],1,0,'R',1);
         $pdf->Cell(6/100*$width,$height,$optSatKegiatan[$rPres['kodekegiatan']],1,0,'C',1);
-        $pdf->Cell(15/100*$width,$height,number_format($rPres['upahpremi'],0),1,0,'R',1);
-        $pdf->Cell(15/100*$width,$height,number_format($rPres['umr'],0),1,1,'R',1);
+        $pdf->Cell(10/100*$width,$height,number_format($rPres['umr'],0),1,0,'R',1);
+        $pdf->Cell(10/100*$width,$height,number_format($rPres['upahpremi'],0),1,0,'R',1);
+        $pdf->Cell(10/100*$width,$height,number_format($rPres['denda'],0),1,0,'R',1);
+        $pdf->Cell(10/100*$width,$height,number_format($rPres['umr']+$rPres['upahpremi']-$rPres['denda'],0),1,1,'R',1);
         
         //$col2 = 'nik,absensi,jhk,umr,insentif';
         
@@ -147,7 +153,9 @@ switch($proses) {
         $pdf->Cell(10/100*$width,$height,$_SESSION['lang']['absensi'],1,0,'C',1);
         $pdf->Cell(10/100*$width,$height,$_SESSION['lang']['jhk'],1,0,'C',1);
         $pdf->Cell(10/100*$width,$height,$_SESSION['lang']['umr'],1,0,'C',1);
-        $pdf->Cell(10/100*$width,$height,$_SESSION['lang']['insentif'],1,1,'C',1);
+        $pdf->Cell(10/100*$width,$height,$_SESSION['lang']['insentif'],1,0,'C',1);
+        $pdf->Cell(10/100*$width,$height,$_SESSION['lang']['denda'],1,0,'C',1);
+        $pdf->Cell(10/100*$width,$height,$_SESSION['lang']['jumlah'],1,1,'C',1);
         $pdf->SetFont('Arial','',7);
         $pdf->SetFillColor(255,255,255);
 		$totHk=$totUmr=$totIns=0;
@@ -160,28 +168,34 @@ switch($proses) {
             $pdf->Cell(10/100*$width,$height,$rKhdrn['absensi'],1,0,'C',1);
             $pdf->Cell(10/100*$width,$height,$rKhdrn['jhk'],1,0,'C',1);
             $pdf->Cell(10/100*$width,$height,number_format($rKhdrn['umr'],0),1,0,'R',1);
-            $pdf->Cell(10/100*$width,$height,number_format($rKhdrn['insentif'],0),1,1,'R',1);
+            $pdf->Cell(10/100*$width,$height,number_format($rKhdrn['insentif'],0),1,0,'R',1);
+            $pdf->Cell(10/100*$width,$height,number_format($rKhdrn['denda'],0),1,0,'R',1);
+            $pdf->Cell(10/100*$width,$height,number_format($rKhdrn['umr']+$rKhdrn['insentif']-$rKhdrn['denda'],0),1,1,'R',1);
             $totHk+=$rKhdrn['jhk'];
             $totUmr+=$rKhdrn['umr'];
             $totIns+=$rKhdrn['insentif'];
+            $totDnd+=$rKhdrn['denda'];
         }
         
 		$pdf->Cell(35/100*$width,$height,$_SESSION['lang']['total'],1,0,'C',1);
 		$pdf->Cell(10/100*$width,$height,$totHk,1,0,'C',1);
 		$pdf->Cell(10/100*$width,$height,number_format($totUmr,0),1,0,'R',1);
-		$pdf->Cell(10/100*$width,$height,number_format($totIns,0),1,1,'R',1);
+		$pdf->Cell(10/100*$width,$height,number_format($totIns,0),1,0,'R',1);
+		$pdf->Cell(10/100*$width,$height,number_format($totDnd,0),1,0,'R',1);
+		$pdf->Cell(10/100*$width,$height,number_format($totUmr+$totIns-$totDnd,0),1,1,'R',1);
         
         $pdf->Ln(30);
         $pdf->SetFont('Arial','B',9);
         $pdf->Cell($width,$height,$titleDetail[2],0,1,'L',1);
         $pdf->SetFillColor(220,220,220);
         $pdf->SetFont('Arial','B',8);
-        $sMat="select distinct * from ".$dbname.".kebun_pakaimaterial where notransaksi='".$param['notransaksi']."'";
+        $sMat="select a.*,d.namaorganisasi from (select distinct * from ".$dbname.".kebun_pakaimaterial where notransaksi='".$param['notransaksi']."') a
+			   left join ".$dbname.".organisasi d on a.kodeorg=d.kodeorganisasi";
         $qMat=mysql_query($sMat) or die(mysql_error($conn));
         
         $pdf->Cell(5/100*$width,$height,"No.",1,0,'C',1);
-        $pdf->Cell(13/100*$width,$height,$_SESSION['lang']['kodeorg'],1,0,'C',1);
-        $pdf->Cell(10/100*$width,$height,$_SESSION['lang']['namabarang'],1,0,'C',1);
+        $pdf->Cell(13/100*$width,$height,$_SESSION['lang']['blok'],1,0,'C',1);
+        $pdf->Cell(15/100*$width,$height,$_SESSION['lang']['namabarang'],1,0,'C',1);
         $pdf->Cell(10/100*$width,$height,$_SESSION['lang']['kwantitas'],1,0,'C',1);
         $pdf->Cell(15/100*$width,$height,$_SESSION['lang']['kwantitasha'],1,0,'C',1);
         $pdf->Cell(10/100*$width,$height,$_SESSION['lang']['hargasatuan'],1,0,'C',1);
@@ -192,8 +206,8 @@ switch($proses) {
         {
             $no3++;
             $pdf->Cell(5/100*$width,$height,$no3,1,0,'C',1);
-            $pdf->Cell(13/100*$width,$height,$rMat['kodeorg'],1,0,'C',1);
-            $pdf->Cell(10/100*$width,$height,$optNamaBrg[$rMat['kodebarang']],1,0,'L',1);
+            $pdf->Cell(13/100*$width,$height,$rMat['namaorganisasi'],1,0,'C',1);
+            $pdf->Cell(15/100*$width,$height,$optNamaBrg[$rMat['kodebarang']],1,0,'L',1);
             $pdf->Cell(10/100*$width,$height,$rMat['kwantitas'],1,0,'C',1);
             $pdf->Cell(15/100*$width,$height,$rMat['kwantitasha'],1,0,'R',1);
             $pdf->Cell(10/100*$width,$height,$rMat['hargasatuan'],1,0,'R',1);
@@ -287,29 +301,35 @@ switch($proses) {
         $tab.="<table cellpadding=1 cellspacing=1 border=0 class=sortable><thead>";
         $tab.="<tr class=rowheader>";
         $tab.="<td>".$_SESSION['lang']['tanggal']."</td>";
-        $tab.="<td>".$_SESSION['lang']['kodeorg']."</td>";
+        $tab.="<td>".$_SESSION['lang']['blok']."</td>";
         $tab.="<td>".$_SESSION['lang']['namakegiatan']."</td>";
         $tab.="<td>".$_SESSION['lang']['hasilkerjad']."</td>";
         $tab.="<td>".$_SESSION['lang']['satuan']."</td>";
-        $tab.="<td>".$_SESSION['lang']['upahpremi']."</td>";
         $tab.="<td>".$_SESSION['lang']['umr']."</td>";
+        $tab.="<td>".$_SESSION['lang']['upahpremi']."</td>";
+        $tab.="<td>".$_SESSION['lang']['denda']."</td>";
+        $tab.="<td>".$_SESSION['lang']['jumlah']."</td>";
         $tab.="</tr></thead><tbody>";
-         $sPres="select distinct sum(a.insentif) as upahpremi, sum(a.umr) as umr,sum(a.jhk) as jumlahhk,kodekegiatan,
-                tanggal,b.kodeorg,b.hasilkerja from ".$dbname.".kebun_kehadiran a left join ".$dbname.".kebun_prestasi b on a.notransaksi=b.notransaksi
-                left join ".$dbname.".kebun_aktifitas c on a.notransaksi=c.notransaksi where a.notransaksi='".$param['notransaksi']."' group by a.notransaksi";
-         $qPres=mysql_query($sPres) or die(mysql_error($conn));
+		$sPres="select a.*,d.namaorganisasi from (select distinct sum(a.insentif) as upahpremi,sum(a.umr) as umr,sum(a.denda) as denda
+				,sum(a.jhk) as jumlahhk,kodekegiatan,tanggal,b.kodeorg,b.hasilkerja 
+				from ".$dbname.".kebun_kehadiran a left join ".$dbname.".kebun_prestasi b on a.notransaksi=b.notransaksi
+                left join ".$dbname.".kebun_aktifitas c on a.notransaksi=c.notransaksi where a.notransaksi='".$param['notransaksi']."' group by a.notransaksi) a
+				left join ".$dbname.".organisasi d on a.kodeorg=d.kodeorganisasi";
+		$qPres=mysql_query($sPres) or die(mysql_error($conn));
         $rPres=mysql_fetch_assoc($qPres);   
   
               //'tanggal,kodekegiatan,a.kodeorg,hasilkerja,jumlahhk,upahkerja,upahpremi,umr';
              $tab.="<tr class=rowcontent>";
              
              $tab.="<td>".tanggalnormal($rPres['tanggal'])."</td>";
-             $tab.="<td>".$rPres['kodeorg']."</td>";
+             $tab.="<td>".$rPres['namaorganisasi']."</td>";
              $tab.="<td>".$optKegiatan[$rPres['kodekegiatan']]."</td>";
              $tab.="<td>".$rPres['hasilkerja']."</td>";
              $tab.="<td>".$optSatKegiatan[$rPres['kodekegiatan']]."</td>";
-             $tab.="<td align=right>".number_format($rPres['upahpremi'],0)."</td>";
              $tab.="<td align=right>".number_format($rPres['umr'],0)."</td>";
+             $tab.="<td align=right>".number_format($rPres['upahpremi'],0)."</td>";
+             $tab.="<td align=right>".number_format($rPres['denda'],0)."</td>";
+             $tab.="<td align=right>".number_format($rPres['umr']+$rPres['upahpremi']-$rPres['denda'],0)."</td>";
              $tab.="</tr>";
          $tab.="</table>";
          $tab.="<br />".$titleDetail[1]."<br />";
@@ -323,6 +343,8 @@ switch($proses) {
             $tab.="<td>".$_SESSION['lang']['jhk']."</td>";
             $tab.="<td>".$_SESSION['lang']['umr']."</td>";
             $tab.="<td>".$_SESSION['lang']['insentif']."</td>";
+            $tab.="<td>".$_SESSION['lang']['denda']."</td>";
+            $tab.="<td>".$_SESSION['lang']['jumlah']."</td>";
             $tab.="</tr></thead><tbody>";
 			$totJhk=$totUmr=$totInsentif=0;
             while($rKhdrn=mysql_fetch_assoc($qKhdrn))
@@ -334,23 +356,29 @@ switch($proses) {
              $tab.="<td>".$rKhdrn['jhk']."</td>";
              $tab.="<td  align=right>".number_format($rKhdrn['umr'],0)."</td>";
              $tab.="<td  align=right>".number_format($rKhdrn['insentif'],0)."</td>";
+             $tab.="<td  align=right>".number_format($rKhdrn['denda'],0)."</td>";
+             $tab.="<td  align=right>".number_format($rKhdrn['umr']+$rKhdrn['insentif']-$rKhdrn['denda'],0)."</td>";
              $tab.="</tr>";
              $totJhk+=$rKhdrn['jhk'];
              $totUmr+=$rKhdrn['umr'];
              $totInsentif+=$rKhdrn['insentif'];
+             $totDenda+=$rKhdrn['denda'];
             }
              $tab.="<tr class=rowcontent>";
              $tab.="<td colspan=2>".$_SESSION['lang']['total']."</td>";
              $tab.="<td  align=right>".$totJhk."</td>";
              $tab.="<td  align=right>".number_format($totUmr,0)."</td>";
              $tab.="<td  align=right>".number_format($totInsentif,0)."</td>";
+             $tab.="<td  align=right>".number_format($totDenda,0)."</td>";
+             $tab.="<td  align=right>".number_format($totUmr+$totInsentif-$totDenda,0)."</td>";
              $tab.="</tr>";
          $tab.="</table><br />";
-        $sMat="select distinct * from ".$dbname.".kebun_pakaimaterial where notransaksi='".$param['notransaksi']."'";
+        $sMat="select a.*,d.namaorganisasi from (select distinct * from ".$dbname.".kebun_pakaimaterial where notransaksi='".$param['notransaksi']."') a
+			   left join ".$dbname.".organisasi d on a.kodeorg=d.kodeorganisasi";
         $qMat=mysql_query($sMat) or die(mysql_error($conn));
         $tab.="<table cellpadding=1 cellspacing=1 border=0 class=sortable><thead>";
         $tab.="<tr class=rowheader>";
-        $tab.="<td>".$_SESSION['lang']['kodeorg']."</td>";
+        $tab.="<td>".$_SESSION['lang']['blok']."</td>";
         $tab.="<td>".$_SESSION['lang']['kodebarang']."</td>";
         $tab.="<td>".$_SESSION['lang']['kwantitas']."</td>";
         $tab.="<td>".$_SESSION['lang']['kwantitasha']."</td>";
@@ -360,7 +388,7 @@ switch($proses) {
         $tab.="</tr></thead><tbody>";
         while($rMat=mysql_fetch_assoc($qMat)){
             $tab.="<tr class=rowcontent>";
-            $tab.="<td>".$rMat['kodeorg']."</td>";
+            $tab.="<td>".$rMat['namaorganisasi']."</td>";
             $tab.="<td>".$rMat['kodebarang']."-".$optNamaBrg[$rMat['kodebarang']]."</td>";
             $tab.="<td>".$rMat['kwantitas']."</td>";
             $tab.="<td>".$rMat['kwantitasha']."</td>";

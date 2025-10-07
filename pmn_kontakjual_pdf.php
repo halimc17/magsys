@@ -29,6 +29,7 @@ class PDF extends FPDF{
         global $nama;
 		global $bar;
 		global $arrStatPPn;
+		global $norekbayar;
 
                         $noKontrak=$_GET['column'];
                         //$nospb=substr($noSpb,0,4);
@@ -37,11 +38,13 @@ class PDF extends FPDF{
                         //echo $str;exit();
                         $res=mysql_query($str);
                         $bar=mysql_fetch_assoc($res);
+						
                         $kodePt=$bar['kodept'];
                         $kdBrg=$bar['kodebarang'];
                         $tlgKontrk=tanggalnormal($bar['tanggalkontrak']);
                         $kdCust=$bar['koderekanan'];
-
+						$norekbayar = $bar['rekening'];
+                        
                         //echo $posting; exit();	
                         //ambil nama pt
                            $str1="select * from ".$dbname.".organisasi where kodeorganisasi='".$kodePt."'"; 
@@ -90,7 +93,12 @@ class PDF extends FPDF{
         $pdf->AddPage();
 		$pdf->Ln(45);
                 $pdf->SetFont('Arial','BU','12');
-                $pdf->Cell(180,5,strtoupper($_SESSION['lang']['kontrakJual']),0,1,'C');
+		  $optKomo=makeOption($dbname,'log_5masterbarang','kodebarang,namabarang');
+		  if(strstr(strtoupper($optKomo[$kdBrg]),'SEWA')){
+		     $pdf->Cell(180,5,strtoupper($_SESSION['lang']['kontraksewa']),0,1,'C');
+		  }else{
+                   $pdf->Cell(180,5,strtoupper($_SESSION['lang']['kontrakJual']),0,1,'C');
+		  }
                 $pdf->SetFont('Arial','B','10');
                 $pdf->Cell(180,5,"No : ".$noKontrak,0,1,'C');
                 $pdf->Ln(10);				
@@ -162,12 +170,21 @@ class PDF extends FPDF{
 		$optMtSim=makeOption($dbname,'setup_matauang','kode,simbol',$whrmt);
 		$optMtuang=makeOption($dbname,'setup_matauang','kode,matauang',$whrmt);
 		
+		if($bar['tanggalkontrak']<='2022-03-31'){
+		    $angkaPpn=" ";
+		}else{
+			$angkaPpn=" 11%";
+		}
 		
 		$pdf->SetFont('Arial','B','10');
         $pdf->Cell(39,5,$_SESSION['lang']['hargasatuan'],'',0,'L');
         $pdf->Cell(5,5,':','',0,'L');
 		$pdf->SetFont('Arial','','10');
-		$pdf->Cell(100,5,$optMtSim[$bar['matauang']]." ".number_format($bar['hargasatuan'],2)." (".$arrStatPPn[$bar['ppn']]." PPn)",'',1,'L');
+		if(strlen($bar['hargasatuan'])-strpos($bar['hargasatuan'],'.')==4){
+			$pdf->Cell(100,5,$optMtSim[$bar['matauang']]." ".number_format($bar['hargasatuan'],3)." (".$arrStatPPn[$bar['ppn']]." PPn".$angkaPpn.")",'',1,'L');
+		}else{
+			$pdf->Cell(100,5,$optMtSim[$bar['matauang']]." ".number_format($bar['hargasatuan'],2)." (".$arrStatPPn[$bar['ppn']]." PPn".$angkaPpn.")",'',1,'L');
+		}
 		$pdf->Cell(39,5,"",'',0,'L');
         $pdf->Cell(5,5,'','',0,'L');
 		$pdf->SetFont('Arial','','10');
@@ -305,8 +322,9 @@ class PDF extends FPDF{
 		$rTrmn=mysql_fetch_assoc($qTrmn);
 		
 		//$sTrmn2="select distinct namabank,rekening from ".$dbname.".keu_5akunbank where pemilik='".$bar['kodept']."' and noakun='".$bar['rekening']."'";
-		$sTrmn2="select distinct namabank,rekening from ".$dbname.".keu_5akunbank where pemilik='".$bar['kodept']."'";
-                $qTrmn2=mysql_query($sTrmn2) or die(mysql_error($conn));
+		$sTrmn2="select distinct namabank,rekening from ".$dbname.".keu_5akunbank where pemilik='".$bar['kodept']."' and noakun = '".$norekbayar."' ";
+       
+		$qTrmn2=mysql_query($sTrmn2) or die(mysql_error($conn));
 		$rTrmn2=mysql_fetch_assoc($qTrmn2);
                 
                 
@@ -328,8 +346,11 @@ class PDF extends FPDF{
                 }
                 else
                 {
-                    $ktTermin="".$rTrmn['satu']."% Setelah kontrak ditandatangani selambatnya tanggal ".$listTgl." \n".$rTrmn['dua']."% Selambatnya 7 (tujuh) hari setelah BA ditandatangani \n \n";
-		
+					if($kdCust=='SMR' or $kdCust=='BAP'){
+                       $ktTermin="".$rTrmn['satu']."% Setelah kontrak ditandatangani selambatnya tanggal ".$listTgl." \n".$rTrmn['dua']."% Selambatnya 7 (tujuh) hari setelah BA ditandatangani dan \n        dokumen asli penagihan diterima \n \n";
+					}else{
+					   $ktTermin="".$rTrmn['satu']."% Setelah kontrak ditandatangani selambatnya tanggal ".$listTgl." \n".$rTrmn['dua']."% Selambatnya 7 (tujuh) hari setelah BA ditandatangani \n \n";
+                    }		
                 }
 		
                 
@@ -349,7 +370,7 @@ class PDF extends FPDF{
                 $pdf->Cell(39,5,$_SESSION['lang']['nilkontrak'],'',0,'L');
                 $pdf->Cell(5,5,':','',0,'L');
 		$pdf->SetFont('Arial','','10');
-		$pdf->Cell(100,5,$optMtSim[$bar['matauang']]." ".number_format($nilKontrak,0)." (".$arrStatPPn[$bar['ppn']]." PPn)",'',1,'L');
+		$pdf->Cell(100,5,$optMtSim[$bar['matauang']]." ".number_format($nilKontrak,0)." (".$arrStatPPn[$bar['ppn']]." PPn".$angkaPpn.")",'',1,'L');
 		$pdf->SetFont('Arial','B','10');
         $pdf->Cell(39,5,'','',0,'L');
         $pdf->Cell(5,5,'','',0,'L');
@@ -363,6 +384,8 @@ class PDF extends FPDF{
 		
 		$toleransi=$bar['toleransi']."\n";
 		$pdf->SetFont('Arial','B','10');
+		$pdf->Cell(39,5,'','',1,'');
+		$pdf->Cell(39,5,'','',1,'');
 		$pdf->Cell(39,5,'','',1,'');
         $pdf->Cell(39,5,'','',1,'');
         $pdf->Cell(39,5,'','',1,'');				
@@ -420,7 +443,8 @@ class PDF extends FPDF{
 		
                 
                 $pdf->Cell(20,5,'',0,'L');
-		$pdf->Cell(80,5,ucwords(strtolower($jabatanTtd[$bar['penandatangan']])),'',0,'C');
+		//$pdf->Cell(80,5,ucwords(strtolower($jabatanTtd[$bar['penandatangan']])),'',0,'C');
+		$pdf->Cell(80,5,$jabatanTtd[$bar['penandatangan']],'',0,'C');
 		
 		$pdf->Cell(80,5,ucwords(strtolower($jabTtdBeli[$bar['koderekanan']])),'',1,'C'); 
 

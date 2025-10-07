@@ -11,8 +11,8 @@ $frm[2]='';
 OPEN_BOX();
 ?>
 <?php
-$optOrg="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
-$sOrg="select namaorganisasi,kodeorganisasi from ".$dbname.".organisasi where tipe='KEBUN'";
+$optOrg="<option value=''>".$_SESSION['lang']['all']."</option>";
+$sOrg="select namaorganisasi,kodeorganisasi from ".$dbname.".organisasi where tipe='PABRIK' and detail='1' and length(kodeorganisasi)=4";
 $qOrg=mysql_query($sOrg) or die(mysql_error($conn));
 while($rOrg=mysql_fetch_assoc($qOrg))
 {
@@ -46,7 +46,7 @@ $intiplasma="<option value=''>".$_SESSION['lang']['all']."</option>";
 $intiplasma.="<option value='I'>Inti</option>";
 $intiplasma.="<option value='P'>Plasma</option>";
 
-$arr="##periode##tipeIntex##unit";
+$arr="##kodePabrik##periode##tipeIntex##unit";
 
 ?>
 <script language=javascript src=js/zTools.js></script>
@@ -150,6 +150,7 @@ function closeAfd(id)
 }
 function batal()
 {
+	document.getElementById('pabrik').value='';
 	document.getElementById('periode').value='';
 	document.getElementById('tipeIntex').value='';	
 	document.getElementById('unit').value='';
@@ -172,6 +173,7 @@ $frm[0].="<div>
 <fieldset style=\"float: left;\">
 <legend><b>".$_SESSION['lang']['rProdKebun']."</b></legend>
 <table cellspacing=\"1\" border=\"0\" >
+<tr><td><label>".$_SESSION['lang']['pabrik']."</label></td><td><select id=\"kodePabrik\" name=\"kodePabrik\" style=\"width:150px\">".$optOrg."</select></td></tr>
 <tr><td><label>".$_SESSION['lang']['periode']."</label></td><td><select id=\"periode\" name=\"periode\" style=\"width:150px\">".$optper."</select></td></tr>
 <tr><td><label>".$_SESSION['lang']['tbs']."</label></td><td><select id=\"tipeIntex\" name=\"tipeIntex\" onchange=\"getKode()\" style=\"width:150px\">".$optTbs."</select></td></tr>
 <tr><td>".$_SESSION['lang']['unit']."/".$_SESSION['lang']['supplier']."</td><td><select id=\"unit\" style=\"width:150px\"><option value=''>".$_SESSION['lang']['all']."</option></select></td></tr>
@@ -215,14 +217,16 @@ $frm[1].="<fieldset style='clear:both'><legend><b>Print Area</b></legend>
 </div></fieldset>";
 
 #==============tab 3
+$sThn="select DISTINCT(substr(periode,1,4)) as tahun from ".$dbname.".setup_periodeakuntansi order by periode desc";
+$qThn=mysql_query($sThn) or die(mysql_error());
+while($rThn=mysql_fetch_assoc($qThn))
+{
+   $optThn.="<option value='".$rThn['tahun']."'>".$rThn['tahun']."</option>";
+}
 $arr3="##periodetahun##unittahun##intiplasmatahun";
 $frm[2].="<fieldset><legend>Production Trend</legend>";
 $frm[2].="<table cellspacing=1 border=0>";
-$frm[2].="<tr><td><labe>".$_SESSION['lang']['periode']."</label></td><td><select id=periodetahun style=width:150px>
-                   <option value='".date('Y')."'>".date('Y')."</option>
-                   <option value='".(date('Y')-1)."'>".(date('Y')-1)."</option>
-                   <option value='".(date('Y')-2)."'>".(date('Y')-2)."</option>    
-                   </select></td></tr>";
+$frm[2].="<tr><td><labe>".$_SESSION['lang']['periode']."</label></td><td><select id=periodetahun style=width:150px>".$optThn."</select></td></tr>";
 $frm[2].="<tr><td><labe>".$_SESSION['lang']['unit']."</label></td><td><select id=unittahun style=width:150px>".$optUniDt."</select></td></tr>";
 $frm[2].="<tr><td>".$_SESSION['lang']['intiplasma']."</td><td><select id=intiplasmatahun style=width:150px>".$intiplasma."</select></td></tr>";
 

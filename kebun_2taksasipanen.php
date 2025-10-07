@@ -14,7 +14,7 @@ $optPer="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
 $optAfd="<option value=''>".$_SESSION['lang']['all']."</option>";
 $lksiTugas=substr($_SESSION['empl']['lokasitugas'],0,4);
 
-if($_SESSION['EMPL']['tipelokasitugas']=='HOLDING'){
+if($_SESSION['empl']['tipelokasitugas']=='HOLDING' or $_SESSION['empl']['tipelokasitugas']=='KANWIL'){
     $add="";
 }else
 {

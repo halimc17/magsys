@@ -151,7 +151,7 @@ if($param['tipe']=='BIBIT') {
 		if($param['statustanam'] == 'TM') {
 			$listAkun = "'621'";
 			$stsBlok = "'TM'";
-		} elseif($param['statustanam'] == 'TBM') {
+		} elseif(substr($param['statustanam'],0,3) == 'TBM') {
 			$listAkun = "'126'";
 			$stsBlok = "'TBM'";
 		} else {
@@ -199,6 +199,19 @@ if(is_array($param['kebun'])) {
 	$whereKodeorg4 = "LEFT(a.kodeorg,4) = '".$param['kebun']."'";
 	$whereKodeorg5 = "LEFT(a.kodeblok,4) = '".$param['kebun']."'";
 }
+// Get Data Jurnal kodeblok
+if(is_array($param['divisi'])) {
+	$whereKodeorg  .= " and LEFT(a.kodeblok,6) in ('".implode("','",$param['divisi'])."')";
+	$whereKodeorg4 .= " and LEFT(a.kodeorg,6)  in ('".implode("','",$param['divisi'])."')";
+	$whereKodeorg5 .= " and LEFT(a.kodeblok,6) in ('".implode("','",$param['divisi'])."')";
+} else {
+	if($param['divisi']!=''){
+		$whereKodeorg  .= " and LEFT(a.kodeblok,6)= '".$param['divisi']."'";
+		$whereKodeorg4 .= " and LEFT(a.kodeorg,6) = '".$param['divisi']."'";
+		$whereKodeorg5 .= " and LEFT(a.kodeblok,6)= '".$param['divisi']."'";
+	}
+}
+
 //$month3 = ($level<3) ? "": " AND MONTH(a.tanggal)='".$month."'";
 $month3 = "";
 $tt3 = (($level==3 || $level==4) and $param['statustanam']!='TM') ?" AND b.tahuntanam='".$param['tahuntanam']."'": "";
@@ -206,6 +219,7 @@ $akun3 = ($level<3) ? "LEFT(a.noakun,5)": "LEFT(a.noakun,7)";
 $akun4 = ($level==4) ? "LEFT(a.noakun,7) in (".$param['noakun'].")" : "LEFT(a.noakun,3) in (".$listAkun.")";
 $hgroupBy = ($level==4) ? "GROUP BY a.kodeblok, a.kodevhc, a.tanggal, a.nojurnal, c.kodejurnal, ".$akun3.", nik" : "GROUP BY a.tanggal,  c.kodejurnal, ".$akun3.", kodeblok, a.kodevhc, nik, kodebarang";
 // $sumJum = ($level<4) ? "sum(a.jumlah)" : "a.jumlah";
+/*
 $qData = "SELECT a.tanggal, a.noreferensi, f.kodebarang as kdbrg2, c.kodejurnal, ".$akun3." as noakun, kodeblok, a.kodevhc, nik, a.kodebarang, sum(a.jumlah) as jumlah, e.namajenisvhc, d.jenisvhc
 	FROM ".$dbname.".keu_jurnaldt_vw a
 	INNER JOIN ".$dbname.".setup_blok b ON a.kodeblok = b.kodeorg AND b.intiplasma like '%".$param['tipekebun']."%'
@@ -217,8 +231,20 @@ $qData = "SELECT a.tanggal, a.noreferensi, f.kodebarang as kdbrg2, c.kodejurnal,
 	AND ".$akun4." AND kodeblok != '' AND statusblok in (".$stsBlok.") ".$tt3."
 	".$hgroupBy."
 	ORDER BY kodeblok ASC, b.statusblok ASC,  b.tahuntanam DESC, a.noakun ASC";
+*/
+$qData = "SELECT a.tanggal, a.noreferensi, a.kodebarang as kdbrg2, c.kodejurnal, ".$akun3." as noakun, kodeblok, a.kodevhc, nik, a.kodebarang, sum(a.jumlah) as jumlah, e.namajenisvhc, d.jenisvhc
+	FROM ".$dbname.".keu_jurnaldt_vw a
+	INNER JOIN ".$dbname.".setup_blok b ON a.kodeblok = b.kodeorg AND b.intiplasma like '%".$param['tipekebun']."%'
+	LEFT JOIN ".$dbname.".keu_jurnalht c ON a.nojurnal = c.nojurnal
+	LEFT JOIN ".$dbname.".vhc_5master d ON a.kodevhc = d.kodevhc 
+	LEFT JOIN ".$dbname.".vhc_5jenisvhc e ON d.jenisvhc = e.jenisvhc 
+	WHERE YEAR(a.tanggal) = '".$year."'".$month3." AND a.tanggal <= '".$tgl."' AND ".$whereKodeorg."
+	AND ".$akun4." AND kodeblok != '' AND trim(left(statusblok,3)) in (".$stsBlok.") ".$tt3."
+	".$hgroupBy."
+	ORDER BY kodeblok ASC, b.statusblok ASC,  b.tahuntanam DESC, a.noakun ASC";
+
+//exit('Warning : '.$qData);
 $resData = fetchData($qData);
-// echo $qData;
 
 // Rearrange Data
 $data = $data2 = $data3 = $data4 = $dataPnn = $data2Pnn = $noPanen = array();
@@ -498,9 +524,10 @@ if($level==3) {
 		INNER JOIN ".$dbname.".setup_blok b ON a.kodeorg = b.kodeorg AND b.intiplasma like '%".$param['tipekebun']."%' 
 		LEFT JOIN ".$dbname.".kebun_aktifitas c ON a.notransaksi = c.notransaksi
 		WHERE YEAR(c.tanggal) = '".$year."'
-		AND c.tanggal <= '".$tgl."' AND ".$whereKodeorg2." AND b.statusblok in (".$stsBlok.") ".$tt3.
+		AND c.tanggal <= '".$tgl."' AND ".$whereKodeorg2." AND trim(left(b.statusblok,3)) in (".$stsBlok.") ".$tt3.
 		" AND a.kodekegiatan <> 0
 		GROUP BY c.tanggal,LEFT(a.kodekegiatan,7)";
+
 	$resPres = fetchData($qPres);
 	$dataPres = array();
 	foreach($resPres as $row) {
@@ -531,10 +558,11 @@ if($level==3) {
 		INNER JOIN ".$dbname.".setup_blok b ON a.kodeblok = b.kodeorg AND b.intiplasma like '%".$param['tipekebun']."%' 
 		LEFT JOIN ".$dbname.".log_5masterbarang e ON a.kodebarang = e.kodebarang
 		WHERE YEAR(x.tanggal) = '".$year."' 
-		AND x.tanggal <= '".$tgl."' AND x.nojurnal like '%INVK%' AND (x.kodebarang != '' OR x.kodebarang != null) AND ".$whereKodeorg5." AND b.statusblok in (".$stsBlok.") ".$tt3."";
+		AND x.tanggal <= '".$tgl."' AND x.nojurnal like '%INVK%' AND (x.kodebarang != '' OR x.kodebarang != null) AND ".$whereKodeorg5." AND trim(left(b.statusblok,3)) in (".$stsBlok.") ".$tt3."";
+	//exit('Warning: '.$qMat2);
+
 	$resMat2 = fetchData($qMat2);
-	// echo $qMat2."<p><p>";
-	
+
 	$qMat = "SELECT x.tanggal,LEFT(x.kodekegiatan,7) as akun,y.kodebarang,
 		e.namabarang, e.satuan, (a.kwantitas) as vol, (kwantitas * hargasatuan) as rupiah
 		FROM ".$dbname.".keu_jurnaldt_vw x
@@ -543,7 +571,7 @@ if($level==3) {
 		INNER JOIN ".$dbname.".setup_blok b ON a.kodeorg = b.kodeorg AND b.intiplasma like '%".$param['tipekebun']."%' 
 		LEFT JOIN ".$dbname.".log_5masterbarang e ON a.kodebarang = e.kodebarang
 		WHERE YEAR(x.tanggal) = '".$year."'
-		AND x.tanggal <= '".$tgl."' AND x.nojurnal like '%INVK%' AND (x.kodebarang = '' OR x.kodebarang = null) AND ".$whereKodeorg4." AND b.statusblok in (".$stsBlok.") ".$tt3."";
+		AND x.tanggal <= '".$tgl."' AND x.nojurnal like '%INVK%' AND (x.kodebarang = '' OR x.kodebarang = null) AND ".$whereKodeorg4." AND trim(left(b.statusblok,3)) in (".$stsBlok.") ".$tt3."";
 	$resMat = fetchData($qMat);
 	// echo $qMat;
 	$dataMat = array();
@@ -593,7 +621,7 @@ if($level==3) {
 		INNER JOIN ".$dbname.".setup_blok b ON a.alokasibiaya = b.kodeorg AND b.intiplasma like '%".$param['tipekebun']."%' 
 		LEFT JOIN ".$dbname.".vhc_kegiatan c ON a.jenispekerjaan = c.kodekegiatan
 		WHERE YEAR(a.tanggal) = '".$year."' 
-		AND a.tanggal <= '".$tgl."' AND (".$whereKodeorg3.") AND b.statusblok in (".$stsBlok.") ".$tt3.
+		AND a.tanggal <= '".$tgl."' AND (".$whereKodeorg3.") AND trim(left(b.statusblok,3)) in (".$stsBlok.") ".$tt3.
 		" AND length(a.alokasibiaya) > 6
 		GROUP BY a.tanggal, LEFT(c.noakun,7), a.alokasibiaya"; 
 		// echo $qVhc;
@@ -627,7 +655,7 @@ if($level < 3) {
 		INNER JOIN ".$dbname.".setup_blok b ON a.kodeorg = b.kodeorg AND b.intiplasma like '%".$param['tipekebun']."%' 
 		LEFT JOIN ".$dbname.".bgt_distribusi c ON a.kunci = c.kunci
 		WHERE tahunbudget = '".$year."' and ".$whereBud." AND LEFT(noakun,3) in (".$listAkun.")
-		AND statusblok in (".$stsBlok.") and a.kodeorg != ''
+		AND trim(left(statusblok,3)) in (".$stsBlok.") and a.kodeorg != ''
 		GROUP BY a.kodebudget, a.kodeorg, LEFT(noakun,5)";
 	$resBud = fetchData($qBud);
 	
@@ -854,7 +882,7 @@ if($level < 3) {
 		LEFT JOIN ".$dbname.".kebun_aktifitas c ON a.notransaksi = c.notransaksi
 		LEFT JOIN ".$dbname.".setup_kegiatan d ON a.kodekegiatan = d.kodekegiatan 
 		WHERE YEAR(c.tanggal) = '".$year."'
-		AND c.tanggal <= '".$tgl."' AND ".$whereKodeorg2." AND b.statusblok in (".$stsBlok.") ".$tt3.
+		AND c.tanggal <= '".$tgl."' AND ".$whereKodeorg2." AND trim(left(b.statusblok,3)) in (".$stsBlok.") ".$tt3.
 		" AND a.kodekegiatan <> 0 
 		AND LEFT(a.kodekegiatan,7) in (".$param['noakun'].") 
 		GROUP BY c.tanggal,LEFT(a.kodekegiatan,7), a.kodeorg 
@@ -869,7 +897,7 @@ if($level < 3) {
 			// AND c.tanggal <= '".$tgl."' 
 			// AND ".$whereKodeorg2." 
 			// AND a.kodekegiatan like '%".$param['noakun']."%' 
-			// AND b.statusblok in (".$stsBlok.") ".$tt3." 
+			// AND trim(left(b.statusblok,3)) in (".$stsBlok.") ".$tt3." 
 			// GROUP BY b.kodeorg
 			// ORDER BY b.kodeorg ASC";
 		$resPres = fetchData($qPres);
@@ -901,7 +929,7 @@ if($level < 3) {
 			INNER JOIN ".$dbname.".setup_blok b ON a.kodeblok = b.kodeorg AND b.intiplasma like '%".$param['tipekebun']."%' 
 			LEFT JOIN ".$dbname.".log_5masterbarang e ON a.kodebarang = e.kodebarang
 			WHERE YEAR(x.tanggal) = '".$year."' 
-			AND x.tanggal <= '".$tgl."' AND x.nojurnal like '%INVK%' AND (x.kodebarang != '' OR x.kodebarang != null) AND ".$whereKodeorg5." AND b.statusblok in (".$stsBlok.") ".$tt3."";
+			AND x.tanggal <= '".$tgl."' AND x.nojurnal like '%INVK%' AND (x.kodebarang != '' OR x.kodebarang != null) AND ".$whereKodeorg5." AND trim(left(b.statusblok,3)) in (".$stsBlok.") ".$tt3."";
 		$resMat2 = fetchData($qMat2);
 		// echo $qMat2;
 		
@@ -913,7 +941,7 @@ if($level < 3) {
 			INNER JOIN ".$dbname.".setup_blok b ON a.kodeorg = b.kodeorg AND b.intiplasma like '%".$param['tipekebun']."%' 
 			LEFT JOIN ".$dbname.".log_5masterbarang e ON a.kodebarang = e.kodebarang
 			WHERE YEAR(a.tanggal) = '".$year."'
-			AND a.tanggal <= '".$tgl."' AND x.nojurnal like '%INVK%' AND (x.kodebarang = '' OR x.kodebarang = null) AND ".$whereKodeorg4." AND b.statusblok in (".$stsBlok.") ".$tt3."";
+			AND a.tanggal <= '".$tgl."' AND x.nojurnal like '%INVK%' AND (x.kodebarang = '' OR x.kodebarang = null) AND ".$whereKodeorg4." AND trim(left(b.statusblok,3)) in (".$stsBlok.") ".$tt3."";
 			// echo "<br>".$qMat;
 		$resMat = fetchData($qMat);
 		$dataMat = array();
@@ -966,7 +994,7 @@ if($level < 3) {
 		// INNER JOIN ".$dbname.".setup_blok b ON a.alokasibiaya = b.kodeorg
 		// LEFT JOIN ".$dbname.".vhc_kegiatan c ON a.jenispekerjaan = c.kodekegiatan
 		// WHERE YEAR(a.tanggal) = '".$year."' 
-		// AND a.tanggal <= '".$tgl."' AND (".$whereKodeorg3.") AND b.statusblok in (".$stsBlok.") ".$tt3.
+		// AND a.tanggal <= '".$tgl."' AND (".$whereKodeorg3.") AND trim(left(b.statusblok,3)) in (".$stsBlok.") ".$tt3.
 		// " AND length(a.alokasibiaya) > 6
 		// GROUP BY LEFT(c.noakun,7)"; 
 		$qVhc = "SELECT a.alokasibiaya,a.tanggal,LEFT(c.noakun,7) as akun, sum(a.kmkeluar - a.kmmasuk) as vol, a.kodevhc
@@ -974,7 +1002,7 @@ if($level < 3) {
 				INNER JOIN ".$dbname.".setup_blok b ON a.alokasibiaya = b.kodeorg AND b.intiplasma like '%".$param['tipekebun']."%' 
 				LEFT JOIN ".$dbname.".vhc_kegiatan c ON a.jenispekerjaan = c.kodekegiatan
 				WHERE YEAR(a.tanggal) = '".$year."' 
-				AND a.tanggal <= '".$tgl."' AND (".$whereKodeorg3.") AND b.statusblok in (".$stsBlok.") ".$tt3.
+				AND a.tanggal <= '".$tgl."' AND (".$whereKodeorg3.") AND trim(left(b.statusblok,3)) in (".$stsBlok.") ".$tt3.
 				" AND length(a.alokasibiaya) > 6 AND LEFT(c.noakun,7) = '".$param['noakun']."'
 				GROUP BY a.kodevhc, a.alokasibiaya, a.tanggal, LEFT(c.noakun,7) ";
 			// echo $qVhc;
@@ -1048,10 +1076,11 @@ switch($level) {
 					</table></div>";
 			$tab .= "<input id='ptRep' type=hidden value='".$_POST['pt']."'>";
 			$tab .= "<input id='kebunRep' type=hidden value='".$_POST['kebun']."'>";
+			$tab .= "<input id='divisiRep' type=hidden value='".$_POST['divisi']."'>";
 			$tab .= "<input id='tanggalRep' type=hidden value='".$_POST['tanggal']."'>";
 			$tab .= "<input id='tipeRep' type=hidden value='".$_POST['tipe']."'>";
 			$tab .= "<div id='report-level-1'>";
-			$tab .= "<button class=mybutton onclick=\"formPrint('excel',1,'##ptRep##kebunRep##tanggalRep##tipeRep','','kebun_slave_2accreport',event)\">";
+			$tab .= "<button class=mybutton onclick=\"formPrint('excel',1,'##ptRep##kebunRep##divisiRep##tanggalRep##tipeRep','','kebun_slave_2accreport',event)\">";
 			$tab .= "Excel</button>";
 			$tab .= "<table class=sortable cellpadding=3>";
 		}
@@ -1205,9 +1234,11 @@ switch($level) {
 					}
 					foreach($optAkun as $akun=>$namaakun) {
 						if(substr($akun,0,3) != '611') {
-							if($sts=='TM' and substr($akun,0,1)=='1') {
+							
+							//if($sts=='TM' and substr($akun,0,1)=='1') {
+							if(substr($akun,0,2)!='62' and substr($akun,0,3)!='126') {
 								continue;
-							} elseif($sts=='TBM' and substr($akun,0,3)!='126') {
+							} elseif(substr($sts,0,3)=='TBM' and substr($akun,0,3)!='126') {
 								continue;
 							}
 							
@@ -1311,7 +1342,7 @@ switch($level) {
 		if($mode=='excel') {
 			$tab .= "<table class=sortable cellpadding=3 border=1>";
 		} else {
-			$tab .= "<button class=mybutton onclick=\"formPrint('excel',2,'##ptRep##kebunRep##tanggalRep##tipeRep','','kebun_slave_2accreport',event)\">";
+			$tab .= "<button class=mybutton onclick=\"formPrint('excel',2,'##ptRep##kebunRep##divisiRep##tanggalRep##tipeRep','','kebun_slave_2accreport',event)\">";
 			$tab .= "Excel</button>";
 			$tab .= "<table class=sortable cellpadding=3>";
 		}
@@ -1478,7 +1509,7 @@ switch($level) {
 						if(substr($akun,0,3) != '611') {
 							if($sts=='TM' and substr($akun,0,1)=='1') {
 								continue;
-							} elseif($sts=='TBM' and substr($akun,0,3)!='126') {
+							} elseif(substr($sts,0,3)=='TBM' and substr($akun,0,3)!='126') {
 								continue;
 							}
 							
@@ -1614,7 +1645,7 @@ switch($level) {
 		if($mode=='excel') {
 			$tab .= "<table class=sortable cellpadding=3 border=1>";
 		} else {
-			$tab .= "<button class=mybutton onclick=\"formPrint('excel',3,'##ptRep##kebunRep##tanggalRep##tipeRep##statustanam##tahuntanam','','kebun_slave_2accreport',event)\">";
+			$tab .= "<button class=mybutton onclick=\"formPrint('excel',3,'##ptRep##kebunRep##divisiRep##tanggalRep##tipeRep##statustanam##tahuntanam','','kebun_slave_2accreport',event)\">";
 			$tab .= "Excel</button>";
 			$tab .= "<table class=sortable cellpadding=3>";
 		}
@@ -1673,7 +1704,6 @@ switch($level) {
 		
 		// Init Grand Total
 		$gTotal = array(0,0,0,0,0,0,0,0,0,0);
-		
 		// Content
 		$tab .= "<tbody>";
 		foreach($optAkun as $akun=>$namaakun) {
@@ -1876,7 +1906,7 @@ switch($level) {
 					$tab .= "<td colspan=10 style='text-align:left;font-weight:bold'>Account Report Deatails Upah</td>";
 					$tab .= "</tr>";
 				} else {
-					$tab .= "<button class=mybutton onclick=\"parent.formPrint('excel',4,'##ptRep##kebunRep##tipeRep##tanggalRep##statustanam##tahuntanam##noakun##namakegiatan##kodebarang##title','','kebun_slave_2accreport',event)\" >";
+					$tab .= "<button class=mybutton onclick=\"parent.formPrint('excel',4,'##ptRep##kebunRep##divisiRep##tipeRep##tanggalRep##statustanam##tahuntanam##noakun##namakegiatan##kodebarang##title','','kebun_slave_2accreport',event)\" >";
 					$tab .= "Excel</button>";
 					$tab .= "<table class=sortable cellpadding=3>";
 				}
@@ -1958,7 +1988,7 @@ switch($level) {
 					$tab .= "<td colspan=9 style='text-align:left;font-weight:bold'>Account Report Deatails Upah</td>";
 					$tab .= "</tr>";
 				} else {
-					$tab .= "<button class=mybutton onclick=\"parent.formPrint('excel',4,'##ptRep##kebunRep##tipeRep##tanggalRep##statustanam##tahuntanam##noakun##namakegiatan##kodebarang##title','','kebun_slave_2accreport',event)\" >";
+					$tab .= "<button class=mybutton onclick=\"parent.formPrint('excel',4,'##ptRep##kebunRep##divisiRep##tipeRep##tanggalRep##statustanam##tahuntanam##noakun##namakegiatan##kodebarang##title','','kebun_slave_2accreport',event)\" >";
 					$tab .= "Excel</button>";
 					$tab .= "<table class=sortable cellpadding=3>";
 				}
@@ -2043,7 +2073,7 @@ switch($level) {
 					$tab .= "<td colspan=9 style='text-align:left;font-weight:bold'>Account Report Deatails Upah</td>";
 					$tab .= "</tr>";
 				} else {
-					$tab .= "<button class=mybutton onclick=\"parent.formPrint('excel',4,'##ptRep##kebunRep##tipeRep##tanggalRep##statustanam##tahuntanam##noakun##namakegiatan##kodebarang##title','','kebun_slave_2accreport',event)\" >";
+					$tab .= "<button class=mybutton onclick=\"parent.formPrint('excel',4,'##ptRep##kebunRep##divisiRep##tipeRep##tanggalRep##statustanam##tahuntanam##noakun##namakegiatan##kodebarang##title','','kebun_slave_2accreport',event)\" >";
 					$tab .= "Excel</button>";
 					$tab .= "<table class=sortable cellpadding=3>";
 				}
@@ -2132,7 +2162,7 @@ switch($level) {
 					$tab .= "<td colspan=2 style='text-align:left;font-weight:bold'>Account Report Deatails Upah</td>";
 					$tab .= "</tr>";
 				} else {
-					$tab .= "<button class=mybutton onclick=\"parent.formPrint('excel',4,'##ptRep##kebunRep##tipeRep##tanggalRep##statustanam##tahuntanam##noakun##namakegiatan##kodebarang##title','','kebun_slave_2accreport',event)\" >";
+					$tab .= "<button class=mybutton onclick=\"parent.formPrint('excel',4,'##ptRep##kebunRep##divisiRep##tipeRep##tanggalRep##statustanam##tahuntanam##noakun##namakegiatan##kodebarang##title','','kebun_slave_2accreport',event)\" >";
 					$tab .= "Excel</button>";
 					$tab .= "<table class=sortable cellpadding=3>";
 				}
@@ -2200,7 +2230,7 @@ switch($level) {
 					$tab .= "<td colspan=2 style='text-align:left;font-weight:bold'>Account Report Deatails Upah</td>";
 					$tab .= "</tr>";
 				} else {
-					$tab .= "<button class=mybutton onclick=\"parent.formPrint('excel',4,'##ptRep##kebunRep##tipeRep##tanggalRep##statustanam##tahuntanam##noakun##namakegiatan##kodebarang##title','','kebun_slave_2accreport',event)\" >";
+					$tab .= "<button class=mybutton onclick=\"parent.formPrint('excel',4,'##ptRep##kebunRep##divisiRep##tipeRep##tanggalRep##statustanam##tahuntanam##noakun##namakegiatan##kodebarang##title','','kebun_slave_2accreport',event)\" >";
 					$tab .= "Excel</button>";
 					$tab .= "<table class=sortable cellpadding=3>";
 				}

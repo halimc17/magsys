@@ -7,26 +7,68 @@ require_once('lib/fpdf.php');
 require_once('lib/terbilang.php');
 
 
-$_POST['proses']==''?$proses=$_GET['proses']:$proses=$_POST['proses']; 
+$_POST['proses']==''?$proses=$_GET['proses']:$proses=$_POST['proses'];
 $_POST['periode0']==''?$periode=$_GET['periode0']:$periode=$_POST['periode0'];
+$_POST['periode2']==''?$periode2=$_GET['periode2']:$periode2=$_POST['periode2'];
+$_POST['unit0']==''?$unit=$_GET['unit0']:$unit=$_POST['unit0'];
+$_POST['divisi0']==''?$divisi=$_GET['divisi0']:$divisi=$_POST['divisi0'];
+
+if(isset($_GET['kdOrg'])){
+    $kdOrg=$_GET['kdOrg'];
+}else{
+    $kdOrg = '';
+}
 
 if($proses=='preview'||$proses=='excel'){
-    if($periode==''){
-        exit("Error: All field required");
+    if($periode=='' and $periode2==''){
+        exit("Error: All Date field required");
     }
-    
+	if($periode=='' and $periode2!=''){
+		$periode=$periode2;
+	}
+	if($periode!='' and $periode2==''){
+		$periode2=$periode;
+	}
+    $periode=$periode."-01";
+    $periode2=$periode2."-".date("t",strtotime($periode2."-01"));
+    if($periode>$periode2){
+        exit("Error: All Date Wrong...!");
+    }
     #ambil data jurnal
-    $sQuery="SELECT a.nojurnal, a.kodekegiatan, a.kodeblok, a.jumlah
+	/*
+    $sQuery="select a.*,d.namaorganisasi from (SELECT a.nojurnal, a.kodekegiatan, a.kodeblok, a.jumlah
         FROM ".$dbname.".`keu_jurnaldt_vw` a
         WHERE a.`tanggal` LIKE '".$periode."%'
         AND a.kodekegiatan != ''
         AND length( a.kodeblok ) =10
-        AND a.jumlah >0
-        ";  
+        AND a.jumlah >0) a
+		left join ".$dbname.".organisasi d on a.kodeblok=d.kodeorganisasi";  
+	*/
+	if($unit==''){
+		$sQuery="select a.*,d.namaorganisasi from (SELECT a.nojurnal, a.kodekegiatan, a.kodeblok, a.jumlah, a.noakun
+				FROM ".$dbname.".`keu_jurnaldt_vw` a
+				WHERE a.`tanggal` BETWEEN '".$periode."' and '".$periode2."'
+				AND length(a.kodeblok) = 10
+				AND (a.noakun like '126%' OR a.noakun like '128%' OR  a.noakun like '6%')) a
+				left join ".$dbname.".organisasi d on a.kodeblok=d.kodeorganisasi"; 
+	}else{
+		$sQuery="select a.*,d.namaorganisasi from (SELECT a.nojurnal, a.kodekegiatan, a.kodeblok, a.jumlah, a.noakun
+				FROM ".$dbname.".`keu_jurnaldt_vw` a
+				WHERE a.`tanggal` BETWEEN '".$periode."' and '".$periode2."'
+				AND a.`kodeorg` = '".$unit."'
+                AND a.`kodeblok` LIKE '".$divisi."%'
+				AND length(a.kodeblok) = 10
+				AND (a.noakun like '126%' OR a.noakun like '128%' OR  a.noakun like '6%')) a
+				left join ".$dbname.".organisasi d on a.kodeblok=d.kodeorganisasi
+				order by a.kodekegiatan,a.kodeblok,a.nojurnal"; 
+	}
+	//exit('Warning: '.$sQuery);
     $rQuery=mysql_query($sQuery);
     while($bQuery=mysql_fetch_object($rQuery)){
+		/*
         $listKegiatan[$bQuery->kodekegiatan]=$bQuery->kodekegiatan;
         $listBlok[$bQuery->kodeblok]=$bQuery->kodeblok;
+        $namaBlok[$bQuery->kodeblok]=$bQuery->namaorganisasi;
         $dzArr[$bQuery->kodekegiatan][$bQuery->kodeblok]['total']+=$bQuery->jumlah;
         if(substr($bQuery->nojurnal,13,4)=='/M0/'){ // HK Perawatan
             $dzArr[$bQuery->kodekegiatan][$bQuery->kodeblok]['/M0/']+=$bQuery->jumlah;
@@ -50,7 +92,36 @@ if($proses=='preview'||$proses=='excel'){
             $dzArr[$bQuery->kodekegiatan][$bQuery->kodeblok]['/IDC/']+=$bQuery->jumlah;
         }else{ // lainnya, harusnya nol
             $dzArr[$bQuery->kodekegiatan][$bQuery->kodeblok]['none']+=$bQuery->jumlah;
-        }        
+        } 
+		*/
+		$kodekegiatan=($bQuery->kodekegiatan=='' ? $bQuery->noakun.'01' : $bQuery->kodekegiatan);
+        $listKegiatan[$kodekegiatan]=$kodekegiatan;
+        $listBlok[$bQuery->kodeblok]=$bQuery->kodeblok;
+        $namaBlok[$bQuery->kodeblok]=$bQuery->namaorganisasi;
+        $dzArr[$kodekegiatan][$bQuery->kodeblok]['total']+=$bQuery->jumlah;
+        if(substr($bQuery->nojurnal,13,4)=='/M0/'){ // HK Perawatan
+            $dzArr[$kodekegiatan][$bQuery->kodeblok]['/M0/']+=$bQuery->jumlah;
+        }else if(substr($bQuery->nojurnal,13,7)=='/INVK1/'){ // Material
+            $dzArr[$kodekegiatan][$bQuery->kodeblok]['/INVK1/']+=$bQuery->jumlah;
+        }else if(substr($bQuery->nojurnal,13,4)=='/PNN'){ // Panen
+            $dzArr[$kodekegiatan][$bQuery->kodeblok]['/PNN']+=$bQuery->jumlah;
+        }else if(substr($bQuery->nojurnal,13,3)=='/KK'){ // Kas Keluar
+            $dzArr[$kodekegiatan][$bQuery->kodeblok]['/KK']+=$bQuery->jumlah;
+        }else if(substr($bQuery->nojurnal,13,3)=='/BK'){ // Bank Keluar, digabung ke Kas Keluar
+            $dzArr[$kodekegiatan][$bQuery->kodeblok]['/KK']+=$bQuery->jumlah;
+        }else if(substr($bQuery->nojurnal,13,4)=='/SPK'){ // SPK
+            $dzArr[$kodekegiatan][$bQuery->kodeblok]['/SPK']+=$bQuery->jumlah;
+        }else if(substr($bQuery->nojurnal,13,3)=='/CT'){ // Catu Beras
+            $dzArr[$kodekegiatan][$bQuery->kodeblok]['/CT']+=$bQuery->jumlah;
+        }else if(substr($bQuery->nojurnal,13,4)=='/VHC'){ // Transit Kendaraan
+            $dzArr[$kodekegiatan][$bQuery->kodeblok]['/VHC']+=$bQuery->jumlah;
+        }else if(substr($bQuery->nojurnal,13,3)=='/M/'){ // Memorial
+            $dzArr[$kodekegiatan][$bQuery->kodeblok]['/M/']+=$bQuery->jumlah;
+        }else if(substr($bQuery->nojurnal,13,5)=='/IDC/'){ // IDC
+            $dzArr[$kodekegiatan][$bQuery->kodeblok]['/IDC/']+=$bQuery->jumlah;
+        }else{ // lainnya, harusnya nol
+            $dzArr[$kodekegiatan][$bQuery->kodeblok]['none']+=$bQuery->jumlah;
+        } 
     }
     
     if(!empty($listKegiatan))sort($listKegiatan);
@@ -61,7 +132,9 @@ if($proses=='preview'||$proses=='excel'){
         FROM ".$dbname.".`kebun_kehadiran` a
         LEFT JOIN ".$dbname.".`kebun_prestasi` b on a.notransaksi=b.notransaksi
         LEFT JOIN ".$dbname.".`kebun_aktifitas` c on b.notransaksi=c.notransaksi
-        WHERE c.tanggal LIKE '".$periode."%'
+        WHERE c.tanggal BETWEEN '".$periode."' and '".$periode2."'
+        AND c.kodeorg = '".$unit."'
+        AND b.kodeorg LIKE '".$divisi."%'
         AND c.jurnal =1
         AND b.nik = '-'
         ";  
@@ -74,7 +147,9 @@ if($proses=='preview'||$proses=='excel'){
     $sQuery="SELECT b.kodekegiatan, b.kodeorg, b.hasilkerja
         FROM ".$dbname.".`kebun_prestasi` b
         LEFT JOIN ".$dbname.".`kebun_aktifitas` c on b.notransaksi=c.notransaksi
-        WHERE c.tanggal LIKE '".$periode."%'
+        WHERE c.tanggal BETWEEN '".$periode."' and '".$periode2."'
+        AND c.kodeorg = '".$unit."'
+        AND b.kodeorg LIKE '".$divisi."%'
         AND c.jurnal =1
         AND b.nik = '-'
         ";  
@@ -86,7 +161,9 @@ if($proses=='preview'||$proses=='excel'){
     #ambil hk dan prestasi panen    
     $sQuery="SELECT b.kodeorg, b.hasilkerja
         FROM ".$dbname.".`kebun_prestasi_vw` b
-        WHERE b.tanggal LIKE '".$periode."%'
+        WHERE b.tanggal BETWEEN '".$periode."' and '".$periode2."'
+        AND b.unit LIKE '".$unit."%'
+        AND b.kodeorg LIKE '".$divisi."%'
         AND b.jurnal =1
         ";  
     $rQuery=mysql_query($sQuery);
@@ -98,7 +175,9 @@ if($proses=='preview'||$proses=='excel'){
     #ambil prestasi spk    
     $sQuery="SELECT b.kodekegiatan, b.kodeblok, b.hasilkerjarealisasi
         FROM ".$dbname.".`log_baspk` b
-        WHERE b.tanggal LIKE '".$periode."%'
+        WHERE b.tanggal BETWEEN '".$periode."' and '".$periode2."'
+        AND b.kodeblok LIKE '".$unit."%'
+        AND b.kodeblok LIKE '".$divisi."%'
         AND b.statusjurnal =1
         ";  
     $rQuery=mysql_query($sQuery);
@@ -159,13 +238,13 @@ if($proses=='preview'||$proses=='excel'){
     
     if(!empty($listBlok))foreach($listBlok as $lBlok){
         if(!empty($listKegiatan))foreach($listKegiatan as $lKegiatan){
-            if($dzArr[$lKegiatan][$lBlok]['total']>0){
+            if($dzArr[$lKegiatan][$lBlok]['total']!=0){
                 $tab.="
                 <tr class=rowcontent>
                 <td align=center>".$lKegiatan."</td>
                 <td>".$dicKegiatan[$lKegiatan]."</td>
                 <td>".$dicSatuanKegiatan[$lKegiatan]."</td>
-                <td align=center>".$lBlok."</td>
+                <td align=center>".$namaBlok[$lBlok]."</td>
                 <td align=right>".number_format($dzArr[$lKegiatan][$lBlok]['hk/M0/'],2)."</td>
                 <td align=right>".number_format($dzArr[$lKegiatan][$lBlok]['prestasi/M0/'],2)."</td>
                 <td align=right>".number_format($dzArr[$lKegiatan][$lBlok]['/M0/'])."</td>
@@ -192,6 +271,18 @@ if($proses=='preview'||$proses=='excel'){
 }	
 switch($proses)
 {
+    case'getAfdAll':
+		$str = "select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi 
+				where kodeorganisasi like '".$kdOrg."%' and length(kodeorganisasi)=6 and tipe in ('AFDELING','BIBITAN','STATION') order by namaorganisasi" ;
+        $res=mysql_query($str);
+        $optDivisi="<option value=''>".$_SESSION['lang']['all']."</option>";
+        while($bar=mysql_fetch_object($res)) 
+        {
+           $optDivisi.="<option value='".$bar->kodeorganisasi."'>".$bar->namaorganisasi."</option>";
+        }
+        echo $optDivisi;
+    break;
+    
     case'preview':
         echo $tab;
     break;

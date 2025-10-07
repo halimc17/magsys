@@ -37,6 +37,8 @@ switch($proses)
             $where=" tipe='BLOK' and kodeorganisasi in (select distinct kodeorg from ".$dbname.".setup_blok where left(kodeorg,4)='".substr($kdOrg,0,4)."' and luasareaproduktif!=0)"; //echo"warning:".$where;exit();
         }
 	$optBlok=makeOption($dbname,'organisasi','kodeorganisasi,namaorganisasi',$where,'0',true);
+	$optketerangan="<option value='Panen'>Panen</option>";
+	$optketerangan.="<option value='Temuan'>Temuan</option>";
 	//$table .= "<table id='ppDetailTable'>";
 	//echo"warning:".$table;
     # Header
@@ -51,6 +53,7 @@ switch($proses)
         $table .= "<td>".$_SESSION['lang']['busuk']."</td>";
         $table .= "<td>".$_SESSION['lang']['matang']."</td>";
         $table .= "<td>".$_SESSION['lang']['lewatmatang']."</td>";
+        $table .= "<td>".$_SESSION['lang']['keterangan']."</td>";
         $table .= "<td colspan=3>Action</td>";
         $table .= "</tr>";
         $table .= "</thead>";
@@ -78,6 +81,7 @@ switch($proses)
 	array('style'=>'width:30px','onkeypress'=>'return angka_doang(event)','maxlength'=>'5','disabled'=>'true'))."</td>";
 	$table .= "<td>".makeElement("lwtmtng",'textnum','0',
 	array('style'=>'width:30px','onkeypress'=>'return angka_doang(event)','maxlength'=>'5','disabled'=>'true'))."</td>";
+	$table .= "<td><select id=keterangan name=keterangan style='width:65px'>".$optketerangan."</select><input type=hidden id=oldketerangan name=oldketerangan value='' /></td>";
 	
     # Add, Container Delete
     $table .= "<td><img id='detail_add' title=".$_SESSION['lang']['save']." class=zImgBtn onclick=\"addDetail()\" src='images/save.png'/>";
@@ -114,9 +118,9 @@ switch($proses)
 				if(mysql_query($sins))
 				{
 					$kgBjr=intval($_POST['jjng'])*intval($_POST['bjr']);
-					$dins="insert into ".$dbname.".kebun_spbdt (nospb, blok, jjg, bjr, brondolan,  mentah, busuk, matang, lewatmatang,kgbjr,kgwb) 
+					$dins="insert into ".$dbname.".kebun_spbdt (nospb, blok, jjg, bjr, brondolan,  mentah, busuk, matang, lewatmatang,kgbjr,kgwb,keterangan) 
 					values ('".$_POST['noSpb']."','".$_POST['blok']."','".$_POST['jjng']."','".$_POST['bjr']."',
-					'".$_POST['brondolan']."','".$_POST['mentah']."','".$_POST['busuk']."','".$_POST['matang']."','".$_POST['lwtmatang']."','".$kgBjr."','".$_POST['kgwb']."')";
+					'".$_POST['brondolan']."','".$_POST['mentah']."','".$_POST['busuk']."','".$_POST['matang']."','".$_POST['lwtmatang']."','".$kgBjr."','".$_POST['kgwb']."','".$_POST['keterangan']."')";
 					//echo "warning:test".$dins;
 					if(mysql_query($dins))
 					{
@@ -136,9 +140,9 @@ switch($proses)
 			else
 			{
 				$kgBjr=intval($_POST['jjng'])*intval($_POST['bjr']);
-				$dins="insert into ".$dbname.".kebun_spbdt (nospb, blok, jjg, bjr, brondolan, mentah, busuk, matang, lewatmatang,kgbjr,kgwb) 
+				$dins="insert into ".$dbname.".kebun_spbdt (nospb, blok, jjg, bjr, brondolan, mentah, busuk, matang, lewatmatang,kgbjr,kgwb,keterangan) 
 				values ('".$_POST['noSpb']."','".$_POST['blok']."','".$_POST['jjng']."','".$_POST['bjr']."',
-					'".$_POST['brondolan']."','".$_POST['mentah']."','".$_POST['busuk']."','".$_POST['matang']."','".$_POST['lwtmatang']."','".$kgBjr."','".$_POST['kgwb']."')";
+					'".$_POST['brondolan']."','".$_POST['mentah']."','".$_POST['busuk']."','".$_POST['matang']."','".$_POST['lwtmatang']."','".$kgBjr."','".$_POST['kgwb']."','".$_POST['keterangan']."')";
 				//echo "warning:test".$dins;
 				if(mysql_query($dins))
 				{
@@ -151,7 +155,7 @@ switch($proses)
 			}
             break;
 	case'loadDetail':
-	$sDet="select * from ".$dbname.".kebun_spbdt where nospb='".$noSpb."' order by blok desc";
+	$sDet="select a.*,b.namaorganisasi from ".$dbname.".kebun_spbdt a left join ".$dbname.".organisasi b on b.kodeorganisasi=a.blok where nospb='".$noSpb."' order by blok desc";
 	//echo $sDet;
 	$qDet=mysql_query($sDet) or die(mysql_error());
 	$no=0;
@@ -160,7 +164,7 @@ switch($proses)
 		$no+=1;
 		echo"<tr class=rowcontent>
 		<td>".$no."</td>
-		<td>".$rDet['blok']."</td>
+		<td>".$rDet['namaorganisasi']."</td>
 		<td>".$rDet['bjr']."</td>
 		<td>".$rDet['jjg']."</td>
 		<td>".$rDet['brondolan']."</td>
@@ -169,17 +173,21 @@ switch($proses)
 		<td>".$rDet['busuk']."</td>
 		<td>".$rDet['matang']."</td>
 		<td>".$rDet['lewatmatang']."</td>
-		<td><img src=images/application/application_edit.png class=resicon  title='Edit' onclick=\"editDetail('".$rDet['nospb']."','".$rDet['blok']."','".$rDet['jjg']."','".$rDet['bjr']."','".$rDet['brondolan']."','".$rDet['mentah']."','".$rDet['busuk']."','".$rDet['matang']."','".$rDet['lewatmatang']."','".$rDet['kgwb']."');\">
-			<img src=images/application/application_delete.png class=resicon  title='Delete' onclick=\"delDetail('".$rDet['nospb']."','".$rDet['blok']."');\" ></td>
+		<td>".$rDet['keterangan']."</td>
+		<td><img src=images/application/application_edit.png class=resicon  title='Edit' onclick=\"editDetail('".$rDet['nospb']."','".$rDet['blok']."','".$rDet['jjg']."','".$rDet['bjr']."','".$rDet['brondolan']."','".$rDet['mentah']."','".$rDet['busuk']."','".$rDet['matang']."','".$rDet['lewatmatang']."','".$rDet['kgwb']."','".$rDet['keterangan']."');\">
+			<img src=images/application/application_delete.png class=resicon  title='Delete' onclick=\"delDetail('".$rDet['nospb']."','".$rDet['blok']."','".$rDet['keterangan']."');\" ></td>
 		</tr>
 		";
 	}
 	break;
         case'getBlokSma':
-        $optKdBlok="<option value=''></option>";    
-        $sdt="select distinct kodeorganisasi,namaorganisasi from ".$dbname.".organisasi where
-              induk like '".substr($_POST['kdAfd'],0,4)."%'  and tipe='BLOK' order by namaorganisasi asc";
-        //exit("error:".$sdt);
+        $optKdBlok="<option value=''></option>";
+        //$sdt="select distinct kodeorganisasi,namaorganisasi from ".$dbname.".organisasi where
+        //      induk like '".substr($_POST['kdAfd'],0,4)."%'  and tipe='BLOK' order by namaorganisasi asc";
+        $sdt="select distinct kodeorganisasi,namaorganisasi from ".$dbname.".organisasi where tipe='BLOK' 
+			  and left(induk,4) in (select distinct kodeunit from ".$dbname.".bgt_regional_assignment where regional='".$_SESSION['empl']['regional']."')
+			  order by namaorganisasi asc";
+        //exit("Warning: ".$sdt);
         $qdt=mysql_query($sdt) or die(mysql_error($conn));
         while($rdt=  mysql_fetch_assoc($qdt)){
             $optKdBlok.="<option value='".$rdt['kodeorganisasi']."'>".$rdt['namaorganisasi']."</option>";

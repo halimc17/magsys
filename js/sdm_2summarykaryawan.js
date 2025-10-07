@@ -125,7 +125,7 @@ function getlevel2(tanggal,region){
 }
 function windAta(title,tujuan,param,ev){
   tujuan=tujuan+"?"+param;  
-   width='350';
+   width='750';
    height='400';
    content="<iframe frameborder=0 width=100% height=100% src='"+tujuan+"'>\n\
             <div id='detailData' style='overflow:auto;height:350px;max-width:350px'></div></iframe>"

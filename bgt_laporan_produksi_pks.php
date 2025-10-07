@@ -10,8 +10,7 @@ include('master_mainMenu.php');
 //OPEN_BOX('','<b>'.strtoupper($_SESSION['lang']['laporanbukubesar']).'</b>');
 OPEN_BOX();
 
-        $str="select distinct tahunbudget from ".$dbname.".bgt_budget
-                  order by tahunbudget desc";
+        $str="select distinct tahunbudget from ".$dbname.".bgt_produksi_pks order by tahunbudget desc";
         $res=mysql_query($str);
         $opttahun="";
         while($bar=mysql_fetch_object($res))

@@ -26,7 +26,8 @@ $tgl1=tanggalsystem(checkPostGet('tgl1',''));
 $tgl2=tanggalsystem(checkPostGet('tgl2',''));
 $kdCustomer=checkPostGet('kdCustomer','');
 $periode = checkPostGet('periode','-');
-$wr="kodekelompok='S003'";
+//$wr="kodekelompok='S003'";
+$wr="true";
 $optSupp=makeOption($dbname, 'log_5supplier', 'kodetimbangan,namasupplier',$wr);
 
 $subtota=$subjjg=0;
@@ -57,7 +58,7 @@ switch($proses)
 
         $sTimbangan="select kodebarang,notransaksi,kodeorg,jumlahtandan1 as jjg,beratbersih as netto,kodecustomer,jammasuk,jamkeluar,beratmasuk,
                      substr(tanggal,1,10) as tanggal,supir,nokendaraan,nodo,nokontrak,kgpembeli,beratbersih,beratkeluar,nosipb from ".$dbname.".pabrik_timbangan
-                     where  millcode='".$kdPabrik."' and kodebarang!='40000003' ".$whr." and  tanggal >= ".$tgl_1."000000 and tanggal<=".$tgl_2."235959"; 
+                     where  millcode='".$kdPabrik."' and kodebarang!='40000003' ".$whr." and intex=0 and tanggal >= ".$tgl_1."000000 and tanggal<=".$tgl_2."235959"; 
                      //echo $sTimbangan;
         echo"<table cellspacing=1 border=0 class=sortable>
         <thead class=rowheader>
@@ -276,7 +277,7 @@ switch($proses)
 
         $sTimbangan="select kodebarang,notransaksi,kodeorg,jumlahtandan1 as jjg,beratbersih as netto,kodecustomer,jammasuk,jamkeluar,beratmasuk,
                      substr(tanggal,1,10) as tanggal,supir,nokendaraan,nodo,nokontrak,kgpembeli,beratbersih,beratkeluar,nosipb from ".$dbname.".pabrik_timbangan
-                     where  millcode='".$kdPabrik."' and kodebarang!='40000003' ".$whr." and  tanggal >= ".$tgl_1."000000 and tanggal<=".$tgl_2."235959"; 
+                     where  millcode='".$kdPabrik."' and kodebarang!='40000003' ".$whr." and intex=0 and tanggal >= ".$tgl_1."000000 and tanggal<=".$tgl_2."235959"; 
                 //$sList="select notransaksi,kodeorg,jumlahtandan1 as jjg,beratbersih as netto,kodecustomer,substr(tanggal,1,10) as tanggal,supir,nokendaraan,nodo,nokontrak from ".$dbname.".pabrik_timbangan where nokontrak!='' ".$where;
 
                 $qList=mysql_query($sTimbangan) or die(mysql_error());
@@ -376,7 +377,7 @@ switch($proses)
 
         $sTimbangan="select kodebarang,notransaksi,kodeorg,jumlahtandan1 as jjg,beratbersih as netto,kodecustomer,jammasuk,jamkeluar,beratmasuk,
                      substr(tanggal,1,10) as tanggal,supir,nokendaraan,nodo,nokontrak,kgpembeli,beratbersih,beratkeluar,nosipb from ".$dbname.".pabrik_timbangan
-                     where  millcode='".$kdPabrik."' and kodebarang!='40000003' ".$whr." and  tanggal >= ".$tgl_1."000000 and tanggal<=".$tgl_2."235959"; 
+                     where  millcode='".$kdPabrik."' and kodebarang!='40000003' ".$whr." and intex=0 and tanggal >= ".$tgl_1."000000 and tanggal<=".$tgl_2."235959"; 
         $tab.="<table cellspacing=1 border=1 class=sortable>
         <thead class=rowheader>
         <tr>

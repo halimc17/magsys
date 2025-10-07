@@ -127,10 +127,15 @@ OPEN_BOX();
  <td>No</td>
     <td><?php echo $_SESSION['lang']['namakaryawan'] ?></td>
  	<td><?php echo $_SESSION['lang']['tipelembur'] ?></td>
-  	<td><?php echo $_SESSION['lang']['jamaktual'] ?></td>
-  	<td><?php echo $_SESSION['lang']['uangmakan'] ?></td>
+  	<td><?php echo $_SESSION['lang']['jam'].' 1' ?></td>
+	<td><?php echo $_SESSION['lang']['uangkelebihanjam'].' 1' ?></td>
+  	<td><?php echo $_SESSION['lang']['jam'].' 2' ?></td>
+	<td><?php echo $_SESSION['lang']['uangkelebihanjam'].' 2' ?></td>
+  	<td><?php echo $_SESSION['lang']['beban'].' '.$_SESSION['lang']['jam'].' 2' ?></td>
+	<td><?php echo $_SESSION['lang']['total'].' '.$_SESSION['lang']['uangkelebihanjam'] ?></td>
     <td><?php echo $_SESSION['lang']['penggantiantransport'] ?></td>
-	 <td><?php echo $_SESSION['lang']['uangkelebihanjam'] ?></td>
+  	<td><?php echo $_SESSION['lang']['uangmakan'] ?></td>
+	<td><?php echo 'No.BA' ?></td>
     <td>Action</td>
     </tr>
 </thead>
@@ -147,4 +152,3 @@ CLOSE_BOX();
 <?php 
 echo close_body();
 ?>
-

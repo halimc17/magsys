@@ -243,10 +243,13 @@ switch($proses) {
            $whereOrg = " tipe='BIBITAN' and length(kodeorganisasi)>6 and left(kodeorganisasi,4)='".$param['afdeling']."'";
 		   $whereDiv = " tipe='BIBITAN'";
 		}
-        else{    
-                $whereOrg = " kodeorganisasi in (select distinct kodeorg from ".$dbname.".setup_blok where left(kodeorg,4)='".$param['afdeling']."' and luasareaproduktif>0)
-                          and tipe='BLOK' and left(kodeorganisasi,4)='".$param['afdeling']."'";
-				$whereDiv = " tipe='AFDELING'";
+        else{
+			if($blokStatus=='lc'){
+                $whereOrg = " kodeorganisasi in (select distinct kodeorg from ".$dbname.".setup_blok where left(kodeorg,4)='".$param['afdeling']."' and luasareanonproduktif>0 and detail=1) and tipe='BLOK' and left(kodeorganisasi,4)='".$param['afdeling']."'";
+			}else{
+                $whereOrg = " kodeorganisasi in (select distinct kodeorg from ".$dbname.".setup_blok where left(kodeorg,4)='".$param['afdeling']."' and luasareaproduktif>0 and detail=1) and tipe='BLOK' and left(kodeorganisasi,4)='".$param['afdeling']."'";
+			}
+			$whereDiv = " tipe='AFDELING'";
             //$whereOrg = "(tipe='BLOK') and left(kodeorganisasi,4)='".$param['afdeling']."'";
             
         }
@@ -404,7 +407,7 @@ switch($proses) {
 		#================ Absensi Tab =============================
 		# Get Data
 		$where = "notransaksi='".$param['notransaksi']."'";
-		$cols = "nourut,nik,absensi,jhk,umr,insentif";
+		$cols = "nourut,nik,absensi,jhk,umr,insentif,denda";
 		$query = selectQuery($dbname,'kebun_kehadiran',$cols,$where);
 		$data = fetchData($query);
 		$dataShow = $data;
@@ -437,6 +440,9 @@ switch($proses) {
 		$theForm1->addEls('insentif',$_SESSION['lang']['insentif'],'0','textnum','R',10);
 		#$theForm1->_elements[5]->_attr['onkeyup'] = "totalVal();cekVal(this,'Abs','Ins')";
 		$theForm1->_elements[5]->_attr['onkeyup'] = "totalVal();";
+
+		$theForm1->addEls('denda',$_SESSION['lang']['denda'],'0','textnum','R',10);
+		$theForm1->_elements[6]->_attr['onkeyup'] = "totalVal();";
 		
 		# Table
 		$theTable1 = new uTable('absensiTable',$_SESSION['lang']['tabel'].' '.$_SESSION['lang']['absensi'],$cols,$data,$dataShow);
@@ -578,10 +584,14 @@ switch($proses) {
 		if($blokStatus=='bibit'){
            $whereOrg = " tipe='BIBITAN' and length(kodeorganisasi)>6 and left(kodeorganisasi,4)='".$param['chKdOrg']."'";
 		}
-        else{    
+        else{
+			if($blokStatus=='lc'){
+			$whereOrg = " kodeorganisasi in (select distinct kodeorg from ".$dbname.".setup_blok where left(kodeorg,4)='".$param['chKdOrg']."' and luasareanonproduktif>0)
+						and detail=1 and tipe='BLOK' and left(kodeorganisasi,4)='".$param['chKdOrg']."'";
+            }else{
 			$whereOrg = " kodeorganisasi in (select distinct kodeorg from ".$dbname.".setup_blok where left(kodeorg,4)='".$param['chKdOrg']."' and luasareaproduktif>0)
-					  and tipe='BLOK' and left(kodeorganisasi,4)='".$param['chKdOrg']."'";
-            
+						and detail=1 and tipe='BLOK' and left(kodeorganisasi,4)='".$param['chKdOrg']."'";
+			}
         }
         
 		$str="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi where ".$whereOrg." and induk like '".$param['divisi']."%' order by namaorganisasi";
@@ -597,16 +607,19 @@ switch($proses) {
 
 	case 'updateGudang':
 		$blokStatus = $_SESSION['tmp']['actStat'];
-		if($blokStatus=='bibit'){
-			$str="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi where kodeorganisasi like '".substr($param['material'],0,5)."%' AND tipe like '%GUDANG%'";
-			// $kdGudang = substr($param['material'],0,5);
+		if(substr($param['material'],4,1)=='8'){
+			$str="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi 
+			where kodeorganisasi like '".substr($param['material'],0,4)."9".substr($param['material'],5,1)."%' AND tipe like '%GUDANG%'";
+		}else{
+			if($blokStatus=='bibit'){
+				$str="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi 
+				where kodeorganisasi like '".substr($param['material'],0,5)."%' AND tipe like '%GUDANG%'";
+			}else{
+				$str="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi 
+				where kodeorganisasi like '".substr($param['material'],0,4)."2".substr($param['material'],5,1)."%' AND tipe like '%GUDANG%'";
+			}
 		}
-        else{
-			$str="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi where kodeorganisasi like '".substr($param['material'],0,4)."2".substr($param['material'],5,1)."%' AND tipe like '%GUDANG%'";
-			// $kdGudang = substr($param['material'],0,1);
-            
-        }
-		
+		//exit('Warning: '.$str.' - '.$param['material']);
 		// echo"<select id='kodegudang' onchange='changeGudang()'>";
         $res=mysql_query($str);
         $bar=mysql_fetch_assoc($res);

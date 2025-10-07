@@ -11,13 +11,23 @@ $method=checkPostGet('method','');
 
 switch($method){
 	case 'preview':
-		$str1="select a.*,b.namakaryawan,b.tanggalmasuk, b.nik
-	       from ".$dbname.".sdm_cutiht a
-		   left join ".$dbname.".datakaryawan b on a.karyawanid=b.karyawanid
-	       where a.kodeorg='".$kodeorg."' 
-		   and a.periodecuti='".$periode."' 
-		   and b.nik like '%".$karyawan."%'"; 
-		   
+		/*
+		$str1="select a.*,b.namakaryawan,b.tanggalmasuk,b.tanggalkeluar,b.nik
+				from ".$dbname.".sdm_cutiht a
+				left join ".$dbname.".datakaryawan b on a.karyawanid=b.karyawanid
+				where a.kodeorg='".$kodeorg."' 
+				and a.periodecuti='".$periode."' 
+				and (b.tanggalkeluar>'".date('Y-m-d',strtotime('+30 days',strtotime(date('Y-m-d'))))."' or b.tanggalkeluar='0000-00-00')
+				and b.nik like '%".$karyawan."%'"; 
+		*/
+		$str1="select a.*,b.namakaryawan,b.tanggalmasuk,b.tanggalkeluar,b.nik
+				from ".$dbname.".sdm_cutiht a
+				left join ".$dbname.".datakaryawan b on a.karyawanid=b.karyawanid
+				where a.kodeorg='".$kodeorg."' 
+				and a.periodecuti='".$periode."' 
+				and (b.tanggalkeluar>='".date('Y-m-d',strtotime($periode.'-01-01'))."' or b.tanggalkeluar='0000-00-00')
+				and b.nik like '%".$karyawan."%'"; 
+		//exit('Warning: '.$str1);
 		$res1=mysql_query($str1);
 		
 		if(mysql_num_rows($res1) <= 0){
@@ -71,7 +81,7 @@ switch($method){
 	case 'loadkaryawan':
 		$hariini = date("Y-m-d");
 		$optkaryawan="";
-		$str="select nik,namakaryawan from ".$dbname.".datakaryawan where tipekaryawan in(0,1,7,8) and lokasitugas='".$kodeorg."' and (tanggalkeluar='0000-00-00' or tanggalkeluar>'".$hariini."') order by namakaryawan";
+		$str="select nik,namakaryawan from ".$dbname.".datakaryawan where tipekaryawan in(0,1,2,3,6,7,8) and lokasitugas='".$kodeorg."' and (tanggalkeluar='0000-00-00' or tanggalkeluar>'".$hariini."') order by namakaryawan";
 		$res=mysql_query($str);
 		$optkaryawan.="<option value=''>".$_SESSION['lang']['all']."</option>";
 		while($bar=mysql_fetch_object($res))

@@ -39,7 +39,7 @@ if(tanggalsystem($periode1)>tanggalsystem($periode2)) {
 
 // Get Data
 $qData = "SELECT
-	a.updatetime,c.namakaryawan as updatedby,b.namakaryawan,a.data
+	a.updatetime,c.namakaryawan as updatedby,b.nik,b.namakaryawan,a.data
 	FROM ".$dbname.".hist_datakaryawan a LEFT JOIN
 	".$dbname.".datakaryawan b on a.karyawanid=b.karyawanid LEFT JOIN 
 	".$dbname.".datakaryawan c on a.updateby=c.karyawanid
@@ -62,16 +62,17 @@ $dataExcel = $data;
 $theCols = array(
 	$_SESSION['lang']['tanggalupdate'],
 	$_SESSION['lang']['updateby'],
+	'NIK',
 	$_SESSION['lang']['namakaryawan'],
 	$_SESSION['lang']['data'],
 );
-$align = explode(",","C,C,C,C");
+$align = explode(",","C,C,C,C,C");
 
 switch($mode) {
     case 'pdf':
         /** Report Prep **/
 		$title = $_SESSION['lang']['histkaryawan'];
-        $length = explode(",","20,20,20,40");
+        $length = explode(",","17,20,10,20,33");
         
         $pdf = new zPdfMaster('P','pt','A4');
         $pdf->setAttr1($title,$align,$length,$theCols);
@@ -93,8 +94,8 @@ switch($mode) {
 					$tmpX = $pdf->GetX();
 					foreach($row['data'] as $k=>$r) {
 						$pdf->SetX($tmpX);
-						$pdf->Cell(15/100*$width,$height,$k,'LBR',0,'L');
-						$pdf->Cell(25/100*$width,$height,$r['old'].' => '.$r['new'],'LBR',0,'L');
+						$pdf->Cell(13/100*$width,$height,$k,'LBR',0,'L');
+						$pdf->Cell(20/100*$width,$height,$r['old'].' => '.$r['new'],'LBR',0,'L');
 						$pdf->Ln();
 					}
 				}
@@ -135,7 +136,7 @@ switch($mode) {
 	
 		/** Generate Table **/
         foreach($theCols as $key=>$head) {
-			if($key==3) {
+			if($key==4) {
 				$tab .= "<td style='text-align:center' colspan=2>".$head."</td>";
 			} else {
 				$tab .= "<td style='text-align:center'>".$head."</td>";
@@ -150,6 +151,7 @@ switch($mode) {
 			$i=0;
 			$tab .= "<td rowspan='".count($row['data'])."' align='".$alignPrev[0]."'>".$row['updatetime']."</td>";
 			$tab .= "<td rowspan='".count($row['data'])."' align='".$alignPrev[1]."'>".$row['updatedby']."</td>";
+			$tab .= "<td rowspan='".count($row['data'])."' align='".$alignPrev[1]."'>".$row['nik']."</td>";
 			$tab .= "<td rowspan='".count($row['data'])."' align='".$alignPrev[2]."'>".$row['namakaryawan']."</td>";
 			$i=0;
 			foreach($row['data'] as $k=>$r) {

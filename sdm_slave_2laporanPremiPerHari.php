@@ -90,7 +90,7 @@ if($proses!='getSubUnit'){
                 $tanggalSampai=$rDatez['tanggalsampai'];
         }
 
-function dates_inbetween($date1, $date2)
+function dates_inbetwee($date1, $date2)
 {
     $day = 60*60*24;
     $date1 = strtotime($date1);
@@ -105,7 +105,8 @@ function dates_inbetween($date1, $date2)
     $dates_array[] = date('Y-m-d',$date2);
     return $dates_array;
 }
-$tgltgl = dates_inbetween($tanggalMulai, $tanggalSampai);
+//$tgltgl = dates_inbetwee($tanggalMulai, $tanggalSampai);
+$tgltgl = rangeTanggal($tanggalMulai, $tanggalSampai);
 #ambil data premi
 if($_SESSION['empl']['tipelokasitugas']=='HOLDING'||$_SESSION['empl']['tipelokasitugas']=='KANWIL')
 {
@@ -162,7 +163,9 @@ $spremi="select sum(premi+insentif) as premi,a.karyawanid,tanggal,sum(penaltykeh
          left join ".$dbname.".sdm_5jabatan c on b.kodejabatan=c.kodejabatan
          where ".$wprem."  and left(tanggal,7)='".$periode."'
          group by  a.karyawanid,tanggal order by a.karyawanid";
-$sbasis="select * from ".$dbname.".kebun_prestasi_vw where kodeorg like '".$afdId."%' and tanggal like '".$periode."%'";
+$sbasis="select a.* from ".$dbname.".kebun_prestasi_vw a 
+		 left join ".$dbname.".datakaryawan b on b.karyawanid=a.karyawanid
+		 where b.lokasitugas like '".substr($kdOrg,0,4)."%' and b.subbagian like '".$afdId."%' and tanggal like '".$periode."%'";
 }
 else
 {
@@ -219,10 +222,11 @@ $spremi="select sum(premi+insentif) as premi,a.karyawanid,tanggal,sum(penaltykeh
          where ".$wprem." and left(tanggal,7)='".$periode."'
           group by  a.karyawanid,tanggal order by a.karyawanid";
 
-$sbasis="select * from ".$dbname.".kebun_prestasi_vw 
-         where kodeorg like '".substr($kdOrg,0,4)."%' and tanggal like '".$periode."%'";
+$sbasis="select a.* from ".$dbname.".kebun_prestasi_vw a
+		 left join ".$dbname.".datakaryawan b on b.karyawanid=a.karyawanid
+         where b.lokasitugas like '".substr($kdOrg,0,4)."%' and tanggal like '".$periode."%'";
 }
-//exit("error: ".$sbasis);
+//exit("Warning: ".$sbasis);
 
 //echo $sql.'<br>';
 

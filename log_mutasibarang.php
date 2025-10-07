@@ -22,14 +22,15 @@ echo" <b>".$_SESSION['lang']['periode'].": <span id=displayperiod>".tanggalnorma
 echo"</legend>";
 #kodeorganisasi untuk klinik harus berakhiran PK
 if($_SESSION['empl']['tipelokasitugas']=='KANWIL' and substr($_SESSION['empl']['subbagian'],-2)!='PK'){
-   $str="select namaorganisasi,kodeorganisasi from ".$dbname.".organisasi where tipe='GUDANG'
+   $str="select namaorganisasi,kodeorganisasi from ".$dbname.".organisasi where tipe like 'GUDANG%'
        and left(induk,4) in(select kodeunit from ".$dbname.".bgt_regional_assignment where regional='".$_SESSION['empl']['regional']."')
        order by namaorganisasi";// and kodeorganisasi not in ('SENE10', 'SKNE10', 'SOGE30') order by namaorganisasi";
-
+   
 }
 else{
    $str="select namaorganisasi,kodeorganisasi from ".$dbname.".organisasi where (left(induk,4)='".$_SESSION['empl']['lokasitugas']."' 
        or kodeorganisasi='".$_SESSION['empl']['lokasitugas']."') and tipe like 'GUDANG%' order by kodeorganisasi";
+	 
 }
 
 $res=mysql_query($str);
@@ -60,7 +61,8 @@ if($_SESSION['empl']['tipelokasitugas'] == 'HOLDING'){
            order by kodeorganisasi";
 }else{
 	$str="  select namaorganisasi,kodeorganisasi from ".$dbname.".organisasi where tipe like 'GUDANG%' 
-           and induk in(select kodeunit from ".$dbname.".bgt_regional_assignment where regional='".$_SESSION['empl']['regional']."')
+           and (induk in(select kodeunit from ".$dbname.".bgt_regional_assignment where regional='".$_SESSION['empl']['regional']."')
+			   or alokasi='".$_SESSION['empl']['kodeorganisasi']."')
            order by kodeorganisasi";
 }
 // print_r($str);

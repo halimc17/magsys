@@ -224,18 +224,29 @@ switch($proses)
         $tab.="<img onclick=parent.detexcel(event,'".$lokTgs."','".$tipekary."','".$tanggal."') src=images/excel.jpg class=resicon title='MS.Excel'>";
         $tab.="<table cellpadding=1 cellspacing=1 border=0 class=sortable><thead>";
         $tab.="<tr><td>".$_SESSION['lang']['nomor']."</td>";
-        $tab.="<td>".$_SESSION['lang']['namakaryawan']."</td></tr></thead><tbody>";
+        $tab.="<td>".$_SESSION['lang']['lokasitugas']."</td>";
+        $tab.="<td>".$_SESSION['lang']['nik']."</td>";
+        $tab.="<td>".$_SESSION['lang']['namakaryawan']."</td>";
+        $tab.="<td>".$_SESSION['lang']['jabatan']."</td>";
+        $tab.="<td>".$_SESSION['lang']['tipekaryawan']."</td></tr></thead><tbody>";
         if($tipekary!=4){
-        $sdatakar="select namakaryawan,tipekaryawan,lokasitugas from ".$dbname.".datakaryawan 
-                   where tanggalmasuk <= '".tanggalsystem($tanggal)."' and 
-                   (tanggalkeluar >= '".substr(tanggalsystem($tanggal),0,6)."01' or tanggalkeluar = '0000-00-00') 
-                   and lokasitugas='".$lokTgs."' and tipekaryawan='".$tipekary."' order by namakaryawan asc";
+			$sdatakar="select a.nik,a.namakaryawan,a.tipekaryawan,a.lokasitugas,c.namajabatan,d.tipe from ".$dbname.".datakaryawan a
+					left join ".$dbname.".sdm_5jabatan c on c.kodejabatan=a.kodejabatan
+					left join ".$dbname.".sdm_5tipekaryawan d on d.id=a.tipekaryawan
+					where a.tanggalmasuk <= '".tanggalsystem($tanggal)."' 
+					and (a.tanggalkeluar > '".substr(tanggalsystem($tanggal),0,6)."01' or a.tanggalkeluar = '0000-00-00') 
+					and a.lokasitugas='".$lokTgs."' and a.tipekaryawan='".$tipekary."' 
+					order by a.kodeorganisasi,a.lokasitugas,a.namakaryawan asc";
         }else{
-            $sdatakar="select a.*  from ".$dbname.".datakaryawan a 
-          left join ".$dbname.".sdm_gaji b on a.karyawanid=b.karyawanid where 
-          tanggalmasuk <= ".tanggalsystem($tanggal)." and (tanggalkeluar > '".substr(tanggalsystem($tanggal),0,6)."01' or tanggalkeluar = '0000-00-00') 
-          and periodegaji='".$periodeGj."'   and tipekaryawan=4 and lokasitugas='".$lokTgs."'
-          and idkomponen=1";
+            $sdatakar="select a.*,c.namajabatan,d.tipe from ".$dbname.".datakaryawan a 
+					left join ".$dbname.".sdm_gaji b on a.karyawanid=b.karyawanid
+					left join ".$dbname.".sdm_5jabatan c on c.kodejabatan=a.kodejabatan
+					left join ".$dbname.".sdm_5tipekaryawan d on d.id=a.tipekaryawan
+					where a.tanggalmasuk <= ".tanggalsystem($tanggal)." 
+					and (a.tanggalkeluar > '".substr(tanggalsystem($tanggal),0,6)."01' or a.tanggalkeluar = '0000-00-00') 
+					and a.lokasitugas='".$lokTgs."' and a.tipekaryawan=4
+					and b.periodegaji='".$periodeGj."' and b.idkomponen=1
+					order by a.kodeorganisasi,a.lokasitugas,a.namakaryawan asc";
         }
         //echo $sdatakar;
         $qdatakar=mysql_query($sdatakar) or die(mysql_error($conn));
@@ -243,7 +254,11 @@ switch($proses)
             $nor+=1;
             $tab.="<tr class=rowcontent>";
             $tab.="<td>".$nor."</td>";
+            $tab.="<td>".$rdatakar['lokasitugas']."</td>";
+            $tab.="<td>".$rdatakar['nik']."</td>";
             $tab.="<td>".$rdatakar['namakaryawan']."</td>";
+            $tab.="<td>".$rdatakar['namajabatan']."</td>";
+            $tab.="<td>".$rdatakar['tipe']."</td>";
             $tab.="</tr>";
         }
         $tab.="</tbody></table>";

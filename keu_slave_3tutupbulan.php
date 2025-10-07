@@ -171,7 +171,7 @@ else
     $res=mysql_query($str);
     if(mysql_num_rows($res)>0)
     {
-        echo " There still Vehicle Runn transaction that has not been posted:\n";
+        echo " There still Vehicle Run transaction that has not been posted:\n";
         $no=0;
         while($bar=mysql_fetch_object($res))
         {
@@ -193,7 +193,7 @@ if(mysql_num_rows($res)>0){
             $transit=abs($bar->saldo);
         }
 }
-if($transit>10 && $transit!='')#lebih dari  10 rupiah
+if($transit>100 && $transit!='')#lebih dari  10 rupiah
 {
     exit(" Error: Transit account has not been allocated correctly, remains:".$transit);
 }
@@ -276,12 +276,25 @@ if(substr($_SESSION['empl']['lokasitugas'],2,2)!='HO'){
     //          and kodeorg='".$_SESSION['empl']['lokasitugas']."' and substr(kodeorg,3,2)!='HO'";
     //$str="select nojurnal FROM ".$dbname.".keu_jurnalht where  tanggal like '".$param['periode']."%'
     //          and nojurnal like '%".$_SESSION['empl']['lokasitugas']."/KBN%' and substr(nojurnal,12,2)!='HO'";
-    $str="select nojurnal FROM ".$dbname.".keu_jurnalht where  tanggal like '".$param['periode']."%'
-              and nojurnal like '%".$_SESSION['empl']['lokasitugas']."/KBN%'";
-    $res=mysql_query($str);
-    if(mysql_num_rows($res)>0){
+	if(substr($_SESSION['empl']['lokasitugas'],3,1)=='E'){
+		$str="select nojurnal FROM ".$dbname.".keu_jurnalht where  tanggal like '".$param['periode']."%'
+              and (nojurnal like '%".$_SESSION['empl']['lokasitugas']."/KBN%' or nojurnal like '%".$_SESSION['empl']['lokasitugas']."/M0%')
+			  order by tanggal desc limit 1";
+	}else{
+		if($_SESSION['empl']['lokasitugas']=='KACB'){
+			$str="select nojurnal FROM ".$dbname.".keu_jurnalht where  tanggal like '".$param['periode']."%'
+              and nojurnal like '%".$_SESSION['empl']['lokasitugas']."/SAPI%'
+			  order by tanggal desc limit 1";
+		}else{
+			$str="select nojurnal FROM ".$dbname.".keu_jurnalht where  tanggal like '".$param['periode']."%'
+              and nojurnal like '%".$_SESSION['empl']['lokasitugas']."/KBN%'
+			  order by tanggal desc limit 1";
+		}
+	}
+	$res=mysql_query($str);
+	if(mysql_num_rows($res)>0){
 
-    }else{
+	}else{
         exit(" Error: Proses Gaji has not been processed. ");    
     }
     #---------------------------------------==================================
@@ -406,8 +419,19 @@ switch($proses) {
 //        exit;
         $resCek = fetchData($qCek);
         if(!empty($resCek)) {
-			echo ' Error : This period has been closed(Before).';
-            exit;
+			$sPeriode="select periode from ".$dbname.".setup_periodeakuntansi 
+                       where kodeorg='".$_SESSION['empl']['lokasitugas']."' order by periode desc limit 1";
+            $qPeriode=mysql_query($sPeriode) or die(mysql_error($conn));
+            $rPeriode=mysql_fetch_assoc($qPeriode);
+            if($rPeriode['periode']==$param['periode']){
+                $sDel="delete from ".$dbname.".keu_jurnalht where nojurnal='".$nojurnal."'";
+                if(!mysql_query($sDel)){
+                    exit("warning :".$sDel." ".mysql_error($conn));
+                }
+            }else{
+                echo ' Error : This period has been closed(Before).';
+                exit;    
+            }
         }
         
          $query = "select count(*) as x from ".$dbname.".keu_jurnaldt_vw where 
@@ -557,6 +581,7 @@ switch($proses) {
 					  from ".$dbname.".sdm_daftarasset a left join ".$dbname.".sdm_5tipeasset b
 					  on a.tipeasset=b.kodetipe    
 					  where a.kodeorg='".$_SESSION['empl']['lokasitugas']."' 
+		and jlhblnpenyusutan-(((".substr($param['periode'],0,4)."*12)+".substr($param['periode'],5,2).")-((left(awalpenyusutan,4)*12)+RIGHT(awalpenyusutan,2)))>0
 					  and status=1  and a.awalpenyusutan <= '".$param['periode']."' and persendecline=0";
 				$res=  mysql_query($str);
 				$arrAsset = array();
@@ -578,6 +603,7 @@ switch($proses) {
 					 from ".$dbname.".sdm_daftarasset a left join ".$dbname.".sdm_5tipeasset b
 					 on a.tipeasset=b.kodetipe    
 					 where a.kodeorg='".$_SESSION['empl']['lokasitugas']."' 
+		and jlhblnpenyusutan-(((".substr($param['periode'],0,4)."*12)+".substr($param['periode'],5,2).")-((left(awalpenyusutan,4)*12)+RIGHT(awalpenyusutan,2)))>0
 					 and status=1 and a.awalpenyusutan <= '".$param['periode']."' and a.persendecline>'0'";
 				$res=  mysql_query($str);
 			   
@@ -635,8 +661,9 @@ switch($proses) {
 				$poolAsset = array();
 				foreach($arrAsset as $row) {
 					$poolAsset[$row['kode']] = $row['nilai'];
+					//print_r('poolasset = '.$poolAsset.' nilai = '.$nilai);
 				}
-				
+				//print_r('poolasset = '.$poolAsset.' nilai = '.$nilai);
 				// Get List Akun dari Parameter Jurnal = 'DEP'
 				$optDep = makeOption($dbname,'keu_5parameterjurnal',"jurnalid,noakunkredit",
 									  "kodeaplikasi='DEP'");
@@ -652,9 +679,9 @@ switch($proses) {
 					$qJurnal = selectQuery($dbname,'keu_jurnaldt',"jumlah",
 										   "nojurnal='".$nojurnal."' and noakun='".$optDep[$kode]."'");
 					$resJurnal = fetchData($qJurnal);
-					
+					//exit('Warning: nojurnal='.$qJurnal.' dan nilai='.$resJurnal[0]['jumlah']+round($nilai,2));
 					if(empty($resJurnal)) {
-						exit("Warning: Depresiasi ".$kode." belum terjurnal dengan benar");
+						exit("Warning: Depresiasi ".$kode." belum terjurnal dengan benar.");
 					} else {
 						if($resJurnal[0]['jumlah']+round($nilai,2)>0.01) {
 							exit("Warning: Depresiasi ".$kode." belum terjurnal dengan benar");

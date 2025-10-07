@@ -1,4 +1,4 @@
-<?php 
+<?php
 session_start();
 require_once('master_validation.php');
 require_once('config/connection.php');
@@ -340,9 +340,8 @@ switch($proses)
 
 
         case'postingDa':
-		if(is_array($_POST['notransaksi'])){
-			foreach($_POST['notransaksi'] as $barisNtrns =>$dtrnotrans)
-			{
+			if(is_array($_POST['notransaksi'])){
+				foreach($_POST['notransaksi'] as $barisNtrns =>$dtrnotrans){
 					$tglData=tanggalsystem($_POST['tglData'][$barisNtrns]);
 					$kdvhc=$_POST['kdVhc'][$barisNtrns];
 					$tgl=substr($tglData,0,4);
@@ -353,92 +352,185 @@ switch($proses)
 					$sStatKend="select kepemilikan from ".$dbname.".vhc_5master where kodevhc='".$kdvhc."'";
 					$qStatKend=mysql_query($sStatKend) or die(mysql_error());
 					$rStatKend=mysql_fetch_assoc($qStatKend);
-							if($rStatKend['kepemilikan']!=0)
-							{	
-									$sOpt="select idkaryawan from ".$dbname.".vhc_runhk 
-										  where notransaksi='".$dtrnotrans."'";
-									$qOpt=mysql_query($sOpt) or die(mysql_error());
-											while($rCopt=mysql_fetch_assoc($qOpt))
-											{
-												$statKary=0;
-											$sPost="select a.satuan from ".$dbname.".vhc_rundt a 
-											left join ".$dbname.".vhc_runhk b on a.notransaksi=b.notransaksi 
-											left join ".$dbname.".vhc_runht c on c.notransaksi=b.notransaksi 
-											where b.idkaryawan='".$rCopt['idkaryawan']."' and c.tanggal like '".$period."%' group by a.satuan";
-													// echo"warning".$sPost."__".$tglData;exit();
-													$qPost=mysql_query($sPost) or die(mysql_error());
-													$rPost=mysql_num_rows($qPost);
-													if($rPost>1)
-													{
-															$statKary+=1;
-													}
-											}
-											if($statKary!=0)
-											{
-													echo"warning: Fail, there are ".$statKary." person, with different UOM";
-													exit();
-											}
-											else
-											{
-													$sudPost="update ".$dbname.".vhc_runht set posting='1',postingby='".$_SESSION['standard']['userid']."' where notransaksi='".$dtrnotrans."'";
-													//echo"warning".$sudPost;exit();
-													if(mysql_query($sudPost))
-													echo"";
-													else
-													echo "DB Error : ".mysql_error($conn);
-											}
-
-									//}
+					if($rStatKend['kepemilikan']!=0){	
+						$sOpt="select idkaryawan from ".$dbname.".vhc_runhk 
+							  where notransaksi='".$dtrnotrans."'";
+						$qOpt=mysql_query($sOpt) or die(mysql_error());
+						while($rCopt=mysql_fetch_assoc($qOpt)){
+							$statKary=0;
+							$sPost="select a.satuan from ".$dbname.".vhc_rundt a 
+									left join ".$dbname.".vhc_runhk b on a.notransaksi=b.notransaksi 
+									left join ".$dbname.".vhc_runht c on c.notransaksi=b.notransaksi 
+									where b.idkaryawan='".$rCopt['idkaryawan']."' and c.tanggal like '".$period."%' group by a.satuan";
+							// echo"warning".$sPost."__".$tglData;exit();
+							//exit('Warning: '.$sPost);
+							$qPost=mysql_query($sPost) or die(mysql_error());
+							$rPost=mysql_num_rows($qPost);
+							if($rPost>1){
+								//$statKary+=1;
 							}
-							else
-							{
-									$sudPost="update ".$dbname.".vhc_runht set posting='1',postingby='".$_SESSION['standard']['userid']."' where notransaksi='".$dtrnotrans."'";
-									//echo"warning".$sudPost;exit();
-									if(mysql_query($sudPost))
-									echo"";
+						}
+						if($statKary!=0){
+							echo"warning: Fail, there are ".$statKary." person, with different UOM";
+							exit();
+						}else{
+							$sPost="select b.kodeorg,a.notransaksi,b.tanggal,c.kelompokvhc,sum(a.jumlah) as jumlah from ".$dbname.".vhc_rundt a
+									LEFT JOIN ".$dbname.".vhc_runht b on b.notransaksi=a.notransaksi
+									LEFT JOIN ".$dbname.".vhc_5jenisvhc c on c.jenisvhc=b.jenisvhc
+									where a.notransaksi='".$dtrnotrans."' and c.kelompokvhc='AB'
+									GROUP BY a.notransaksi";
+							$qPost=mysql_query($sPost) or die(mysql_error());
+							$nPost=mysql_num_rows($qPost);
+							if($nPost>0){
+								while($rPost=mysql_fetch_assoc($qPost)){
+									$kodeorgP=$rPost['kodeorg'];
+									$tanggalP=$rPost['tanggal'];
+									$jumlahHM=$rPost['jumlah'];
+								}
+								$sLibur="select keterangan from ".$dbname.".sdm_5harilibur 
+										where tanggal='".$tanggalP."' and kebun in ('GLOBAL','".$kodeorgP."')";
+								$qLibur=mysql_query($sLibur) or die(mysql_error());
+								$nLibur=mysql_num_rows($qLibur);
+								if($nLibur>0){
+									$libur=True;
+									$jumlahUM=0;
+									$PremiperHM=0;
+									$sPremiHM="select nilai from ".$dbname.".setup_parameterappl 
+												where kodeaplikasi='TR' and kodeparameter='TRHMLIBUR' and kodeorg='".$kodeorgP."'";
+									$qPremiHM=mysql_query($sPremiHM) or die(mysql_error());
+									while($rPremiHM=mysql_fetch_assoc($qPremiHM)){
+										$PremiperHM=$rPremiHM['nilai'];
+									}
+								}else{
+									$libur=False;
+									$jumlahUM=0;
+									$PremiperHM=0;
+									$sPremiHM="select nilai from ".$dbname.".setup_parameterappl 
+												where kodeaplikasi='TR' and kodeparameter='TRHMKERJA' and kodeorg='".$kodeorgP."'";
+									$qPremiHM=mysql_query($sPremiHM) or die(mysql_error());
+									while($rPremiHM=mysql_fetch_assoc($qPremiHM)){
+										$PremiperHM=$rPremiHM['nilai'];
+									}
+								}
+								$premi=($jumlahHM*$PremiperHM)+$jumlahUM;
+								if($premi!=0){
+									$sUpdPremi="update ".$dbname.".vhc_runhk set premi='".$premi."' 
+												where notransaksi='".$dtrnotrans."' and posisi=0";
+									if(mysql_query($sUpdPremi))
+										echo"";
 									else
-									echo "DB Error : ".mysql_error($conn);
-							}
-			 }
-		 }else{
-		   exit(" Gagal : Nomor transaksi tidak dalam bentuk array");
-		 }
-        break;
-        case'postSat':
+										echo "DB Error : ".mysql_error($conn);
+								}
 
-        $tgl=substr($_POST['tglData'],0,4);
-        $tglm=substr($_POST['tanggal'],5,2);
-        $period=$tgl."-".$tglm;
-                $sOpt="select idkaryawan from ".$dbname.".vhc_runhk where notransaksi='".$_POST['notransaksi']."'";
-                $qOpt=mysql_query($sOpt) or die(mysql_error());
-                        while($rCopt=mysql_fetch_assoc($qOpt))
-                        {
-                                $sPost="select a.satuan from ".$dbname.".vhc_rundt a 
-                                left join ".$dbname.".vhc_runhk b on a.notransaksi=b.notransaksi 
-                                left join ".$dbname.".vhc_runht c on c.notransaksi=b.notransaksi 
-                                where b.idkaryawan='".$rCopt['idkaryawan']."' and c.tanggal like '%".$period."%' group by a.satuan";
-                                //echo"warning".$sPost;exit();
-                                $qPost=mysql_query($sPost) or die(mysql_error());
-                                $rPost=mysql_num_rows($qPost);
-                                if($rPost>1)
-                                {
-                                        $statKary+=1;
-                                }
-                        }
-                        if($statKary!=0)
-                        {
-                                echo"warning: Fail, there are ".$statKary." person, with different UOM";
-                                exit();
-                        }
-                        else
-                        {
-                                $sudPost="update ".$dbname.".vhc_runht set posting='1',postingby='".$_SESSION['standard']['userid']."' where notransaksi='".$_POST['notransaksi']."'";
-                                if(mysql_query($sudPost))
-                                echo"";
-                                else
-                                echo "DB Error : ".mysql_error($conn);
-                        }
-        break;
+							}
+
+							$sudPost="update ".$dbname.".vhc_runht set posting='1',postingby='".$_SESSION['standard']['userid']."' where notransaksi='".$dtrnotrans."'";
+							//exit("Warning: 1.".$sudPost;
+							if(mysql_query($sudPost))
+								echo"";
+							else
+								echo "DB Error : ".mysql_error($conn);
+						}
+
+						//}
+					}else{
+						$sudPost="update ".$dbname.".vhc_runht set posting='1',postingby='".$_SESSION['standard']['userid']."' where notransaksi='".$dtrnotrans."'";
+						//echo"warning".$sudPost;exit();
+						if(mysql_query($sudPost))
+							echo"";
+						else
+							echo "DB Error : ".mysql_error($conn);
+					}
+				}
+			}else{
+				exit(" Gagal : Nomor transaksi tidak dalam bentuk array");
+			}
+			break;
+
+        case'postSat':
+			$tgl=substr($_POST['tglData'],0,4);
+			$tglm=substr($_POST['tanggal'],5,2);
+			$period=$tgl."-".$tglm;
+			$sOpt="select idkaryawan from ".$dbname.".vhc_runhk where notransaksi='".$_POST['notransaksi']."'";
+			$qOpt=mysql_query($sOpt) or die(mysql_error());
+			while($rCopt=mysql_fetch_assoc($qOpt))
+			{
+				$sPost="select a.satuan from ".$dbname.".vhc_rundt a 
+						left join ".$dbname.".vhc_runhk b on a.notransaksi=b.notransaksi 
+						left join ".$dbname.".vhc_runht c on c.notransaksi=b.notransaksi 
+						where b.idkaryawan='".$rCopt['idkaryawan']."' and c.tanggal like '%".$period."%' group by a.satuan";
+				//echo"warning".$sPost;exit();
+				$qPost=mysql_query($sPost) or die(mysql_error());
+				$rPost=mysql_num_rows($qPost);
+				if($rPost>1)
+				{
+					$statKary+=1;
+				}
+			}
+			if($statKary!=0)
+			{
+				echo"warning: Fail, there are ".$statKary." person, with different UOM";
+				exit();
+			}
+			else
+			{
+				$sPost="select b.kodeorg,a.notransaksi,b.tanggal,c.kelompokvhc,sum(a.jumlah) as jumlah from ".$dbname.".vhc_rundt a
+						LEFT JOIN ".$dbname.".vhc_runht b on b.notransaksi=a.notransaksi
+						LEFT JOIN ".$dbname.".vhc_5jenisvhc c on c.jenisvhc=b.jenisvhc
+						where a.notransaksi='".$_POST['notransaksi']."' and c.kelompokvhc='AB'
+						GROUP BY a.notransaksi";
+				$qPost=mysql_query($sPost) or die(mysql_error());
+				$nPost=mysql_num_rows($qPost);
+				if($nPost>0){
+					while($rPost=mysql_fetch_assoc($qPost)){
+						$kodeorgP=$rPost['kodeorg'];
+						$tanggalP=$rPost['tanggal'];
+						$jumlahHM=$rPost['jumlah'];
+					}
+					$sLibur="select keterangan from ".$dbname.".sdm_5harilibur 
+							where tanggal='".$tanggalP."' and kebun in ('GLOBAL','".$kodeorgP."')";
+					$qLibur=mysql_query($sLibur) or die(mysql_error());
+					$nLibur=mysql_num_rows($qLibur);
+					if($nLibur>0){
+						$libur=True;
+						$jumlahUM=0;
+						$PremiperHM=0;
+						$sPremiHM="select nilai from ".$dbname.".setup_parameterappl 
+									where kodeaplikasi='TR' and kodeparameter='TRHMLIBUR' and kodeorg='".$kodeorgP."'";
+						$qPremiHM=mysql_query($sPremiHM) or die(mysql_error());
+						while($rPremiHM=mysql_fetch_assoc($qPremiHM)){
+							$PremiperHM=$rPremiHM['nilai'];
+						}
+					}else{
+						$libur=False;
+						$jumlahUM=0;
+						$PremiperHM=0;
+						$sPremiHM="select nilai from ".$dbname.".setup_parameterappl 
+									where kodeaplikasi='TR' and kodeparameter='TRHMKERJA' and kodeorg='".$kodeorgP."'";
+						$qPremiHM=mysql_query($sPremiHM) or die(mysql_error());
+						while($rPremiHM=mysql_fetch_assoc($qPremiHM)){
+							$PremiperHM=$rPremiHM['nilai'];
+						}
+					}
+					$premi=($jumlahHM*$PremiperHM)+$jumlahUM;
+					if($premi!=0){
+						$sUpdPremi="update ".$dbname.".vhc_runhk set premi='".$premi."' 
+									where notransaksi='".$_POST['notransaksi']."' and posisi=0";
+						if(mysql_query($sUpdPremi))
+							echo"";
+						else
+							echo "DB Error : ".mysql_error($conn);
+					}
+				}
+
+				$sudPost="update ".$dbname.".vhc_runht set posting='1',postingby='".$_SESSION['standard']['userid']."' where notransaksi='".$_POST['notransaksi']."'";
+				if(mysql_query($sudPost))
+					echo"";
+				else
+					echo "DB Error : ".mysql_error($conn);
+			}
+			break;
+
         case'postingByTrip':
         //echo "warning:masuk";
         $sNotrans="select a.*,b.idkaryawan,b.posisi,c.alokasibiaya,c.jenispekerjaan,c.jumlahrit,c.beratmuatan from 

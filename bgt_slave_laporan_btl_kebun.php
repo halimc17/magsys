@@ -9,7 +9,7 @@ $thnbudget=$_POST['thnbudget'];
 //$str="select sum(hathnini) as luas from ".$dbname.".bgt_areal_per_afd_vw 
 //      where tahunbudget=".$thnbudget." and afdeling like '".$kodeorg."%' ";
 $str="select sum(hathnini) as luas,thntnm from ".$dbname.".bgt_blok where 
-      kodeblok like '".$kodeorg."%' and tahunbudget='".$thnbudget."' and statusblok in ('TBM','TM') group by tahunbudget,kodeblok";
+      kodeblok like '".$kodeorg."%' and tahunbudget='".$thnbudget."' and statusblok in ('TBM','TBM-01','TBM-02','TBM-03','TM') group by tahunbudget,kodeblok";
 $res=mysql_query($str);
 while($bar=mysql_fetch_object($res))
 {

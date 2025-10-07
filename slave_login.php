@@ -18,8 +18,8 @@ $ini_array = parse_ini_file("lib/nangkoel.ini");
 $_SESSION['MAXLIFETIME']=$ini_array['MAXLIFETIME'];
 $_SESSION['DIE']=time()+$_SESSION['MAXLIFETIME'];
 //++++++++++++++++++++++++++++++++++
-$uname   =$_POST['uname'];
-$password=$_POST['password'];
+$uname   =addslashes($_POST['uname']);
+$password=addslashes($_POST['password']);
 $language=$_POST['language'];
 $str1    ="select * from ".$dbname.".user
 		   where namauser='".$uname."'

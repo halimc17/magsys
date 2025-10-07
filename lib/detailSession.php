@@ -31,12 +31,13 @@ function setEmplSession($conn,$userid,$dbname)//load all data from user_empl to 
 		  $_SESSION['empl']['kodejabatan']=$barses1->kodejabatan;
                                   $_SESSION['empl']['subbagian']=$barses1->subbagian;
 		  //ambil tipe induk organisasi
-		  $strx= "select tipe from  ".$dbname.".organisasi where kodeorganisasi='".$barses1->lokasitugas."'";
+		  $strx= "select tipe,induk from ".$dbname.".organisasi where kodeorganisasi='".$barses1->lokasitugas."'";
 		  $resx=mysql_query($strx);
 		  $_SESSION['empl']['tipelokasitugas']='';
 		  while($barx=mysql_fetch_object($resx))
 		  {
 		  	$_SESSION['empl']['tipelokasitugas']=$barx->tipe;
+		  	$_SESSION['empl']['induk']=$barx->induk;
 		  }
 		}
                                 //ambil wilayah

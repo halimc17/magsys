@@ -57,17 +57,25 @@ if ($proses == 'excel')
             <td bgcolor=#CCCCCC  align=center>".$_SESSION['lang']['jumlah']."</td>
             <td bgcolor=#CCCCCC  align=center>".$_SESSION['lang']['satuan']."</td>
             <td bgcolor=#CCCCCC  align=center>".$_SESSION['lang']['status']." ".$_SESSION['lang']['persetujuan']."</td>
-            <td bgcolor=#CCCCCC  align=center>Ostd</td>   
+            <td bgcolor=#CCCCCC  align=center>Ostd</td>
             <td bgcolor=#CCCCCC  align=center>".$_SESSION['lang']['chat']."</td>   
+            <td bgcolor=#CCCCCC  align=center>".$_SESSION['lang']['purchaser']."</td>     
             <td bgcolor=#CCCCCC  align=center>".$_SESSION['lang']['nopo']."</td>     
             <td bgcolor=#CCCCCC  align=center>".$_SESSION['lang']['tgl_po']."</td> 
-            <td bgcolor=#CCCCCC  align=center>".$_SESSION['lang']['namasupplier']."</td>     
+            <td bgcolor=#CCCCCC  align=center>".$_SESSION['lang']['namasupplier']."</td>
+            <td bgcolor=#CCCCCC  align=center>"."Qty PO"."</td>
+            <td bgcolor=#CCCCCC  align=center>".$_SESSION['lang']['satuan']."</td>
             <td bgcolor=#CCCCCC  align=center>".$_SESSION['lang']['status']." PO</td>
             <td bgcolor=#CCCCCC  align=center>".$_SESSION['lang']['rapbNo']."</td>
             <td bgcolor=#CCCCCC  align=center>".$_SESSION['lang']['tanggal']."</td>
-            <td bgcolor=#CCCCCC  align=center>".$_SESSION['lang']['print']."</td>
-                
-        </tr></thead>";
+            <td bgcolor=#CCCCCC  align=center>"."Qty BAPB"."</td>
+            <td bgcolor=#CCCCCC  align=center>".$_SESSION['lang']['satuan']."</td>";
+	if ($proses == 'excel'){
+		$stream.="<td bgcolor=#CCCCCC  align=center>".$_SESSION['lang']['keterangan']."</td>";
+	}else{
+		$stream.="<td bgcolor=#CCCCCC  align=center>".$_SESSION['lang']['print']."</td>";
+	}
+	$stream.="</tr></thead>";
 
     //lokasitugas lock
     //print_r($_SESSION['empl']);
@@ -86,19 +94,19 @@ if ($proses == 'excel')
     //tanggal pp
     if($tgl!='')
     {
-        $where.="and a.tanggal='".$tgl."' ";
+        $where.=" and a.tanggal='".$tgl."' ";
     }
     
     //lokasi pembelian
     if($lok!='')
     {
-        $where.="and a.lokalpusat='".$lok."'";
+        $where.=" and a.lokalpusat='".$lok."' ";
     }
     
     //nama supplier
     if($sup!='')
     {
-        $where.="and b.namasupplier like '%".$sup."%' ";
+        $where.=" and b.namasupplier like '%".$sup."%' ";
     }
     
     //
@@ -108,51 +116,54 @@ if ($proses == 'excel')
     {
         if($stat=='1')
         {
-            $where.=" and a.close='1' and a.status!='3'";       
+            $where.=" and a.close='1' and a.status!='3' ";       
         }
         if($stat=='2')
         {
-            $where.=" and a.close='2' and a.purchaser='0000000000' and a.create_po=''";       
+            //$where.=" and a.close='2' and a.purchaser='0000000000' and a.create_po=''";       
+            $where.=" and (a.create_po='' or a.create_po='0') and a.purchaser='0000000000' and a.close='2' and a.status!='3' ";       
         }
         if($stat=='3')
         {
-            $where.="and  a.create_po!='' and b.nopo is not null";
+            $where.=" and a.create_po!='' and b.nopo is not null ";
         }
         if($stat=='4')
         {
-            $where.="and (a.create_po='' or a.create_po='0') and a.purchaser!='0000000000' and a.close='2' ";
+            $where.=" and (a.create_po='' or a.create_po='0') and a.purchaser!='0000000000' and a.close='2' and a.status!='3' ";
         }
         if($stat=='5')
         {
-            $where.="and a.status='3' and (a.close='2' or a.close='1') ";
+            $where.=" and a.status='3' and (a.close='2' or a.close='1') ";
         }
     }
     
     if($nama!='')
     {
         $where.=" and a.kodebarang in (select kodebarang from ".$dbname.".log_5masterbarang where "
-                . " namabarang like '%".$nama."%' and inactive='0')";
+                . " namabarang like '%".$nama."%') ";
+                //. " namabarang like '%".$nama."%' and inactive='0')";
     }
     
     
        
      if($psj!='')
-     { 
-         $where.="and (a.persetujuan1='".$psj."' || a.persetujuan2='".$psj."' || a.persetujuan3='".$psj."' || "
-                 . " a.persetujuan4='".$psj."' || a.persetujuan5='".$psj."')";
+     {
+         //$where.="and (a.persetujuan1='".$psj."' || a.persetujuan2='".$psj."' || a.persetujuan3='".$psj."' || "
+         //        . " a.persetujuan4='".$psj."' || a.persetujuan5='".$psj."')";
+         $where.=" and ((a.persetujuan1='".$psj."' and a.hasilpersetujuan1='0') || (a.persetujuan2='".$psj."' and a.hasilpersetujuan2='0') || (a.persetujuan3='".$psj."' and a.hasilpersetujuan3='0') || (a.persetujuan4='".$psj."' and a.hasilpersetujuan4='0') || (a.persetujuan5='".$psj."' and a.hasilpersetujuan1='0')) ";
      }
-      
-       
+
     //select * from log_prapodt a left join log_podt b on a.nopp=b.nopp left join log_transaksi_vw c on a.nopp=c.nopp where a.nopp='002/10/2014/PP/SKDM' and a.kodebarang='37401051'   
     
-    $iList="select a.kodeorg,a.nopp,a.tanggal as tanggalpp,a.purchaser,a.kodebarang,a.jumlah as jumlahpp,a.kodevhc,a.status,"
+    $iList="select a.kodeorg,a.nopp,a.tanggal as tanggalpp,a.purchaser,a.kodebarang,a.jumlah as jumlahpp,a.kodevhc,a.status,a.keterangan,"
             . " a.close,a.create_po,a.lokalpusat,b.nopo as nopo,b.tanggal as tanggalpo,"
-            . "b.jumlahpesan as jumlahpo,b.kodesupplier,b.kodesupplier,b.namasupplier,"
-            . " b.statuspo,c.notransaksi,c.tanggal as tanggalba,"
-            . " a.persetujuan1,a.persetujuan2,a.persetujuan3,a.persetujuan4,a.persetujuan5 "
+            . " b.jumlahpesan as jumlahpo,b.satuan as satuanpo,b.kodesupplier,b.kodesupplier,b.namasupplier,"
+            . " b.statuspo,c.notransaksi,c.tanggal as tanggalba,c.jumlah as jumlahba,c.satuan as satuanba,"
+            . " a.persetujuan1,a.persetujuan2,a.persetujuan3,a.persetujuan4,a.persetujuan5,d.namakaryawan as namapurchaser "
             . " from ".$dbname.".log_prapo_vw a left join ".$dbname.".log_po_vw b on a.nopp=b.nopp and a.kodebarang=b.kodebarang"
             . " left join ".$dbname.".log_transaksi_vw c on b.nopo=c.nopo and b.nopp=c.nopp and b.kodebarang=c.kodebarang "
-            . "  where  a.tanggal like '%".$per."%' ".$where." order by a.nopp desc,a.tanggal desc ";    
+            . " left join ".$dbname.".datakaryawan d on d.karyawanid=a.purchaser "
+            . " where  a.tanggal like '%".$per."%' ".$where." order by a.nopp desc,a.tanggal desc ";    
 
     //echo $iList;
     
@@ -218,7 +229,7 @@ if ($proses == 'excel')
             $stream.="<td>".$dList['nopp']."</td>";
             $stream.="<td>".tanggalnormal($dList['tanggalpp'])."</td>";
             $stream.="<td>".$dList['kodebarang']."</td>";
-            $stream.="<td>".$nmBrg[$dList['kodebarang']]."</td>";
+            $stream.="<td width='450px'>".$nmBrg[$dList['kodebarang']]."</td>";
             $stream.="<td align=right>".number_format($dList['jumlahpp'])."</td>";
             $stream.="<td>".$satBrg[$dList['kodebarang']]."</td>";
             
@@ -237,16 +248,29 @@ if ($proses == 'excel')
             
             
             $stream.="<td>".$jmlHari."</td>";
+		if ($proses == 'excel'){
+            $stream.="<td></td>";
+		}else{
             $stream.="<td>".$ingChat."</td>";
+		}
+            $stream.="<td>".$dList['namapurchaser']."</td>";
             $stream.="<td>".$dList['nopo']."</td>";
             $stream.="<td>".$dList['tanggalpo']."</td>";
             $stream.="<td>".$dList['namasupplier']."</td>";
+            $stream.="<td align=right>".number_format($dList['jumlahpo'])."</td>";
+            $stream.="<td>".$dList['satuanpo']."</td>";
             $stream.="<td>".$stPo[$dList['statuspo']]."</td>";
             $stream.="<td>".$dList['notransaksi']."</td>";
             $stream.="<td>".$dList['tanggalba']."</td>";
+            $stream.="<td align=right>".number_format($dList['jumlahba'])."</td>";
+            $stream.="<td>".$dList['satuanba']."</td>";
+		if ($proses == 'excel'){
+            $stream.="<td>".$dList['keterangan']."</td>";
+		}else{
             $stream.="<td align=center>
                         <img onclick=\"previewDetail('".$dList['nopp']."',event);\" title=\"Detail PP\" class=\"resicon\" src=\"images/zoom.png\">
                         <img src=images/pdf.jpg class=resicon  title='Print' onclick=\"masterPDF('log_prapoht','".$dList['nopp']."','','log_slave_print_log_pp',event);\"></td>";
+		}
         $stream.="</tr>";    
     }
 

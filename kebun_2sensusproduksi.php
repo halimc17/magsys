@@ -15,7 +15,7 @@ while($rOrg=mysql_fetch_assoc($qOrg))
 	$optOrg.="<option value=".$rOrg['kodeorg'].">".$rOrg['kodeorg']."</option>";
 }
 
-$sPeriode="select distinct substr(tanggal,1,7) as periode from ".$dbname.".kebun_rencanapanen_vw order by tanggal asc";
+$sPeriode="select distinct substr(tanggal,1,7) as periode from ".$dbname.".kebun_rencanapanen_vw order by tanggal desc";
 $qPeriode=mysql_query($sPeriode); 
 $optPeriode="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
 while($rPeriode=mysql_fetch_object($qPeriode))

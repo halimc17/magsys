@@ -12,7 +12,7 @@ $tipekaryawan=$_POST['tipekaryawan'];
                 $hakcuti=$x;
             else
                 $hakcuti=12;  
-            
+/*            
 if($_SESSION['empl']['tipelokasitugas']!='HOLDING'){
     $str1="select a.*,b.namakaryawan,b.tanggalmasuk,b.lokasitugas as locTugas,b.tipekaryawan,b.nik,c.tipe,
 	       COALESCE(ROUND(DATEDIFF('".$tglAbis."',b.tanggalmasuk)/365.25,3),0) as masakerja
@@ -21,9 +21,8 @@ if($_SESSION['empl']['tipelokasitugas']!='HOLDING'){
 		   left join ".$dbname.".sdm_5tipekaryawan c on b.tipekaryawan = c.id 
 	       where b.lokasitugas='".$kodeorg."' and b.alokasi=0
 		   and (a.periodecuti='".$periode."' or a.periodecuti='".($periode-1)."')
-                   and b.tanggalkeluar='0000-00-00' and b.tipekaryawan in(0,1,2,3) and b.tipekaryawan like '%".$tipekaryawan."%'"; 
-}
-else{
+                 and (b.tanggalkeluar='0000-00-00' or b.tanggalkeluar>'".date('Y-m-d')."') and b.tipekaryawan in(0,1,2,3) and b.tipekaryawan like '%".$tipekaryawan."%'"; 
+}else{
     $str1="select a.*,b.namakaryawan,b.tanggalmasuk,b.lokasitugas  as locTugas,b.tipekaryawan,b.nik,c.tipe,
 	       COALESCE(ROUND(DATEDIFF('".$tglAbis."',b.tanggalmasuk)/365.25,3),0) as masakerja
 	       from ".$dbname.".sdm_cutiht a
@@ -31,8 +30,29 @@ else{
 		   left join ".$dbname.".sdm_5tipekaryawan c on b.tipekaryawan = c.id 
 	       where b.lokasitugas='".$kodeorg."' and b.alokasi=1
 		   and (a.periodecuti='".$periode."' or a.periodecuti='".($periode-1)."')
-                   and b.tanggalkeluar='0000-00-00' and b.tipekaryawan in(0,1,2,3) and b.tipekaryawan like '%".$tipekaryawan."%'"; 
-}		  
+                 and (b.tanggalkeluar='0000-00-00' or b.tanggalkeluar>'".date('Y-m-d')."') and b.tipekaryawan in(0,1,2,3) and b.tipekaryawan like '%".$tipekaryawan."%'"; 
+}
+*/
+if($_SESSION['empl']['tipelokasitugas']!='HOLDING'){
+    $str1="select a.*,b.namakaryawan,b.tanggalmasuk,b.tanggalpengangkatan,b.lokasitugas as locTugas,b.tipekaryawan,b.nik,c.tipe,
+	       COALESCE(ROUND(DATEDIFF('".$tglAbis."',b.tanggalmasuk)/365.25,3),0) as masakerja, COALESCE(ROUND(DATEDIFF('".$tglAbis."',b.tanggalpengangkatan)/365.25,3),0) as masakerjastaff
+	       from ".$dbname.".sdm_cutiht a
+		   left join ".$dbname.".datakaryawan b on a.karyawanid=b.karyawanid 
+		   left join ".$dbname.".sdm_5tipekaryawan c on b.tipekaryawan = c.id 
+	       where b.lokasitugas='".$kodeorg."'
+		   and (a.periodecuti='".$periode."')
+                 and (b.tanggalkeluar='0000-00-00' or b.tanggalkeluar>'".date('Y-m-d')."') and b.tipekaryawan in(0,1,2,3,6,9) and b.tipekaryawan like '%".$tipekaryawan."%'"; 
+}else{
+    $str1="select a.*,b.namakaryawan,b.tanggalmasuk,b.tanggalpengangkatan,b.lokasitugas  as locTugas,b.tipekaryawan,b.nik,c.tipe,
+	       COALESCE(ROUND(DATEDIFF('".$tglAbis."',b.tanggalmasuk)/365.25,3),0) as masakerja, COALESCE(ROUND(DATEDIFF('".$tglAbis."',b.tanggalpengangkatan)/365.25,3),0) as masakerjastaff
+	       from ".$dbname.".sdm_cutiht a
+		   left join ".$dbname.".datakaryawan b on a.karyawanid=b.karyawanid 
+		   left join ".$dbname.".sdm_5tipekaryawan c on b.tipekaryawan = c.id 
+	       where b.lokasitugas='".$kodeorg."' and b.alokasi=1
+		   and (a.periodecuti='".$periode."')
+                 and (b.tanggalkeluar='0000-00-00' or b.tanggalkeluar>'".date('Y-m-d')."') and b.tipekaryawan in(0,1,2,3,6,7,8,9) and b.tipekaryawan like '%".$tipekaryawan."%'"; 
+}
+
 	$res1=mysql_query($str1); 
 	echo"<table class=sortable cellspacing=1 border=0>
 	     <thead>
@@ -44,6 +64,8 @@ else{
 		    <td style='text-align:center;'>".$_SESSION['lang']['tipekaryawan']."</td>
 			<td style='text-align:center;'>".$_SESSION['lang']['tanggalmasuk']."</td>
 			<td style='text-align:center;'>Masa Kerja (Tahun-Bulan)</td>			
+			<td style='text-align:center;'>".$_SESSION['lang']['tanggalpengangkatan']."</td>
+			<td style='text-align:center;'>Masa Kerja Staff (Th-Bl)</td>			
 			<td style='text-align:center;'>".$_SESSION['lang']['periode']."</td>			
 			<td style='text-align:center;'>".$_SESSION['lang']['dari']."</td>
 			<td style='text-align:center;'>".$_SESSION['lang']['tanggalsampai']."</td>
@@ -80,22 +102,46 @@ else{
 #            else if($bar1->tipekaryawan!=0 and substr($bar1->lokasitugas,2,2)!='HO')
 #                    $hakcuti=12;
 		$penambahTanggal = adddate($bar1->sampai,"+180 days");
+		//$penambahTanggal = adddate($bar1->sampai);
 		// echo getRangeTanggal(date('Y-m-d'),$bar1->sampai);
 		// echo adddate(date('Y-m-d'), "-180 days");
 		
 		//Masa kerja
 		$date1=$bar1->tanggalmasuk;
+		$date1staff=($bar1->tanggalpengangkatan=='0000-00-00' ? $bar1->tanggalmasuk : $bar1->tanggalpengangkatan);
         $date2=date('Y-m-d');
         
         $diff = abs(strtotime($date2) - strtotime($date1)); 
+        $diffstaff = abs(strtotime($date2) - strtotime($date1staff)); 
                 
-        $years = floor($diff / (365*60*60*24)); 
-        $months = floor(($diff - $years * 365*60*60*24) / (30*60*60*24)); 
-        $days = floor(($diff - $years * 365*60*60*24 - $months*30*60*60*24)/ (60*60*24)); 
-        
-        $lamaKerja=" ".$years." Tahun ".$months." Bulan";
+        //$years = floor($diff / (365*60*60*24)); 
+        //$months = floor(($diff - $years * 365*60*60*24) / (30*60*60*24)); 
+        //$days = floor(($diff - $years * 365*60*60*24 - $months*30*60*60*24)/ (60*60*24)); 
+
+        //$yearsstaff = floor($diffstaff / (365*60*60*24)); 
+        //$monthsstaff = floor(($diffstaff - $yearsstaff * 365*60*60*24) / (30*60*60*24)); 
+        //$daysstaff = floor(($diffstaff - $yearsstaff * 365*60*60*24 - $monthsstaff*30*60*60*24)/ (60*60*24)); 
+
+	$tdate=strtotime($date2);
+	$dob=strtotime($date1);
+	$bllalu=date('Y-m-d',strtotime('-1 month',$dob));
+	$years=(date('Y',$tdate)-date('Y',$dob))-(date('m',$tdate)<date('m',$dob) || (date('m',$tdate)==date('m',$dob) && date('d',$tdate)<date('d',$dob)) ?1 :0);
+	//$months=(substr($date2,5,5)<substr($date1,5,5) ? 12 : 0)+(date('m',$tdate)-date('m',$dob))-(date('d',$tdate)<date('d',$dob) ? 1 : 0);
+	$months=(date('m',$tdate)<date('m',$dob) || (date('m',$tdate)==date('m',$dob) && date('d',$tdate)<date('d',$dob)) ? 12 : 0)+(date('m',$tdate)-date('m',$dob))-(date('d',$tdate)<date('d',$dob) ? 1 : 0);
+	$days=(date('d',$tdate)<date('d',$dob) ? date('t',strtotime($bllalu)) : 0)+date('d',$tdate)-date('d',$dob);
+
+	$tdate=strtotime($date2);
+	$dob=strtotime($date1staff);
+	$bllalu=date('Y-m-d',strtotime('-1 month',$dob));
+$yearsstaff=(date('Y',$tdate)-date('Y',$dob))-(date('m',$tdate)<date('m',$dob) || (date('m',$tdate)==date('m',$dob) && date('d',$tdate)<date('d',$dob)) ?1 :0);
+	$monthsstaff=(date('m',$tdate)<date('m',$dob) || (date('m',$tdate)==date('m',$dob) && date('d',$tdate)<date('d',$dob)) ? 12 : 0)+(date('m',$tdate)-date('m',$dob))-(date('d',$tdate)<date('d',$dob) ? 1 : 0);
+	$daysstaff=(date('d',$tdate)<date('d',$dob) ? date('t',strtotime($bllalu)) : 0)+date('d',$tdate)-date('d',$dob);
+
+        $lamaKerja=" ".$years." tahun ".$months." bulan ".$days." hari";
+        $lamaKerjastaff=" ".$yearsstaff." tahun ".$monthsstaff." bulan ".$daysstaff." hari";
 		
-		$sisacuti=$hakcuti-$bar1->diambil;
+//		$sisacuti=$hakcuti-$bar1->diambil;
+		$sisacuti=$bar1->hakcuti-$bar1->diambil;
 		if(getRangeTanggal(date('Y-m-d'),$penambahTanggal) > 0){
 			echo"<tr class=rowcontent id=baris".$no.">
 					   <td>".$no."</td>
@@ -106,10 +152,12 @@ else{
 					   <td>".$bar1->tipe."</td>
 					   <td>".tanggalnormal($bar1->tanggalmasuk)."</td>
 					   <td>".$lamaKerja."</td>
+					   <td>".tanggalnormal($bar1->tanggalpengangkatan)."</td>
+					   <td>".$lamaKerjastaff."</td>
 					   <td id=periode".$no.">".$bar1->periodecuti."</td>				   
 					   <td id=dari".$no.">".tanggalnormal($bar1->dari)."</td>
-					   <td id=sampai".$no.">".tanggalnormal($penambahTanggal)."</td>
-					   <td id=hak".$no." align=right>".$hakcuti."</td>
+					   <td id=sampai".$no.">".tanggalnormal($bar1->sampai)."</td>
+					   <td id=hak".$no." align=right>".$bar1->hakcuti."</td>
 					   <td id=diambil".$no." align=right>".$bar1->diambil."</td>
 					   <td style='text-align:right;'><input type=text id=sisa".$no." class=myinputtextnumber size=4 conkeypress=\"return angka_doang(event);\" value='".$sisacuti."'>
 					   <img src='images/save.png'  title='Save' class=resicon onclick=updateSisa('".$periode."','".$bar1->karyawanid."','".$bar1->kodeorg."','sisa".$no."')>

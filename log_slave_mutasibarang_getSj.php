@@ -16,7 +16,7 @@ switch($param['proses']){
               left join ".$dbname.".log_suratjalanht b on a.nosj=b.nosj
               where a.notransaksireferensi='' and b.kodeorg='".$_SESSION['empl']['lokasitugas']."' and a.kodept='".$optInduk[$kdid]."'" 
              . " group by nosj,jenis order by nosj desc";
-        $res = fetchData($q);
+		$res = fetchData($q);
         $str ="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
         $exist = array();
         foreach($res as $row) {

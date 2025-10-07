@@ -103,12 +103,13 @@ function loadData()
 	
 }
 
-function fillField(afd,jenispremi,kelaspohon,basis,premilebih,premilibur,premiliburbasis,topografi,premitopografi,premibrondolan)
+function fillField(afd,jenispremi,kelaspohon,basis,premilebih,premilibur,premiliburbasis,topografi,premitopografi,premibrondolan,jenisbasis,premilebih2,premilebih3)
 {
 	setValue('afd',afd);
 	setValue('jenispremi',jenispremi);
 	setValue('kelaspohon',kelaspohon);
 	setValue('topografi',topografi);
+	setValue('jenisbasis',jenisbasis);
 	
 	document.getElementById('afd').disabled = true;
 	document.getElementById('jenispremi').disabled = true;
@@ -123,6 +124,8 @@ function fillField(afd,jenispremi,kelaspohon,basis,premilebih,premilibur,premili
     document.getElementById('topografi').value=topografi;
     document.getElementById('premitopografi').value=premitopografi;
 	document.getElementById('premibrondolan').value=premibrondolan;
+    document.getElementById('premilebih2').value=premilebih2;
+    document.getElementById('premilebih3').value=premilebih3;
     
     document.getElementById('method').value="update";
 }
@@ -169,11 +172,9 @@ function cancelIsi()
     document.getElementById('topografi').selectedIndex=0;
 	document.getElementById('topografi').disabled = false;
     document.getElementById('premitopografi').value=0;
+    document.getElementById('premibrondolan').value=0;
+    document.getElementById('jenisbasis').selectedIndex=0;
+    document.getElementById('premilebih2').value=0;
+    document.getElementById('premilebih3').value=0;
     document.getElementById('method').value="insert";
 }
-
-
-
-
-
-

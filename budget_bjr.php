@@ -11,7 +11,12 @@ echo open_body();
 include('master_mainMenu.php');
 
 $optOrg="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
-$sql = "SELECT kodeorganisasi,namaorganisasi FROM ".$dbname.".organisasi where tipe='KEBUN' ORDER BY kodeorganisasi";
+//$sql = "SELECT kodeorganisasi,namaorganisasi FROM ".$dbname.".organisasi where tipe='KEBUN' ORDER BY kodeorganisasi";
+if(trim($_SESSION['empl']['tipelokasitugas'])=='HOLDING'){
+	$sql = "SELECT kodeorganisasi,namaorganisasi FROM ".$dbname.".organisasi where tipe='BLOK' and detail='1' ORDER BY kodeorganisasi";
+}else{
+	$sql = "SELECT kodeorganisasi,namaorganisasi FROM ".$dbname.".organisasi where tipe='BLOK' and detail='1' and kodeorganisasi like '".$_SESSION['empl']['lokasitugas']."%' ORDER BY kodeorganisasi";
+}
 $qry = mysql_query($sql) or die ("SQL ERR : ".mysql_error());
 while ($data=mysql_fetch_assoc($qry))
                         {
@@ -32,13 +37,13 @@ echo"<br /><br /><fieldset style='float:left;'>
                 <legend>".$_SESSION['lang']['entryForm']."</legend> 
                         <table border=0 cellpadding=1 cellspacing=1>
                                 <tr><td width=100>".$_SESSION['lang']['budgetyear']."<td width=10>:</td></td><td><input type=text id=tahunbudget size=10 onkeypress=\"return angka(event,'0123456789');validatefn(event);\" class=myinputtext maxlength=4 style=\"width:200px;\"></td></tr>
-                                <tr><td>".$_SESSION['lang']['kodeorganisasi']." <td>:</td></td><td><select id=kodeorg style=\"width:200px;\" >".$optOrg."</select></td></tr>
+                                <tr><td>".$_SESSION['lang']['kodeorganisasi']." <td>:</td></td><td><select id=kodeorg onchange=getthntanam() style=\"width:200px;\" >".$optOrg."</select></td></tr>
                                 <tr><td>".$_SESSION['lang']['thntnm']."<td>:</td></td><td><input type=text id=thntanam size=10 onkeypress=\"return angka(event,'0123456789');validatefn(event);\" class=myinputtext maxlength=4 style=\"width:200px;\"></td></tr>
                                 <tr><td>".$_SESSION['lang']['bjr']."<td>:</td></td><td><input type=text id=bjr size=10 onkeypress=\"return angka_doang(event);\" class=myinputtext maxlength=6 style=\"width:200px;\"> </td></tr>
 
                                 <tr><td></td><td></td><br />
                                         <td><br /><button class=mybutton onclick=simpanbjr()>Simpan</button>
-                                        <button class=mybutton onclick=cancelbjr()>Hapus</button></td></tr>
+                                        <button class=mybutton onclick=cancelbjr()>Batal</button></td></tr>
                         </table></fieldset>
                                         <input type=hidden id=method value='insert'>
                                         <input type=hidden id=oldtahunbudget value='insert'>

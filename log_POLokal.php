@@ -130,15 +130,22 @@ CLOSE_BOX();
         }
         
 		$user_id=$_SESSION['standard']['userid'];
-		$klq="select namakaryawan,karyawanid,bagian,lokasitugas from ".$dbname.".`datakaryawan` where
-            (tanggalkeluar = '0000-00-00' or tanggalkeluar > '".date("Y-m-d")."') and tipekaryawan in ('0','7','8') and
-            karyawanid!='".$user_id."' and lokasitugas!='' and (kodejabatan<6 or kodejabatan=11 or kodejabatan=12 or kodejabatan=117 or kodejabatan=146) and
-            tanggalkeluar='0000-00-00' order by namakaryawan asc"; 
+		$klq="select namakaryawan,karyawanid,bagian,lokasitugas,kodejabatan from ".$dbname.".`datakaryawan` 
+			where (tanggalkeluar = '0000-00-00' or tanggalkeluar > '".date("Y-m-d")."') and tipekaryawan in ('0','2','6','7','8') 
+			and karyawanid!='".$user_id."' and lokasitugas!='' 
+			and kodeorganisasi='".$_SESSION['empl']['kodeorganisasi']."'
+			and lokasitugas not like '%HO'
+			and (kodejabatan<6 or kodejabatan=29 or kodejabatan=117 or kodejabatan=119 or kodejabatan=146 or kodejabatan=150 or kodejabatan=156 
+			or kodejabatan=160 or kodejabatan=177 or kodejabatan=200 or kodejabatan=207 or kodejabatan=280 or kodejabatan=343 or kodejabatan=344 
+			or kodejabatan=348 or kodejabatan=351 or kodejabatan=125) 
+			order by namakaryawan asc"; 
+		//exit('Warning: '.$klq);
         $qry=mysql_query($klq) or die(mysql_error());
 		$optPur="";
         while($rst=mysql_fetch_object($qry))
         {
-                $sBag="select nama from ".$dbname.".sdm_5departemen where kode='".$rst->bagian."'";
+                //$sBag="select nama from ".$dbname.".sdm_5departemen where kode='".$rst->bagian."'";
+                $sBag="select namajabatan as nama from ".$dbname.".sdm_5jabatan where kodejabatan='".$rst->kodejabatan."'";
                 $qBag=mysql_query($sBag) or die(mysql_error());
                 $rBag=mysql_fetch_assoc($qBag);
                 $optPur.="<option value='".$rst->karyawanid."'>".$rst->namakaryawan." [".$rst->lokasitugas."] [".$rBag['nama']."]</option>";
@@ -250,7 +257,7 @@ CLOSE_BOX();
                  <tr>
             <td><? echo $_SESSION['lang']['keterangan'] ?></td>
                         <td>:</td>
-                        <td><textarea id='ketUraian' name='ketUraian' onkeypress='return tanpa_kutip(event);' maxlength=30></textarea></td>
+                        <td><textarea id='ketUraian' name='ketUraian' onkeypress='return tanpa_kutip(event);' maxlength=50></textarea></td>
         </tr>
                 <tr>
             <td><? echo $_SESSION['lang']['purchaser'] ?></td>

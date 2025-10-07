@@ -73,8 +73,8 @@ $optNmKeg=makeOption($dbname, 'setup_kegiatan', 'kodekegiatan,namakegiatan');
             #realisasi
             $sdgaji="select noakun,sum(jumlah) as realst from ".$dbname.".keu_jurnaldt_vw
             where noakun like '".$dtser[0]."%' and kodeorg='".$dtser[1]."' 
-            and left(tanggal,7)='".$periode."'  
-            group by noakun asc";
+            and left(tanggal,7)='".$periode."' and noakun not like '71502%'
+            group by noakun order by noakun asc";
             $qdgaji=mysql_query($sdgaji) or die(mysql_error($conn));
             while($rdgaji=mysql_fetch_assoc($qdgaji)){
             $dtAkun[$rdgaji['noakun']]=$rdgaji['noakun'];
@@ -83,8 +83,8 @@ $optNmKeg=makeOption($dbname, 'setup_kegiatan', 'kodekegiatan,namakegiatan');
             #realisasi sbi
             $sdgajisbi="select noakun,sum(jumlah) as realst from ".$dbname.".keu_jurnaldt_vw
             where noakun like '".$dtser[0]."%'  and kodeorg='".$dtser[1]."' 
-            and left(tanggal,7) between '".$thn[0]."-01' and '".$periode."'
-            group by noakun asc";
+            and left(tanggal,7) between '".$thn[0]."-01' and '".$periode."' and noakun not like '71502%'
+            group by noakun order by noakun asc";
             $qdgajisbi=mysql_query($sdgajisbi) or die(mysql_error($conn));
             while($rdgajisbi=mysql_fetch_assoc($qdgajisbi)){
             $dtAkun[$rdgajisbi['noakun']]=$rdgajisbi['noakun'];
@@ -95,7 +95,7 @@ $optNmKeg=makeOption($dbname, 'setup_kegiatan', 'kodekegiatan,namakegiatan');
             $s_budstbi="select noakun,sum(rp".$bulan.") as budget_st from ".$dbname.".bgt_budget_detail
             where noakun like '".$dtser[0]."%' and  kodeorg like '".$dtser[1]."%' 
             and tahunbudget='".$thn[0]."' 
-            group by noakun";
+            group by noakun order by noakun asc";
             $q_budstbi = mysql_query($s_budstbi) or die(mysql_error($conn));
             while($r_budstbi=mysql_fetch_assoc($q_budstbi))
             {
@@ -106,7 +106,7 @@ $optNmKeg=makeOption($dbname, 'setup_kegiatan', 'kodekegiatan,namakegiatan');
             # Budget Station SDBI
             $s_budstsdbi="select noakun,sum(".$fld_st5.") as bgt_st from ".$dbname.".bgt_budget_detail
               where noakun like '".$dtser[0]."%'  and kodeorg like '".$dtser[1]."%'   and tahunbudget='".$thn[0]."' 
-              group by noakun";
+              group by noakun order by noakun asc";
             //echo $s_budstsdbi;
             $q_budstsdbi = mysql_query($s_budstsdbi) or die(mysql_error($conn));
             while($r_budstsdbi=mysql_fetch_assoc($q_budstsdbi)){
@@ -177,8 +177,8 @@ $optNmKeg=makeOption($dbname, 'setup_kegiatan', 'kodekegiatan,namakegiatan');
             #realisasi
             $sdgaji="select noakun,sum(jumlah) as realst from ".$dbname.".keu_jurnaldt_vw
             where noakun like '".$dtser[0]."%' and kodeorg='".$dtser[1]."' 
-            and left(tanggal,7)='".$periode."'  
-            group by noakun asc";
+            and left(tanggal,7)='".$periode."' and noakun not like '71502%'
+            group by noakun order by noakun asc";
             //exit("error:".$sdgaji);
             $qdgaji=mysql_query($sdgaji) or die(mysql_error($conn));
             while($rdgaji=mysql_fetch_assoc($qdgaji)){
@@ -188,8 +188,8 @@ $optNmKeg=makeOption($dbname, 'setup_kegiatan', 'kodekegiatan,namakegiatan');
             #realisasi sbi
             $sdgajisbi="select noakun,sum(jumlah) as realst from ".$dbname.".keu_jurnaldt_vw
             where noakun like '".$dtser[0]."%'  and kodeorg='".$dtser[1]."' 
-            and left(tanggal,7) between '".$thn[0]."-01' and '".$periode."'
-            group by noakun asc";
+            and left(tanggal,7) between '".$thn[0]."-01' and '".$periode."' and noakun not like '71502%'
+            group by noakun order by noakun asc";
             $qdgajisbi=mysql_query($sdgajisbi) or die(mysql_error($conn));
             while($rdgajisbi=mysql_fetch_assoc($qdgajisbi)){
             $dtAkun[$rdgajisbi['noakun']]=$rdgajisbi['noakun'];
@@ -200,7 +200,7 @@ $optNmKeg=makeOption($dbname, 'setup_kegiatan', 'kodekegiatan,namakegiatan');
             $s_budstbi="select noakun,sum(rp".$bulan.") as budget_st from ".$dbname.".bgt_budget_detail
             where noakun like '".$dtser[0]."%' and  kodeorg like '".$dtser[1]."%' 
             and tahunbudget='".$thn[0]."' 
-            group by noakun";
+            group by noakun order by noakun asc";
             $q_budstbi = mysql_query($s_budstbi) or die(mysql_error($conn));
             while($r_budstbi=mysql_fetch_assoc($q_budstbi))
             {
@@ -211,7 +211,7 @@ $optNmKeg=makeOption($dbname, 'setup_kegiatan', 'kodekegiatan,namakegiatan');
             # Budget Station SDBI
             $s_budstsdbi="select noakun,sum(".$fld_st5.") as bgt_st from ".$dbname.".bgt_budget_detail
               where noakun like '".$dtser[0]."%'  and kodeorg like '".$dtser[1]."%'   and tahunbudget='".$thn[0]."' 
-              group by noakun";
+              group by noakun order by noakun asc";
             //echo $s_budstsdbi;
             $q_budstsdbi = mysql_query($s_budstsdbi) or die(mysql_error($conn));
             while($r_budstsdbi=mysql_fetch_assoc($q_budstsdbi)){

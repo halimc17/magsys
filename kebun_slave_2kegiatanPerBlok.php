@@ -65,10 +65,10 @@ while($bar=mysql_fetch_object($res))
 }
 
 #generate SQL
-$str="select noakun,sum(debet) as biaya,kodeblok from ".$dbname.".keu_jurnaldt_vw 
+$str="select a.*,b.namaorganisasi from (select noakun,sum(debet) as biaya,kodeblok from ".$dbname.".keu_jurnaldt_vw 
       where tanggal between '".$tgl1."' and '".$tgl2."' and noakun like '".substr($kegiatan,0,7)."%' and kodeorg='".$kdOrg."' and kodekegiatan='".$kegiatan."'
 	  ".$whrip."
-      group by noakun,kodeblok";
+      group by noakun,kodeblok) a left join ".$dbname.".organisasi b on a.kodeblok=b.kodeorganisasi order by a.noakun,a.kodeblok";
 //echo $str;
 $res=mysql_query($str);
 
@@ -117,7 +117,7 @@ while($bar=mysql_fetch_object($res))
                 <td>".$no."</td>
                 <td>".$bar->noakun."</td>    
                 <td>".$namakegiatan[$bar->noakun]."</td>  
-                <td>".$bar->kodeblok."</td>
+                <td>".$bar->namaorganisasi."</td>
                 <td>".$tahuntanam[$bar->kodeblok]."</td>
                 <td align=right>".number_format($pres[$bar->kodeblok][$kegiatan])."</td>
                  <td>".$satuan[$kegiatan]."</td>                     
@@ -236,7 +236,7 @@ while($bar=mysql_fetch_object($res))
     $pdf->Cell(8/100*$width,$height,$no,1,0,'C',1);		
     $pdf->Cell(12/100*$width,$height,$bar->noakun,1,0,'C',1);		
     $pdf->Cell(30/100*$width,$height,$namakegiatan[$bar->noakun],1,0,'L',1);		
-    $pdf->Cell(15/100*$width,$height,$bar->kodeblok,1,0,'L',1);		
+    $pdf->Cell(15/100*$width,$height,$bar->namaorganisasi,1,0,'L',1);		
     $pdf->Cell(15/100*$width,$height,$tahuntanam[$bar->kodeblok],1,0,'C',1);		
     $pdf->Cell(15/100*$width,$height,number_format($bar->biaya),1,1,'R',1);		
     $ttl+=$bar->biaya;

@@ -2,6 +2,7 @@
 require_once('master_validation.php');
 require_once('config/connection.php');
 require_once('lib/nangkoelib.php');
+include_once('lib/zFunction.php');
 include_once('lib/zLib.php');
 
 $method = checkPostGet('method','');
@@ -139,8 +140,31 @@ switch($method)
     
     case'loadData':
         //$str1="select * from ".$dbname.".project where kodeorg='".$_SESSION['empl']['lokasitugas']."' order by substring(kode, -7) desc";
+      $postJabatan = getPostingJabatan('traksi');
+		if($_SESSION['empl']['subbagian']=='')
+		{
+			if(trim($_SESSION['empl']['tipelokasitugas'])=='HOLDING'){
+				$whereCont = "TRUE";
+			}else if(trim($_SESSION['empl']['tipelokasitugas'])=='KANWIL'){
+				$whereCont = "kodeorg in (select kodeorganisasi from ".$dbname.".organisasi c where c.induk='".$_SESSION['empl']['kodeorganisasi']."' and kodeorganisasi not like '%HO')";
+			}else{
+				$whereCont = "a.kodeorg='".$_SESSION['empl']['lokasitugas']."'";
+			}
+		}
+		else
+		{
+			if(in_array($_SESSION['empl']['kodejabatan'],$postJabatan)) {
+				$whereCont = "a.kodeorg='".$_SESSION['empl']['lokasitugas']."'";
+			}else{
+				//$whereCont = "a.kodeorg='".$_SESSION['empl']['lokasitugas']."'";
+				$whereCont = "a.updateby='".$_SESSION['standard']['userid']."'";
+			}
+		}
      $str1="select a.*,b.namakaryawan from ".$dbname.".project a 
-            left join ".$dbname.".datakaryawan b on a.updateby=b.karyawanid order by substring(kode, -7) desc";   
+            left join ".$dbname.".datakaryawan b on a.updateby=b.karyawanid 
+			where ".$whereCont."
+			order by a.posting,a.kodeorg,substring(a.kode, -10) desc";
+	//echo $str1;		
     if($res1=mysql_query($str1))
     {
         $rowd=mysql_num_rows($res1);
@@ -181,16 +205,19 @@ switch($method)
                         echo"<img src=images/application/application_edit.png class=resicon  title='Edit' onclick=\"fillField('".$bar1->kodeorg."','".$aset."','".$bar1->tipe."','".$bar1->nama."','".tanggalnormal($bar1->tanggalmulai)."','".tanggalnormal($bar1->tanggalselesai)."','update','".$bar1->kode."','".$bar1->subtipe."');\">
                         <img src=images/application/application_delete.png class=resicon  title='Delete' onclick=\"hapus('".$bar1->kode."');\">
                         <img src=images/nxbtn.png class=resicon  title='Detail' onclick=\"detailForm('".$bar1->kodeorg."','".$aset."','".$bar1->tipe."','".$bar1->nama."','".tanggalnormal($bar1->tanggalmulai)."','".tanggalnormal($bar1->tanggalselesai)."','detail','".$bar1->kode."','".$bar1->subtipe."','".$dSubAst['namasub']."');\">
+						<img src=images/skyblue/posting.png class=resicon  title='posting data' onclick=\"postIni('".$bar1->kode."','".$bar1->kodeorg."');\">";
+                    }elseif($bar1->posting==0 and in_array($_SESSION['empl']['kodejabatan'],$postJabatan)){
+                        echo"<img src=images/application/application_edit.png class=resicon  title='Edit' onclick=\"fillField('".$bar1->kodeorg."','".$aset."','".$bar1->tipe."','".$bar1->nama."','".tanggalnormal($bar1->tanggalmulai)."','".tanggalnormal($bar1->tanggalselesai)."','update','".$bar1->kode."','".$bar1->subtipe."');\">
+                        <img src=images/application/application_delete.png class=resicon  title='Delete' onclick=\"hapus('".$bar1->kode."');\">
+                        <img src=images/nxbtn.png class=resicon  title='Detail' onclick=\"detailForm('".$bar1->kodeorg."','".$aset."','".$bar1->tipe."','".$bar1->nama."','".tanggalnormal($bar1->tanggalmulai)."','".tanggalnormal($bar1->tanggalselesai)."','detail','".$bar1->kode."','".$bar1->subtipe."','".$dSubAst['namasub']."');\">
                         <img src=images/skyblue/posting.png class=resicon  title='posting data' onclick=\"postIni('".$bar1->kode."','".$bar1->kodeorg."');\">";
-                        
                     }else{
                         if($bar1->posting==1){
                             echo"<img src=images/skyblue/posted.png class=resicon>";
-                        }
-                        else {    
+                        }else{    
                             echo"<img src=images/skyblue/posting.png>";
-                            }                       
-//                        echo"<img onclick=\"masterPDF('project','".$bar1->kode.",".$bar1->updateby."','','vhc_slave_project_pdf',event);\" title=\"Print\" class=\"resicon\" src=\"images/pdf.jpg\">";
+                        }                       
+						//echo"<img onclick=\"masterPDF('project','".$bar1->kode.",".$bar1->updateby."','','vhc_slave_project_pdf',event);\" title=\"Print\" class=\"resicon\" src=\"images/pdf.jpg\">";
                     }
                     echo"</td>
                         <td>
@@ -506,13 +533,15 @@ switch($method)
 			$sCari="select distinct updateby from ".$dbname.".project where kode='".$_POST['kode']."'";
 			$qCari=mysql_query($sCari) or die(mysql_error($conn));
 			$rCari=mysql_fetch_assoc($qCari);
-			if($optLokasi[$rCari['updateby']]!=$_SESSION['empl']['lokasitugas']) {
+			/*
+			if($optLokasi[$rCari['updateby']]!=$_SESSION['empl']['lokasitugas'] and !in_array($_SESSION['empl']['kodejabatan'],$postJabatan)) {
 				$str="delete from ".$dbname.".keu_jurnalht where nojurnal='".$nojurnal."'";
 				mysql_query($str) or die(" Error".mysql_error($conn)); #rollback jurnal
 				$str="delete from ".$dbname.".sdm_daftarasset where kodeasset='".$kodeAsset."'";
 				mysql_query($str) or die(" Error".mysql_error($conn)); #rollback asset			
 				exit("Error:Anda Tidak Memiliki Autorisasi");
 			}
+			*/
 			$sPost="update ".$dbname.".project set updateby='".$_SESSION['standard']['userid']."',posting='1' where kode='".$_POST['kode']."'";
 			if(!mysql_query($sPost)){ 
 				$str="delete from ".$dbname.".keu_jurnalht where nojurnal='".$nojurnal."'";

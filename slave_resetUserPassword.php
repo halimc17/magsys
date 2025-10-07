@@ -26,13 +26,13 @@ else
                             Dear ".$uname.",<br><br>
                                   Here is your new password:
                                           <table>
-                                          <tr><td>UserName</td><td>:".$uname."</td></tr>
-                                          <tr><td>NewPassword</td><td>:<b>".$password."</b></td></tr>
+                                          <tr><td>UserName</td><td>: ".$uname."</td></tr>
+                                          <tr><td>NewPassword</td><td>: <b>".$password."</b></td></tr>
                                           </table><br>
                                           Please maintain your password periodically.
                                           <br>
-                                          Regards,
-                                          System, at ".date('d-m-YYY H:i:s')."
+                                          Regards,<br>
+                                          System,<br> at ".date('d-m-Y H:i:s')."
                                </body></html>"; 
                             
                                 $to     =$email;	  

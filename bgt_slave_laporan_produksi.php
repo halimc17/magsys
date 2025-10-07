@@ -379,10 +379,21 @@ if($proses=='excel')
                 $tab.="<td  align=center>".$dtBln7."(kg)</td>";
             }
              $tab.="<td align=center  width=50>".$_SESSION['lang']['total']." (KG)</td></tr></thead><tbody>";
-             $sList="select * from ".$dbname.".bgt_produksi_kbn_kg_vw where
-                    kodeunit like '".$_POST['kdUnit']."%' and tahunbudget='".$_POST['thnBudget']."'
-                    order by kodeblok asc ";
-                // echo $sList;
+             $sList="select a.tahunbudget,a.kodeunit,a.kodeblok,b.thntanam as thntnm,b.bjr,c.pokokproduksi,c.hathnini as luas,(c.hathnini*a.jjgperpkk*1000) as kgsetahun 
+							,(b.bjr*a.jjg01) as kg01,(b.bjr*a.jjg02) as kg02,(b.bjr*a.jjg03) as kg03
+							,(b.bjr*a.jjg04) as kg04,(b.bjr*a.jjg05) as kg05,(b.bjr*a.jjg06) as kg06
+							,(b.bjr*a.jjg07) as kg07,(b.bjr*a.jjg08) as kg08,(b.bjr*a.jjg09) as kg09
+							,(b.bjr*a.jjg10) as kg10,(b.bjr*a.jjg11) as kg11,(b.bjr*a.jjg12) as kg12
+							,c.intiplasma
+					from ".$dbname.".bgt_produksi_kebun a
+					LEFT JOIN ".$dbname.".bgt_bjr b on a.kodeblok=b.kodeorg and a.tahunbudget=b.tahunbudget
+					LEFT JOIN ".$dbname.".bgt_blok c on a.kodeblok=c.kodeblok and a.tahunbudget=c.tahunbudget
+					where a.kodeunit like '".$_POST['kdUnit']."%' and a.tahunbudget='".$_POST['thnBudget']."' 
+					order by a.kodeblok asc ";
+             //$sList="select * from ".$dbname.".bgt_produksi_kbn_kg_vw where
+             //       kodeunit like '".$_POST['kdUnit']."%' and tahunbudget='".$_POST['thnBudget']."'
+             //       order by kodeblok asc ";
+             //echo $sList;
                 $qList=mysql_query($sList) or die(mysql_error());
                 while($rList=mysql_fetch_assoc($qList))
                 {
@@ -402,8 +413,8 @@ if($proses=='excel')
 	            $tab.="<td align=right ".$rtp.">".$rList['tahunbudget']."</td>";
                     $tab.="<td align=right ".$rtp.">".$rList['thntnm']."</td>";
                     $tab.="<td align=right ".$rtp.">".$rList['pokokproduksi']."</td>";
-                    $tab.="<td align=right ".$rtp.">".$rList['bjr']."</td>";
-                    $tab.="<td align=right ".$rtp.">".$rOpt['jjgperpkk']."</td>";
+                    $tab.="<td align=right ".$rtp.">".number_format($rList['bjr'],2)."</td>";
+                    $tab.="<td align=right ".$rtp.">".number_format($rOpt['jjgperpkk'],2)."</td>";
 
                     $tab.="<td align=right ".$rtp.">".number_format($totala,0)."</td>";
 
@@ -422,10 +433,10 @@ if($proses=='excel')
                         {
                             $rList['kg'.$b]=0;
                         }
-                        $tab.="<td align='right' ".$rtp.">".number_format($rList['kg'.$b],0)."</td>";
+                        $tab.="<td align='right' ".$rtp.">".number_format($rList['kg'.$b],2)."</td>";
                         $rTotal[$rList['kodeblok']]+=$rList['kg'.$b];
                     }
-			 $tab.="<td align=right ".$rtp.">".number_format($rTotal[$rList['kodeblok']],0)."</td>";
+			 $tab.="<td align=right ".$rtp.">".number_format($rTotal[$rList['kodeblok']],2)."</td>";
 		  
                     $tab.="</tr>";
 
@@ -456,14 +467,15 @@ if($proses=='excel')
 				$totbjr+=$rList['bjr'];
 				$totpkkprod+=$rList['pokokproduksi'];
 				$totjpt+=$rOpt['jjgperpkk'];
+				$totkg+=$rTotal[$rList['kodeblok']];
 
 
 
 			}//tutup while
-                        $tab.="<thead><tr class=rowheader><td align=center colspan=4>".$_SESSION['lang']['total']."</td>";
+                $tab.="<thead><tr class=rowheader><td align=center colspan=4>".$_SESSION['lang']['total']."</td>";
 				$tab.="<td align=right>".number_format($totpkkprod)."</td>";
-				$tab.="<td align=right>".number_format($totbjr)."</td>";
-				$tab.="<td align=right>".number_format($totjpt)."</td>";
+				$tab.="<td align=right>".number_format($totbjr/$no,2)."</td>";
+				$tab.="<td align=right>".number_format($totjpt,2)."</td>";
 				$tab.="<td align=right>".number_format($totSemua)."</td>";
 				for($i=1;$i<=12;$i++)
 				{
@@ -472,7 +484,7 @@ if($proses=='excel')
 					echo "</pre>";*/
 					$tab.="<td align=right>".number_format($hasil[$a[$i]],2)."</td>";
 				}
-                $tab.="<td></td>";
+                $tab.="<td>".number_format($totkg,2)."</td>";
 				$tab.="</tr></thead>";
 	
                         $tab.="</tbody></table>";

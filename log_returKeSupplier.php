@@ -24,7 +24,7 @@ echo"</legend>";
        order by namaorganisasi";// and kodeorganisasi not in ('SENE10', 'SKNE10', 'SOGE30') order by namaorganisasi";
 }else{
    $str="select namaorganisasi,kodeorganisasi from ".$dbname.".organisasi where (left(induk,4)='".$_SESSION['empl']['lokasitugas']."' 
-       or kodeorganisasi='".$_SESSION['empl']['lokasitugas']."') and tipe= 'GUDANGTEMP' order by namaorganisasi";
+       or kodeorganisasi='".$_SESSION['empl']['lokasitugas']."') and tipe like 'GUDANG%' order by namaorganisasi";
     
 }
 

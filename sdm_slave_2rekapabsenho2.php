@@ -22,7 +22,7 @@ function putertanggal($tanggal)
 $tangsys1=putertanggal($tanggal1);
 $tangsys2=putertanggal($tanggal2);
 
-function dates_inbetween($date1, $date2){
+function dates_inbetwee($date1, $date2){
     $day = 60*60*24;
     $date1 = strtotime($date1);
     $date2 = strtotime($date2);
@@ -73,7 +73,8 @@ if($tangsys1>$tangsys2)
 }
 
 //cek max hari inputan
-$tanggaltanggal = dates_inbetween($tangsys1, $tangsys2);
+//$tanggaltanggal = dates_inbetwee($tangsys1, $tangsys2);
+$tanggaltanggal = rangeTanggal($tangsys1, $tangsys2);
 $jumlahhari=count($tanggaltanggal);
 //if($jumlahhari>31||$jumlahhari<1)
 //{

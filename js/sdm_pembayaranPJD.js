@@ -194,3 +194,15 @@ function saveBayarPJD(no,notransaksi)
 			}
 		}			
 }  
+
+function previewPUKPJDPDF(nosk,ev)
+{
+   	param='notransaksi='+nosk;
+	tujuan = 'sdm_slave_printPUKPJD_pdf.php?'+param;	
+ //display window
+   title=nosk;
+   width='700';
+   height='400';
+   content="<iframe frameborder=0 width=100% height=100% src='"+tujuan+"'></iframe>"
+   showDialog1(title,content,width,height,ev); 
+}

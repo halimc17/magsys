@@ -70,12 +70,14 @@ $strf="select kodekegiatan,kelompok,namakegiatan from ".$dbname.".setup_kegiatan
 $resf=mysql_query($strf);
 while($barf=mysql_fetch_object($resf))
 {
-	$optKegiatan.="<option value='".$barf->kodekegiatan."'>[".$barf->kelompok."]-".$barf->namakegiatan."</option>";
+	$optKegiatan.="<option value='".$barf->kodekegiatan."'>[".$barf->kelompok."][".$barf->kodekegiatan."]-".$barf->namakegiatan."</option>";
 }
 
 //=================Get kendaraan
    $optionm="<option value=''></option>"; 
-	$str="select * from ".$dbname.".vhc_5master order by kodetraksi,kodevhc";
+	$str="select kodevhc,kodetraksi,kodebarang from ".$dbname.".vhc_5master where kodeorg in 
+	(select a.kodeunit from ".$dbname.".bgt_regional_assignment a LEFT JOIN ".$dbname.".organisasi b on b.kodeorganisasi=a.kodeunit where a.regional='".$_SESSION['empl']['regional']."' and b.detail=1)
+	order by kodetraksi,kodevhc";
 	$res=mysql_query($str);
 	while($bar1=mysql_fetch_object($res))
 	{

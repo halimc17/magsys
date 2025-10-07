@@ -138,10 +138,12 @@ switch($proses) {
                 $optBlok[$bar->kodeorg]=$bar->namaorg;
             }  
         } else {
-			$str_blok="SELECT b.kodeorganisasi as kodeorg, b.namaorganisasi as namaorg FROM ".$dbname.".setup_blok a LEFT JOIN ".$dbname.".organisasi b 
-				ON a.kodeorg = b.kodeorganisasi 
-				WHERE a.luasareaproduktif >0 and b.kodeorganisasi like '".substr($param['divisi'],0,4)."%' 
-				and length(b.kodeorganisasi)>6";
+			//$str_blok="SELECT b.kodeorganisasi as kodeorg, b.namaorganisasi as namaorg FROM ".$dbname.".setup_blok a LEFT JOIN ".$dbname.".organisasi b 
+			//	ON a.kodeorg = b.kodeorganisasi 
+			//	WHERE a.luasareaproduktif >0 and b.kodeorganisasi like '".substr($param['divisi'],0,4)."%' 
+			//	and length(b.kodeorganisasi)>6";
+            $str_blok="SELECT b.kodeorganisasi as kodeorg, b.namaorganisasi as namaorg FROM ".$dbname.".organisasi b 
+				WHERE b.kodeorganisasi like '".substr($param['divisi'],0,4)."%'";
             $res_blok=mysql_query($str_blok);
             while($bar=mysql_fetch_object($res_blok)) {
                 $optBlok[$bar->kodeorg]=$bar->namaorg;

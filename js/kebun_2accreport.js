@@ -26,6 +26,29 @@ function getKebun() {
     post_response_text(tujuan+'.php', param, respon);
 }
 
+function getDivisi() {
+    var param = "unit="+getValue('kebun')+'&proses=getDivisi',
+		tujuan = "kebun_slave_2panen";
+    
+    function respon() {
+        if (con.readyState == 4) {
+            if (con.status == 200) {
+                busy_off();
+                if (!isSaveResponse(con.responseText)) {
+                    alert('ERROR TRANSACTION,\n' + con.responseText);
+                } else {
+                    // Success Response
+					document.getElementById('divisi').innerHTML=con.responseText;
+                }
+            } else {
+                busy_off();
+                error_catch(con.status);
+            }
+        }
+    }
+    
+    post_response_text(tujuan+'.php', param, respon);
+}
 
 /**
  * level1
@@ -61,7 +84,7 @@ function level1() {
  * Generate Level 2 Report
  */
 function level2() {
-	var param = "pt="+getValue('ptRep')+"&kebun="+getValue('kebunRep')+"&tipe="+
+	var param = "pt="+getValue('ptRep')+"&kebun="+getValue('kebunRep')+"&divisi="+getValue('divisiRep')+"&tipe="+
 			getValue('tipeRep')+"&tanggal="+getValue('tanggalRep')+'&tipekebun='+getValue('tipekebun'),
 		tujuan = "kebun_slave_2accreport";
     
@@ -122,7 +145,7 @@ function level2() {
  * Generate Level 3 Report
  */
 function level3(status, tahuntanam,luasha) {
-	var param = "pt="+getValue('ptRep')+"&kebun="+getValue('kebunRep')+"&tipe="+
+	var param = "pt="+getValue('ptRep')+"&kebun="+getValue('kebunRep')+"&divisi="+getValue('divisiRep')+"&tipe="+
 			getValue('tipeRep')+"&tanggal="+getValue('tanggalRep')+"&statustanam="+
 			status+"&tahuntanam="+tahuntanam+'&tipekebun='+getValue('tipekebun'),
 		tujuan = "kebun_slave_2accreport";
@@ -213,7 +236,7 @@ function level4(event, tipeReport, akun, namakegiatan,kodebarang) {
 	document.getElementById('noakun').value = akun;
 	document.getElementById('namakegiatan').value = namakegiatan;
 	document.getElementById('kodebarang').value = kodebarang;
-	var param = "pt="+getValue('ptRep')+"&kebun="+getValue('kebunRep')+"&tipe="+
+	var param = "pt="+getValue('ptRep')+"&kebun="+getValue('kebunRep')+"&divisi="+getValue('divisiRep')+"&tipe="+
 			getValue('tipeRep')+"&tanggal="+getValue('tanggalRep')+"&statustanam="+
 			getValue('statustanam')+"&tahuntanam="+getValue('tahuntanam')+"&mode=preview&level=4&title="+tipeReport+"&noakun="+akun+"&namakegiatan="+namakegiatan+'&tipekebun='+getValue('tipekebun');
 	if (typeof kodebarang != 'undefined') {

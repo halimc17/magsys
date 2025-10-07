@@ -8,8 +8,7 @@ echo open_body();
 <?
 include('master_mainMenu.php');
 OPEN_BOX('',$_SESSION['lang']['verifikasi']);
-	
-		
+
 $frm[1]="<fieldset>
      <legend>".$_SESSION['lang']['form']."</legend>
 	 <table>
@@ -37,7 +36,7 @@ $frm[1]="<fieldset>
 		 <tfoot>
 		 </tfoot>
 		</table>
-		<button class=mybutton onclick=selesai()>".$_SESSION['lang']['done']."</button>
+		<button class=mybutton onclick=selesai()>".$_SESSION['lang']['done']." </button>
 		<button class=mybutton onclick=batalkan()>".$_SESSION['lang']['cancel']."</button>
 	 </fieldset>
 	 </fieldset>
@@ -47,7 +46,7 @@ $frm[0]="<fieldset>
 	   <legend>".$_SESSION['lang']['list']."</legend>
 	  <fieldset><legend></legend>
 	  ".$_SESSION['lang']['cari_transaksi']."
-	  <input type=text id=txtbabp size=25 class=myinputtext onkeypress=\"return tanpa_kutip(event);\" maxlength=9>
+	  <input type=text id=txtbabp size=25 class=myinputtext onkeypress=\"return tanpa_kutip(event);\" maxlength=13>
 	  <button class=mybutton onclick=cariPJD(0)>".$_SESSION['lang']['find']."</button>
 	  </fieldset>
 	  <table class=sortable cellspacing=1 border=0>
@@ -58,10 +57,10 @@ $frm[0]="<fieldset>
 	  <td>".$_SESSION['lang']['karyawan']."</td>
 	  <td>".$_SESSION['lang']['tanggalsurat']."</td>
 	  <td>".$_SESSION['lang']['tujuan']."</td>
-	  <td>".$_SESSION['lang']['uangmuka']."</td>
-	  <td>".$_SESSION['lang']['digunakan']."</td>	  
+	  <td>".$_SESSION['lang']['digunakan']."</td>
+	  <td>".$_SESSION['lang']['dibayar']."</td>	  
 	  <td>".$_SESSION['lang']['approval_status']."</td>	  
-	  <td></td>
+	  <td>Action</td>
 	  </tr>
 	  </head>
 	   <tbody id=containerlist>";
@@ -73,13 +72,23 @@ $notransaksi="";
   if(isset($_POST['tex']))
   {
   	$notransaksi.=" and notransaksi like '%".$_POST['tex']."%' ";
-  } 
+  }
+if(strstr(strtoupper(substr($_SESSION['empl']['lokasitugas'],0,4)),'HO')){
 $str="select count(*) as jlhbrs from ".$dbname.".sdm_pjdinasht 
         where
-		kodeorg='".substr($_SESSION['empl']['lokasitugas'],0,4)."'
+		kodeorg like '%HO'
 		and statuspersetujuan=1 and statushrd=1
 		".$notransaksi."
 		order by jlhbrs desc";
+}else{
+$str="select count(*) as jlhbrs from ".$dbname.".sdm_pjdinasht 
+        where
+		kodeorg not like '%HO'
+		and kodeorg in (select kodeorganisasi from ".$dbname.".organisasi where induk='".$_SESSION['empl']['induk']."')
+		and statuspersetujuan=1 and statushrd=1
+		".$notransaksi."
+		order by jlhbrs desc";
+}
 $res=mysql_query($str);
 while($bar=mysql_fetch_object($res))
 {
@@ -96,14 +105,22 @@ while($bar=mysql_fetch_object($res))
 	 
   
   $offset=$page*$limit;
-  
-
+if(strstr(strtoupper(substr($_SESSION['empl']['lokasitugas'],0,4)),'HO')){
   $str="select * from ".$dbname.".sdm_pjdinasht 
         where
         kodeorg like '%HO'
 		and statuspersetujuan=1 and statushrd=1
 		".$notransaksi."
-		order by tanggalbuat desc  limit ".$offset.",20";	
+		order by tanggalbuat desc,notransaksi desc limit ".$offset.",20";	
+}else{
+  $str="select * from ".$dbname.".sdm_pjdinasht 
+        where
+		kodeorg not like '%HO'
+		and kodeorg in (select kodeorganisasi from ".$dbname.".organisasi where induk='".$_SESSION['empl']['induk']."')
+		and statuspersetujuan=1 and statushrd=1
+		".$notransaksi."
+		order by tanggalbuat desc,notransaksi desc limit ".$offset.",20";	
+}
   $res=mysql_query($str);
   $no=$page*$limit;
   while($bar=mysql_fetch_object($res))
@@ -131,29 +148,45 @@ while($bar=mysql_fetch_object($res))
    else 
     $stpersetujuan=$_SESSION['lang']['wait_approve'];	  
    
-   $str1="select sum(jumlah) as jumlah from ".$dbname.".sdm_pjdinasdt
+   $str1="select sum(jumlah) as jumlah,sum(jumlahhrd) as jumlahhrd from ".$dbname.".sdm_pjdinasdt
          where notransaksi='".$bar->notransaksi."'";
    $res1=mysql_query($str1);
 
    $usage=0;
+   $usagehrd=0;
    while($bar1=mysql_fetch_object($res1))
    {
    	 $usage=$bar1->jumlah;
+   	 $usagehrd=$bar1->jumlahhrd;
    }	 	 
+
+  $tujuan=$bar->tujuan1;
+  if($bar->tujuan2!=''){
+	$tujuan=$bar->tujuan2;
+  }elseif($bar->tujuan3!=''){
+	$tujuan=$bar->tujuan3;
+  }elseif($bar->tujuanlain!=''){
+	$tujuan=$bar->tujuanlain;
+  }
 	  
 	$frm[0].="<tr class=rowcontent>
 	  <td>".$no."</td>
 	  <td>".$bar->notransaksi."</td>
 	  <td>".$namakaryawan."</td>
 	  <td>".tanggalnormal($bar->tanggalbuat)."</td>
-	  <td>".$bar->tujuan1."</td>
-	  <td align=right>".number_format($bar->dibayar,2,'.',',')."</td>
+	  <td>".$tujuan."</td>
 	  <td align=right>".number_format($usage,2,'.',',')."</td>
+	  <td align=right>".number_format($usagehrd,2,'.',',')."</td>
 	  <td>".$stpersetujuan."</td>
 	  <td align=center>
-	     <img src=images/pdf.jpg class=resicon  title='".$_SESSION['lang']['pdf']."' onclick=\"previewPJD('".$bar->notransaksi."',event);\"> 
-       ".$add."
-	  </td>
+	     <img src=images/pdf.jpg class=resicon  title='".$_SESSION['lang']['pdf']."' onclick=\"previewPJD('".$bar->notransaksi."',event);\">".$add;
+	  if($usagehrd<>0){
+		 $frm[0].="&nbsp <img src=images/pdf.jpg class=resicon  title='".$_SESSION['lang']['pdf']." (BKU)' onclick=\"previewPUKPJDPJPDF('".$bar->notransaksi."',event);\">";
+	  }
+	  if($bar->hasilkerja<>'' or !is_null($bar->hasilkerja)){
+		 $frm[0].="&nbsp <img src=images/pdf.jpg class=resicon  title='".$_SESSION['lang']['pdf']."(Laporan Aktivitas)' onclick=\"previewPJDUraian('".$bar->notransaksi."',event);\">";
+	  }
+	  $frm[0].="</td>
 	  </tr>";
   }
   $frm[0].="<tr><td colspan=11 align=center>
@@ -163,7 +196,7 @@ while($bar=mysql_fetch_object($res))
 	   <button class=mybutton onclick=cariPJD(".($page+1).");>".$_SESSION['lang']['lanjut']."</button>
 	   </td>
 	   </tr>";	   
-$frm[0].="</tbody>
+ $frm[0].="</tbody>
 	   <tfoot>
 	   </tfoot>
 	   </table>
@@ -172,7 +205,7 @@ $frm[0].="</tbody>
 $hfrm[1]=$_SESSION['lang']['form'];
 $hfrm[0]=$_SESSION['lang']['list'];
 	 
-drawTab('FRM',$hfrm,$frm,100,900);	  
+drawTab('FRM',$hfrm,$frm,100,950);	  
 CLOSE_BOX();
 echo close_body();
 ?>

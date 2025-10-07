@@ -139,23 +139,28 @@ CLOSE_BOX();
         }
         
 		$user_id=$_SESSION['standard']['userid'];
+		//$klq="select namakaryawan,karyawanid,bagian,lokasitugas,kodejabatan from ".$dbname.".`datakaryawan` where
+        //    (tanggalkeluar = '0000-00-00' or tanggalkeluar > '".date("Y-m-d")."') and tipekaryawan in ('0','2','6','7','8') and
+        //    karyawanid!='".$user_id."' and lokasitugas!='' and (kodejabatan=5 or kodejabatan=173 or kodejabatan=174 or kodejabatan=175 or kodejabatan=176 or //kodejabatan=261 or kodejabatan=309 or kodejabatan=353)
+        //    order by namakaryawan asc"; 
+		//print_r($klq);	
 		$klq="select namakaryawan,karyawanid,bagian,lokasitugas,kodejabatan from ".$dbname.".`datakaryawan` where
-            (tanggalkeluar = '0000-00-00' or tanggalkeluar > '".date("Y-m-d")."') and tipekaryawan in ('0','7','8') and
-            karyawanid!='".$user_id."' and lokasitugas!='' and (kodejabatan<6 or kodejabatan=11 or kodejabatan=12 or kodejabatan=117 or kodejabatan=176 or kodejabatan=173) and
-            tanggalkeluar='0000-00-00' order by namakaryawan asc"; 
-        
-		$qry=mysql_query($klq) or die(mysql_error());
-		$optPur=$optPur2="";
+            (tanggalkeluar = '0000-00-00' or tanggalkeluar > '".date("Y-m-d")."') and tipekaryawan in ('0','2','6','7','8') and
+            karyawanid!='".$user_id."' and lokasitugas!=''
+            order by namakaryawan asc"; 
+        $qry=mysql_query($klq) or die(mysql_error());
+		$optPur=$optPur2="<option value=''></option>";
         while($rst=mysql_fetch_object($qry))
         {
                 $sBag="select nama from ".$dbname.".sdm_5departemen where kode='".$rst->bagian."'";
-                $qBag=mysql_query($sBag) or die(mysql_error());
+				 $qBag=mysql_query($sBag) or die(mysql_error());
                 $rBag=mysql_fetch_assoc($qBag);
-                if($rst->kodejabatan != '173') {
+                if($rst->kodejabatan != '173' and $rst->kodejabatan != '309') {
                     $optPur.="<option value='".$rst->karyawanid."'>".$rst->namakaryawan." [".$rst->lokasitugas."] [".$rBag['nama']."]</option>";
                 }
                 $optPur2.="<option value='".$rst->karyawanid."'>".$rst->namakaryawan." [".$rst->lokasitugas."] [".$rBag['nama']."]</option>";
         }
+		//$optPur2.="<option value=''></option>";
         
 		$sKrm="select id_franco,franco_name from ".$dbname.".setup_franco where status=0 order by franco_name asc";
         $qKrm=mysql_query($sKrm) or die(mysql_error($conn));
@@ -219,12 +224,12 @@ CLOSE_BOX();
           <tr>
             <td><?php echo $_SESSION['lang']['tandatangan']?></td>
                         <td>:</td>
-                        <td><select id="persetujuan_id" name="persetujuan_id" style="width:150px;" ><?php echo $optPur?></select></td>
+                        <td><select id="persetujuan_id" name="persetujuan_id" style="width:150px;" disabled="true"><?php echo $optPur?></select></td>
         </tr>
                   <tr>
             <td><?php echo $_SESSION['lang']['tandatangan']?> 2</td>
                         <td>:</td>
-                        <td><select id="persetujuan_id2" name="persetujuan_id2" style="width:150px;" ><?php echo $optPur2?></select></td>
+                        <td><select id="persetujuan_id2" name="persetujuan_id2" style="width:150px;" disabled="true"><?php echo $optPur2?></select></td>
         </tr>
            <tr  style="display:none;">
             <td><?php echo $_SESSION['lang']['ongkoskirim']?></td>

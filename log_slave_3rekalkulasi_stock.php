@@ -47,7 +47,8 @@ else{
         $rpmasuk[$bar->kodebarang]+=$bar->rpmasuk;
     }
 #ambil rupiah per barang per gudang menjadi tambahan rpmasuk
-    $sJrn="select kodebarang,jumlah from ".$dbname.".keu_jurnaldt where  nojurnal like '%EXP01%' and tanggal between '".$mulai."' and '".$sampai."' and right(noreferensi,6)='".$_POST['unit']."' and kodebarang!=''";
+//    $sJrn="select kodebarang,jumlah from ".$dbname.".keu_jurnaldt where  nojurnal like '%EXP01%' and tanggal between '".$mulai."' and '".$sampai."' and right(noreferensi,6)='".$_POST['unit']."' and kodebarang!=''";
+    $sJrn="select kodebarang,jumlah from ".$dbname.".keu_jurnaldt where (nojurnal like '%EXP01%' or nojurnal like '%INVM1%') and tanggal between '".$mulai."' and '".$sampai."' and right(noreferensi,6)='".$_POST['unit']."' and kodebarang!='' and (keterangan like 'Biaya Kirim%' or keterangan like 'PBBKB%')";
     $qJrn=mysql_query($sJrn) or die(mysql_error($conn));
     while($rJrn=mysql_fetch_assoc($qJrn)){
       $rpmasuk[$rJrn['kodebarang']]+=$rJrn['jumlah'];  

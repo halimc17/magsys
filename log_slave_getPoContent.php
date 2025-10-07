@@ -144,7 +144,8 @@ function createForm($nopo,$notransaksi='')
                  $sddt=" and a.notransaksi!='".$notransaksi."' ";
            }
 //++++++++++++++++++++++++++++++
-         $strx="select sum(a.jumlah) as jumlah,a.kodebarang as kodebarang 
+         //$strx="select sum(a.jumlah) as jumlah,a.kodebarang as kodebarang 
+         $strx="select sum(if(substr(a.notransaksi,13,2)='GI',a.jumlah*-1,a.jumlah)) as jumlah,a.kodebarang as kodebarang 
             from ".$dbname.".log_transaksidt a,
                  ".$dbname.".log_transaksiht b
                    where a.notransaksi=b.notransaksi 

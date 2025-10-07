@@ -404,15 +404,15 @@ function checkChkPpn(){
 			ppN.value = 0;
 			b.disabled = false;
 			if(b.value==c)
-				b.value=(remove_comma(b)*1.1);
+				b.value=(remove_comma(b)*1.11);
 			else
 				b.value=c;
 			change_number(b);
 		}else{
 			ppN.disabled = true;
-			ppN.value = 10;
+			ppN.value = 11;
 			b.disabled = true;
-			b.value=(remove_comma(b)/1.1);
+			b.value=(remove_comma(b)/1.11);
 			change_number(b);
 		}
 	}
@@ -541,14 +541,15 @@ function calculatePph()
         dis=document.getElementById('nilai_diskon');
         subTot=document.getElementById('total_harga_po');
         //alert(reg);
-        if(reg.test(nilP))
+        //if(reg.test(nilP))
+        if((nilP))
         {
-                if(nilP==10)
+                if(nilP==2)
                 {
                         dis.value=remove_comma(dis);
                         subTot.value=remove_comma(subTot);
                         pn=(parseFloat((subTot.value-dis.value))*nilP)/100;	
-                        document.getElementById('hslPPh').innerHTML=pn;
+                        document.getElementById('hslPPh').innerHTML=nilP;
                         document.getElementById('pph').value=pn;
                 }
 
@@ -560,7 +561,7 @@ function calculatePph()
                         document.getElementById('hslPPh').innerHTML=nilP;
                         document.getElementById('pph').value=pn;
                 }	
-                else if(nilP==2)
+                else
                 {
                         dis.value=remove_comma(dis);
                         subTot.value=remove_comma(subTot);
@@ -606,8 +607,8 @@ function grandTotal()
 		if(ppn.value!=0||ppn.value!='')
         {
             nilPpn=(parseFloat((sb_tot.value-nilDiskon.value))*ppn.value)/100;	
-            document.getElementById('hslPPn').innerHTML=nilPpn;
-            document.getElementById('ppn').value=nilPpn;   
+            document.getElementById('hslPPn').innerHTML=nilPpn.toFixed(2);
+            document.getElementById('ppn').value=nilPpn.toFixed(2);   
         }
         else
         {
@@ -620,8 +621,8 @@ function grandTotal()
 		if(pph.value!=0||pph.value!='')
         {
             nilPph=(parseFloat((sb_tot.value-nilDiskon.value))*pph.value)/100;	
-            document.getElementById('hslPPh').innerHTML=nilPph;
-            document.getElementById('pph').value=nilPph;   
+            document.getElementById('hslPPh').innerHTML=nilPph.toFixed(2);
+            document.getElementById('pph').value=nilPph.toFixed(2);   
         }
         else
         {
@@ -983,7 +984,7 @@ function fillField(nopo,tgl_po,supplier_id,sub_tot,disc,nil_pbbkb,nil_pph,chkppn
 																		document.getElementById('hslPPh').innerHTML=nil_pph;
                                                                         if(nil_pph!=0)
                                                                         {
-                                                                                document.getElementById('ppH').value=10;
+                                                                                document.getElementById('ppH').value=((nil_pph/(sub_tot-diskon_nilai))*100).toFixed(3);
                                                                         }
                                                                         else
                                                                         {
@@ -998,7 +999,8 @@ function fillField(nopo,tgl_po,supplier_id,sub_tot,disc,nil_pbbkb,nil_pph,chkppn
 																		}
                                                                         if(nil_ppn!=0)
                                                                         {
-                                                                                document.getElementById('ppN').value=10;
+                                                                                //document.getElementById('ppN').value=11;
+                                                                                document.getElementById('ppN').value=((nil_ppn/(sub_tot-diskon_nilai))*100).toFixed(3);
                                                                         }
                                                                         else
                                                                         {

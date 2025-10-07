@@ -1,3 +1,31 @@
+function getkeg() {
+    var kodeasset = document.getElementById('kodeasset').value;
+    var param = "kodeasset="+kodeasset;
+    
+    function respon() {
+        if (con.readyState == 4) {
+            if (con.status == 200) {
+                busy_off();
+                if (!isSaveResponse(con.responseText)) {
+                    alert('ERROR TRANSACTION,\n' + con.responseText);
+                } else {
+					document.getElementById('kodekegiatan').innerHTML=con.responseText;
+                }
+            } else {
+                busy_off();
+                error_catch(con.status);
+            }
+        }
+    }
+    
+    
+	post_response_text('keu_slave_jurnal_header.php?proses=getkeg', param, respon);
+    
+} 
+ 
+
+
+
 var showPerPage = 10;
 
 function getValue(id) {
@@ -20,7 +48,52 @@ function getValue(id) {
     }
 }
 
-//
+
+
+
+
+
+
+
+
+
+
+
+function getsup(){
+	tipeinv=document.getElementById('tipeinv').options[document.getElementById('tipeinv').selectedIndex].value;
+	param='tipeinv='+tipeinv;
+    tujuan='keu_slave_kasbank_detail.php';
+
+	post_response_text(tujuan+'?'+'proses=getsup', param, respog);
+	
+	function respog(){
+		if(con.readyState==4){
+			if (con.status == 200) {
+				busy_off();
+				if (!isSaveResponse(con.responseText)) {
+					alert(con.responseText);
+				}
+				else {
+					document.getElementById('supplierIdcr').innerHTML=con.responseText;
+				}
+			}
+			else {
+				busy_off();
+				error_catch(con.status);
+			}
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+
 
 function getKurs2(){
 	tanggal=document.getElementById('tanggal').value;	
@@ -152,7 +225,7 @@ function searchTrans() {
     
     var noakun = getValue('sAkun');
     var tanggal2 = getValue('sTanggal2');
-    var tipetransaksi=getValue('sTipe')
+    var tipetransaksi=getValue('sTipe');
     
     
     if(tanggal!='') {
@@ -174,14 +247,47 @@ function searchTrans() {
     goToPages(1,showPerPage,where);
 }
 
+
 /* Paging
  * Paging Data
  */
 function defaultList() {
-    goToPages(1,showPerPage);
+
+	
+	
+	
+	
+	
+	goToPages(1,showPerPage);
 }
 
 function goToPages(page,shows,where) {
+	//ini datanya
+	var notrans = document.getElementById('sNoTrans');
+    var rupiah = document.getElementById('sRupiah');
+    var tanggal = getValue('sTanggal');
+
+    var noakun = getValue('sAkun');
+    var tipetransaksi=getValue('sTipe');
+	var tanggal2 = getValue('sTanggal2');
+    
+    if(tanggal!='') {
+        var tmpTanggal = tanggal.split('-');
+        var tanggalR = tmpTanggal[2]+"-"+tmpTanggal[1]+"-"+tmpTanggal[0];
+    } else {
+        var tanggalR = '';
+    }
+	
+	 if(tanggal2!='') {
+        var tmpTanggal2 = tanggal2.split('-');
+        var tanggalR2 = tmpTanggal2[2]+"-"+tmpTanggal2[1]+"-"+tmpTanggal2[0];
+    } else {
+        var tanggalR2 = '';
+    }
+    
+    var where = '[["notransaksi","'+notrans.value+'"],["tanggal","'+tanggalR+'"],["tanggal2","'+tanggalR2+'"],["jumlah","'+remove_comma_var(rupiah.value)+'"],["noakun","'+noakun+'"],["tipetransaksi","'+tipetransaksi+'"]]';
+  
+	
     if(typeof where != 'undefined') {
         var newWhere = where.replace(/'/g,'"');
     }
@@ -192,6 +298,8 @@ function goToPages(page,shows,where) {
         param+="&where="+newWhere;
     }
     
+
+
     function respon() {
         if (con.readyState == 4) {
             if (con.status == 200) {
@@ -211,6 +319,7 @@ function goToPages(page,shows,where) {
     
     post_response_text('keu_slave_kasbank.php?proses=showHeadList', param, respon);
 }
+
 
 function choosePage(obj,shows,where) {
     var pageVal = obj.options[obj.selectedIndex].value;
@@ -233,7 +342,10 @@ function showAdd() {
                 } else {
                     //=== Success Response
                     workField.innerHTML = con.responseText;
-                }
+
+				
+				
+				}
             } else {
                 busy_off();
                 error_catch(con.status);
@@ -279,7 +391,9 @@ function showEdit(num) {
     var tipetransaksi = document.getElementById('tipetransaksi_'+num).getAttribute('value');
     var param = "numRow="+num+"&notransaksi="+trans+"&kodeorg="+
         kodeorg+"&noakun="+noakun+"&tipetransaksi="+tipetransaksi;
-    
+
+
+
     function respon() {
         if (con.readyState == 4) {
             if (con.status == 200) {
@@ -290,6 +404,9 @@ function showEdit(num) {
                     //=== Success Response
                     workField.innerHTML = con.responseText;
                     showDetail();
+
+
+
                 }
             } else {
                 busy_off();
@@ -740,6 +857,15 @@ function searchMemo(title,content,ev)
 	//alert('asdasd');
 }
 
+function searchPerdin(title,content,ev)
+{
+    width='850';
+	height='620';
+	showDialog1(title,content,width,height,ev);
+    getForminvoice(3);
+	//alert('asdasd');
+}
+
 function getForminvoice(tipe)
 {
 	param='';
@@ -748,6 +874,8 @@ function getForminvoice(tipe)
 		post_response_text(tujuan+'?'+'proses=getForminvoice', param, respog);
 	} else if (tipe==1) {
 		post_response_text(tujuan+'?'+'proses=getFormInvoiceAR', param, respog);
+	} else if (tipe==3) {
+		post_response_text(tujuan+'?'+'proses=getFormPerdin', param, respog);
 	} else {
 		post_response_text(tujuan+'?'+'proses=getFormMemo', param, respog);
 	}
@@ -854,6 +982,42 @@ function findMemo()
 	}
 }
 
+function findPerdin()
+{
+	var param='notransaksi='+getValue('sNotransaksi')+'&periode='+getValue('sYm')+
+			'&tipetransaksi='+getValue('tipetransaksi')+'&kodeorg='+getValue('kodeorg')+'&pemilikhutang='+getValue('pemilikhutang'),
+		tujuan='keu_slave_kasbank_detail.php?proses=getPerdin';
+	var hutangunit=0;
+        if(document.getElementById('hutangunit').checked==true){
+            hutangunit=1;
+        }
+        pemilikHutang=document.getElementById('pemilikhutang');
+        pemilikHutang=pemilikHutang.options[pemilikHutang.selectedIndex].value;
+        noakunHutang=document.getElementById('noakunhutang');
+        noakunHutang=noakunHutang.options[noakunHutang.selectedIndex].value;
+        param+='&hutangunit='+hutangunit+'&pemilikhutang='+pemilikHutang+'&noakunhutang='+noakunHutang;
+	post_response_text(tujuan, param, respog);
+	function respog()
+	{
+		if(con.readyState==4)
+		{
+			if (con.status == 200) {
+				busy_off();
+				if (!isSaveResponse(con.responseText)) {
+					alert(con.responseText);
+				}
+				else {
+					document.getElementById('container2').innerHTML=con.responseText;
+				}
+			}
+			else {
+				busy_off();
+				error_catch(con.status);
+			}
+		}
+	}
+}
+
 function setPo(np,nilai,akn,ket,supp,nopo)
 {
     document.getElementById('keterangan1').value=np;
@@ -883,12 +1047,49 @@ function setPo(np,nilai,akn,ket,supp,nopo)
     closeDialog();
 }
 
+//function checkAll() {
+//    var els = document.getElementById('invTbody').getElementsByClassName('inv-chk');
+//    for(var i=0;i<els.length;i++) {
+//       els[i].checked = true;
+//    }
+//}
+
 function checkAll() {
     var els = document.getElementById('invTbody').getElementsByClassName('inv-chk');
+    if (els[1].checked == true)
+    {
+        chk = false;
+    }
+    else
+    {
+        chk = true;
+    }
     for(var i=0;i<els.length;i++) {
-        els[i].checked = true;
+       els[i].checked = chk;
     }
 }
+
+/*
+function checkAll()
+{
+    drt = document.getElementById('btnAllInvoice');
+    if (drt.checked == true)
+    {
+        chk = true;
+    }
+    else
+    {
+        chk = false;
+    }
+    var tbl = document.getElementById("invTbody");
+    var row = tbl.rows.length;
+    row = row - 1;
+    for (i = 0; i <= row; i++)
+    {
+        document.getElementById('inv_' + i).checked = chk;
+    }
+}
+*/
 
 function getMemo(nojurnal) {
 	var param='nojurnal='+nojurnal;
@@ -899,6 +1100,36 @@ function getMemo(nojurnal) {
 	param += '&pemilikhutang='+getValue('pemilikhutang')+'&tanggal='+getValue('tanggal')+'&noakunhutang='+getValue('noakunhutang');
     tujuan='keu_slave_kasbank_detail.php';
 	post_response_text(tujuan+'?'+'proses=addFromMemo', param, respog);
+	
+	function respog() {
+        if(con.readyState==4) {
+            if (con.status == 200){
+                busy_off();
+                if (!isSaveResponse(con.responseText)) {
+                    alert(con.responseText);
+                }
+                else {
+                    showDetail();
+                    closeDialog();
+                }
+            }
+            else {
+                busy_off();
+                error_catch(con.status);
+            }
+        }
+    }
+}
+
+function getPerdin(noperdin) {
+	var param='noperdin='+noperdin;
+    param += '&notransaksi='+getValue('notransaksi')+'&kodeorg='+getValue('kodeorg');
+    param += '&noakun='+getValue('noakun2a')+'&tipetransaksi='+getValue('tipetransaksi');
+    param += '&kode='+getValue('kode')+'&matauang='+getValue('matauang');
+    param += '&kurs='+getValue('kurs')+'&hutangunit='+getValue('hutangunit');
+	param += '&pemilikhutang='+getValue('pemilikhutang')+'&tanggal='+getValue('tanggal')+'&noakunhutang='+getValue('noakunhutang');
+    tujuan='keu_slave_kasbank_detail.php';
+	post_response_text(tujuan+'?'+'proses=addFromPerdin', param, respog);
 	
 	function respog() {
         if(con.readyState==4) {
@@ -949,6 +1180,7 @@ function add2detail() {
 		post_response_text(tujuan+'?'+'proses=addFromInvoice', param, respog);
 	} else {
 		alert('Tidak ada No Invoice yang dipilih');
+        return;
 	}
 	
 	function respog() {
@@ -1078,4 +1310,44 @@ function cekKurs() {
 			document.getElementById('editHead').setAttribute('disabled','disabled');
 		}
 	}
+}
+
+function getAkun()
+{
+    tipetransaksi=document.getElementById('tipetransaksi').value;
+	if(tipetransaksi=='K'){
+		//document.getElementById('lhutangnit').innerHTML=$_SESSION['lang']['hutangnit'];
+		//document.getElementById('lpemilikhutang').innerHTML=$_SESSION['lang']['pemilikhutang'];
+		document.getElementById('lhutangunit').innerHTML='Hutang Unit';
+		document.getElementById('lpemilikhutang').innerHTML='Pemilik Hutang';
+		document.getElementById('lnoakunhutang').innerHTML='No Akun Hutang';
+	}else{
+		//document.getElementById('lhutangnit').innerHTML=$_SESSION['lang']['piutangnit'];
+		//document.getElementById('lpemilikhutang').innerHTML=$_SESSION['lang']['pemilikpiutang'];
+		document.getElementById('lhutangunit').innerHTML='Piutang Unit';
+		document.getElementById('lpemilikhutang').innerHTML='Pemilik Piutang';
+		document.getElementById('lnoakunhutang').innerHTML='No Akun Piutang';
+	}
+    param='proses=getAkun'+'&tipetransaksi='+tipetransaksi;
+    tujuan='keu_slave_kasbank_kurs.php';
+    post_response_text(tujuan, param, respog);    
+    function respog()
+    {
+		if(con.readyState==4)
+		{
+			if (con.status == 200) {
+				busy_off();
+				if (!isSaveResponse(con.responseText)) {
+						alert('ERROR TRANSACTION,\n' + con.responseText);
+				}
+				else {
+					//alert(con.responseText);
+					document.getElementById('noakunhutang').innerHTML=con.responseText;  
+				}
+			} else {
+				busy_off();
+				error_catch(con.status);
+			}
+		}	
+    } 
 }

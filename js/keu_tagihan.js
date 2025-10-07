@@ -65,7 +65,6 @@ function goToPages(page,shows,where) {
             }
         }
     }
-    
     post_response_text('keu_slave_tagihan.php?proses=showHeadList', param, respon);
 }
 
@@ -97,8 +96,7 @@ function showAdd() {
             }
         }
     }
-    
-    post_response_text('keu_slave_tagihan.php?proses=showAdd', param, respon);
+	post_response_text('keu_slave_tagihan.php?proses=showAdd', param, respon);
 }
 
 function showEditFromAdd() {
@@ -123,7 +121,6 @@ function showEditFromAdd() {
             }
         }
     }
-    
     post_response_text('keu_slave_tagihan.php?proses=showEdit', param, respon);
 }
 
@@ -149,7 +146,6 @@ function showEdit(num) {
             }
         }
     }
-    
     post_response_text('keu_slave_tagihan.php?proses=showEdit', param, respon);
 }
 
@@ -161,7 +157,6 @@ function addDataTable() {
         alert('No PO harus dipilih');
         return;
     }
-    
     var param = "noinvoice="+getValue('noinvoice')+"&noinvoicesupplier="+getValue('noinvoicesupplier')+"&tanggal="+getValue('tanggal')+"&tipeinvoice="+getValue('tipeinvoice');
     param += "&nopo="+getValue('nopo')+"&keterangan="+getValue('keterangan')+"&nilaiinvoice="+getValue('nilaiinvoice');
     param += "&jatuhtempo="+getValue('jatuhtempo')+"&nofp="+getValue('nofp');
@@ -176,7 +171,7 @@ function addDataTable() {
                     alert(con.responseText);
                 } else {
                     //=== Success Response
-                    alert('Added Data Header');
+                    //alert('Added Data Header');
                     //showEditFromAdd();
 					defaultList();
                 }
@@ -186,7 +181,6 @@ function addDataTable() {
             }
         }
     }
-    
     post_response_text('keu_slave_tagihan.php?proses=add', param, respon);
 }
 
@@ -213,7 +207,6 @@ function editDataTable() {
             }
         }
     }
-    
     post_response_text('keu_slave_tagihan.php?proses=edit', param, respon);
 }
 
@@ -242,7 +235,6 @@ function showDetail() {
             }
         }
     }
-    
     post_response_text('keu_slave_tagihan_detail.php?proses=showDetail', param, respon);
 }
 
@@ -267,14 +259,13 @@ function deleteData(num) {
             }
         }
     }
-    
+	if(confirm("Deleting, are you sure ?!!"))
     post_response_text('keu_slave_tagihan.php?proses=delete', param, respon);
 }
 
 function printPDF(ev) {
     // Prep Param
     param = "proses=pdf";
-    
     showDialog1('Print PDF',"<iframe frameborder=0 style='width:795px;height:400px'"+
         " src='keu_slave_tagihan_print.php?"+param+"'></iframe>",'800','400',ev);
     var dialog = document.getElementById('dynamic1');
@@ -309,7 +300,6 @@ function updPO() {
 
 function updInvoice() {
     var invoice = document.getElementById('nilaiinvoice');
-    
     var param = "nopo="+getValue('nopo');
     
     function respon() {
@@ -335,7 +325,6 @@ function updInvoice() {
             }
         }
     }
-    
     post_response_text('keu_slave_tagihan.php?proses=updInvoice', param, respon);
 }
 
@@ -348,21 +337,23 @@ function searchNopo(title,ev,langCari)
 		alert('Tanggal terima harus diisi terlebih dahulu');return;
 	}
 	if(isi=='po') {
-		tipe = 'PO';
-                doc='No. PO';
+		tipe='PO';
+		doc	='No. PO';
 	} else if(isi=='sj') {
-		tipe = 'Surat Jalan';
-                doc='No. Surat Jalan';
+		tipe='Surat Jalan';
+		doc	='No. Surat Jalan';
 	} else if(isi=='nm') {
-		tipe = 'Konosemen';
-                 doc='No. Konosemen';
-        } else if(isi=='bykrm') {
-		tipe = 'Biaya Kirim';
-                doc='No. PO';
-	}        
-	else {
-		tipe = 'SPK';
-                doc='No. SPK';
+		tipe='Konosemen';
+		doc	='No. Konosemen';
+    } else if(isi=='bykrm') {
+		tipe='Biaya Kirim';
+		doc	='No. PO';
+    } else if(isi=='trading') {
+		tipe='Trading';
+		doc	='No. Kontrak Ext';
+	} else {
+		tipe='SPK';
+		doc='No. SPK';
 	}
 	content = "<fieldset><legend>"+langCari+" "+tipe+"</legend>"+langCari+
 		" "+doc+"<input type=text class=myinputtext id=no_brg><button class=mybutton onclick=findNopo()>Find</button></fieldset><div id=container2></div>";
@@ -370,8 +361,9 @@ function searchNopo(title,ev,langCari)
 	width='500';
 	height='400';
 	showDialog1(title+tipe,content,width,height,ev);
-    findNopo();
+    //findNopo();
 }
+
 function findNopo()
 {
 	txt=trim(document.getElementById('no_brg').value);
@@ -386,29 +378,36 @@ function findNopo()
 	
 	function respog()
 	{
-		      if(con.readyState==4)
-		      {
-			        if (con.status == 200) {
-						busy_off();
-						if (!isSaveResponse(con.responseText)) {
-							alert(con.responseText);
-						}
-						else {
-							//alert(con.responseText);
-							document.getElementById('container2').innerHTML=con.responseText;
-						}
-					}
-					else {
-						busy_off();
-						error_catch(con.status);
-					}
-		      }
-	 }
+		if(con.readyState==4)
+		{
+			if (con.status == 200) {
+				busy_off();
+				if (!isSaveResponse(con.responseText)) {
+					alert(con.responseText);
+				}
+				else {
+					//alert(con.responseText);
+					document.getElementById('container2').innerHTML=con.responseText;
+				}
+			}
+			else {
+				busy_off();
+				error_catch(con.status);
+			}
+		}
+	}
 }
+
 function setPo(np,nilai,jns,ppn,namasupplier,matauang,kurs)
 {
     document.getElementById('nopo').value=np;
-    document.getElementById('nilaiinvoice').value=nilai;
+	if(jns=='trading'){
+		document.getElementById('uangmuka').value=nilai;
+		document.getElementById('nilaiinvoice').value=0;
+	}else{
+		document.getElementById('uangmuka').value=0;
+		document.getElementById('nilaiinvoice').value=nilai;
+	}
     document.getElementById('tipeinvoice').disabled=false;
 	document.getElementById('supplier').value=namasupplier;
 	if(typeof matauang!='undefined') {
@@ -420,48 +419,46 @@ function setPo(np,nilai,jns,ppn,namasupplier,matauang,kurs)
     closeDialog();
 }
 
-
 function postingData(row)
 {
     noinvoice=document.getElementById('noinvoice_'+row).innerHTML;
-    param='noinvoice='+noinvoice;
-        tujuan='keu_slave_tagihanPosting.php';
-        if(confirm('Anda yakin dokumen telah lengkap..?'))
-             post_response_text(tujuan+'?'+'proses=getPo', param, respog);
+    nopo=document.getElementById('nopo_'+row).innerHTML;
+    nofp=document.getElementById('nofp_'+row).innerHTML;
+    param='noinvoice='+noinvoice+'&nopo='+nopo+'&nofp='+nofp;
+	tujuan='keu_slave_tagihanPosting.php';
+	if(confirm('Anda yakin dokumen telah lengkap..?'))
+		post_response_text(tujuan+'?'+'proses=getPo', param, respog);
 	
 	function respog()
 	{
-            if(con.readyState==4)
-            {
-                if (con.status == 200) {
-                            busy_off();
-                            if (!isSaveResponse(con.responseText)) {
-                                    alert(con.responseText);
-                            }
-                            else {
-                                    //alert(con.responseText);
-                                        x=document.getElementById('tr_'+row);
-                                        //x.cells[6].innerHTML=''
-                                        x.cells[12].innerHTML="<img class='zImgBtn' title=Lengkap' src='images/skyblue/posted.png'>";
-                                        x.cells[11].innerHTML='';
-                                        x.cells[10].innerHTML=''
-                                        
-                                    
-                            }
-                        }
-                        else {
-                                busy_off();
-                                error_catch(con.status);
-                        }
-            }
-	 }    
+		if(con.readyState==4)
+		{
+			if (con.status == 200) {
+				busy_off();
+				if (!isSaveResponse(con.responseText)) {
+					alert(con.responseText);
+				}
+				else {
+					//alert(con.responseText);
+					x=document.getElementById('tr_'+row);
+					//x.cells[6].innerHTML=''
+					x.cells[13].innerHTML="<img class='zImgBtn' title=Lengkap' src='images/skyblue/posted.png'>";
+					x.cells[12].innerHTML='';
+					x.cells[11].innerHTML=''
+				}
+			}
+			else {
+				busy_off();
+				error_catch(con.status);
+			}
+		}
+	}    
 }
 
 function detailPDF(numRow,ev) {
     // Prep Param
     var noinvoice = document.getElementById('noinvoice_'+numRow).getAttribute('value');
     param = "proses=pdf&noinvoice="+noinvoice;
-    
     showDialog1('Print PDF',"<iframe frameborder=0 style='width:795px;height:400px'"+
         " src='keu_slave_tagihan_print_detail.php?"+param+"'></iframe>",'800','400',ev);
     var dialog = document.getElementById('dynamic1');

@@ -28,7 +28,8 @@ OPEN_BOX();
 <?
 //inisialisasi periode
 //$optPeriode="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
-$sTgl="select distinct substr(periode,1,7) as periode from ".$dbname.".keu_jurnaldt_vw order by periode desc";
+//$sTgl="select distinct substr(periode,1,7) as periode from ".$dbname.".keu_jurnaldt_vw order by periode desc";
+$sTgl="select distinct substr(periode,1,7) as periode from ".$dbname.".setup_periodeakuntansi order by periode desc";
 $qTgl=mysql_query($sTgl) or die(mysql_error());
 $optPeriode="";
 while($rTgl=mysql_fetch_assoc($qTgl))

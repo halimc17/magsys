@@ -14,6 +14,8 @@ $lokasi=$_SESSION['empl']['lokasitugas'];
 $jmlhJJg=checkPostGet('jmlhJJg','');
 $persenBrnd=checkPostGet('persenBrnd','');
 $kgPtngan=checkPostGet('kgPtngan','');
+$jmlJJgAsli=checkPostGet('jmlJJgAsli',0);
+$kgPotAsli=checkPostGet('kgPotAsli',0);
 
 if($_SESSION['language']=='EN'){
     $zz='keterangan1 as keterangan';
@@ -69,21 +71,32 @@ switch($proses)
 		<table cellspacing=1 border=0 class=sortable>
 	<thead>
 	<tr class=rowheader>
-	<td>No.</td>
-	<td>".$_SESSION['lang']['noTiket']."</td>
-	<td>".$_SESSION['lang']['tanggal']."</td>
-	";
-		
+	<td rowspan=2 align=center>No.</td>
+	<td rowspan=2 align=center>".$_SESSION['lang']['noTiket']."</td>
+	<td rowspan=2 align=center>".$_SESSION['lang']['tanggal']."</td>
+	<td colspan=9 align=center>Grading Adjust</td>
+	<td colspan=9 align=center>Grading Asli</td>
+	<td rowspan=2 align=center>Action</td>
+	</tr>
+	<tr class=rowheader>
+		<td align=center>".$_SESSION['lang']['sortasi']." (JJG)</td>";
 	$sFraksi="select kode,".$zz.",type from ".$dbname.".pabrik_5fraksi2 order by kode asc";
 	$qFraksi=mysql_query($sFraksi) or die(mysql_error());
 	while($rFraksi=mysql_fetch_assoc($qFraksi))
 	{
-		echo"<td>".$rFraksi['keterangan']." ".($rFraksi['type']!=''?"(".$rFraksi['type'].")":'')."</td> ";
+		echo"<td align=center>".$rFraksi['keterangan']." ".($rFraksi['type']!=''?"(".$rFraksi['type'].")":'')."</td> ";
+	}
+	echo "	<td align=center>".$_SESSION['lang']['potongankg']."</td>
+			<td align=center>".$_SESSION['lang']['sortasi']." (JJG)</td>";
+	$sFraksi="select kode,".$zz.",type from ".$dbname.".pabrik_5fraksi2 order by kode asc";
+	$qFraksi=mysql_query($sFraksi) or die(mysql_error());
+	while($rFraksi=mysql_fetch_assoc($qFraksi))
+	{
+		echo"<td align=center>".$rFraksi['keterangan']." ".($rFraksi['type']!=''?"(".$rFraksi['type'].")":'')."</td> ";
 	}
 					 
-	echo"<td>".$_SESSION['lang']['sortasi']."(JJG)</td><td> ".$_SESSION['lang']['potongankg']."</td>
-	<td>Action</td>
-	</tr>
+	echo "	<td align=center>".$_SESSION['lang']['potongankg']."</td>
+		</tr>
 	</thead>
 	<tbody>";
 
@@ -96,13 +109,17 @@ switch($proses)
 	$page=0;
 	}
 	$offset=$page*$limit;
-	$ql2="select distinct a.notiket from ".$dbname.".pabrik_sortasi a left join ".$dbname.".pabrik_timbangan b on a.notiket=b.notransaksi where millcode='".$_SESSION['empl']['lokasitugas']."' and kodebarang='40000003'    order by a.`notiket` desc";//echo $ql2;
+	$whr="";
+	if($noTiket!=""){
+		$whr=" and a.notiket='".$noTiket."' ";
+	}
+	$ql2="select distinct a.notiket from ".$dbname.".pabrik_sortasi a left join ".$dbname.".pabrik_timbangan b on a.notiket=b.notransaksi where millcode='".$_SESSION['empl']['lokasitugas']."' and kodebarang='40000003' ".$whr." order by a.`notiket` desc";//echo $ql2;
 	$query2=mysql_query($ql2) or die(mysql_error());
 	$jsl=mysql_num_rows($query2);
 	$jlhbrs= $jsl;
 
 
-	$sNotiket="select distinct a.notiket from ".$dbname.".pabrik_sortasi a left join ".$dbname.".pabrik_timbangan b on a.notiket=b.notransaksi where millcode='".$_SESSION['empl']['lokasitugas']."' and kodebarang='40000003'  order by `notiket` desc limit ".$offset.",".$limit." ";
+	$sNotiket="select distinct a.notiket from ".$dbname.".pabrik_sortasi a left join ".$dbname.".pabrik_timbangan b on a.notiket=b.notransaksi where millcode='".$_SESSION['empl']['lokasitugas']."' and kodebarang='40000003' ".$whr." order by `notiket` desc limit ".$offset.",".$limit." ";
 	//echo $ql2;
 	$qNotiket=mysql_query($sNotiket) or die(mysql_error());
 	$a=0;
@@ -110,15 +127,16 @@ switch($proses)
 	{
 			$no+=1;
 			$aret=1;
-			echo"<tr class=rowcontent><td>".$no."</td>";
-			echo"<td>".$rNotiket['notiket']."</td>";
+			echo"<tr class=rowcontent><td align=center>".$no."</td>";
+			echo"<td align=center width=5%>".$rNotiket['notiket']."</td>";
 			$sFraksi="select kode from ".$dbname.".pabrik_5fraksi2 order by kode asc";
 			$qFraksi=mysql_query($sFraksi) or die(mysql_error());
-			$sJjg="select jjgsortasi,tanggal,persenBrondolan,kgpotsortasi from ".$dbname.".pabrik_timbangan 
+			$sJjg="select jjgsortasi,tanggal,persenBrondolan,kgpotsortasi,jjgsortasli,kgpotsortasli from ".$dbname.".pabrik_timbangan 
 				   where notransaksi='".$rNotiket['notiket']."'";
 			$qJjg=mysql_query($sJjg) or die(mysql_error());
 			$rJjg=mysql_fetch_assoc($qJjg);
-			echo"<td>".tanggalnormal(substr($rJjg['tanggal'],0,10))."</td>";
+			echo"<td align=center width=6%>".tanggalnormal(substr($rJjg['tanggal'],0,10))."</td>";
+			echo"<td align=right>".number_format($rJjg['jjgsortasi'],0)."</td>";
 			while($rFraksi=mysql_fetch_assoc($qFraksi)){		
 					$sMax="select notiket,jumlah,kodefraksi from ".$dbname.".pabrik_sortasi where notiket='".$rNotiket['notiket']."' and kodefraksi='".$rFraksi['kode']."'";
 					$qMax=mysql_query($sMax) or die(mysql_error());
@@ -132,148 +150,182 @@ switch($proses)
 							echo"<td align=right>".number_format($rMax['jumlah'],2)."</td>";
 					}
 			}
-			//while($a!=$rMax)
-
-			echo"<td align=right>".number_format($rJjg['jjgsortasi'],0)."</td>";
 			echo"<td align=right>".number_format($rJjg['kgpotsortasi'],2)."</td>";
-			echo"<td>
-
-<img src=images/application/application_delete.png class=resicon  title='Delete' onclick=\"deldata('".$rNotiket['notiket']."');\"></td></tr>";
+			echo"<td align=right>".number_format($rJjg['jjgsortasli'],0)."</td>";
+			$sFraksi="select kode from ".$dbname.".pabrik_5fraksi2 order by kode asc";
+			$qFraksi=mysql_query($sFraksi) or die(mysql_error());
+			while($rFraksi=mysql_fetch_assoc($qFraksi)){		
+					$sMax="select notiket,jmlasli,kodefraksi from ".$dbname.".pabrik_sortasi where notiket='".$rNotiket['notiket']."' and kodefraksi='".$rFraksi['kode']."'";
+					$qMax=mysql_query($sMax) or die(mysql_error());
+					$rMax=mysql_fetch_assoc($qMax);
+					if($rFraksi['kode']==$rMax['kodefraksi'])
+					{
+							echo"<td align=right id='".$rFraksi['kode']."##".$rMax['notiket']."' onclick=\"editDetHead('".$rNotiket['notiket']."','".tanggalnormal((substr($rJjg['tanggal'],0,10)))."')\" style=\"cursor:pointer\" >".number_format($rMax['jmlasli'],2)."</td>";
+					}
+					else
+					{
+							echo"<td align=right>".number_format($rMax['jmlasli'],2)."</td>";
+					}
+			}
+			//while($a!=$rMax)
+			echo"<td align=right>".number_format($rJjg['kgpotsortasli'],2)."</td>";
+			echo"<td align=center>
+				<img src=images/application/application_delete.png class=resicon  title='Delete' onclick=\"deldata('".$rNotiket['notiket']."');\"></td></tr>";
 	}
-	echo"
-	<tr><td colspan=17 align=center>
-	".(($page*$limit)+1)." to ".(($page+1)*$limit)." Of ".  $jlhbrs."<br />
-	<button class=mybutton onclick=cariBast(".($page-1).");>".$_SESSION['lang']['pref']."</button>
-	<button class=mybutton onclick=cariBast(".($page+1).");>".$_SESSION['lang']['lanjut']."</button>
-	</td>
-	</tr>";  	
-
+	echo"<tr><td colspan=20 align=center>".(($page*$limit)+1)." to ".(($page+1)*$limit)." Of ".  $jlhbrs."<br />
+				<button class=mybutton onclick=cariBast(".($page-1).");>".$_SESSION['lang']['pref']."</button>
+				<button class=mybutton onclick=cariBast(".($page+1).");>".$_SESSION['lang']['lanjut']."</button>
+			</td>
+		</tr>";  	
 	echo"</tbody></table>";
 	break;
 	case'insert':
-	   // echo"warning";
-		if($noTiket=='')
-		{
+		if($noTiket==''){
+			echo"warning:No Tiket Tidak boleh Kosong";
+			exit();
+		}
+		$kdFraksi=$_POST['kdFraksi'];
+		$isiData=$_POST['isiData'];
+		foreach ($kdFraksi as $rt =>$isi){
+			if($isiData[$isi]==''){
+				$isiData[$isi]=0; 
+			}
+			$sCek="select notiket,kodefraksi from ".$dbname.".pabrik_sortasi where notiket='".$noTiket."' and kodefraksi='".$isi."'";
+			$qCek=mysql_query($sCek) or die(mysql_error());
+			$rCek=mysql_num_rows($qCek);
+			if($rCek<1){
+				$sIns="insert into ".$dbname.".pabrik_sortasi (notiket, kodefraksi, jumlah) values ('".$noTiket."','".$isi."','".$isiData[$isi]."')";
+				if(mysql_query($sIns)){
+					$sCekDt="select jjgsortasi from ".$dbname.".pabrik_timbangan where notransaksi='".$noTiket."'";
+					$qCekDt=mysql_query($sCekDt) or die(mysql_error());
+					$rCekDt=mysql_fetch_assoc($qCekDt);
+					if($rCekDt['jjgsortasi']==0){
+						$sDt="update ".$dbname.".pabrik_timbangan set jjgsortasi='".$jmlhJJg."',kgpotsortasi='".$kgPtngan."' where notransaksi='".$noTiket."'";
+						if(!mysql_query($sDt))
+							echo "DB Error : ".$sDt."__".mysql_error($conn);
+					}
+				}else{
+					echo "DB Error : ".mysql_error($conn);
+				}
+			}else{
+				$sIns="update ".$dbname.".pabrik_sortasi set kodefraksi='".$isi."', jumlah='".$isiData[$isi]."' where notiket='".$noTiket."' and kodefraksi='".$isi."'";
+				if(mysql_query($sIns)){
+					$sDt="update ".$dbname.".pabrik_timbangan set jjgsortasi='".$jmlhJJg."',kgpotsortasi='".$kgPtngan."' where notransaksi='".$noTiket."'";
+					if(!mysql_query($sDt))
+						echo "DB Error : ".$sDt."__".mysql_error($conn);
+				}else{
+					echo "DB Error : ".$sDt."__".mysql_error($conn);
+				}
+			}
+		}
+	// Grading Asli
+		$kdFraksi=$_POST['kdFraksi2'];
+		$isiData=$_POST['isiData2'];
+		foreach ($kdFraksi as $rt =>$isi){
+			if($isiData[$isi]==''){
+				$isiData[$isi]=0; 
+			}
+			$sCek="select notiket,kodefraksi from ".$dbname.".pabrik_sortasi where notiket='".$noTiket."' and kodefraksi='".$isi."'";
+			$qCek=mysql_query($sCek) or die(mysql_error());
+			$rCek=mysql_num_rows($qCek);
+			if($rCek<1){
+				$sIns="insert into ".$dbname.".pabrik_sortasi (notiket, kodefraksi, jmlasli) values ('".$noTiket."','".$isi."','".$isiData[$isi]."')";
+				if(mysql_query($sIns)){
+					$sCekDt="select jjgsortasi from ".$dbname.".pabrik_timbangan where notransaksi='".$noTiket."'";
+					$qCekDt=mysql_query($sCekDt) or die(mysql_error());
+					$rCekDt=mysql_fetch_assoc($qCekDt);
+					if($rCekDt['jjgsortasi']==0){
+						$sDt="update ".$dbname.".pabrik_timbangan set jjgsortasli='".$jmlJJgAsli."',kgpotsortasli='".$kgPotAsli."' where notransaksi='".$noTiket."'";
+						if(!mysql_query($sDt))
+							echo "DB Error : ".$sDt."__".mysql_error($conn);
+					}
+				}else{
+					echo "DB Error : ".mysql_error($conn);
+				}
+			}else{
+				$sIns="update ".$dbname.".pabrik_sortasi set kodefraksi='".$isi."', jmlasli='".$isiData[$isi]."' where notiket='".$noTiket."' and kodefraksi='".$isi."'";
+				if(mysql_query($sIns)){
+					$sDt="update ".$dbname.".pabrik_timbangan set jjgsortasli='".$jmlJJgAsli."',kgpotsortasli='".$kgPotAsli."' where notransaksi='".$noTiket."'";
+					if(!mysql_query($sDt))
+						echo "DB Error : ".$sDt."__".mysql_error($conn);
+				}else{
+					echo "DB Error : ".$sDt."__".mysql_error($conn);
+				}
+			}
+		}
+	break;
+
+	case'update':
+		if($noTiket==''){
 			echo"warning:No Tiket Tidak boleh Kosong";
 			exit();
 		}
 	$kdFraksi=$_POST['kdFraksi'];
 	$isiData=$_POST['isiData'];
-//                    echo"<pre>";
-//                    print_r();
-//                    echo"</pre><br />";
-	foreach ($kdFraksi as $rt =>$isi)
-	{
-		if($isiData[$isi]=='')
-		{
+	foreach ($kdFraksi as $rt =>$isi){
+		if($isiData[$isi]==''){
 		   $isiData[$isi]=0; 
 		}
 		$sCek="select notiket,kodefraksi from ".$dbname.".pabrik_sortasi where notiket='".$noTiket."' and kodefraksi='".$isi."'";
 		$qCek=mysql_query($sCek) or die(mysql_error());
 		$rCek=mysql_num_rows($qCek);
-		if($rCek<1)
-		{
-				$sIns="insert into ".$dbname.".pabrik_sortasi (notiket, kodefraksi, jumlah) values ('".$noTiket."','".$isi."','".$isiData[$isi]."')";
-				if(mysql_query($sIns))
-				{
-				   $sCekDt="select jjgsortasi from ".$dbname.".pabrik_timbangan where notransaksi='".$noTiket."'";
-				   $qCekDt=mysql_query($sCekDt) or die(mysql_error());
-				   $rCekDt=mysql_fetch_assoc($qCekDt);
-				   if($rCekDt['jjgsortasi']==0)
-				   {
-				   $sDt="update ".$dbname.".pabrik_timbangan set jjgsortasi='".$jmlhJJg."',kgpotsortasi='".$kgPtngan."' where notransaksi='".$noTiket."'";
-				   if(mysql_query($sDt))
-					   echo"";
-				   else
-					   echo "DB Error : ".$sDt."__".mysql_error($conn);
-				   }
-				}
-				else
-				{
-					echo "DB Error : ".mysql_error($conn);
-				}
-		}
-		else
-		{
+		if($rCek>0){
 			$sIns="update ".$dbname.".pabrik_sortasi set kodefraksi='".$isi."', jumlah='".$isiData[$isi]."' where notiket='".$noTiket."' and kodefraksi='".$isi."'";
-			if(mysql_query($sIns))
-			{
-			 $sDt="update ".$dbname.".pabrik_timbangan set jjgsortasi='".$jmlhJJg."',kgpotsortasi='".$kgPtngan."' where notransaksi='".$noTiket."'";
-			   if(mysql_query($sDt))
-				   echo"";
-			   else
+			if(mysql_query($sIns)){
+			   $sDt="update ".$dbname.".pabrik_timbangan set jjgsortasi='".$jmlhJJg."',persenBrondolan='".$persenBrnd."',kgpotsortasi='".$kgPtngan."' where notransaksi='".$noTiket."'";
+			   if(!mysql_query($sDt))
 				   echo "DB Error : ".$sDt."__".mysql_error($conn);
+			}else{
+				echo "DB Error : ".mysql_error($conn);
 			}
-			else
-			{
+		}else{
+			$sIns="insert into ".$dbname.".pabrik_sortasi (notiket, kodefraksi, jumlah) values ('".$noTiket."','".$isi."','".$isiData[$isi]."')";
+			if(mysql_query($sIns)){
+				$sDt="update ".$dbname.".pabrik_timbangan set jjgsortasi='".$jmlhJJg."',persenBrondolan='".$persenBrnd."',kgpotsortasi='".$kgPtngan."' where notransaksi='".$noTiket."'";
+				if(!mysql_query($sDt))
+				   echo "DB Error : ".$sDt."__".mysql_error($conn);
+			}else{
 				echo "DB Error : ".$sDt."__".mysql_error($conn);
 			}
 		}
 	}
-	break;
-
-	case'update':
-		if($noTiket=='')
-		{
-			echo"warning:No Tiket Tidak boleh Kosong";
-			exit();
-		}
-	$kdFraksi=$_POST['kdFraksi'];
-	$isiData=$_POST['isiData'];
-//                    echo"<pre>";
-//                    print_r();
-//                    echo"</pre><br />";
-	foreach ($kdFraksi as $rt =>$isi)
-	{
-
-		if($isiData[$isi]=='')
-		{
+	// Grading Asli
+	$kdFraksi=$_POST['kdFraksi2'];
+	$isiData=$_POST['isiData2'];
+	foreach ($kdFraksi as $rt =>$isi){
+		if($isiData[$isi]==''){
 		   $isiData[$isi]=0; 
 		}
 		$sCek="select notiket,kodefraksi from ".$dbname.".pabrik_sortasi where notiket='".$noTiket."' and kodefraksi='".$isi."'";
 		$qCek=mysql_query($sCek) or die(mysql_error());
 		$rCek=mysql_num_rows($qCek);
-		if($rCek>0)
-		{
-			$sIns="update ".$dbname.".pabrik_sortasi set kodefraksi='".$isi."', jumlah='".$isiData[$isi]."' where notiket='".$noTiket."' and kodefraksi='".$isi."'";
-			if(mysql_query($sIns))
-			{
-
-			   $sDt="update ".$dbname.".pabrik_timbangan set jjgsortasi='".$jmlhJJg."',persenBrondolan='".$persenBrnd."',kgpotsortasi='".$kgPtngan."' where notransaksi='".$noTiket."'";
-			   if(mysql_query($sDt))
-				   echo"";
-			   else
-				   echo "DB Error : ".$sDt."__".mysql_error($conn);
-
-			}
-			else
-			{
+		if($rCek>0){
+			$sIns="update ".$dbname.".pabrik_sortasi set kodefraksi='".$isi."', jmlasli='".$isiData[$isi]."' where notiket='".$noTiket."' and kodefraksi='".$isi."'";
+			if(mysql_query($sIns)){
+				$sDt="update ".$dbname.".pabrik_timbangan set jjgsortasli='".$jmlJJgAsli."',kgpotsortasli='".$kgPotAsli."' where notransaksi='".$noTiket."'";
+				if(!mysql_query($sDt))
+					echo "DB Error : ".$sDt."__".mysql_error($conn);
+			}else{
 				echo "DB Error : ".mysql_error($conn);
 			}
-		}
-		else
-		{
-			$sIns="insert into ".$dbname.".pabrik_sortasi (notiket, kodefraksi, jumlah) values ('".$noTiket."','".$isi."','".$isiData[$isi]."')";
-			if(mysql_query($sIns))
-			{
-				$sDt="update ".$dbname.".pabrik_timbangan set jjgsortasi='".$jmlhJJg."',persenBrondolan='".$persenBrnd."',kgpotsortasi='".$kgPtngan."' where notransaksi='".$noTiket."'";
-			   if(mysql_query($sDt))
-				   echo"";
-			   else
+		}else{
+			$sIns="insert into ".$dbname.".pabrik_sortasi (notiket, kodefraksi,jmlasli) values ('".$noTiket."','".$isi."','".$isiData[$isi]."')";
+			if(mysql_query($sIns)){
+				$sDt="update ".$dbname.".pabrik_timbangan set jjgsortasli='".$jmlJJgAsli."',kgpotsortasi='".$kgPotAsli."' where notransaksi='".$noTiket."'";
+				if(!mysql_query($sDt))
 				   echo "DB Error : ".$sDt."__".mysql_error($conn);
+			}else{
+				echo "DB Error : ".$sDt."__".mysql_error($conn);
 			}
-			   else
-			   {    echo "DB Error : ".$sDt."__".mysql_error($conn);}
-
 		}
-
 	}    
 	// exit("Error".$sIns);
 	break;
 	case'delData':
 	//$where=" notiket='".$noTiket."' and kodefraksi='".$kdFraksi."'";
 	$where=" notiket='".$noTiket."'";
-	$sDel="delete from ".$dbname.".pabrik_sortasi where  ".$where."";
+	//$sDel="delete from ".$dbname.".pabrik_sortasi where  ".$where."";
+	$sDel="update ".$dbname.".pabrik_sortasi set jumlah=0 where ".$where."";
 	if(mysql_query($sDel))
 	{
 	   $sUpd="update ".$dbname.".pabrik_timbangan set jjgsortasi=0,persenBrondolan=0 where notransaksi='".$noTiket."'";
@@ -301,14 +353,20 @@ switch($proses)
 	{
 	echo"<td>".$rFraksi['keterangan']." ".($rFraksi['type']!=''?"(".$rFraksi['type'].")":'')."</td> ";
 	}
-	echo"<td>".$_SESSION['lang']['sortasi']."(JJG)</td><td> ".$_SESSION['lang']['potongankg']."</td>
+	$sFraksi="select kode,".$zz.",type from ".$dbname.".pabrik_5fraksi2 order by kode asc";
+	$qFraksi=mysql_query($sFraksi) or die(mysql_error());
+	while($rFraksi=mysql_fetch_assoc($qFraksi))
+	{
+	echo"<td>".$rFraksi['keterangan']." ".($rFraksi['type']!=''?"(".$rFraksi['type'].")":'')."</td> ";
+	}
+	echo"<td>".$_SESSION['lang']['sortasi']." (JJG)</td><td> ".$_SESSION['lang']['potongankg']."</td>
 	<td>Action</td>
 	</tr>
 	</thead>
 	<tbody>";
 			if($noTiket!='')
 			{
-					$where="where kodefraksi='pwajib' and notiket like '%".$noTiket."%'";
+					$where="where notiket like '%".$noTiket."%'";
 			}
 
 	$limit=20;
@@ -355,6 +413,22 @@ switch($proses)
 					else
 					{
 							echo"<td align=right>".number_format($rMax['jumlah'],2)."</td>";
+					}
+			}
+			$sFraksi="select kode from ".$dbname.".pabrik_5fraksi2 order by kode asc";
+			$qFraksi=mysql_query($sFraksi) or die(mysql_error());
+			while($rFraksi=mysql_fetch_assoc($qFraksi))
+			{
+					$sMax="select notiket,jmlasli,kodefraksi from ".$dbname.".pabrik_sortasi where notiket='".$rNotiket['notiket']."' and kodefraksi='".$rFraksi['kode']."'";
+					$qMax=mysql_query($sMax) or die(mysql_error());
+					$rMax=mysql_fetch_assoc($qMax);
+					if($rFraksi['kode']==$rMax['kodefraksi'])
+					{
+							echo"<td align=right id='".$rFraksi['kode']."##".$rMax['notiket']."' onclick=\"editDetHead('".$rNotiket['notiket']."','".tanggalnormal((substr($rJjg['tanggal'],0,10)))."')\" style=\"cursor:pointer\" >".number_format($rMax['jmlasli'],2)."</td>";
+					}
+					else
+					{
+							echo"<td align=right>".number_format($rMax['jmlasli'],2)."</td>";
 					}
 			}
 			//while($a!=$rMax)
@@ -445,34 +519,54 @@ switch($proses)
 	# Header
 	$table .= "<thead>";
 	$table .= "<tr>";
-	$table .= "<td>".$_SESSION['lang']['noTiket']."</td><td>Netto</td><td>".$_SESSION['lang']['sortasi']."(JJG)</td><td>BJR</td>";
+	$table .= "<td rowspan=2 align=center>".$_SESSION['lang']['noTiket']."</td><td rowspan=2 align=center>Netto</td><td rowspan=2 align=center>" .$_SESSION['lang']['janjang']."</td><td rowspan=2 align=center>BJR</td>";
 	$qHead="select distinct kode,".$zz." from ".$dbname.".pabrik_5fraksi2  order by kode asc";
 	$zd=mysql_query($qHead);
 	$rHead=fetchData($qHead);
    // $brs=count($rHead);
+	$table .= "<td colspan=9 align=center>Grading Adjust</td><td colspan=9 align=center>Grading Asli</td>";
+	$table .= "<td rowspan=2 align=center>Action</td></tr>";
+	$table .= "<tr><td align=center>".$_SESSION['lang']['sortasi']." (JJG)</td>";
 	foreach($rHead as $row =>$isi)
 	{
 		$table .= "<td>".$isi['keterangan']."</td>";
 		// $brs+=1;
 	}
-	$table .= "<td>".$_SESSION['lang']['potongankg']."</td><td>Action</td></tr>";
-
+	$table .="<td rowspan=2 align=center>".$_SESSION['lang']['potongankg']."</td>";
+	$table .="<td align=center>".$_SESSION['lang']['sortasi']." (JJG)</td>";
+	foreach($rHead as $row =>$isi)
+	{
+		$table .= "<td>".$isi['keterangan']."</td>";
+		// $brs+=1;
+	}
+	$table .="<td rowspan=2 align=center>".$_SESSION['lang']['potongankg']."</td>";
+	$table .= "</tr>";
 	$table .= "</thead><tbody>";
-	$table.="<tr class=rowcontent><td><select style='width:80px;' id=noTkt name=noTkt onchange=getNetto(this.options[this.selectedIndex].value)>".$optNotiket."</select></td>";          
+	$table.="<tr class=rowcontent><td><select style='width:70px;' id=noTkt name=noTkt onchange=getNetto(this.options[this.selectedIndex].value)>".$optNotiket."</select></td>";          
 	$table.="<td id=nettox></td>";
-	$table.="<td><input type=text class=myinputtextnumber style='width:65px;' id=jmlhJJg  onkeypress=\"return angka_doang(event)\" size=\"10\" maxlength=\"4\" value=0  onblur=hitungBJR(this.value,".mysql_num_rows($zd).")></td>";
+	$table.="<td><input type=text class=myinputtextnumber style='width:50px;' id=jmlJJg  onkeypress=\"return angka_doang(event)\" size=\"10\" maxlength=\"4\" value=0  onblur=hitungBJR(this.value,".mysql_num_rows($zd).") disabled></td>";
 	$table.="<td id=bjrx></td>";
+	$table.="<td><input type=text class=myinputtextnumber style='width:35px;' id=jmlhJJg  onkeypress=\"return angka_doang(event)\" size=\"10\" maxlength=\"4\" value=0  onblur=hitungPotongan(this.value,'BRD',".mysql_num_rows($zd).")></td>";
 	$a=0;
 	$arr="";
 	foreach($rHead as $row2 =>$isi2)
 	{
 		$a++;
 		$arr.="##".$isi2['kode'];
-	$table .="<td align=right>
-		<input type=text class=myinputtextnumber style='width:65px;' id=inputan_".$a." name=frak".$isi2['kode']." onkeypress=\"return angka_doang(event)\" size=\"10\" maxlength=\"4\" value=0 onblur=hitungPotongan(this.value,'".$isi2['kode']."',".mysql_num_rows($zd).")><input type=hidden id=fraksi_".$a." value=".$isi2['kode']." /></td>";
+		$table .="<td align=right>
+		<input type=text class=myinputtextnumber style='width:35px;' id=inputan_".$a." name=frak".$isi2['kode']." onkeypress=\"return angka_doang(event)\" size=\"10\" maxlength=\"5\" value=0 onblur=hitungPotongan(this.value,'".$isi2['kode']."',".mysql_num_rows($zd).")><input type=hidden id=fraksi_".$a." value=".$isi2['kode']." /></td>";
 	}
-	$table.="<td><input type=text class=myinputtextnumber style='width:65px;' id=kgPtngan  onkeypress=\"return angka_doang(event)\" size=\"10\" maxlength=\"4\" value=0  /></td>";
-	$table .="<td><img id='detail_add' title='".$_SESSION['lang']['save']."' class=zImgBtn onclick=\"addDetail('".$a."')\" src='images/save.png'/></td>";
+	$table.="<td><input type=text class=myinputtextnumber style='width:50px;' id=kgPtngan  onkeypress=\"return angka_doang(event)\" size=\"10\" maxlength=\"8\" value=0 readonly /></td>";
+	$table.="<td><input type=text class=myinputtextnumber style='width:35px;' id=jmlJJgAsli  onkeypress=\"return angka_doang(event)\" size=\"10\" maxlength=\"4\" value=0  onblur=hitungPotAsli(this.value,'BRD',".mysql_num_rows($zd).")></td>";
+	foreach($rHead as $row3 =>$isi3)
+	{
+		$a++;
+		$arr.="##".$isi3['kode'];
+		$table .="<td align=right>
+		<input type=text class=myinputtextnumber style='width:35px;' id=inputan_".$a." name=frak3".$isi3['kode']." onkeypress=\"return angka_doang(event)\" size=\"10\" maxlength=\"5\" value=0 onblur=hitungPotAsli(this.value,'".$isi3['kode']."',".mysql_num_rows($zd).")><input type=hidden id=fraksi_".$a." value=".$isi3['kode']." /></td>";
+	}
+	$table.="<td><input type=text class=myinputtextnumber style='width:40px;' id=kgPotAsli  onkeypress=\"return angka_doang(event)\" size=\"10\" maxlength=\"8\" value=0 readonly /></td>";
+	$table .="<td align=center><img id='detail_add' title='".$_SESSION['lang']['save']."' class=zImgBtn onclick=\"addDetail('".$a."')\" src='images/save.png'/></td>";
 	$table.="</tr></tbody></table><input type=hidden id=jmlhBaris value=".$a." />";
 	echo $table;
 
@@ -507,7 +601,7 @@ switch($proses)
 			}
 			//echo $optNotiket;
 	}
-	$sJjg="select jjgsortasi,tanggal,persenBrondolan,kgpotsortasi,beratbersih from ".$dbname.".pabrik_timbangan where notransaksi='".$noTiket."'";
+	$sJjg="select jjgsortasi,tanggal,persenBrondolan,kgpotsortasi,beratbersih,jumlahtandan1,jjgsortasli,kgpotsortasli from ".$dbname.".pabrik_timbangan where notransaksi='".$noTiket."'";
 	$qJjg=mysql_query($sJjg) or die(mysql_error());
 	$rJjg=mysql_fetch_assoc($qJjg);
 					//=========================
@@ -523,6 +617,7 @@ switch($proses)
 //                    }
 //                    echo"</tr></thead>
 //                         <tbody><tr class=rowcontent><td>Standar Potongan*100(%)</td><td id=nettox>".$rJjg['beratbersih']."</td><td id=bjrx>".number_format(($rJjg['beratbersih']/$rJjg['jjgsortasi']),2,".","")."</td>";
+
 //                    while($barf=mysql_fetch_object($resx))
 //                    {
 //                        echo"<td align=center id=pot".$barf->kodefraksi.">".$barf->potongan."</td>";
@@ -537,33 +632,47 @@ switch($proses)
 	//echo"warning:".$table;
 	# Header
 	$table .= "<thead>";
-	$table .= "<tr>";               
-	$table .= "<td>".$_SESSION['lang']['noTiket']."</td><td>Netto</td>
-			   <td>".$_SESSION['lang']['sortasi']."(JJG)</td>
-			   <td>BJR</td>";
+	$table .= "<tr>";
+	$table .= "<td rowspan=2 align=center>".$_SESSION['lang']['noTiket']."</td>
+			   <td rowspan=2 align=center>Netto</td>
+			   <td rowspan=2 align=center>".$_SESSION['lang']['janjang']."</td>
+			   <td rowspan=2 align=center>BJR</td>";
+	$table .= "<td colspan=9 align=center>Grading Adjust</td>";
+	$table .= "<td colspan=9 align=center>Grading Asli</td>";
+	$table .= "<td rowspan=2 align=center>Action</td>";
+	$table .= "</tr><tr>
+			   <td align=center>".$_SESSION['lang']['sortasi']." (JJG)</td>";
 	$qHead="select distinct kode,".$zz." from ".$dbname.".pabrik_5fraksi2 order by kode asc";
 	$zd=mysql_query($qHead);
 	$rHead=fetchData($qHead);
-	
 	$brs=0;
 	foreach($rHead as $row =>$isi)
 	{
-		$table .= "<td>".$isi['keterangan']."</td>";
+		$table .= "<td align=center>".$isi['keterangan']."</td>";
 	   $brs+=1;
 	}
-	$table .= "<td>KG Potongan</td><td>Action</td></tr>";
-
+	$table .= "<td align=center>".$_SESSION['lang']['potongankg']."</td>
+			   <td align=center>".$_SESSION['lang']['sortasi']." (JJG)</td>";
+	foreach($rHead as $row =>$isi)
+	{
+		$table .= "<td align=center>".$isi['keterangan']."</td>";
+	   $brs+=1;
+	}
+	$table .= "<td align=center>".$_SESSION['lang']['potongankg']."</td>";
 	$table .= "</thead><tbody>";
-	$table.="<tr class=rowcontent><td><select style='width:80px;' id=noTkt name=noTkt disabled onchange=getNetto(this.options[this.selectedIndex].value)>".$optNotiket."</select></td>";    
+	$table.="<tr class=rowcontent><td><select style='width:70px;' id=noTkt name=noTkt disabled onchange=getNetto(this.options[this.selectedIndex].value)>".$optNotiket."</select></td>";    
 	$table.="<td id=nettox>".$rJjg['beratbersih']."</td>";
-	$table.="<td><input type=text class=myinputtextnumber style='width:65px;' id=jmlhJJg  onkeypress=\"return angka_doang(event)\" size=\"10\" maxlength=\"4\" value='".$rJjg['jjgsortasi']."'  onblur=hitungBJR(this.value,".mysql_num_rows($zd).")></td>";
-	@$dtbjr=$rJjg['beratbersih']/$rJjg['jjgsortasi'];
+	$table.="<td><input type=text class=myinputtextnumber style='width:40px;' id=jmlJJg  onkeypress=\"return angka_doang(event)\" size=\"10\" maxlength=\"4\" value='".$rJjg['jumlahtandan1']."'  onblur=hitungBJR(this.value,".mysql_num_rows($zd).") disabled></td>";
+	@$dtbjr=$rJjg['beratbersih']/$rJjg['jumlahtandan1'];
 	$table.="<td id=bjrx>".number_format($dtbjr,2)."</td>";
+	$table.="<td><input type=text class=myinputtextnumber style='width:35px;' id=jmlhJJg  onkeypress=\"return angka_doang(event)\" size=\"10\" maxlength=\"4\" value='".$rJjg['jjgsortasi']."'  onblur=hitungPotongan(this.value,'BRD',".mysql_num_rows($zd).")></td>";
+
 	$qData="select * from ".$dbname.".pabrik_sortasi where notiket='".$noTiket."' order by kodefraksi asc";
 	$rData=fetchData($qData);
 	foreach($rData as $brs =>$dt)
 	{
 	   $listData[$dt['kodefraksi']]=$dt['jumlah'];
+	   $listData3[$dt['kodefraksi']]=$dt['jmlasli'];
 	}
 	$a=0;
 	foreach($rHead as $row2 =>$isi2)
@@ -571,10 +680,19 @@ switch($proses)
 		$a++;
 		setIt($listData[$isi2['kode']],0);
 		$table .="<td align=right>
-		<input type=text class=myinputtextnumber style='width:65px;' id=inputan_".$a." onkeypress=\"return angka_doang(event)\" size=\"10\" maxlength=\"4\" value=".$listData[$isi2['kode']]." onblur=hitungPotongan(this.value,'".$isi2['kode']."',".mysql_num_rows($zd).")><input type=hidden  id=fraksi_".$a." value=".$isi2['kode']." /></td>";
+		<input type=text class=myinputtextnumber style='width:35px;' id=inputan_".$a." onkeypress=\"return angka_doang(event)\" size=\"10\" maxlength=\"5\" value=".$listData[$isi2['kode']]." onblur=hitungPotongan(this.value,'".$isi2['kode']."',".mysql_num_rows($zd).")><input type=hidden  id=fraksi_".$a." value=".$isi2['kode']." /></td>";
 	}
-	$table.="<td><input type=text class=myinputtextnumber style='width:65px;' id=kgPtngan  onkeypress=\"return angka_doang(event)\" size=\"10\" maxlength=\"4\" value='".$rJjg['kgpotsortasi']."'  /></td>";
-	$table .="<td><img id='detail_add' title='".$_SESSION['lang']['save']."' class=zImgBtn onclick=\"addDetail('".$a."')\" src='images/save.png'/></td>";
+	$table.="<td><input type=text class=myinputtextnumber style='width:50px;' id=kgPtngan  onkeypress=\"return angka_doang(event)\" size=\"10\" maxlength=\"8\" value='".$rJjg['kgpotsortasi']."' readonly /></td>";
+	$table.="<td><input type=text class=myinputtextnumber style='width:35px;' id=jmlJJgAsli  onkeypress=\"return angka_doang(event)\" size=\"10\" maxlength=\"4\" value='".$rJjg['jjgsortasli']."'  onblur=hitungPotAsli(this.value,'BRD',".mysql_num_rows($zd).")></td>";
+	foreach($rHead as $row3 =>$isi3)
+	{
+		$a++;
+		setIt($listData3[$isi3['kode']],0);
+		$table .="<td align=right>
+		<input type=text class=myinputtextnumber style='width:35px;' id=inputan_".$a." onkeypress=\"return angka_doang(event)\" size=\"10\" maxlength=\"5\" value=".$listData3[$isi3['kode']]." onblur=hitungPotAsli(this.value,'".$isi3['kode']."',".mysql_num_rows($zd).")><input type=hidden  id=fraksi_".$a." value=".$isi3['kode']." /></td>";
+	}
+	$table.="<td><input type=text class=myinputtextnumber style='width:50px;' id=kgPotAsli  onkeypress=\"return angka_doang(event)\" size=\"10\" maxlength=\"8\" value='".$rJjg['kgpotsortasli']."' readonly /></td>";
+	$table .="<td align=center><img id='detail_add' title='".$_SESSION['lang']['save']."' class=zImgBtn onclick=\"addDetail('".$a."')\" src='images/save.png'/></td>";
 	$table.="</tr></tbody></table><input type=hidden id=jmlhBaris value=".$a." />";
 	echo $table;
 	break;
@@ -583,8 +701,16 @@ switch($proses)
 		<table cellspacing=1 border=0 class=sortable>
 	<thead>
 	<tr class=rowheader>
-	<td>No.fsdfd</td>
-	<td>".$_SESSION['lang']['noTiket']."</td>
+	<td rowspan=2 align=center>No.</td>
+	<td rowspan=2 align=center>".$_SESSION['lang']['noTiket']."</td>
+	<td rowspan=2 align=center>Netto</td>
+	<td rowspan=2 align=center>".$_SESSION['lang']['janjang']."</td>
+	<td rowspan=2 align=center>BJR</td>
+	<td colspan=9 align=center>Grading Adjust</td>
+	<td colspan=9 align=center>Grading Asli</td>
+	<td rowspan='2' align=center>Action</td>
+	</tr><tr class=rowheader>
+	<td align=center>".$_SESSION['lang']['sortasi']." (JJG)</td>
 	";
 		$thn=substr($tgl,0,4);
 		$bln=substr($tgl,4,2);
@@ -595,20 +721,30 @@ switch($proses)
 	$brs=count($rHead);
 	foreach($rHead as $row =>$isi)
 	{
-		echo "<td>".$isi['keterangan']."</td>";
+		echo "<td align=center>".$isi['keterangan']."</td>";
 
 	}
-	echo"<td>".$_SESSION['lang']['sortasi']."(JJG)</td><td>".$_SESSION['lang']['potongankg']."</td><td>Action</td></tr></thead><tbody>";
+	echo"	<td align=center>".$_SESSION['lang']['potongankg']."</td>
+			<td align=center>".$_SESSION['lang']['sortasi']." (JJG)</td>";
+	foreach($rHead as $row =>$isi)
+	{
+		echo "<td align=center>".$isi['keterangan']."</td>";
+
+	}
+	echo"	<td align=center>".$_SESSION['lang']['potongankg']."</td>";
+	echo "</tr></thead><tbody>";
+
 	$qData="select * from ".$dbname.".pabrik_sortasi a left join ".$dbname.".pabrik_timbangan b on a.notiket=b.notransaksi 
 		where substr(b.tanggal,1,10) = '".$tanggal."' and millcode='".$_POST['kdOrg']."' and kodebarang='40000003' and kodefraksi in (select distinct kodefraksi from ".$dbname.".pabrik_5fraksi2 order by kodefraksi)  ";
-	//echo $qData;
+	//exit('Warning: '.$qData);
 	$rData=fetchData($qData);
 	foreach($rData as $brs =>$dt)
 	{
 	   $listData[$dt['notiket']][$dt['kodefraksi']]=$dt['jumlah'];
+	   $listData3[$dt['notiket']][$dt['kodefraksi']]=$dt['jmlasli'];
 	}
 
-	$sNotiket="select notiket from ".$dbname.".pabrik_sortasi a left join ".$dbname.".pabrik_timbangan b on a.notiket=b.notransaksi 
+	$sNotiket="select DISTINCT notiket from ".$dbname.".pabrik_sortasi a left join ".$dbname.".pabrik_timbangan b on a.notiket=b.notransaksi 
 		where substr(b.tanggal,1,10)= '".$tanggal."' and millcode='".$_POST['kdOrg']."' and kodebarang='40000003' and kodefraksi in (select distinct kodefraksi from ".$dbname.".pabrik_5fraksi2 order by kodefraksi)  group by `notiket` order by `notiket`  ";
 	//echo $sNotiket;
 	$qNotiket=mysql_query($sNotiket) or die(mysql_error());
@@ -616,11 +752,15 @@ switch($proses)
 	while($rNotiket=mysql_fetch_assoc($qNotiket))
 	{
 			$no+=1;
-			$sJjg="select jjgsortasi,tanggal,persenBrondolan,kgpotsortasi from ".$dbname.".pabrik_timbangan where notransaksi='".$rNotiket['notiket']."'";
+			$sJjg="select jjgsortasi,tanggal,persenBrondolan,kgpotsortasi,beratbersih,jumlahtandan1,jjgsortasli,kgpotsortasli from ".$dbname.".pabrik_timbangan where notransaksi='".$rNotiket['notiket']."'";
 			$qJjg=mysql_query($sJjg) or die(mysql_error());
 			$rJjg=mysql_fetch_assoc($qJjg);
-			echo"<tr class=rowcontent onclick=\"editDet('".$rNotiket['notiket']."','".tanggalnormal((substr($rJjg['tanggal'],0,10)))."');\" style=\"cursor:pointer\"><td>".$no."</td>";
+			echo"<tr class=rowcontent onclick=\"editDet('".$rNotiket['notiket']."','".tanggalnormal((substr($rJjg['tanggal'],0,10)))."');\" style=\"cursor:pointer\"><td align=center>".$no."</td>";
 			echo"<td>".$rNotiket['notiket']."</td>";
+			echo"<td align=right>".$rJjg['beratbersih']."</td>";
+			echo"<td align=right>".$rJjg['jumlahtandan1']."</td>";
+			echo"<td align=right>".number_format(($rJjg['jumlahtandan1']==0 ? 0 : $rJjg['beratbersih']/$rJjg['jumlahtandan1']),2)."</td>";
+			echo"<td align=right>".number_format($rJjg['jjgsortasi'],2)."</td>";
 			$sKdFrak="select kodefraksi from ".$dbname.".pabrik_sortasi where notiket='".$rNotiket['notiket']."'";
 			$rKdFrak=fetchData($sKdFrak);
 			foreach($rHead as $row2 =>$isi2)
@@ -628,25 +768,33 @@ switch($proses)
 				setIt($listData[$rNotiket['notiket']][$isi2['kode']],0);
 				echo "<td  align=right>".number_format($listData[$rNotiket['notiket']][$isi2['kode']],2)."</td>";
 			}
-
-			echo"<td align=right>".number_format($rJjg['jjgsortasi'],2)."</td>";
-			echo"<td align=right>".number_format($rJjg['kgpotsortasi'],2)."</td><td>
+			echo"<td align=right>".number_format($rJjg['kgpotsortasi'],2)."</td>";
+			echo"<td align=right>".number_format($rJjg['jjgsortasli'],2)."</td>";
+			foreach($rHead as $row3 =>$isi3)
+			{
+				setIt($listData3[$rNotiket['notiket']][$isi3['kode']],0);
+				echo "<td  align=right>".number_format($listData3[$rNotiket['notiket']][$isi3['kode']],2)."</td>";
+			}
+			echo"<td align=right>".number_format($rJjg['kgpotsortasli'],2)."</td><td align=center>
 			<img src=images/application/application_delete.png class=resicon  title='Delete' onclick=\"delDet('".$rNotiket['notiket']."');\"></td></tr>";
 	}
-
-
 	echo"</tbody></table></div>";
 	break;
+
 	case'getNetto':
-		$str="select beratbersih from ".$dbname.".pabrik_timbangan where notransaksi='".$_POST['noticket']."'";
+		$str="select beratbersih,jumlahtandan1,kgpotsortasi,jjgsortasi from ".$dbname.".pabrik_timbangan where notransaksi='".$_POST['noticket']."'";
 		$res=mysql_query($str);
 		$netto=0;
 		while($bar=mysql_fetch_object($res))
 		{
 			$netto=$bar->beratbersih;
+			$jmljjg=$bar->jumlahtandan1;
+			$kgpotsortasi=$bar->kgpotsortasi;
+			$jjgsortasi=$bar->jjgsortasi;
 		}
-		echo $netto;  
-	break;    
+		echo $netto.'###'.$jmljjg.'###'.$kgpotsortasi.'###'.$jjgsortasi;
+	break;
+
 	default:
 	break;
 }

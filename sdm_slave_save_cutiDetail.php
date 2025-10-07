@@ -12,6 +12,10 @@ $diambil	=$_POST['diambilJ'];
 $keterangan	=$_POST['keteranganJ'];
 $method     =$_POST['method'];
 
+if(!strstr(strtoupper($keterangan),'CUTI')){
+   $keterangan='CUTI '.$keterangan;
+}
+
 $optSubBagian = makeOption($dbname,'datakaryawan','karyawanid,subbagian');
 
 //periksa apakah ada yang tidak benar
@@ -26,14 +30,17 @@ $rangeTgl = rangeTanggal($dari, $sampai);
 
 if($method=='insert')
 {
-	if(getRangeTanggal($dari,$sampai) != $diambil){
-		exit("Gagal : Perisaka kembali tanggal dari/sampai cuti.");
+	//if(getRangeTanggal($dari,$sampai) != $diambil){
+	//	exit("Gagal : Periksa kembali tanggal dari/sampai cuti.");
+	//}
+	if(getRangeTanggal($dari,$sampai) < $diambil){
+		exit("Gagal : Periksa kembali tanggal dari/sampai cuti.");
 	}
 	
-	$strAbsen = "select * from ".$dbname.".sdm_absensidt where karyawanid = '".$karyawanid."' and tanggal between '".$dari."' and '".$sampai."'";
-	if(mysql_num_rows(mysql_query($strAbsen)) > 0){
-		exit("Gagal : Untuk range tanggal awal s/d akhir cuti sudah ada absen.");
-	}
+	//$strAbsen = "select * from ".$dbname.".sdm_absensidt where karyawanid = '".$karyawanid."' and tanggal between '".$dari."' and '".$sampai."'";
+	//if(mysql_num_rows(mysql_query($strAbsen)) > 0){
+	//	 exit("Gagal : Untuk range tanggal awal s/d akhir cuti sudah ada absen.");
+	//}
 	
 $strc="select * from ".$dbname.".sdm_cutidt
        where karyawanid = '".$karyawanid."' and ((daritanggal>=".$dari." and daritanggal<=".$sampai.")
@@ -67,18 +74,101 @@ $strc="select * from ".$dbname.".sdm_cutidt
 			mysql_query($strDelAbs);
 		}
 		
-		$str="delete from ".$dbname.".sdm_cutidt
-		       where kodeorg='".$kodeorg."'
-			   and karyawanid=".$karyawanid."
+		$str3="select * from ".$dbname.".sdm_ijin
+		       where karyawanid=".$karyawanid."
 			   and periodecuti='".$periode."'
-			   and daritanggal='".$_POST['dariJ']."'";
+			   and substr(darijam,1,10)='".$_POST['dariJ']."'
+			   and substr(sampaijam,1,10)='".$_POST['sampaiJ']."'
+			   and persetujuan1=hrd and stpersetujuanhrd='1'";
+		$res3=mysql_query($str3);
+        $inputhrd=0;
+        while($bar3=mysql_fetch_object($res3)){
+           $inputhrd=$bar3->hrd;
+        }
+        if($inputhrd==0){
+		   $str2="update ".$dbname.".sdm_ijin set stpersetujuanhrd=0,komenst2='' 
+		       where karyawanid=".$karyawanid."
+			   and periodecuti='".$periode."'
+			   and substr(darijam,1,10)='".$_POST['dariJ']."'
+			   and substr(sampaijam,1,10)='".$_POST['sampaiJ']."'
+			   and stpersetujuanhrd='1'";
+		}else{
+		   $str2="delete from ".$dbname.".sdm_ijin
+		       where karyawanid=".$karyawanid."
+			   and periodecuti='".$periode."'
+			   and substr(darijam,1,10)='".$_POST['dariJ']."'
+			   and substr(sampaijam,1,10)='".$_POST['sampaiJ']."'
+			   and stpersetujuanhrd='1'";
+	    }
+		mysql_query($str2);
+		
+		$str="delete from ".$dbname.".sdm_cutidt
+		       where karyawanid=".$karyawanid."
+			   and periodecuti='".$periode."'
+			   and daritanggal='".$_POST['dariJ']."'
+			   and sampaitanggal='".$_POST['sampaiJ']."'";
+
 		break;	   
 	case 'insert':
 		foreach($rangeTgl as $val){
-			$strAbs = "insert into ".$dbname.".sdm_absensidt (kodeorg,tanggal,karyawanid,shift,absensi,jam,jamPlg,penjelasan,catu,penaltykehadiran,premi,insentif,fingerprint) values ('".$optSubBagian[$karyawanid]."','".$val."','".$karyawanid."','','C','00:00:00','00:00:00','".$keterangan."','0','0','0','0','0')";
+			if(substr($kodeorg,2,2)=='HO'){
+				$kebun='HOLDING';
+			}else if(substr($kodeorg,2,2)=='RO'){
+				$kebun='KANWIL';
+			}else if(substr($kodeorg,3,1)=='E'){
+				$kebun='ESTATE';
+			}else if(substr($kodeorg,3,1)=='M'){
+				$kebun='MILL';
+			}else{
+				$kebun=$kodeorg;
+			}
+			$strLibur="select kebun,tanggal from ".$dbname.".sdm_5harilibur where tanggal='".$val."' and (kebun='GLOBAL' or kebun='".$kebun."' or kebun='".$kodeorg."')";
+			$resLibur=mysql_query($strLibur);
+			$AdaLibur=mysql_num_rows($resLibur);
+			if($AdaLibur>0){
+				continue;
+			}
+			$strAbsen="select kodeorg,tanggal,karyawanid from ".$dbname.".sdm_absensidt where karyawanid = '".$karyawanid."' and tanggal='".$val."'";
+			$resAbsen=mysql_query($strAbsen);
+			$Ada=0;
+			while($barAbsen=mysql_fetch_object($resAbsen)){
+				$Ada=1;
+			}
+			if($Ada==1){
+				$strAbs = "update ".$dbname.".sdm_absensidt set absensi='C' where karyawanid='".$karyawanid."' and tanggal='".$val."'";
+			}else{
+				$strAbs = "insert into ".$dbname.".sdm_absensidt (kodeorg,tanggal,karyawanid,shift,absensi,jam,jamPlg,penjelasan,catu,penaltykehadiran,premi,insentif,fingerprint) values ('".$optSubBagian[$karyawanid]."','".$val."','".$karyawanid."','','C','00:00:00','00:00:00','".$keterangan."','0','0','0','0','0')";
+			}
 			mysql_query($strAbs);
 		}
-	
+
+		$str3="select * from ".$dbname.".sdm_ijin
+		       where karyawanid=".$karyawanid."
+			   and periodecuti='".$periode."'
+			   and substr(darijam,1,10)='".tanggalsystemn($_POST['dariJ'])."'
+			   and substr(sampaijam,1,10)='".tanggalsystemn($_POST['sampaiJ'])."'
+			   and jenisijin='CUTI'";
+		$res3=mysql_query($str3);
+        $inputada=0;
+        while($bar3=mysql_fetch_object($res3)){
+           $inputada=1;
+        }
+        
+        if($inputada==1){
+		   $str2="update ".$dbname.".sdm_ijin set persetujuan1=".$_SESSION['standard']['userid'].",stpersetujuan1=1,komenst1='Permintaan Disetujui',
+		       stpersetujuanhrd=1,komenst2='Permintaan Disetujui',hrd=".$_SESSION['standard']['userid']." 
+		       where karyawanid=".$karyawanid."
+			   and periodecuti='".$periode."'
+			   and substr(darijam,1,10)='".tanggalsystemn($_POST['dariJ'])."'
+			   and substr(sampaijam,1,10)='".tanggalsystemn($_POST['sampaiJ'])."'
+			   and jenisijin='CUTI'";
+		}else{
+		   $str2="insert into ".$dbname.".sdm_ijin 
+		      values('".$karyawanid."',".$dari.",'".$keterangan."','".$keterangan."','".$_SESSION['standard']['userid']."','1','Permintaan Disetujui',".tanggalsystem(date('d-m-Y,')).",".$dari.",".$dari.",".$sampai.",'CUTI','".$_SESSION['standard']['userid']."','1',
+			  '".$periode."',".$diambil.",'Permintaan Disetujui')";
+		}
+		mysql_query($str2);
+
 		$str="insert into ".$dbname.".sdm_cutidt 
 		      (kodeorg,karyawanid,periodecuti,daritanggal,
 			  sampaitanggal,jumlahcuti,keterangan
@@ -87,6 +177,7 @@ $strc="select * from ".$dbname.".sdm_cutidt
 			  '".$periode."','".$dari."','".$sampai."',
 			  ".$diambil.",'".$keterangan."'
 			  )";
+
 		break;
 	default:
 	   break;					
@@ -94,8 +185,14 @@ $strc="select * from ".$dbname.".sdm_cutidt
 	if(mysql_query($str))
 		{
 		//ambil sum jumlah diambil dan update table header
+        /*
 		$strx="select sum(jumlahcuti) as diambil from ".$dbname.".sdm_cutidt
 		       where kodeorg='".$kodeorg."'
+			   and karyawanid=".$karyawanid."
+			   and periodecuti='".$periode."'";
+		*/
+		$strx="select sum(jumlahcuti) as diambil from ".$dbname.".sdm_cutidt
+		       where upper(keterangan) like '%CUTI%'
 			   and karyawanid=".$karyawanid."
 			   and periodecuti='".$periode."'";
 			   

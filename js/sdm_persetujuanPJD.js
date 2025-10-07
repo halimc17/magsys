@@ -2,9 +2,9 @@
  * @author repindra.ginting
  */
 
-function approvePJD(notransaksi,karyawanid,status,kolom)
+function approvePJD(notransaksi,karyawanid,status,kolom,tujuan2)
 {      
-	 	param='notransaksi='+notransaksi+'&karyawanid='+karyawanid+'&status='+status+'&kolom='+kolom;
+	 	param='notransaksi='+notransaksi+'&karyawanid='+karyawanid+'&status='+status+'&kolom='+kolom+'&tujuan2='+tujuan2;
 		tujuan = 'sdm_slave_PJDinasApproval.php';
 		if(status==1)
 		   comment=' Approve ';
@@ -123,6 +123,19 @@ function previewPJDPDF(nosk,ev)
 {
    	param='notransaksi='+nosk;
 	tujuan = 'sdm_slave_printPJD_pdf.php?'+param;	
+ //display window
+   title=nosk;
+   width='700';
+   height='400';
+   content="<iframe frameborder=0 width=100% height=100% src='"+tujuan+"'></iframe>"
+   showDialog1(title,content,width,height,ev);
+   
+}
+
+function previewPUKPJDPDF(nosk,ev)
+{
+   	param='notransaksi='+nosk;
+	tujuan = 'sdm_slave_printPUKPJD_pdf.php?'+param;	
  //display window
    title=nosk;
    width='700';

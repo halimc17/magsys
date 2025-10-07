@@ -5,6 +5,7 @@ require_once('lib/nangkoelib.php');
 require_once('lib/zLib.php');
 
 $pt=checkPostGet('pt','');
+$unit=checkPostGet('unit','');
 if(isset($_GET['proses']))
 {
     $proses=$_GET['proses'];
@@ -26,14 +27,35 @@ switch($proses)
     }
     echo $optKebun;
     break;
+    case'getDiv':
+    $optKebun="<option value=''>".$_SESSION['lang']['all']."</option>";
+    $sKbn="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi where induk='".$unit."' and tipe='AFDELING'";
+    $qKbn=mysql_query($sKbn) or die(mysql_error($conn));
+    while($rKbn=  mysql_fetch_assoc($qKbn))
+    {
+    $optKebun.="<option value=".$rKbn['kodeorganisasi'].">".$rKbn['namaorganisasi']."</option>";
+    }
+    echo $optKebun;
+    break;
+    case'getDivisi':
+    $optDivisi="<option value=''>".$_SESSION['lang']['all']."</option>";
+    $sDivisi="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi where tipe not like 'GUDANG%' and induk='".$unit."'";
+    $qDivisi=mysql_query($sDivisi) or die(mysql_error($conn));
+    while($rDivisi=  mysql_fetch_assoc($qDivisi))
+    {
+    $optDivisi.="<option value=".$rDivisi['kodeorganisasi'].">".$rDivisi['namaorganisasi']."</option>";
+    }
+    echo $optDivisi;
+    break;
     case'getDetail':
     $kodeorg=$_GET['kodeorg'];
     $tgl=$_GET['tanggal'];
-    $sKary="select namakaryawan,karyawanid from ".$dbname.".datakaryawan where lokasitugas='".substr($kodeorg,0,4)."'";
+    $sKary="select namakaryawan,karyawanid,nik from ".$dbname.".datakaryawan where lokasitugas='".substr($kodeorg,0,4)."'";
     $qKary=mysql_query($sKary) or die(mysql_error());
     while($rKary=mysql_fetch_assoc($qKary))
     {
         $rArrKary[$rKary['karyawanid']]=$rKary['namakaryawan'];
+        $rNIKKary[$rKary['karyawanid']]=$rKary['nik'];
     }
     echo"<link rel=stylesheet type=text/css href=style/generic.css>
         <script language=javascript1.2 src='js/generic.js'></script>
@@ -47,24 +69,26 @@ switch($proses)
         <table class=sortable cellpadding=1 border=0>
         <thead>
         <tr class=rowheader>
-        <td>No.</td>
-        <td>".$_SESSION['lang']['notransaksi']."</td>
-        <td>".$_SESSION['lang']['blok']."</td>
-        <td>".$_SESSION['lang']['nikmandor']."</td>
-        <td>".$_SESSION['lang']['namakaryawan']."</td>
-        <td>".$_SESSION['lang']['basisjjg']."</td>
-        <td>".$_SESSION['lang']['luas']."</td>
-        <td>".$_SESSION['lang']['hasilkerja']."</td>
-        <td>".$_SESSION['lang']['hasilkerjakg']."</td>
-        <td>".$_SESSION['lang']['upahkerja']."</td>
-        <td>".$_SESSION['lang']['upahpenalty']."</td>
-        <td>".$_SESSION['lang']['premibasis']."</td>
-        <td>".$_SESSION['lang']['upahpremi']."</td>
-        <td>".$_SESSION['lang']['rupiahpenalty']."</td>
+        <td align=center>No.</td>
+        <td align=center>".$_SESSION['lang']['notransaksi']."</td>
+        <td align=center>".$_SESSION['lang']['blok']."</td>
+        <td align=center>".$_SESSION['lang']['nikmandor']."</td>
+        <td align=center>".$_SESSION['lang']['namakaryawan']."</td>
+        <td align=center>NIK</td>
+        <td align=center>".$_SESSION['lang']['basisjjg']."</td>
+        <td align=center>".$_SESSION['lang']['luas']."</td>
+        <td align=center>".$_SESSION['lang']['hasilkerja']."</td>
+        <td align=center>".$_SESSION['lang']['hasilkerjakg']."</td>
+        <td align=center>".$_SESSION['lang']['upahkerja']."</td>
+        <td align=center>".$_SESSION['lang']['upahpenalty']."</td>
+        <td align=center>".$_SESSION['lang']['upahpremi']."</td>
+        <td align=center>".$_SESSION['lang']['rupiahpenalty']."</td>
+        <td align=center>".$_SESSION['lang']['total']."</td>
         </tr></thead><tbody>
             ";
     
-    $sPrestasi="select a.*,b.tanggal,b.nikmandor from ".$dbname.".kebun_prestasi a 
+    $sPrestasi="select a.*,b.tanggal,b.nikmandor,c.namaorganisasi from ".$dbname.".kebun_prestasi a 
+        left join ".$dbname.".organisasi c on a.kodeorg=c.kodeorganisasi 
         left join ".$dbname.".kebun_aktifitas b on a.notransaksi=b.notransaksi 
             where a.kodeorg='".$kodeorg."' and b.tanggal='".$tgl."' and b.tipetransaksi='PNN'";
 //    echo $sPrestasi;
@@ -77,9 +101,9 @@ switch($proses)
         $no+=1;
         
         echo"<tr class=rowcontent>
-            <td>".$no."</td>
+            <td align=center>".$no."</td>
             <td>".$rPrestasi['notransaksi']."</td>
-            <td>".$rPrestasi['kodeorg']."</td>";
+            <td>".$rPrestasi['namaorganisasi']."</td>";
             if(!isset($tempNik) or $tempNik!=$rPrestasi['nikmandor'])
             {
                 $brs=1;
@@ -95,15 +119,16 @@ switch($proses)
                   echo"<td>&nbsp;</td>";
             }
             echo"<td>".$rArrKary[$rPrestasi['nik']]."</td>
+			<td>".$rNIKKary[$rPrestasi['nik']]."</td>
             <td align=right>".number_format($rPrestasi['norma'],2)."</td>
             <td align=right>".number_format($rPrestasi['luaspanen'],2)."</td>
             <td align=right>".number_format($rPrestasi['hasilkerja'],2)."</td>
             <td align=right>".number_format($rPrestasi['hasilkerjakg'],2)."</td>
             <td align=right>".number_format($rPrestasi['upahkerja'],2)."</td>
             <td align=right>".number_format($rPrestasi['upahpenalty'],2)."</td>
-            <td align=right>".number_format($rPrestasi['premibasis'],2)."</td>
             <td align=right>".number_format($rPrestasi['upahpremi'],2)."</td>
             <td align=right>".number_format($rPrestasi['rupiahpenalty'],2)."</td>
+            <td align=right>".number_format($rPrestasi['upahkerja']-$rPrestasi['upahpenalty']+$rPrestasi['upahpremi']-$rPrestasi['rupiahpenalty'],2)."</td>
             </tr>";
 			$totKerja+=$rPrestasi['hasilkerja'];
             $totKerjakg+=$rPrestasi['hasilkerjakg'];
@@ -112,22 +137,24 @@ switch($proses)
             $totPenalty+=$rPrestasi['rupiahpenalty'];
             $totPremi+=$rPrestasi['upahpremi'];
             $totPremibasis+=$rPrestasi['premibasis'];
+            $totJmlTotal+=($rPrestasi['upahkerja']-$rPrestasi['upahpenalty']+$rPrestasi['upahpremi']-$rPrestasi['rupiahpenalty']);
     }
-    echo"<tr class=rowcontent><td colspan=7>Total</td><td align=right>".number_format($totKerja,2)."</td>
+    echo"<tr class=rowcontent><td align=center colspan=8>Total</td><td align=right>".number_format($totKerja,2)."</td>
         <td align=right>".number_format($totKerjakg,2)."</td><td align=right>".number_format($totUpahKerja,2)."</td>
-        <td align=right>".number_format($totUpahpenalty,2)."</td><td align=right>".number_format($totPremibasis,2)."</td>
-        <td align=right>".number_format($totPremi,2)."</td><td align=right>".number_format($totPenalty,2)."</td></tr>";
+        <td align=right>".number_format($totUpahpenalty,2)."</td><td align=right>".number_format($totPremi,2)."</td>
+		<td align=right>".number_format($totPenalty,2)."</td><td align=right>".number_format($totJmlTotal,2)."</td></tr>";
     echo"</tbody></table></fieldset>";
     break;
     
     case'getDetailDenda':
     $kodeorg=$_GET['kodeorg'];
     $tgl=$_GET['tanggal'];
-    $sKary="select namakaryawan,karyawanid from ".$dbname.".datakaryawan where lokasitugas='".substr($kodeorg,0,4)."'";
+    $sKary="select namakaryawan,karyawanid,nik from ".$dbname.".datakaryawan where lokasitugas='".substr($kodeorg,0,4)."'";
     $qKary=mysql_query($sKary) or die(mysql_error());
     while($rKary=mysql_fetch_assoc($qKary))
     {
         $rArrKary[$rKary['karyawanid']]=$rKary['namakaryawan'];
+        $rNIKKary[$rKary['karyawanid']]=$rKary['nik'];
     }
     echo"<link rel=stylesheet type=text/css href=style/generic.css>
         <script language=javascript1.2 src='js/generic.js'></script>
@@ -146,6 +173,7 @@ switch($proses)
         <td>".$_SESSION['lang']['blok']."</td>
         <td>".$_SESSION['lang']['nikmandor']."</td>
         <td>".$_SESSION['lang']['namakaryawan']."</td>
+        <td>NIK</td>
         <td>".$_SESSION['lang']['rupiahpenalty']."</td>
         <td>".$_SESSION['lang']['penalti1']."</td>
         <td>".$_SESSION['lang']['penalti2']."</td>
@@ -160,7 +188,8 @@ switch($proses)
         </tr></thead><tbody>
             ";
     
-    $sPrestasi="select a.*,b.tanggal,b.nikmandor from ".$dbname.".kebun_prestasi a 
+    $sPrestasi="select a.*,b.tanggal,b.nikmandor,c.namaorganisasi from ".$dbname.".kebun_prestasi a 
+        left join ".$dbname.".organisasi c on a.kodeorg=c.kodeorganisasi 
         left join ".$dbname.".kebun_aktifitas b on a.notransaksi=b.notransaksi 
             where a.rupiahpenalty>0 and a.kodeorg='".$kodeorg."' and b.tanggal='".$tgl."' and b.tipetransaksi='PNN'";
 //    echo $sPrestasi;
@@ -173,7 +202,7 @@ switch($proses)
         echo"<tr class=rowcontent>
             <td>".$no."</td>
             <td>".$rPrestasi['notransaksi']."</td>
-            <td>".$rPrestasi['kodeorg']."</td>";
+            <td>".$rPrestasi['namaorganisasi']."</td>";
             if($tempNik!=$rPrestasi['nikmandor'])
             {
                 $brs=1;
@@ -189,6 +218,7 @@ switch($proses)
                   echo"<td>&nbsp;</td>";
             }
             echo"<td>".$rArrKary[$rPrestasi['nik']]."</td>
+			<td>".$rNIKKary[$rPrestasi['nik']]."</td>
             <td align=right>".number_format($rPrestasi['rupiahpenalty'])."</td>
             <td align=right>".number_format($rPrestasi['penalti1'])."</td>
             <td align=right>".number_format($rPrestasi['penalti2'])."</td>
@@ -213,7 +243,7 @@ switch($proses)
             $penalti9+=$rPrestasi['penalti9'];
             $penalti10+=$rPrestasi['penalti10'];
     }
-    echo"<tr class=rowcontent><td colspan=5>Total</td><td align=right>".number_format($rupiahpenalty)."</td>
+    echo"<tr class=rowcontent><td align=center colspan=6>Total</td><td align=right>".number_format($rupiahpenalty)."</td>
         <td align=right>".number_format($penalti1)."</td>
         <td align=right>".number_format($penalti2)."</td>
         <td align=right>".number_format($penalti3)."</td>
@@ -279,8 +309,9 @@ switch($proses)
               b.nikmandor as nikmandor,
               a.hasilkerja as hasilkerja,hasilkerjakg as hasilkerjakg,a.karyawanid as nik,
               a.upahkerja as upahkerja,a.upahpenalty as upahpenalty, a.premibasis as premibasis,
-              a.upahpremi as upahpremi,a.rupiahpenalty as rupiahpenalty
+              a.upahpremi as upahpremi,a.rupiahpenalty as rupiahpenalty,c.namaorganisasi
               from ".$dbname.".kebun_prestasi_vw a
+			  left join ".$dbname.".organisasi c on a.kodeorg=c.kodeorganisasi 
               left join ".$dbname.".kebun_aktifitas b on a.notransaksi=b.notransaksi
               where a.unit = '".$gudang."'  and b.tanggal between ".tanggalsystem($tgl1)." and ".tanggalsystem($tgl2)." 
               ".$where."";
@@ -299,7 +330,7 @@ switch($proses)
             echo"<tr class=rowcontent>
                 <td>".$no."</td>
                 <td>".$bar['notransaksi']."</td>
-                <td>".$bar['kodeorg']."</td>";
+                <td>".$bar['namaorganisasi']."</td>";
                 if($tempNik!=$bar['nikmandor'])
                 {
                     $brs=1;
@@ -346,11 +377,12 @@ switch($proses)
     case'excelDetailDenda':
         $kodeorg=$_GET['kdOrg'];
         $tgl=$_GET['tgl'];
-        $sKary="select namakaryawan,karyawanid from ".$dbname.".datakaryawan where lokasitugas='".substr($kodeorg,0,4)."'";
+        $sKary="select namakaryawan,karyawanid,nik from ".$dbname.".datakaryawan where lokasitugas='".substr($kodeorg,0,4)."'";
         $qKary=mysql_query($sKary) or die(mysql_error());
         while($rKary=mysql_fetch_assoc($qKary))
         {
             $rArrKary[$rKary['karyawanid']]=$rKary['namakaryawan'];
+            $rNIKKary[$rKary['karyawanid']]=$rKary['namakaryawan'];
         }
         $tab.="
         <table class=sortable cellpadding=1 border=1>
@@ -359,8 +391,9 @@ switch($proses)
         <td bgcolor=#DEDEDE align=center>No.</td>
         <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['notransaksi']."</td>
         <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['blok']."</td>
-        <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['nikmandor']."</td>    
+        <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['nikmandor']."</td>
         <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['namakaryawan']."</td>
+        <td bgcolor=#DEDEDE align=center>NIK</td>
         <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['rupiahpenalty']."</td>
         <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['penalti1']."</td>
         <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['penalti2']."</td>
@@ -375,7 +408,8 @@ switch($proses)
         </tr></thead><tbody>
             ";
     
-    $sPrestasi="select a.*,b.tanggal,b.nikmandor from ".$dbname.".kebun_prestasi a 
+    $sPrestasi="select a.*,b.tanggal,b.nikmandor,c.namaorganisasi from ".$dbname.".kebun_prestasi a 
+        left join ".$dbname.".organisasi c on a.kodeorg=c.kodeorganisasi 
         left join ".$dbname.".kebun_aktifitas b on a.notransaksi=b.notransaksi 
             where a.rupiahpenalty>0 and a.kodeorg='".$kodeorg."' and b.tanggal='".$tgl."' and b.tipetransaksi='PNN'";
     //echo $sPrestasi;
@@ -387,7 +421,7 @@ switch($proses)
         $tab.="<tr class=rowcontent>
             <td>".$no."</td>
             <td>".$rPrestasi['notransaksi']."</td>
-            <td>".$rPrestasi['kodeorg']."</td>";
+            <td>".$rPrestasi['namaorganisasi']."</td>";
             if($tempNik!=$rPrestasi['nikmandor'])
             {
                 $brs=1;
@@ -404,6 +438,7 @@ switch($proses)
             }
             $tab.="
             <td>".$rArrKary[$rPrestasi['nik']]."</td>
+            <td>".$rNIKKary[$rPrestasi['nik']]."</td>
             <td align=right>".number_format($rPrestasi['rupiahpenalty'])."</td>
             <td align=right>".number_format($rPrestasi['penalti1'])."</td>
             <td align=right>".number_format($rPrestasi['penalti2'])."</td>
@@ -428,7 +463,7 @@ switch($proses)
             $penalti9+=$rPrestasi['penalti9'];
             $penalti10+=$rPrestasi['penalti10'];
     }
-    $tab.="<tr class=rowcontent><td colspan=5>Total</td><td align=right>".number_format($rupiahpenalty)."</td>
+    $tab.="<tr class=rowcontent><td align=center colspan=6>Total</td><td align=right>".number_format($rupiahpenalty)."</td>
         <td align=right>".number_format($penalti1)."</td>
         <td align=right>".number_format($penalti2)."</td>
         <td align=right>".number_format($penalti3)."</td>
@@ -480,11 +515,12 @@ switch($proses)
     case'excelDetail':
         $kodeorg=$_GET['kdOrg'];
         $tgl=$_GET['tgl'];
-        $sKary="select namakaryawan,karyawanid from ".$dbname.".datakaryawan where lokasitugas='".substr($kodeorg,0,4)."'";
+        $sKary="select namakaryawan,karyawanid,nik from ".$dbname.".datakaryawan where lokasitugas='".substr($kodeorg,0,4)."'";
         $qKary=mysql_query($sKary) or die(mysql_error());
         while($rKary=mysql_fetch_assoc($qKary))
         {
             $rArrKary[$rKary['karyawanid']]=$rKary['namakaryawan'];
+            $rNIKKary[$rKary['karyawanid']]=$rKary['nik'];
         }
         $tab.="
         <table class=sortable cellpadding=1 border=1>
@@ -495,6 +531,7 @@ switch($proses)
         <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['blok']."</td>
         <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['nikmandor']."</td>    
         <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['namakaryawan']."</td>
+        <td bgcolor=#DEDEDE align=center>NIK</td>
         <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['hasilkerja']."</td>
         <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['hasilkerjakg']."</td>
         <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['upahkerja']."</td>
@@ -505,7 +542,8 @@ switch($proses)
         </tr></thead><tbody>
             ";
     
-    $sPrestasi="select a.*,b.tanggal,b.nikmandor from ".$dbname.".kebun_prestasi a 
+    $sPrestasi="select a.*,b.tanggal,b.nikmandor,c.namaorganisasi from ".$dbname.".kebun_prestasi a 
+        left join ".$dbname.".organisasi c on a.kodeorg=c.kodeorganisasi 
         left join ".$dbname.".kebun_aktifitas b on a.notransaksi=b.notransaksi 
             where a.kodeorg='".$kodeorg."' and b.tanggal='".$tgl."' and b.tipetransaksi='PNN'";
     //echo $sPrestasi;
@@ -517,7 +555,7 @@ switch($proses)
         $tab.="<tr class=rowcontent>
             <td>".$no."</td>
             <td>".$rPrestasi['notransaksi']."</td>
-            <td>".$rPrestasi['kodeorg']."</td>";
+            <td>".$rPrestasi['namaorganisasi']."</td>";
             if($tempNik!=$rPrestasi['nikmandor'])
             {
                 $brs=1;
@@ -534,6 +572,7 @@ switch($proses)
             }
             $tab.="
             <td>".$rArrKary[$rPrestasi['nik']]."</td>
+            <td>".$rNIKKary[$rPrestasi['nik']]."</td>
             <td align=right>".number_format($rPrestasi['hasilkerja'],2)."</td>
             <td align=right>".number_format($rPrestasi['hasilkerjakg'],2)."</td>
             <td align=right>".number_format($rPrestasi['upahkerja'],2)."</td>
@@ -550,7 +589,7 @@ switch($proses)
             $totUpahpenalty+=$rPrestasi['upahpenalty'];
             $totPremibasis+=$rPrestasi['premibasis'];
     }
-    $tab.="<tr class=rowcontent><td colspan=5>Total</td><td align=right>".number_format($totKerja,2)."</td>
+    $tab.="<tr class=rowcontent><td align=center colspan=6>Total</td><td align=right>".number_format($totKerja,2)."</td>
         <td align=right>".number_format($totKerjakg,2)."</td><td align=right>".number_format($totUpahKerja,2)."</td>
         <td align=right>".number_format($totUpahpenalty,2)."</td><td align=right>".number_format($totPremibasis,2)."</td>
         <td align=right>".number_format($totPremi,2)."</td><td align=right>".number_format($totPenalty,2)."</td></tr>";
@@ -633,8 +672,9 @@ switch($proses)
               b.nikmandor as nikmandor,
               a.hasilkerja as hasilkerja,hasilkerjakg as hasilkerjakg,a.karyawanid as nik,
               a.upahkerja as upahkerja,a.upahpenalty as upahpenalty, a.premibasis as premibasis,
-              a.upahpremi as upahpremi,a.rupiahpenalty as rupiahpenalty
+              a.upahpremi as upahpremi,a.rupiahpenalty as rupiahpenalty,c.namaorganisasi
               from ".$dbname.".kebun_prestasi_vw a
+			  left join ".$dbname.".organisasi c on a.kodeorg=c.kodeorganisasi 
               left join ".$dbname.".kebun_aktifitas b on a.notransaksi=b.notransaksi
               where a.unit = '".$gudang."'  and b.tanggal between ".tanggalsystem($tgl1)." and ".tanggalsystem($tgl2)." 
               ".$where."";
@@ -653,7 +693,7 @@ switch($proses)
             $tab.="<tr class=rowcontent>
                 <td>".$no."</td>
                 <td>".$bar['notransaksi']."</td>
-                <td>".$bar['kodeorg']."</td>";
+                <td>".$bar['namaorganisasi']."</td>";
                 if($tempNik!=$bar['nikmandor'])
                 {
                     $brs=1;
@@ -732,7 +772,7 @@ switch($proses)
 			}
     break;
     default:
-        break;
+		break;
 }
 //if(isset($_POST['proses']))//=="getKbn")
 //{

@@ -4,6 +4,8 @@ include_once('lib/nangkoelib.php');
 include_once('lib/zLib.php');
 include_once('lib/rTable.php');
 
+
+
 $proses = $_GET['proses'];
 $param = $_POST;
 

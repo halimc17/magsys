@@ -17,6 +17,7 @@ $rinci = array();
        from ".$dbname.".sdm_daftarasset a left join ".$dbname.".sdm_5tipeasset b
        on a.tipeasset=b.kodetipe    
        where a.kodeorg='".$_SESSION['empl']['lokasitugas']."' 
+	   and jlhblnpenyusutan-(((".substr($param['periode'],0,4)."*12)+".substr($param['periode'],5,2).")-((left(awalpenyusutan,4)*12)+RIGHT(awalpenyusutan,2)))>0
        and status=1 and a.awalpenyusutan <= '".$param['periode']."' and persendecline=0";
 
  $res=  mysql_query($str);
@@ -25,10 +26,12 @@ $rinci = array();
  $pass=array();
  while($bar=mysql_fetch_object($res))
  {
+     //$x=mktime(0,0,0,  intval(substr($bar->awalpenyusutan,5,2)+($bar->jlhblnpenyusutan-1)),15,substr($bar->awalpenyusutan,0,4));
      $x=mktime(0,0,0,  intval(substr($bar->awalpenyusutan,5,2)+($bar->jlhblnpenyusutan)),15,substr($bar->awalpenyusutan,0,4));
      $maxperiod=date('Y-m',$x);
      //exit('warning:'.$x."__".$maxperiod."__".$bar->kodeasset);
-     if($param['periode']<$maxperiod) {
+     //if($param['periode']<$maxperiod) {
+     if($param['periode']>=$bar->awalpenyusutan) {
 		if(!isset($ass[$bar->tipeasset])) $ass[$bar->tipeasset]=0;
         $ass[$bar->tipeasset]+=$bar->bulanan;
 		//$rinci[] = array($bar->kodeasset, $bar->bulanan);
@@ -50,6 +53,7 @@ $rinci = array();
        from ".$dbname.".sdm_daftarasset a left join ".$dbname.".sdm_5tipeasset b
        on a.tipeasset=b.kodetipe    
        where a.kodeorg='".$_SESSION['empl']['lokasitugas']."' 
+	   and jlhblnpenyusutan-(((".substr($param['periode'],0,4)."*12)+".substr($param['periode'],5,2).")-((left(awalpenyusutan,4)*12)+RIGHT(awalpenyusutan,2)))>0
        and status=1 and a.awalpenyusutan <= '".$param['periode']."' and a.persendecline>'0'";
  $res=  mysql_query($str);
 
@@ -109,7 +113,11 @@ while($bar=mysql_fetch_object($res)){
 	}
 	//$rinci[] = array($bar->kodeasset, $out);
 	$nama[$bar->tipeasset]=$bar->namatipe;
-	$pass[$bar->tipeasset]='DEP'.substr($bar->tipeasset,0,2);      
+	if(substr($_SESSION['empl']['lokasitugas'],-2)=='HO'){
+		$pass[$bar->tipeasset]='DPH'.substr($bar->tipeasset,0,2);
+	}else{
+		$pass[$bar->tipeasset]='DEP'.substr($bar->tipeasset,0,2);
+	}
 }
 
 echo"<button class=mybutton onclick=prosesPenyusutan(1) id=btnproses>Process</button>

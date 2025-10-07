@@ -76,8 +76,9 @@ $stream.="</thead>";
 #bentuk list karyawan
 $iKar="select karyawanid,namakaryawan,nik,tipekaryawan,kodejabatan,lokasitugas,subbagian,bagian,tanggalmasuk,"
         . " COALESCE(ROUND(DATEDIFF('".$tgl."',tanggalmasuk)/365.25,3),0) as masakerja"
-        . " from ".$dbname.".datakaryawan where lokasitugas='".$unit."' and tanggalkeluar='0000-00-00' "
+        . " from ".$dbname.".datakaryawan where lokasitugas='".$unit."' and (tanggalkeluar='0000-00-00' or tanggalkeluar>'".date('Y-m-d')."')"
         . " and tipekaryawan='".$tipe."' ".$stKawin." ";
+//exit('Warning :'.$iKar);
 $nKar=  mysql_query($iKar) or die (mysql_error($conn));
 while($dKar=  mysql_fetch_assoc($nKar))
 {

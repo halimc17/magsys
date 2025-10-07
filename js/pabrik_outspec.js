@@ -1,0 +1,151 @@
+/**
+ * Pabrik Invetaris Branag
+ */
+
+function loadData(num){
+	millcode	=document.getElementById('millcode').options[document.getElementById('millcode').selectedIndex].value;
+	caripabrik	=document.getElementById('caripabrik').options[document.getElementById('caripabrik').selectedIndex].value;
+	caribarang	=document.getElementById('caribarang').options[document.getElementById('caribarang').selectedIndex].value;
+	cariperiode	=document.getElementById('cariperiode').options[document.getElementById('cariperiode').selectedIndex].value;
+	carinotiket	=document.getElementById('carinotiket').value;
+	param='proses=loadData'+'&millcode='+millcode;
+	param+='&caripabrik='+caripabrik+'&caribarang='+caribarang+'&cariperiode='+cariperiode+'&carinotiket='+carinotiket;
+	param+='&page='+num;
+	tujuan='pabrik_outspec_slave.php';
+	post_response_text(tujuan, param, respog);
+	function respog(){
+		if(con.readyState==4){
+			if (con.status == 200){
+				busy_off();
+				if (!isSaveResponse(con.responseText)){
+					alert('ERROR TRANSACTION,\n' + con.responseText);
+				}else{
+					document.getElementById('container').innerHTML=con.responseText;
+				}
+			}else{
+				busy_off();
+				error_catch(con.status);
+			}
+		}	
+	}  
+}
+
+function simpanData(){
+	millcode 	=document.getElementById('millcode').options[document.getElementById('millcode').selectedIndex].value;
+	notransaksi	=document.getElementById('notransaksi').value;
+	tanggal		=document.getElementById('tanggal').value;
+	kodebarang	=document.getElementById('kodebarang').options[document.getElementById('kodebarang').selectedIndex].value;
+	beratbersih	=document.getElementById('beratbersih').value;
+	nokendaraan	=document.getElementById('nokendaraan').value;
+	supir	  	=document.getElementById('supir').value;
+	noba	  	=document.getElementById('noba').value;
+	notiket  	=document.getElementById('notiket').value;
+	alasan  	=document.getElementById('alasan').value;
+	ongkoskirim	=document.getElementById('ongkoskirim').value;
+	addedit		=document.getElementById('addedit').value;
+	if(millcode=='' ||  notransaksi=='' ||  kodebarang=='' ||  noba=='' ||  notiket==''){
+		alert('Fields are required');
+	}else{
+		param='millcode='+millcode+'&notransaksi='+notransaksi+'&tanggal='+tanggal+'&kodebarang='+kodebarang+'&beratbersih='+beratbersih;
+		param+='&nokendaraan='+nokendaraan+'&supir='+supir+'&noba='+noba+'&notiket='+notiket+'&alasan='+alasan+'&ongkoskirim='+ongkoskirim;
+		param+='&addedit='+addedit+'&proses=saveData';
+		tujuan='pabrik_outspec_slave.php';
+		post_response_text(tujuan, param, respog);
+	}
+	function respog(){
+		if(con.readyState==4){
+			if (con.status == 200){
+				busy_off();
+				if (!isSaveResponse(con.responseText)) {
+					alert('ERROR TRANSACTION,\n' + con.responseText);
+				}else{
+					//document.getElementById('container').innerHTML=con.responseText;
+					bersihkanForm();
+					loadData();
+				}
+			}else{
+				busy_off();
+				error_catch(con.status);
+			}
+		}	
+	}
+}
+
+function fillfield(millcode,notransaksi,tanggal,kodebarang,beratbersih,nokendaraan,supir,noba,notiket,alasan,ongkoskirim){
+	document.getElementById('millcode').value=millcode;
+	document.getElementById('notransaksi').value=notransaksi;
+	document.getElementById('tanggal').value=tanggal;
+	document.getElementById('kodebarang').value=kodebarang;
+	document.getElementById('beratbersih').value=beratbersih;
+	document.getElementById('nokendaraan').value=nokendaraan;
+	document.getElementById('supir').value=supir;
+	document.getElementById('noba').value=noba;
+	document.getElementById('notiket').value=notiket;
+	document.getElementById('alasan').value=alasan;
+	document.getElementById('ongkoskirim').value=ongkoskirim;
+	document.getElementById('addedit').value='update';
+}
+
+function bersihkanForm(){
+	document.getElementById('millcode').value='';
+	document.getElementById('notransaksi').value='';
+	document.getElementById('tanggal').value='';
+	document.getElementById('kodebarang').value='';
+	document.getElementById('beratbersih').value=0;
+	document.getElementById('nokendaraan').value='';
+	document.getElementById('supir').value='';
+	document.getElementById('noba').value='';
+	document.getElementById('notiket').value='';
+	document.getElementById('alasan').value='';
+	document.getElementById('ongkoskirim').value=0;
+	document.getElementById('addedit').value='update';
+}
+
+function deldata(millcode,notransaksi,kodebarang){
+	param='millcode='+millcode+'&notransaksi='+notransaksi+'&kodebarang='+kodebarang;
+	param+='&proses=delData';
+	if (confirm('Delete ..?')) {
+		tujuan = 'pabrik_outspec_slave.php';
+		post_response_text(tujuan, param, respog);
+	}
+	function respog(){
+		if(con.readyState==4){
+			if (con.status == 200) {
+				busy_off();
+				if (!isSaveResponse(con.responseText)) {
+					alert('ERROR TRANSACTION,\n' + con.responseText);
+				}else{
+					//document.getElementById('container').innerHTML=con.responseText;
+					loadData();
+				}
+			}else{
+				busy_off();
+				error_catch(con.status);
+			}
+		}	
+	} 	
+}
+
+function preview_BAPDF(millcode,notransaksi,kodebarang,namabarang,type,ev){
+	param='millcode='+millcode+'&notransaksi='+notransaksi+'&kodebarang='+kodebarang+'&namabarang='+namabarang+'&type='+type;
+	tujuan='pabrik_outspec_BAPDF.php?'+param;
+	title='BA Outspec '+namabarang+' '+millcode+' '+notransaksi+' '+kodebarang;
+	width='700';
+	height='400';
+	content="<iframe frameborder=0 width=100% height=100% src='"+tujuan+"'></iframe>"
+	showDialog1(title,content,width,height,ev);
+}
+
+function cariinventaris(type,ev){
+	caripabrik	=document.getElementById('caripabrik').options[document.getElementById('caripabrik').selectedIndex].value;
+	caribarang	=document.getElementById('caribarang').options[document.getElementById('caribarang').selectedIndex].value;
+	cariperiode	=document.getElementById('cariperiode').options[document.getElementById('cariperiode').selectedIndex].value;
+	carinotiket	=document.getElementById('carinotiket').value;
+	param='caripabrik='+caripabrik+'&caribarang='+caribarang+'&cariperiode='+cariperiode+'&carinotiket='+carinotiket+'&type='+type;
+	tujuan='pabrik_outspec_showpopup.php?'+param;
+	title='Data Outspec '+caripabrik+' '+caribarang+' '+cariperiode+' '+carinotiket;
+	width='1180';
+	height='400';
+	content="<iframe frameborder=0 width=100% height=100% src='"+tujuan+"'></iframe>"
+	showDialog1(title,content,width,height,ev);
+}

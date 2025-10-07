@@ -60,9 +60,9 @@ switch($proses) {
             exit("Warning: Accounting Period for this unit is not set.\nPlease contact IT Dept.");
         }
         if($_SESSION['empl']['tipelokasitugas']=='HOLDING'){
-            $whereKary = "kodeorganisasi='".$_SESSION['empl']['kodeorganisasi']."' and (tanggalkeluar = '0000-00-00' or tanggalkeluar > ".$_SESSION['org']['period']['start'].") and tipekaryawan in ('0','1','2')";
+            $whereKary = "lokasitugas like '%HO' and (tanggalkeluar = '0000-00-00' or tanggalkeluar > ".$_SESSION['org']['period']['start'].") and tipekaryawan in ('0','1','2','3','6','7','8','9')";
         }else{
-            $whereKary = "kodeorganisasi='".$_SESSION['empl']['kodeorganisasi']."' and (tanggalkeluar = '0000-00-00' or tanggalkeluar > ".$_SESSION['org']['period']['start'].")";
+            $whereKary = "kodeorganisasi='".$_SESSION['empl']['kodeorganisasi']."' and (tanggalkeluar = '0000-00-00' or tanggalkeluar > ".$_SESSION['org']['period']['start'].") and tipekaryawan in ('0','1','2','3','6','7','8','9')";
         }
         $optKary = makeOption($dbname,'datakaryawan','karyawanid,namakaryawan,nik',$whereKary,'4',true);
         
@@ -94,7 +94,7 @@ switch($proses) {
         $optVhc = makeOption($dbname,'vhc_5master','kodevhc,kodeorg','','2',true);
         if($_SESSION['empl']['tipelokasitugas']=='KEBUN')
             $optOrgAl = makeOption($dbname,'setup_blok','kodeorg,kodeorg',"
-                        kodeorg like '".$_SESSION['empl']['lokasitugas']."%' and luasareaproduktif!=0",'',true);  
+                        kodeorg like '".$_SESSION['empl']['lokasitugas']."%'",'',true);  
         else
             $optOrgAl = makeOption($dbname,'organisasi','kodeorganisasi,namaorganisasi',"length(kodeorganisasi)>6 and induk like '".$_SESSION['empl']['lokasitugas']."%'",'0',true);
         $optCashFlow = makeOption($dbname,'keu_5mesinlaporandt','nourut,keterangandisplay',
@@ -245,10 +245,17 @@ switch($proses) {
 		echo "<fieldset><legend><b>Tools</b></legend>";
 		if($param['tipetransaksi']=='M') {
 			echo makeElement('btnInvoice1','btn','Add from Invoice AR',array('onclick'=>"searchKontrak('".$_SESSION['lang']['find']." ".$_SESSION['lang']['noinvoice']." AR','<div id=formPencariandata></div>',event)"));
+			echo makeElement('btnInvoice','btn','Add from Invoice AP',array('onclick'=>"searchNopo('".$_SESSION['lang']['find']." ".$_SESSION['lang']['noinvoice']." AP','<div id=formPencariandata></div>',event)")).'&nbsp;';
 			echo makeElement('btnMemo','btn','Add from Memorial',array('onclick'=>"searchMemo('".$_SESSION['lang']['find']." ".$_SESSION['lang']['nojurnal']."','<div id=formPencariandata></div>',event)")).'&nbsp;';
+			//if($_SESSION['empl']['tipelokasitugas']!='HOLDING'){
+				echo makeElement('btnPerdin','btn','Add from Perdin',array('onclick'=>"searchPerdin('".$_SESSION['lang']['find']." ".$_SESSION['lang']['notransaksi']."','<div id=formPencariandata></div>',event)")).'&nbsp;';
+			//}
 		} else {
 			echo makeElement('btnInvoice','btn','Add from Invoice AP',array('onclick'=>"searchNopo('".$_SESSION['lang']['find']." ".$_SESSION['lang']['noinvoice']." AP','<div id=formPencariandata></div>',event)")).'&nbsp;';
 			echo makeElement('btnMemo','btn','Add from Memorial',array('onclick'=>"searchMemo('".$_SESSION['lang']['find']." ".$_SESSION['lang']['nojurnal']."','<div id=formPencariandata></div>',event)")).'&nbsp;';
+			//if($_SESSION['empl']['tipelokasitugas']=='HOLDING'){
+				echo makeElement('btnPerdin','btn','Add from Perdin',array('onclick'=>"searchPerdin('".$_SESSION['lang']['find']." ".$_SESSION['lang']['notransaksi']."','<div id=formPencariandata></div>',event)")).'&nbsp;';
+			//}
 		}
         echo "</fieldset>";
 		echo "<fieldset><legend><b>Detail</b></legend>";
@@ -297,7 +304,18 @@ switch($proses) {
 			//              
 			# Additional Default Data
 		$data['jumlah'] = str_replace(',','',$data['jumlah']);
+
+
+		#cek jika pilihan hutang unit di detail ok maka noakun harus akun hutang unit
 		
+		if($data['hutangunit1']==1 and substr($data['noakun'],0,4)!='1210' and substr($data['noakun'],0,4)!='2210'){
+			exit("Warning: No. Akun masih salah, pilih no. akun hutang unit");
+		}
+		
+		if((substr($data['noakun'],0,4)=='1210' or substr($data['noakun'],0,4)=='2210') and $data['hutangunit1']==0){
+			exit("Warning: No. Akun yang dipilih adalah hutang unit, maka pilihan hutang unit harus 'Ya' ");
+		}
+
 		$query = insertQuery($dbname,'keu_kasbankdt',$data,$cols);
 		if(!mysql_query($query)) {
 			echo "DB Error : ".mysql_error();
@@ -366,7 +384,12 @@ switch($proses) {
 	
     case'getForminvoice':
         $optSupplierCr="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
-        $sSuplier="select distinct supplierid,namasupplier,substr(kodekelompok,1,1) as status from ".$dbname.".log_5supplier order by namasupplier asc";
+        //$sSuplier="select distinct supplierid,namasupplier,substr(kodekelompok,1,1) as status from ".$dbname.".log_5supplier order by namasupplier asc";
+		$sSuplier="select a.* from (select distinct supplierid,namasupplier,substr(kodekelompok,1,1) as status from ".$dbname.".log_5supplier 
+									union
+									(select distinct x.kodecustomer as supplierid,y.namacustomer as namasupplier,'E' as status from ".$dbname.".pmn_traderht x
+									left join ".$dbname.".pmn_4customer y on y.kodecustomer=x.kodecustomer)) a 
+					order by a.namasupplier";
         $qSupplier=mysql_query($sSuplier) or die(mysql_error($sSupplier));
         while($rSupplier=mysql_fetch_assoc($qSupplier))
         {
@@ -446,14 +469,35 @@ switch($proses) {
         echo $form;
         break;
 	
+	case'getFormPerdin':
+
+		$defPeriod = $_SESSION['org']['period']['tahun'].'-'.
+			str_pad($_SESSION['org']['period']['bulan'],2,'0',STR_PAD_LEFT);
+		
+        $form = "<fieldset style=float: left;><legend>".$_SESSION['lang']['find']."</legend>";
+        $form.= "<table>";
+        $form.= "<tr><td>".$_SESSION['lang']['notransaksi']."</td>";
+        $form.= "<td><input type=text class=myinputtext id=sNotransaksi value=''></td></tr>";
+		
+		$form.= "<tr><td>".$_SESSION['lang']['tahun'].'-'.$_SESSION['lang']['bulan']."</td>";
+        $form.= "<td>".makeElement('sYm','textnumw-',$defPeriod,array('placeholder'=>'YYYY-mm'))."</td></tr>";
+		
+        $form.= "</table>";
+		$form.= "<button class=mybutton onclick=findPerdin()>Find</button>";
+		$form.= "</fieldset><div id=container2><fieldset><legend>".$_SESSION['lang']['result']."</legend></fieldset></div>";
+        echo $form;
+        break;
+	
     case'getInvoice':
         $optNmsupp=makeOption($dbname, 'log_5supplier','supplierid,namasupplier');
+        $optNmcust=makeOption($dbname, 'pmn_4customer','kodecustomer,namacustomer');
         $arrTipe=array(
 			"p"=>$_SESSION['lang']['pesananpembelian'],
 			"k"=>$_SESSION['lang']['kontrak'],
 			"s"=>$_SESSION['lang']['suratjalan'],
 			"n"=>$_SESSION['lang']['konosemen'],
-			"b"=>'Biaya Kirim'
+			"b"=>'Biaya Kirim',
+			"t"=>'Trading'
 		);
         $dat="<fieldset><legend>".$_SESSION['lang']['result']."</legend>";
         $dat.="<div style=overflow:auto;width:800px;height:380px;>";
@@ -477,7 +521,7 @@ switch($proses) {
         $dat.="</tr></thead><tbody id='invTbody'>";
         
         $str="select distinct noinvoice from ".$dbname.".aging_sch_vw where (((dibayar<nilaipo)or(dibayar<nilaikontrak)or(dibayar<nilaiinvoice))or(dibayar is null or dibayar=0)) and noinvoice like '".$param['txtfind']."%'";
-        //print_r($str);exit;
+       // print_r($str);exit;
 		$qstr=mysql_query($str) or die(mysql_error($conn));
         while($rstr=mysql_fetch_assoc($qstr))
         {
@@ -490,7 +534,8 @@ switch($proses) {
 			$kdsup=" and kodesupplier='".$param['idSupplier']."'  ";
 		}
 		
-        $sPo="select distinct a.kodesupplier,noinvoice,a.nopo,tipeinvoice,nilaiinvoice,nilaippn,d.noakun,a.keterangan,a.posting,b.namakaryawan
+        $sPo="select distinct a.kodesupplier,noinvoice,a.nopo,a.tipeinvoice,a.nilaiinvoice+a.uangmuka as nilaiinvoice,a.nilaippn,a.keterangan,a.posting
+			,b.namakaryawan,if(a.tipeinvoice='t','1180101',if(a.nilaiinvoice=0 and a.uangmuka>0 and a.tipeinvoice<>'t','1180100',d.noakun)) as noakun
             from ".$dbname.".keu_tagihanht a
 			left join ".$dbname.".datakaryawan b on a.postingby=b.karyawanid ".
 			//left join ".$dbname.".log_poht c on a.nopo=c.nopo
@@ -515,11 +560,13 @@ switch($proses) {
         while($rPo=mysql_fetch_assoc($qPo)) {
             if(isset($belumlunas[$rPo['noinvoice']]) and $rPo['noinvoice']==$belumlunas[$rPo['noinvoice']]){
                 $sJmlh="select distinct sum(jumlah) as jmlhKas from ".$dbname.".keu_kasbankdt where keterangan1='".$rPo['noinvoice']."'";
-                //echo $sJmlh;
+               
                 $qJmlh=mysql_query($sJmlh) or die(msyql_error($conn));
                 $rJmlh=mysql_fetch_assoc($qJmlh);
-                $sCek="select distinct sum(nilaiinvoice+nilaippn) as jmlhinvoice from ".$dbname.".keu_tagihanht where  noinvoice='".$rPo['noinvoice']."'";
-                $qCek=mysql_query($sCek) or die(mysql_error($conn));
+                //$sCek="select distinct sum(nilaiinvoice+nilaippn) as jmlhinvoice from ".$dbname.".keu_tagihanht where  noinvoice='".$rPo['noinvoice']."'";
+                $sCek="select distinct sum(nilaiinvoice+uangmuka) as jmlhinvoice from ".$dbname.".keu_tagihanht where  noinvoice='".$rPo['noinvoice']."'";
+                // echo $sCek;
+				$qCek=mysql_query($sCek) or die(mysql_error($conn));
                 $rCek=mysql_fetch_assoc($qCek);
                 
                 $iDt="select sum(nilai) as nilai from ".$dbname.".keu_tagihandt where noakun in "
@@ -539,10 +586,11 @@ switch($proses) {
 					$dat.="<tr class='rowcontent' title='Invoice not posted yet'><td></td>";
                     $dat.="<td style='background-color:red;'>".$rPo['noinvoice']."</td>"; 
                 } elseif($rJmlh['jmlhKas']>=$rCek['jmlhinvoice']) {
+				   
 					//$dat.="<tr class='rowcontent' title='Already exist'><td></td>"; 
 					//$dat.="<td style='background-color:red;'>".$rPo['noinvoice']."</td>";
 				} else {
-                                    
+                                   
                                         $sisa=$rPo['nilaiinvoice']-$rJmlh['jmlhKas'];
 					//$dat.="<tr class='rowcontent' onclick=\"setPo('".$rPo['noinvoice']."','".$rPo['nilaiinvoice']."','".$rPo['noakun']."','".$rPo['keterangan']."','".$rPo['kodesupplier']."','".$rPo['nopo']."')\" style='pointer:cursor;'>";
 					$dat.="<tr class='rowcontent'>";
@@ -553,7 +601,11 @@ switch($proses) {
                 
 				if($rJmlh['jmlhKas']<$rCek['jmlhinvoice']) {
 					$dat.="<td>".$rPo['nopo']."</td>";
-					$dat.="<td>".$optNmsupp[$rPo['kodesupplier']]."</td>";
+					if($rPo['tipeinvoice']=='t'){
+						$dat.="<td>".$optNmcust[$rPo['kodesupplier']]."</td>";
+					}else{
+						$dat.="<td>".$optNmsupp[$rPo['kodesupplier']]."</td>";
+					}
 					$dat.="<td>".$arrTipe[$rPo['tipeinvoice']]."</td>";
 					$dat.="<td align=right>".number_format($rPo['nilaiinvoice'],2)."</td>";
                                         
@@ -589,6 +641,7 @@ switch($proses) {
 		$dat.="<td>".$_SESSION['lang']['komoditi']."</td>";
         $dat.="<td>".$_SESSION['lang']['nilaiinvoice']."</td>";
         $dat.="<td>".$_SESSION['lang']['nilaippn']."</td>";
+        $dat.="<td>".$_SESSION['lang']['ongkoskirim']."</td>";
         $dat.="<td>Sudah dibayar</td>";
         $dat.="<td>".$_SESSION['lang']['sisa']."</td>";
         $dat.="</tr></thead><tbody id='invTbody'>";
@@ -599,7 +652,7 @@ switch($proses) {
 			$kdsup=" and kodecustomer='".$param['idSupplier']."'  ";
 		}
 		
-        $sPo="select distinct kodecustomer,noinvoice,nilaiinvoice,nilaippn,nokontrak,b.namabarang
+        $sPo="select distinct kodecustomer,noinvoice,nilaiinvoice,nilaippn,nilaipph,ongkoskirim,nokontrak,b.namabarang
             from ".$dbname.".keu_penagihanht a
 			left join ".$dbname.".log_5masterbarang b on a.kodebarang = b.kodebarang
             where noinvoice like '%".$param['txtfind']."%' and posting=1 and a.matauang='".$param['matauang']."' and 
@@ -617,7 +670,7 @@ switch($proses) {
 			// Cek Track Pelunasan
 			$sBayar = "select distinct sum(jumlah) as jmlhKas from ".$dbname.".keu_kasbankdt where keterangan1='".$rPo['noinvoice']."'";
 			$resBayar = fetchData($sBayar);
-			$sisa = $rPo['nilaiinvoice'] - $resBayar[0]['jmlhKas'];
+			$sisa = $rPo['nilaiinvoice']+$rPo['nilaippn']-$rPo['nilaipph']+$rPo['ongkoskirim'] - $resBayar[0]['jmlhKas'];
 			
 			if($sisa > 0){
                 $no+=1;
@@ -627,8 +680,9 @@ switch($proses) {
 				$dat.="<td>".$rPo['nokontrak']."</td>";
 				$dat.="<td>".$optNmsupp[$rPo['kodecustomer']]."</td>";
 				$dat.="<td>".$rPo['namabarang']."</td>";
-				$dat.="<td align=right>".number_format($rPo['nilaiinvoice'],2)."</td>";
+				$dat.="<td align=right>".number_format($rPo['nilaiinvoice']-$rPo['nilaipph'],2)."</td>";
 				$dat.="<td align=right>".number_format($rPo['nilaippn'],2)."</td>";
+				$dat.="<td align=right>".number_format($rPo['ongkoskirim'],2)."</td>";
 				$dat.="<td align=right>".number_format($resBayar[0]['jmlhKas'],2)."</td>";
 				$dat.="<td align=right>".number_format($sisa,2)."</td>";
 				$key++;
@@ -655,9 +709,12 @@ switch($proses) {
 							 kodejurnal = 'M' and posting=0");
 			$resData = fetchData($qData);	
 		}else{
-			$inQuery="select distinct nojurnal from ".$dbname.".keu_jurnaldt where noakun='".$param['noakunhutang']."' and kodeorg='".$param['pemilikhutang']."' and tanggal like  '%".$param['periode']."%' and nojurnal like  '%/M/%'";
-			$sData="select * from ".$dbname.".keu_jurnalht where 
-			        nojurnal in (".$inQuery.") ";
+			if(!empty($param['nojurnal'])){
+				$inQuery="select distinct nojurnal from ".$dbname.".keu_jurnaldt where noakun='".$param['noakunhutang']."' and kodeorg='".$param['pemilikhutang']."' and tanggal like  '%".$param['periode']."%' and nojurnal like '%".$param['nojurnal']."%'";
+			}else{
+				$inQuery="select distinct nojurnal from ".$dbname.".keu_jurnaldt where noakun='".$param['noakunhutang']."' and kodeorg='".$param['pemilikhutang']."' and tanggal like  '%".$param['periode']."%' and nojurnal like '%/M/%'";
+			}
+			$sData="select * from ".$dbname.".keu_jurnalht where nojurnal in (".$inQuery.") ";
 			$qData=mysql_query($sData) or die(mysql_error($conn));
 			while($rData=mysql_fetch_assoc($qData)){
 				$resData[]=$rData;
@@ -698,6 +755,97 @@ switch($proses) {
 		}else{
 			$dat .= "<tr class=rowcontent>";
 			$dat .= "<td colspan=3>".$_SESSION['lang']['dataempty']."</td>";
+			$dat .= "</tr>";
+		}
+		
+		$dat .= "</tbody></table></div></fieldset>";
+		echo $dat;
+		break;
+	
+	case 'getPerdin':
+		$tgl = explode('-',$param['periode']);
+		if(empty($param['periode'])) {
+			exit("Warning: Periode harus diisi dengan format (YYYY-mm)");
+		}
+		if($param['hutangunit']==0){
+			#jika hutang unit tidak di check maka masuk di query ini
+			#jamhari 04-april-2015
+			//$qData = selectQuery($dbname,'sdm_pjdinasht','*',
+			//				 "notransaksi like '%".$param['notransaksi']."%' and
+			//				 tanggalperjalanan like '%".$param['periode']."%' and statushrd='1' and dibayar='0'");
+			/*
+			$qData = "select a.*,b.namakaryawan from ".$dbname.".sdm_pjdinasht a 
+						left join ".$dbname.".datakaryawan b on b.karyawanid=a.karyawanid 
+						where a.notransaksi like '%".$param['notransaksi']."%' 
+							and a.tanggalperjalanan like '%".$param['periode']."%' 
+							and a.kodeorg='".$param['kodeorg']."' 
+							and a.statushrd='1' and (a.dibayar='0' or a.statuspertanggungjawaban='1')";
+			$resData = fetchData($qData);
+			*/
+			$qData = "select a.*,b.namakaryawan from ".$dbname.".sdm_pjdinasht a 
+						left join ".$dbname.".datakaryawan b on b.karyawanid=a.karyawanid 
+						where a.notransaksi like '%".$param['notransaksi']."%' 
+							and a.tanggalperjalanan like '%".$param['periode']."%' 
+							and a.kodeorg in (select kodeorganisasi from ".$dbname.".organisasi where induk='".$_SESSION['empl']['induk']."')
+							and a.statushrd='1' and (a.dibayar='0' or a.statuspertanggungjawaban='1')";
+			$resData = fetchData($qData);
+		}else{
+			$qData = "select a.*,b.namakaryawan from ".$dbname.".sdm_pjdinasht a
+						left join ".$dbname.".datakaryawan b on b.karyawanid=a.karyawanid 
+						where a.notransaksi like '%".$param['notransaksi']."%' 
+							and a.tanggalperjalanan like '%".$param['periode']."%' 
+							and a.kodeorg='".$param['pemilikhutang']."' 
+							and a.statushrd='1' and (a.dibayar='0' or a.statuspertanggungjawaban='1')";
+			$resData = fetchData($qData);	
+		}
+		$dat = "<fieldset>";
+		$dat .= "<legend>".$_SESSION['lang']['hasil']."</legend>";
+		$dat .= "<div style='height:487px;overflow:auto'>";
+		$dat .= "<table class=sortable cellpadding=2><thead><tr class=rowheader>";
+		$dat .= "<td>".$_SESSION['lang']['notransaksi']."</td>";
+		$dat .= "<td>".$_SESSION['lang']['namakaryawan']."</td>";
+		$dat .= "<td>".$_SESSION['lang']['tanggaldinas']."</td>";
+		$dat .= "<td>".$_SESSION['lang']['tanggalkembali']."</td>";
+		$dat .= "<td>".$_SESSION['lang']['tujuan']."</td>";
+		$dat .= "<td>".$_SESSION['lang']['tugas']."</td>";
+		$dat .= "<td align=right>".$_SESSION['lang']['jumlah']."</td>";
+		$dat .= "</tr></thead><tbody>";
+		if(!empty($resData)){
+			foreach($resData as $row) {
+				if($row['totalperdin']==0){
+					if($row['statuspertanggungjawaban']=='1'){
+						$sRp="select sum(jumlahhrd) as totalperdin from ".$dbname.".sdm_pjdinasdt where notransaksi='".$row['notransaksi']."' and (jumlahdibayar='' or jumlahdibayar='0')";
+					}else{
+						$sRp="select sum(uangmuka) as totalperdin from ".$dbname.".sdm_pjdinasht where notransaksi='".$row['notransaksi']."'";
+					}
+					$qRp=mysql_query($sRp) or die(mysql_error($conn));
+					$rRp=mysql_fetch_assoc($qRp);
+					if($rRp['totalperdin']<0){
+						$rRp['totalperdin']=$rRp['totalperdin']*(-1);
+					}
+					$row['totalperdin']=$rRp['totalperdin'];
+				}
+				if($row['totalperdin']<>0){
+					$dat .= "<tr class=rowcontent style='cursor:pointer'";
+					$dat .= "onclick=\"getPerdin('".$row['notransaksi']."')\">";
+					$dat .= "<td>".$row['notransaksi']."</td>";
+					$dat .= "<td>".$row['namakaryawan']."</td>";
+					$dat .= "<td>".$row['tanggalperjalanan']."</td>";
+					$dat .= "<td>".$row['tanggalkembali']."</td>";
+					if($row['tujuan2']==''){
+						$dat .= "<td>".$row['tujuanlain']."</td>";
+						$dat .= "<td>".$row['tugaslain']."</td>";
+					}else{
+						$dat .= "<td>".$row['tujuan2']."</td>";
+						$dat .= "<td>".$row['tugas2']."</td>";
+					}
+					$dat .= "<td align=right>".number_format($row['totalperdin'],2)."</td>";
+					$dat .= "</tr>";
+				}
+			}	
+		}else{
+			$dat .= "<tr class=rowcontent>";
+			$dat .= "<td colspan=7>".$_SESSION['lang']['dataempty']."</td>";
 			$dat .= "</tr>";
 		}
 		
@@ -785,9 +933,19 @@ switch($proses) {
 				else
 					$akunHead = $resCaco[0]['akunhutang'];
 			} else {
-				$akunHead = $resSupp[0]['noakun'];
+				//$akunHead = $resSupp[0]['noakun'];
+				if($row['tipeinvoice']=='t'){
+					//$akunHead='2111101';
+					$akunHead='1180101';
+					$nomordok=($row['nofp']=='' ? $row['nopo'] : $row['nofp']);
+				}else if($row['nilaiinvoice']==0 and $row['uangmuka']>0 and $row['tipeinvoice']!='t'){
+					$akunHead='1180100';
+					$nomordok='';
+				}else{
+					$akunHead=$resSupp[0]['noakun'];
+					$nomordok=($row['nofp']=='' ? $row['nopo'] : $row['nofp']);
+				}
 			}
-			
 			// Detail Journal from Header Kas bank
             $optHead[$row['noinvoice']] = $row;
             
@@ -802,11 +960,11 @@ switch($proses) {
                 'noakun' => $akunHead,
                 'tipetransaksi' => $param['tipetransaksi'],
                 'tanggal' => $row['tanggal'],
-                'jumlah' => $sisa[$row['noinvoice']],
+                'jumlah' => ($row['tipeinvoice']=='t' ? $sisa[$row['noinvoice']]/1.11 : $sisa[$row['noinvoice']]),
                 'noakun2a' => $param['noakun'],
                 'kode' => $param['kode'],
                 'keterangan1' => $row['noinvoice'],
-                'keterangan2' => '',
+                'keterangan2' => $row['noinvoice'].' '.$row['keterangan'].' ('.$row['noinvoicesupplier'].') ('.$row['nopo'].' '.$row['nofp'].')',
                 'matauang' => $param['matauang'],
                 'kurs' => $param['kurs'],
                 'kurs2' => 1,
@@ -816,15 +974,44 @@ switch($proses) {
                 'kodeasset' => '',
                 'kodebarang' => '',
                 'nik' => '',
-                'kodecustomer' => '',
-                'kodesupplier' => $row['kodesupplier'],
+                'kodecustomer' => ($row['tipeinvoice']=='t' ? $row['kodesupplier'] : ''),
+                'kodesupplier' => ($row['tipeinvoice']!='t' ? $row['kodesupplier'] : ''),
                 'kodevhc' => '',
                 'orgalokasi' => '',
-                'nodok' => $row['noinvoice'],
-                'hutangunit1' => $param['hutangunit'],
+                'nodok' => $nomordok,
+                'hutangunit1' => ($row['nilaiinvoice']==0 && $row['uangmuka']>0 ? 0 : $param['hutangunit']),
 				'kodesegment' => $defSegment
             );
 			$noInv = $row['noinvoice'];
+			if($row['tipeinvoice']=='t'){
+				$data[] = array(
+                'notransaksi' => $param['notransaksi'],
+                'noakun' => '1160100',
+                'tipetransaksi' => $param['tipetransaksi'],
+                'tanggal' => $row['tanggal'],
+                'jumlah' => ($sisa[$row['noinvoice']]/1.11)*0.11,
+                'noakun2a' => $param['noakun'],
+                'kode' => $param['kode'],
+                'keterangan1' => $row['noinvoice'],
+                'keterangan2' => 'PPN '.$row['noinvoice'].' '.$row['keterangan'].' ('.$row['noinvoicesupplier'].') ('.$row['nopo'].' '.$row['nofp'].')',
+                'matauang' => $param['matauang'],
+                'kurs' => $param['kurs'],
+                'kurs2' => 1,
+                'noaruskas' => '0',
+                'kodeorg' => $param['kodeorg'],
+                'kodekegiatan' => '',
+                'kodeasset' => '',
+                'kodebarang' => '',
+                'nik' => '',
+                'kodecustomer' => ($row['tipeinvoice']=='t' ? $row['kodesupplier'] : ''),
+                'kodesupplier' => ($row['tipeinvoice']!='t' ? $row['kodesupplier'] : ''),
+                'kodevhc' => '',
+                'orgalokasi' => '',
+                'nodok' => $nomordok,
+                'hutangunit1' => 0,
+				'kodesegment' => $defSegment
+				);
+			}
         }
         
         // From Detail
@@ -913,7 +1100,7 @@ switch($proses) {
 			// Nilai
 			$jumlahUM = $rdata['nilaiinvoice'];
 			$jumlahPpn = $rdata['nilaippn'];
-			$jumlahPiutang = ($rdata['nilaiinvoice']+$rdata['nilaippn']) - $piutangKurang;
+			$jumlahPiutang = ($rdata['nilaiinvoice']+$rdata['nilaippn']-$rdata['nilaipph']+$rdata['ongkoskirim']) - $piutangKurang;
 			
 			// Piutang Penjualan
 			$data[] = array(
@@ -925,7 +1112,7 @@ switch($proses) {
 				'noakun2a' => $param['noakun'],
 				'kode' => $param['kode'],
 				'keterangan1' => $noInv,
-				'keterangan2' => '',
+				'keterangan2' => $resHead['nokontrak'].' - '.$resHead['kuantitas'].' kg',
 				'matauang' => $param['matauang'],
 				'kurs' => $param['kurs'],
 				'kurs2' => 1,
@@ -983,7 +1170,7 @@ switch($proses) {
         }	
 		// Get Data
 		if($param['tipetransaksi']=='M') {
-			$whereJ = " and jumlah >= 0";
+			$whereJ = " and jumlah < 0";
 		} else {
 			$whereJ = " and jumlah < 0";
 		}
@@ -1012,7 +1199,7 @@ switch($proses) {
                 'noakun' => $row['noakun'],
                 'tipetransaksi' => $param['tipetransaksi'],
                 'tanggal' => tanggalsystem($param['tanggal']),
-                'jumlah' => $row['jumlah'],
+                'jumlah' => $row['jumlah']*($param['tipetransaksi']=='M' ? -1 : 1),
                 'noakun2a' => $param['noakun'],
                 'kode' => $param['kode'],
                 'keterangan1' => $row['nodok'],
@@ -1036,6 +1223,357 @@ switch($proses) {
             );
         }
         
+        foreach($data as $row) {
+            $query = insertQuery($dbname,'keu_kasbankdt',$row);
+            if(!mysql_query($query)) {
+                echo 'DB Error: '.mysql_error()."\n".$query;
+            }
+        }
+        break;
+
+	case 'addFromPerdin':
+        $param = $_POST;
+		$noperdin=$param['noperdin'];
+        if($param['hutangunit']==1){
+        	#cek apakah hutang unit sudah tersimpan di data header/belum
+	        $sCek="select hutangunit from ".$dbname.".keu_kasbankht where notransaksi='".$param['notransaksi']."' and hutangunit='".$param['hutangunit']."' 
+	               and pemilikhutang='".$param['pemilikhutang']."'";
+	        $qCek=mysql_query($sCek) or die(mysql_error($conn));
+	        $rCek=mysql_num_rows($qCek);
+	        if($rCek==0){
+	        	exit('warning: Hutang unit belum tersimpan pada header!!');
+	        }
+	        #=============== Get Induk Pemilik Hutang
+		    $whereNomilhut = "kodeorganisasi='".$param['pemilikhutang']."'";
+		    $query = selectQuery($dbname,'organisasi','induk',$whereNomilhut);
+		    $noKon = fetchData($query);
+		    $indukpemilikhutang = $noKon[0]['induk'];
+		    
+		    #=============== Get Induk Pembayar Hutang
+		    $whereNoyarhut = "kodeorganisasi='".$param['kodeorg']."'";
+		    $query = selectQuery($dbname,'organisasi','induk',$whereNoyarhut);
+		    $noKon = fetchData($query);
+		    $indukpembayarhutang = $noKon[0]['induk'];
+		    
+		    if($indukpemilikhutang==$indukpembayarhutang)$jenisinduk='intra'; else $jenisinduk='inter';
+	        $whereNocaco = "jenis='".$jenisinduk."' and kodeorg='".$param['pemilikhutang']."'";
+			$query = selectQuery($dbname,'keu_5caco','akunpiutang,akunhutang',$whereNocaco);
+			//exit('Warning '.$query);
+			$noKon = fetchData($query);
+			if($param['tipetransaksi']=='K'){
+				$noakuncaco = $noKon[0]['akunhutang'];
+			}else{
+				$noakuncaco = $noKon[0]['akunpiutang'];
+			}
+        }
+		// Default Segment
+		$defSegment = colDefaultValue($dbname,'keu_5segment','kodesegment');
+        
+		// Get Data
+		$qData = selectQuery($dbname,'sdm_pjdinasht',"*",
+							 "notransaksi='".$param['noperdin']."'");
+		$resData = fetchData($qData);
+
+		// Rearrange Data
+		$data = array();
+		$num=0;
+        foreach($resData as $bar) {
+
+			//----- Start Ambil Data PJD
+			$karyawanid=$bar['karyawanid'];
+			$kodeorg=$bar['kodeorg'];
+			$persetujuan=$bar['persetujuan'];
+			$hrd=$bar['hrd'];
+			$tujuan3=$bar['tujuan3'];
+			$tujuan2=$bar['tujuan2'];
+			$tujuan1=$bar['tujuan1'];
+			$tanggalperjalanan=tanggalnormal($bar['tanggalperjalanan']);
+			$tanggalkembali=tanggalnormal($bar['tanggalkembali']);
+			$tanggalperjalananw=$bar['tanggalperjalanan'];
+			$tanggalkembaliw=$bar['tanggalkembali'];
+			$uangmuka=$bar['uangmuka'];
+			$dibayar=$bar['dibayar'];
+			$tglbayar=$bar['tglbayar'];
+			$tugas1=$bar['tugas1'];
+			$tugas2=$bar['tugas2'];
+			$tugas3=$bar['tugas3'];
+			$tujuanlain=$bar['tujuanlain'];
+			$tugaslain=$bar['tugaslain'];
+			$pesawat=$bar['pesawat'];
+			$darat=$bar['darat'];
+			$laut=$bar['laut'];
+			$mess=$bar['mess'];
+			$hotel=$bar['hotel'];	
+			$statushrd=$bar['statushrd'];
+			$xhrd=$bar['statushrd'];
+			$xper=$bar['statuspersetujuan'];
+
+			if($param['kodeorg']!=$kodeorg){
+				//exit('Warning : Hutang Unit pada header form belum dicentang karena Unit Berbeda...!'.$noakuncaco);
+				$kodeorg=$param['kodeorg'];
+			}
+
+			//ambil jabatan, karyawan perdin
+			$hjabatan='';
+			$bagian='';
+			$hnama='';
+			$hgolongan='';
+			$strf="select a.bagian,b.namajabatan,a.namakaryawan,a.kodegolongan,a.karyawanid from ".$dbname.".datakaryawan a left join
+				".$dbname.".sdm_5jabatan b on a.kodejabatan=b.kodejabatan
+				where karyawanid=".$karyawanid;	
+
+			$resf=mysql_query($strf);
+			while($barf=mysql_fetch_object($resf))
+			{
+				$hjabatan=$barf->namajabatan;
+				$bagian=$barf->bagian;
+				$hnama=$barf->namakaryawan;
+				$hgolongan=$barf->kodegolongan;
+				$hnik=$barf->karyawanid;
+			}
+			// Regional Tujuan
+			$qRegional = selectQuery($dbname,'bgt_regional_assignment','regional',"kodeunit='".$tujuan2."'");
+			$resRegional = fetchData($qRegional);
+			$reg = $resRegional[0]['regional'];
+			if(empty($reg)){
+				$qRegional = selectQuery($dbname,'bgt_regional_assignment','regional',"kodeunit='".$tujuan3."'");
+				$resRegional = fetchData($qRegional);
+				$reg = $resRegional[0]['regional'];
+				if(empty($reg)){
+					$qRegional = selectQuery($dbname,'bgt_regional_assignment','regional',"regional='".$tujuanlain."'");
+					$resRegional = fetchData($qRegional);
+					$reg = $resRegional[0]['regional'];
+					if(empty($reg)){
+						$reg='KALIMANTAN';
+					}
+				}
+			}
+
+			// Get Hari Libur
+			$strlibur="select count(*) as jumlahlibur from ".$dbname.".sdm_5harilibur where kebun in ('HOLDING','GLOBAL') and keterangan='libur' and (tanggal>='".$tanggalperjalananw."' and tanggal<='".$tanggalkembaliw."')";
+			$reslibur=mysql_query($strlibur);
+			$jmlhrlibur=0;
+			while($barlibur=mysql_fetch_object($reslibur))
+			{ 
+				$jmlhrlibur=$barlibur->jumlahlibur;
+			}
+
+			function getRangeTanggal($tglAwal,$tglAkhir){
+				$jlh = strtotime($tglAkhir) -  strtotime($tglAwal);
+				$jlhHari = $jlh / (3600*24);
+				return $jlhHari + 1;
+			}
+			$jlhHari=getRangeTanggal($tanggalperjalanan,$tanggalkembali);
+			$jmlharilokal=$jlhHari-$jmlhrlibur;
+ 	//exit('Warning:'.$jlhHari." - ".$jmlhrlibur." = ".$jmlharilokal."  ".$strlibur);
+
+  if($tglbayar=='0000-00-00' or $tglbayar=='' or $tglbayar==NULL){
+ 			if($jlhHari == 1){
+				$sUangMuka="select a.*,b.id,b.keterangan as namajenis from ".$dbname.".sdm_5uangmukapjd a left join ".$dbname.".sdm_5jenisbiayapjdinas b on b.id=a.jenis 
+				where a.regional='".$reg."' and a.kodegolongan='".$hgolongan."' and a.jenis in (2,6,7) order by a.jenis";
+			}else{
+				$sUangMuka="select a.*,b.id,b.keterangan as namajenis from ".$dbname.".sdm_5uangmukapjd a left join ".$dbname.".sdm_5jenisbiayapjdinas b on b.id=a.jenis 
+				where a.regional='".$reg."' and a.kodegolongan='".$hgolongan."' and a.jenis in (2,6,8,9,10,11) order by a.jenis";
+			}
+			$rUangMuka=mysql_query($sUangMuka);
+			$jlhUangMuka=0;
+			if($rUangMuka) {
+				$nilaipjd=0;
+				while($bUangMuka=mysql_fetch_object($rUangMuka)) {
+        			if($param['hutangunit']==1){
+       					$noakun=$noakuncaco;
+       				}else{
+						if(strstr(strtoupper(substr($_SESSION['empl']['lokasitugas'],0,4)),'HO')){
+							$noakun='8221001';
+						}else{
+							//$noakun='7121000';
+							$noakun='1180300';
+						}
+        			}
+					if(($pesawat+$darat+$laut)==0 and $bUangMuka->jenis=='2'){
+						continue;
+					}
+					if(($hotel==0 or substr($kodeorg,2,2)=='HO') and $bUangMuka->jenis=='8'){
+						continue;
+					}
+					if($bUangMuka->sekali!=0){
+						$nilaipjd=$bUangMuka->sekali;
+						$jmlkali=1;
+					}
+					if($bUangMuka->perhari!=0){
+						if($bUangMuka->jenis==10){
+							$nilaipjd=$bUangMuka->perhari*$jmlharilokal;
+							$jmlkali=$jmlharilokal;
+						}elseif($bUangMuka->jenis==8){
+							$nilaipjd=$bUangMuka->perhari*($jlhHari-1);
+							$jmlkali=$jlhHari-1;
+						}else{
+							$nilaipjd=$bUangMuka->perhari*$jlhHari;
+							$jmlkali=$jlhHari;
+						}
+					}
+					if($bUangMuka->hariketiga!=0){
+						if($bUangMuka->jenis==10){
+							$nilaipjd=$bUangMuka->hariketiga*($jmlharilokal - 2);
+							$jmlkali=$jmlharilokal-2;
+						}else{
+							$nilaipjd=$bUangMuka->hariketiga*($jlhHari - 2);
+							$jmlkali=$jlhHari-2;
+						}
+					}
+					$jlhUangMuka+=$nilaipjd;
+					//if($xhrd==0 or $xper==0){
+					if($jmlkali!=0){
+        				if($param['tipetransaksi']=='M'){
+							$nilaipjd=$nilaipjd * (-1);
+						}else{
+							$nilaipjd=$nilaipjd * (1);
+						}
+						$keterangan2='SPPD '.$param['noperdin'].' - '.$bUangMuka->namajenis.' '.$jmlkali.' '.$_SESSION['lang']['hari'].' x '.
+									substr("       ".number_format(($bUangMuka->sekali+$bUangMuka->perhari+$bUangMuka->hariketiga),2,',','.'),-12);
+						if($bUangMuka->jenis=='1' or $bUangMuka->jenis=='2' or $bUangMuka->jenis=='3' or $bUangMuka->jenis=='4' or $bUangMuka->jenis=='5' or 	$bUangMuka->jenis=='10'){
+							if(strtoupper($bagian)=='CAPR' or strtoupper($bagian)=='CCFI' or strtoupper($bagian)=='CFT' or strtoupper($bagian)=='CSLS' or strtoupper($bagian)=='OACC' or strtoupper($bagian)=='OBCC' or strtoupper($bagian)=='OFA' or strtoupper($bagian)=='ROA' or strtoupper($bagian)=='TRL' or strtoupper($bagian)=='URD'){
+								$aruskas='310234';
+							}else if(strtoupper($bagian)=='ADM' or strtoupper($bagian)=='CACM' or strtoupper($bagian)=='EST' or strtoupper($bagian)=='ESTN' or strtoupper($bagian)=='ESTO' or strtoupper($bagian)=='KCO' or strtoupper($bagian)=='KCS' or strtoupper($bagian)=='MIL' or strtoupper($bagian)=='MILM' or strtoupper($bagian)=='MILP' or strtoupper($bagian)=='PNE' or strtoupper($bagian)=='RND' or strtoupper($bagian)=='RND1' or strtoupper($bagian)=='SPM' or strtoupper($bagian)=='SPM1' or strtoupper($bagian)=='TCW' or strtoupper($bagian)=='URD1'){
+								$aruskas='310224';
+							}else if(strtoupper($bagian)=='BAQ' or strtoupper($bagian)=='CAF' or strtoupper($bagian)=='CAKC' or strtoupper($bagian)=='CAKS' or strtoupper($bagian)=='CALC' or strtoupper($bagian)=='CARO' or strtoupper($bagian)=='CHR' or strtoupper($bagian)=='COM' or strtoupper($bagian)=='DIR' or strtoupper($bagian)=='GA' or strtoupper($bagian)=='HHRD' or strtoupper($bagian)=='HHRS' or strtoupper($bagian)=='HHSE' or strtoupper($bagian)=='HMTC' or strtoupper($bagian)=='HRA' or strtoupper($bagian)=='HSE1' or strtoupper($bagian)=='HSE2' or strtoupper($bagian)=='IT' or strtoupper($bagian)=='OMIS' or strtoupper($bagian)=='PRO' or strtoupper($bagian)=='SEC' or strtoupper($bagian)=='URD2'){
+								$aruskas='310214';
+							}else{
+								$aruskas='';
+							}
+						}else if($bUangMuka->jenis=='8'){
+							if(strtoupper($bagian)=='CAPR' or strtoupper($bagian)=='CCFI' or strtoupper($bagian)=='CFT' or strtoupper($bagian)=='CSLS' or strtoupper($bagian)=='OACC' or strtoupper($bagian)=='OBCC' or strtoupper($bagian)=='OFA' or strtoupper($bagian)=='ROA' or strtoupper($bagian)=='TRL' or strtoupper($bagian)=='URD'){
+								$aruskas='310231';
+							}else if(strtoupper($bagian)=='ADM' or strtoupper($bagian)=='CACM' or strtoupper($bagian)=='EST' or strtoupper($bagian)=='ESTN' or strtoupper($bagian)=='ESTO' or strtoupper($bagian)=='KCO' or strtoupper($bagian)=='KCS' or strtoupper($bagian)=='MIL' or strtoupper($bagian)=='MILM' or strtoupper($bagian)=='MILP' or strtoupper($bagian)=='PNE' or strtoupper($bagian)=='RND' or strtoupper($bagian)=='RND1' or strtoupper($bagian)=='SPM' or strtoupper($bagian)=='SPM1' or strtoupper($bagian)=='TCW' or strtoupper($bagian)=='URD1'){
+								$aruskas='310221';
+							}else if(strtoupper($bagian)=='BAQ' or strtoupper($bagian)=='CAF' or strtoupper($bagian)=='CAKC' or strtoupper($bagian)=='CAKS' or strtoupper($bagian)=='CALC' or strtoupper($bagian)=='CARO' or strtoupper($bagian)=='CHR' or strtoupper($bagian)=='COM' or strtoupper($bagian)=='DIR' or strtoupper($bagian)=='GA' or strtoupper($bagian)=='HHRD' or strtoupper($bagian)=='HHRS' or strtoupper($bagian)=='HHSE' or strtoupper($bagian)=='HMTC' or strtoupper($bagian)=='HRA' or strtoupper($bagian)=='HSE1' or strtoupper($bagian)=='HSE2' or strtoupper($bagian)=='IT' or strtoupper($bagian)=='OMIS' or strtoupper($bagian)=='PRO' or strtoupper($bagian)=='SEC' or strtoupper($bagian)=='URD2'){
+								$aruskas='310211';
+							}else{
+								$aruskas='';
+							}
+						}else{
+							if(strtoupper($bagian)=='CAPR' or strtoupper($bagian)=='CCFI' or strtoupper($bagian)=='CFT' or strtoupper($bagian)=='CSLS' or strtoupper($bagian)=='OACC' or strtoupper($bagian)=='OBCC' or strtoupper($bagian)=='OFA' or strtoupper($bagian)=='ROA' or strtoupper($bagian)=='TRL' or strtoupper($bagian)=='URD'){
+								$aruskas='310233';
+							}else if(strtoupper($bagian)=='ADM' or strtoupper($bagian)=='CACM' or strtoupper($bagian)=='EST' or strtoupper($bagian)=='ESTN' or strtoupper($bagian)=='ESTO' or strtoupper($bagian)=='KCO' or strtoupper($bagian)=='KCS' or strtoupper($bagian)=='MIL' or strtoupper($bagian)=='MILM' or strtoupper($bagian)=='MILP' or strtoupper($bagian)=='PNE' or strtoupper($bagian)=='RND' or strtoupper($bagian)=='RND1' or strtoupper($bagian)=='SPM' or strtoupper($bagian)=='SPM1' or strtoupper($bagian)=='TCW' or strtoupper($bagian)=='URD1'){
+								$aruskas='310223';
+							}else if(strtoupper($bagian)=='BAQ' or strtoupper($bagian)=='CAF' or strtoupper($bagian)=='CAKC' or strtoupper($bagian)=='CAKS' or strtoupper($bagian)=='CALC' or strtoupper($bagian)=='CARO' or strtoupper($bagian)=='CHR' or strtoupper($bagian)=='COM' or strtoupper($bagian)=='DIR' or strtoupper($bagian)=='GA' or strtoupper($bagian)=='HHRD' or strtoupper($bagian)=='HHRS' or strtoupper($bagian)=='HHSE' or strtoupper($bagian)=='HMTC' or strtoupper($bagian)=='HRA' or strtoupper($bagian)=='HSE1' or strtoupper($bagian)=='HSE2' or strtoupper($bagian)=='IT' or strtoupper($bagian)=='OMIS' or strtoupper($bagian)=='PRO' or strtoupper($bagian)=='SEC' or strtoupper($bagian)=='URD2'){
+								$aruskas='310213';
+							}else{
+								$aruskas='';
+							}
+						}
+						$num++;
+						$data[] = array(
+						'notransaksi' => $param['notransaksi'],
+						'noakun' => $noakun,
+						'tipetransaksi' => $param['tipetransaksi'],
+						'tanggal' => tanggalsystem($param['tanggal']),
+						'jumlah' => $nilaipjd,
+						'noakun2a' => $param['noakun'],
+						'kode' => $param['kode'],
+						'keterangan1' => $param['noperdin'],
+						'keterangan2' => $keterangan2,
+						'matauang' => $param['matauang'],
+						'kurs' => $param['kurs'],
+						'kurs2' => 1,
+						'noaruskas' => $aruskas,
+						'kodeorg' => $param['kodeorg'],
+						'kodekegiatan' => '',
+						'kodeasset' => '',
+						'kodebarang' => '',
+						'nik' => $hnik,
+						'kodecustomer' => '',
+						'kodesupplier' => '',
+						'kodevhc' => '',
+						'orgalokasi' => '',
+						'nodok' => '',
+						'hutangunit1' => $param['hutangunit'],
+						'kodesegment' => $defSegment
+						);
+					}
+					//}
+				}
+			}
+}else{
+					$sreimburs="select a.*,b.keterangan as namajenis from ".$dbname.".sdm_pjdinasdt a left join ".$dbname.".sdm_5jenisbiayapjdinas b on b.id=a.jenisbiaya where notransaksi='".$param['noperdin']."'";
+					$rreimburs=mysql_query($sreimburs);
+					while($bardt=mysql_fetch_object($rreimburs)){ 
+        				if($param['hutangunit']==1){
+       						$noakun=$noakuncaco;
+       					}else{
+							if(strstr(strtoupper(substr($_SESSION['empl']['lokasitugas'],0,4)),'HO')){
+								$noakun='8221001';
+							}else{
+								$noakun='7121000';
+							}
+        				}
+        				if($param['tipetransaksi']=='M'){
+							$nilaipjd=$bardt->jumlahhrd * (-1);
+						}else{
+							$nilaipjd=$bardt->jumlahhrd * (1);
+						}
+						$titik='';
+						for ($i= 1; $i <= $num; $i++){
+							$titik.='.';
+						}
+						$keterangan2='SPPD PJ '.$param['noperdin'].' - '.$bardt->namajenis.' '.$bardt->keterangan.$titik;
+						if($bardt->jenisbiaya=='1' or $bardt->jenisbiaya=='2' or $bardt->jenisbiaya=='3' or $bardt->jenisbiaya=='4' or $bardt->jenisbiaya=='5' or $bardt->jenisbiaya=='10'){
+							if(strtoupper($bagian)=='CCFI' or strtoupper($bagian)=='CFT' or strtoupper($bagian)=='COM' or strtoupper($bagian)=='DIR' or strtoupper($bagian)=='IT' or strtoupper($bagian)=='OACC' or strtoupper($bagian)=='OBCC' or strtoupper($bagian)=='OFA' or strtoupper($bagian)=='OMIS' or strtoupper($bagian)=='ROA' or strtoupper($bagian)=='URD'){
+								$aruskas='310234';
+							}else if(strtoupper($bagian)=='ADM' or strtoupper($bagian)=='CACM' or strtoupper($bagian)=='CAPR' or strtoupper($bagian)=='CARO' or strtoupper($bagian)=='CSLS' or strtoupper($bagian)=='EST' or strtoupper($bagian)=='ESTN' or strtoupper($bagian)=='ESTO' or strtoupper($bagian)=='KCO' or strtoupper($bagian)=='KCS' or strtoupper($bagian)=='MIL' or strtoupper($bagian)=='MILM' or strtoupper($bagian)=='MILP' or strtoupper($bagian)=='PNE' or strtoupper($bagian)=='RND' or strtoupper($bagian)=='RND1' or strtoupper($bagian)=='SPM' or strtoupper($bagian)=='SPM1' or strtoupper($bagian)=='TCW' or strtoupper($bagian)=='URD1'){
+								$aruskas='310224';
+							}else{
+								$aruskas='310214';
+							}
+						}else if($bardt->jenisbiaya=='8'){
+							if(strtoupper($bagian)=='CCFI' or strtoupper($bagian)=='CFT' or strtoupper($bagian)=='COM' or strtoupper($bagian)=='DIR' or strtoupper($bagian)=='IT' or strtoupper($bagian)=='OACC' or strtoupper($bagian)=='OBCC' or strtoupper($bagian)=='OFA' or strtoupper($bagian)=='OMIS' or strtoupper($bagian)=='ROA' or strtoupper($bagian)=='URD'){
+								$aruskas='310231';
+							}else if(strtoupper($bagian)=='ADM' or strtoupper($bagian)=='CACM' or strtoupper($bagian)=='CAPR' or strtoupper($bagian)=='CARO' or strtoupper($bagian)=='CSLS' or strtoupper($bagian)=='EST' or strtoupper($bagian)=='ESTN' or strtoupper($bagian)=='ESTO' or strtoupper($bagian)=='KCO' or strtoupper($bagian)=='KCS' or strtoupper($bagian)=='MIL' or strtoupper($bagian)=='MILM' or strtoupper($bagian)=='MILP' or strtoupper($bagian)=='PNE' or strtoupper($bagian)=='RND' or strtoupper($bagian)=='RND1' or strtoupper($bagian)=='SPM' or strtoupper($bagian)=='SPM1' or strtoupper($bagian)=='TCW' or strtoupper($bagian)=='URD1'){
+								$aruskas='310221';
+							}else{
+								$aruskas='310211';
+							}
+						}else{
+							if(strtoupper($bagian)=='CCFI' or strtoupper($bagian)=='CFT' or strtoupper($bagian)=='COM' or strtoupper($bagian)=='DIR' or strtoupper($bagian)=='IT' or strtoupper($bagian)=='OACC' or strtoupper($bagian)=='OBCC' or strtoupper($bagian)=='OFA' or strtoupper($bagian)=='OMIS' or strtoupper($bagian)=='ROA' or strtoupper($bagian)=='URD'){
+								$aruskas='310233';
+							}else if(strtoupper($bagian)=='ADM' or strtoupper($bagian)=='CACM' or strtoupper($bagian)=='CAPR' or strtoupper($bagian)=='CARO' or 	strtoupper($bagian)=='CSLS' or strtoupper($bagian)=='EST' or strtoupper($bagian)=='ESTN' or strtoupper($bagian)=='ESTO' or strtoupper($bagian)=='KCO' or strtoupper($bagian)=='KCS' or strtoupper($bagian)=='MIL' or strtoupper($bagian)=='MILM' or strtoupper($bagian)=='MILP' or strtoupper($bagian)=='PNE' or strtoupper($bagian)=='RND' or strtoupper($bagian)=='RND1' or strtoupper($bagian)=='SPM' or strtoupper($bagian)=='SPM1' or strtoupper($bagian)=='TCW' or strtoupper($bagian)=='URD1'){
+								$aruskas='310223';
+							}else{
+								$aruskas='310213';
+							}
+						}
+						$num++;
+						$data[] = array(
+						'notransaksi' => $param['notransaksi'],
+						'noakun' => $noakun,
+						'tipetransaksi' => $param['tipetransaksi'],
+						'tanggal' => tanggalsystem($param['tanggal']),
+						'jumlah' => $nilaipjd,
+						'noakun2a' => $param['noakun'],
+						'kode' => $param['kode'],
+						'keterangan1' => $param['noperdin'],
+						'keterangan2' => $keterangan2,
+						'matauang' => $param['matauang'],
+						'kurs' => $param['kurs'],
+						'kurs2' => 1,
+						'noaruskas' => $aruskas,
+						'kodeorg' => $param['kodeorg'],
+						'kodekegiatan' => '',
+						'kodeasset' => '',
+						'kodebarang' => '',
+						'nik' => $hnik,
+						'kodecustomer' => '',
+						'kodesupplier' => '',
+						'kodevhc' => '',
+						'orgalokasi' => '',
+						'nodok' => '',
+						'hutangunit1' => $param['hutangunit'],
+						'kodesegment' => $defSegment
+						);
+				}
+}
+			//----- End Ambil Data PJD
+        }
         foreach($data as $row) {
             $query = insertQuery($dbname,'keu_kasbankdt',$row);
             if(!mysql_query($query)) {

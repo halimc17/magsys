@@ -246,7 +246,7 @@ class PDF extends FPDF
 	{
         $pdf->SetX(133);
 		$pdf->SetX(68);
-        $pdf->Cell(15,$height,'Moister',0,0,'J');
+        $pdf->Cell(15,$height,'Moisture',0,0,'J');
         $pdf->Cell(5,$height,':',0,0,'J');
         $pdf->Cell(20,$height,$moistData.' % Max',0,1,'J');
 		$emptyQual = false;
@@ -256,7 +256,7 @@ class PDF extends FPDF
 	{
         $pdf->SetX(133);
 		$pdf->SetX(68);
-        $pdf->Cell(15,$height,'Derth',0,0,'J');
+        $pdf->Cell(15,$height,'Impurities',0,0,'J');
         $pdf->Cell(5,$height,':',0,0,'J');
         $pdf->Cell(20,$height,$dirtData.' % Max',0,1,'J');
 		$emptyQual = false;

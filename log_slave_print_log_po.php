@@ -109,9 +109,29 @@ class PDF extends FPDF {
         $faxSupplier=	isset($res->fax)? $res->fax: '';
         $kota=			isset($res->kota)? $res->kota: '';
         $cp=			isset($res->kontakperson)? $res->kontakperson: '';
-		
+		$kodept=$bar->kodeorg;
+				if($kodept=='AMP'){
+					$path='images/logo_amp.jpg';
+				}else if($kodept=='CKS'){
+					$path='images/logo_cks.jpg';
+				}else if($kodept=='KAA'){
+					$path='images/logo_kaa.jpg';
+				}else if($kodept=='KAL'){
+					$path='images/logo_kal.jpg';
+				}else if($kodept=='LKA'){
+					$path='images/logo_lka.jpg';
+				}else if($kodept=='MPA'){
+					$path='images/logo_mpa.jpg';
+				}else if($kodept=='MHS'){
+					$path='images/logo_mhs.jpg';
+				}else if($kodept=='MEA'){
+					$path='images/logo_mea.jpg';
+				}else if($kodept=='SMA'){
+					$path='images/logo_sma.jpg';
+				}else{
+					$path='images/logo.jpg';
+				}
         $this->SetMargins(15,10,0);
-        $path='images/logo.jpg';
         $this->Image($path,15,5,0,30);	
         $this->SetFont('Arial','B',9);
         $this->SetFillColor(255,255,255);	
@@ -439,9 +459,14 @@ $pdf->Ln();
 
 $pdf->SetFont('Arial','B',8);	
 $pdf->Cell(65,5,'',0,0,'C',1);	
-$pdf->Cell(40,5,$_SESSION['lang']['dbuat_oleh'],1,0,'C',1);	
-$pdf->Cell(40,5,$_SESSION['lang']['mengetahui'],1,0,'C',1);
-$pdf->Cell(40,5,$_SESSION['lang']['menyetujui'],1,1,'C',1);
+$pdf->Cell(40,5,$_SESSION['lang']['dbuat_oleh'],1,0,'C',1);
+if($rlopoht->matauang=='IDR' and $gr_total>=500000000){
+	$pdf->Cell(40,5,$_SESSION['lang']['menyetujui'],1,1,'C',1);
+	$pdf->Cell(40,5,$_SESSION['lang']['mengetahui'],1,0,'C',1);
+}else{
+	$pdf->Cell(40,5,$_SESSION['lang']['mengetahui'],1,0,'C',1);
+	$pdf->Cell(40,5,$_SESSION['lang']['menyetujui'],1,1,'C',1);
+}
 
 $pdf->SetFont('Arial','B',8);	
 $pdf->Cell(65,5,'',0,0,'C',1);	
@@ -471,8 +496,11 @@ $pdf->SetFont('Arial','B',8);
 $pdf->Cell(65,5,'',0,0,'C',1);	
 $pdf->Cell(40,5,strtoupper($nm_kary),1,0,'C',1);	
 $pdf->Cell(40,5,isset($optNmkry[$rPo['persetujuan1']])? strtoupper($optNmkry[$rPo['persetujuan1']]): '',1,0,'C',1);
-$pdf->Cell(40,5,isset($optNmkry[$rPo['persetujuan2']])? strtoupper($optNmkry[$rPo['persetujuan2']]): '',1,1,'C',1);
-
+if(strtoupper($optNmkry[$rPo['persetujuan2']])=='RIZKI HERNANDA DASLIA'){
+	$pdf->Cell(40,5,'DIRECTOR',1,1,'C',1);
+}else{
+	$pdf->Cell(40,5,isset($optNmkry[$rPo['persetujuan2']])? strtoupper($optNmkry[$rPo['persetujuan2']]): '',1,1,'C',1);
+}
 // $sPo="select persetujuan1,persetujuan2 from ".$dbname.".log_poht where nopo='".$nopo."'";
 // $qPo=mysql_query($sPo) or die(mysql_error($conn));
 // $rPo=mysql_fetch_assoc($qPo);

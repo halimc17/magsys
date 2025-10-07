@@ -77,6 +77,7 @@ switch($proses)
 			
 			$optKary="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
 			$skary="select a.karyawanid,a.nama,b.nik from ".$dbname.".vhc_5operator a left join ".$dbname.".datakaryawan b on a.karyawanid=b.karyawanid where a.aktif='1' and b.lokasitugas='".$kdOrg."' ";//echo $skary;
+			
 			$qkary=mysql_query($skary) or die(mysql_error());
 			while($rkary=mysql_fetch_assoc($qkary)) {
 				$optKary.="<option value=".$rkary['karyawanid'].">".$rkary['nama']."&nbsp;[".$rkary['nik']."]</option>";
@@ -93,6 +94,16 @@ switch($proses)
 			{
 					echo"warning:Please Complete The Form";exit();
 			}
+			#mencegah input data dengan tanggal lebih kecil dari periode penggajian unit
+	        $sPeriode="select DISTINCT periode from ".$dbname.".sdm_5periodegaji where kodeorg='".$kodeOrg."' and periode='".substr($tgl_kerja,0,4)."-".substr($tgl_kerja,4,2)."' and sudahproses=0 and tanggalmulai<='".$tgl_kerja."' and tanggalsampai>='".$tgl_kerja."'";
+	        $qPeriode=mysql_query($sPeriode) or die(mysql_error($conn));
+			$rPeriode=mysql_fetch_assoc($qPeriode);
+			$nPeriode=mysql_num_rows($qPeriode);
+			if($nPeriode<1){
+				echo"Warning: Transaction date out of range";
+				exit();
+			}
+			#===========================================================================
 			#mencegah input data dengan tanggal lebih kecil dari periode awal akuntansi
 			   if($tgl_kerja<$_SESSION['org']['period']['start']){
 			   echo "Validation Error : Date out or range";

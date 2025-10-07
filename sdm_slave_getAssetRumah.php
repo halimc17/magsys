@@ -6,17 +6,10 @@ $kodeorg=$_POST['kodeorg'];
 $blok=$_POST['blok'];
 $norumah=$_POST['norumah'];
 
-$str=" select a.kodeasset,b.tipeasset,b.namasset,b.status,b.keterangan,
-       case b.status
-	   when 0 then 'Retire/pensiun'
-	   when 1 then 'Aktif'
-	   when 2 then 'Broken/Rusak'
-	   when 3 then 'Missing'
-	   else 'Unknown'
-	   end as sts 
+$str=" select a.kodeasset,b.namabarang,a.jumlah,a.keterangan
        from ".$dbname.".sdm_perumahandt a 
-       left join ".$dbname.".sdm_daftarasset b
-	   on a.kodeasset=b.kodeasset
+       left join ".$dbname.".log_5masterbarang b
+	   on a.kodeasset=b.kodebarang
 	   where a.kodeorg='".$kodeorg."' and a.blok='".$blok."'
 	   and a.norumah='".$norumah."'";
 	   	   
@@ -30,9 +23,8 @@ echo"".$_SESSION['lang']['kodeorg'].": ".$kodeorg."<br>
      <thead><tr class=rowheader>
 	    <td>No.</td>
 		<td>".$_SESSION['lang']['kodeasset']."</td>		
-		<td>".$_SESSION['lang']['tipeasset']."</td>
-		<td>".$_SESSION['lang']['namaaset']."</td>
-		<td>".$_SESSION['lang']['status']."</td>
+		<td>".$_SESSION['lang']['namabarang']."</td>
+		<td>".$_SESSION['lang']['jumlah']."</td>
 		<td>".$_SESSION['lang']['keterangan']."</td>
 		</tr>
 	 </thead><tbody>";
@@ -42,9 +34,8 @@ while($bar=mysql_fetch_object($res))
  echo"<tr class=rowcontent>
 		 <td>".$no."</td>
 		 <td>".$bar->kodeasset."</td>
-		 <td>".$bar->tipeasset."</td>
-		 <td>".$bar->namasset."</td>
-		 <td>".$bar->sts."</td>
+		 <td>".$bar->namabarang."</td>
+		 <td>".$bar->jumlah."</td>
 		 <td>".$bar->keterangan."</td>
 		 </tr>";	
 }

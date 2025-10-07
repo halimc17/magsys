@@ -78,6 +78,7 @@ switch($proses)
 			}
 			 // and c.kodept = '".$idPabrik."'
 			$sql .= " order by a.nokontrak";
+			
 			$query=mysql_query($sql) or die(mysql_error());
 			$row=mysql_num_rows($query);
 			if($row>0)

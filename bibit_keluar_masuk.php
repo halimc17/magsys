@@ -324,7 +324,7 @@ foreach($arragama as $kei=>$fal)
 {
         $optKegiatan.="<option value='".$kei."'>".$fal."</option>";
 }  
-$arr=array("Ditanam(Internal)","Disisipi(Internal)","Dijual(External)","Afiliasi");
+$arr=array("Ditanam(Internal)","Disisipi(Internal)","Keluar(External)","Afiliasi");
 $optintex="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
 foreach($arr as $isi =>$eia)
 {
@@ -333,11 +333,16 @@ foreach($arr as $isi =>$eia)
  $optKode="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
  $optAfd="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
  $optKaryawan="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
- $sKaryawan="select distinct karyawanid,namakaryawan from ".$dbname.".datakaryawan a
-	left join ".$dbname.".sdm_5jabatan b ON a.kodejabatan = b.kodejabatan
-	where tipekaryawan='0' and karyawanid!='".$_SESSION['standard']['userid']."'
-	AND substr(lokasitugas,3,2) != 'HO'
-	AND namajabatan like '%assist%'";
+//$sKaryawan="select distinct karyawanid,namakaryawan from ".$dbname.".datakaryawan a
+//	left join ".$dbname.".sdm_5jabatan b ON a.kodejabatan = b.kodejabatan
+//	where tipekaryawan='0' and karyawanid!='".$_SESSION['standard']['userid']."'
+//	AND substr(lokasitugas,3,2) != 'HO'
+//	AND namajabatan like '%assist%'";
+ $sKaryawan = "select a.karyawanid,a.namakaryawan,a.nik,b.namajabatan from ".$dbname.".datakaryawan a ".
+	"left join ".$dbname.".sdm_5jabatan b on a.kodejabatan=b.kodejabatan ".
+	"where (b.namajabatan like '%mandor I%' or b.namajabatan like '%assistant%' or b.namajabatan like '%verificator%') ".
+	"and a.lokasitugas='".$_SESSION['empl']['lokasitugas']."' and (a.tanggalkeluar='0000-00-00' or a.tanggalkeluar > ".$_SESSION['org']['period']['start'].") ".
+	"order by a.namakaryawan asc";
  $qKaryawan=mysql_query($sKaryawan) or die(mysql_error($sKaryawan));
  while($rKaryawan=mysql_fetch_assoc($qKaryawan))
  {

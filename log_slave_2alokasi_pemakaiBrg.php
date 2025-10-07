@@ -16,7 +16,7 @@ switch($proses)
         case'getPeriode':
         //echo "warning:masuk";
         $optorg="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
-        $sOrg="select periode from ".$dbname.".setup_periodeakuntansi where kodeorg='".$kdGudang."'";
+        $sOrg="select periode from ".$dbname.".setup_periodeakuntansi where kodeorg='".$kdGudang."' order by periode desc";
         $qOrg=mysql_query($sOrg) or die(mysql_error());
         while($rOrg=mysql_fetch_assoc($qOrg))
         {

@@ -258,7 +258,7 @@ switch($proses)
                 $this->SetX($ksamping);
                
                 $this->Cell(15,$height,"No.",'TLR',0,'C',1);
-                $this->Cell(110,$height,"No SPK",'TLR',0,'C',1);
+                $this->Cell(110,$height,$_SESSION['lang']['nospk'],'TLR',0,'C',1);
                 $this->Cell(50,$height,"Tanggal",'TLR',0,'C',1);
                 $this->Cell(200,$height,"Kegiatan",'TLR',0,'C',1);
                 $this->Cell(100,$height,"Kontraktor",'TLR',0,'C',1);

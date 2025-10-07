@@ -342,7 +342,7 @@ function removeduplicate($notransaksi) // buat ngilangin nomor transaksi yang do
                 $uangtj[$hslAkhir[0]]=0;
             }
            
-            
+          if($uangtj[$hslAkhir[0]]>0){
             $no+=1;
             echo"<tr class=rowcontent id=row".$no."><td>".$no."</td>";
             echo"
@@ -380,6 +380,7 @@ function removeduplicate($notransaksi) // buat ngilangin nomor transaksi yang do
             //    $premi=$totCekList[$hslAkhir[0]]*$rupiah;
             echo"<td width=5px  align=right id=premi".$no.">".$totCekList[$hslAkhir[0]]*$uangtj[$hslAkhir[0]]."</td>";	
             echo"</tr>";
+		  }
         }	
     }
     //echo"<button class=mybutton onclick=saveAlltjabsen(".$no.");>".$_SESSION['lang']['proses']."</button>";

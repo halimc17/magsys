@@ -5,7 +5,7 @@ require_once('lib/nangkoelib.php');
 require_once('lib/zLib.php');
 require_once('lib/fpdf.php');
 require_once('lib/terbilang.php');
-function dates_inbetween($date1, $date2){
+function dates_inbetwee($date1, $date2){
 
     $day = 60*60*24;
 
@@ -45,7 +45,8 @@ $lksiTgs=substr($idAfd,0,4);
                 {
                     if($idAfd!='')
                     {
-                     $add="b.lokasitugas='".$idAfd."' ";
+                     //$add="b.lokasitugas='".$idAfd."' ";
+                     $add="True";
                     }
                     else
                     {
@@ -62,11 +63,13 @@ $lksiTgs=substr($idAfd,0,4);
                 {
                 if(strlen($idAfd)<6)
                 {
-                    $add="b.lokasitugas='".$idAfd."' and (b.subbagian is null or b.subbagian='') ";
+                    $add="b.lokasitugas='".$idAfd."' and (b.subbagian is null or b.subbagian='' or b.subbagian='".$idAfd."') ";
+                    //$add="True";
                 }
                 else
                 {
                     $add="b.subbagian='".$idAfd."'";
+                    //$add="True";
                 }
                                 if($kdBag2!='')
                                 {
@@ -78,7 +81,7 @@ $lksiTgs=substr($idAfd,0,4);
                 {
                     $dtTipe=" and b.tipekaryawan='".$tPkary."'";
                 }
-				
+
 #######################################################
 			$sTgl="select distinct tanggalmulai,tanggalsampai from ".$dbname.".sdm_5periodegaji 
                    where kodeorg='".substr($idAfd,0,4)."' and periode='".$perod."' 
@@ -87,7 +90,8 @@ $lksiTgs=substr($idAfd,0,4);
             $qTgl=mysql_query($sTgl) or die(mysql_error($conn));
             $rTgl=mysql_fetch_assoc($qTgl);
 
-            $test = dates_inbetween($rTgl['tanggalmulai'], $rTgl['tanggalsampai']);
+            //$test = dates_inbetwee($rTgl['tanggalmulai'], $rTgl['tanggalsampai']);
+            $test = rangeTanggal($rTgl['tanggalmulai'], $rTgl['tanggalsampai']);
             ##tambahan absen permintaan dari pak ujang#
             $sAbsn="select absensi,tanggal,karyawanid from ".$dbname.".sdm_absensidt 
                             where tanggal like '".$perod."%' and substr(kodeorg,1,4) = '".substr($idAfd,0,4)."'";
@@ -124,8 +128,8 @@ $lksiTgs=substr($idAfd,0,4);
 //        echo "</pre>";
 //        exit;
 
-                        $sPrestasi="select a.nik,b.tanggal from ".$dbname.".kebun_prestasi a left join ".$dbname.".kebun_aktifitas b on a.notransaksi=b.notransaksi 
-                                    where b.notransaksi like '%PNN%' and substr(b.kodeorg,1,4) = '".substr($idAfd,0,4)."' and b.tanggal like '".$perod."%'
+			$sPrestasi="select a.nik,b.tanggal from ".$dbname.".kebun_prestasi a left join ".$dbname.".kebun_aktifitas b on a.notransaksi=b.notransaksi 
+			where (b.notransaksi like '%PNN%' or b.notransaksi like '%/BM/%') and substr(b.kodeorg,1,4) = '".substr($idAfd,0,4)."' and b.tanggal like '".$perod."%'
                                    ";
                         //exit("Error".$sPrestasi);
                         $rPrestasi=fetchData($sPrestasi);
@@ -215,7 +219,7 @@ switch($proses)
                ".$dbname.".sdm_gaji_vw a  left join ".$dbname.".datakaryawan b on a.karyawanid=b.karyawanid 
                left join ".$dbname.".sdm_5jabatan c on b.kodejabatan=c.kodejabatan 
                left join ".$dbname.".sdm_5departemen d on b.bagian=d.kode
-               where b.sistemgaji='Harian' and a.periodegaji='".$perod."' and ".$add." ".$dtTipe."";
+               where a.kodeorg='".$lksiTgs."' and b.sistemgaji='Harian' and a.periodegaji='".$perod."' and ".$add." ".$dtTipe."";
         //exit("Error".$sSlip);
         $qSlip=mysql_query($sSlip) or die(mysql_error());
         $rCek=mysql_num_rows($qSlip);
@@ -522,7 +526,7 @@ function AcceptPageBreak()
                ".$dbname.".sdm_gaji_vw a  left join ".$dbname.".datakaryawan b on a.karyawanid=b.karyawanid 
                left join ".$dbname.".sdm_5jabatan c on b.kodejabatan=c.kodejabatan 
                left join ".$dbname.".sdm_5departemen d on b.bagian=d.kode
-               where b.sistemgaji='Harian' and a.periodegaji='".$perod."' and ".$add."  ".$dtTipe."";
+               where a.kodeorg='".$lksiTgs."' and b.sistemgaji='Harian' and a.periodegaji='".$perod."' and ".$add."  ".$dtTipe."";
         $qSlip=mysql_query($sSlip) or die(mysql_error());
         $rCek=mysql_num_rows($qSlip);
         if($rCek>0)
@@ -604,7 +608,7 @@ function AcceptPageBreak()
            }
            $str3="select jumlah,idkomponen,a.karyawanid,c.plus from ".$dbname.".sdm_gaji_vw a 
                   left join ".$dbname.".sdm_ho_component c on a.idkomponen=c.id
-                 where a.sistemgaji='Harian' and a.periodegaji='".$perod."' group by a.karyawanid,idkomponen";
+                 where a.kodeorg='".$lksiTgs."' and a.sistemgaji='Harian' and a.periodegaji='".$perod."' group by a.karyawanid,idkomponen";
            //exit("Error:".$str3);
            $res3=mysql_query($str3,$conn);
            while($bar3=mysql_fetch_assoc($res3))
@@ -939,7 +943,7 @@ else
                ".$dbname.".sdm_gaji_vw a  left join ".$dbname.".datakaryawan b on a.karyawanid=b.karyawanid 
                left join ".$dbname.".sdm_5jabatan c on b.kodejabatan=c.kodejabatan 
                left join ".$dbname.".sdm_5departemen d on b.bagian=d.kode
-               where b.sistemgaji='Harian' and a.periodegaji='".$perod."' and ".$add." ".$dtTipe."";
+               where a.kodeorg='".$lksiTgs."' and b.sistemgaji='Harian' and a.periodegaji='".$perod."' and ".$add." ".$dtTipe."";
         $qSlip=mysql_query($sSlip) or die(mysql_error($conn));
         $rCek=mysql_num_rows($qSlip);
         if($rCek>0)

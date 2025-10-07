@@ -9,6 +9,8 @@ include_once('lib/formReport.php');
 $optPT = makeOption($dbname,'organisasi','kodeorganisasi,namaorganisasi',"tipe='PT'");
 $optKebun = makeOption($dbname,'organisasi','kodeorganisasi,namaorganisasi',"tipe='KEBUN' and induk='".key($optPT)."'",null,1);
 $optKebun[''] = $_SESSION['lang']['all'];
+$optDivisi = makeOption($dbname,'organisasi','kodeorganisasi,namaorganisasi',"tipe='AFDELING' and induk='".key($optKebun)."'",null,1);
+$optDivisi[''] = $_SESSION['lang']['all'];
 $optTipe = array(
 	'RAWAT' => 'Perawatan Kebun',
 	'BIBIT' => 'Perawatan Bibit',
@@ -24,6 +26,8 @@ $fReport = new formReport('cropstatistic','kebun_slave_2accreport',$_SESSION['la
 $fReport->addPrime('pt',$_SESSION['lang']['pt'],'','select','L',20,$optPT);
 $fReport->_primeEls[0]->_attr['onchange'] = "getKebun()";
 $fReport->addPrime('kebun',$_SESSION['lang']['kebun'],'','select','L',20,$optKebun);
+$fReport->_primeEls[1]->_attr['onchange'] = "getDivisi()";
+$fReport->addPrime('divisi',$_SESSION['lang']['divisi'],'','select','L',20,$optDivisi);
 $fReport->addPrime('tipekebun',$_SESSION['lang']['intiplasma'],'','select','L',20,$optTipeKebun);
 $fReport->addPrime('tanggal',"Per Tanggal",date('d-m-Y'),'date','L',15);
 $fReport->addPrime('tipe',"Tipe",'','select','L',20,$optTipe);

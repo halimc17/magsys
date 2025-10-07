@@ -94,7 +94,7 @@ while($rData2=  mysql_fetch_assoc($qData2))
 }
     $tab.="<table cellpadding=1 cellspacing=1 border=".$brd." class=sortable>";
     $tab.="<thead><tr>";
-    $tab.="<td colspan=7  align=center ".$bg.">Summaru Processing</td><td colspan=7 align=center  ".$bg.">Detail Processing</td>";
+    $tab.="<td colspan=7  align=center ".$bg.">Summary Processing</td><td colspan=7 align=center  ".$bg.">Detail Processing</td>";
     $tab.="<td colspan=5  align=center ".$bg.">Detail Material Usage</td></tr>";
     $tab.="<tr>";
     #1#

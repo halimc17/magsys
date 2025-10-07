@@ -45,9 +45,10 @@ if($proses=='preview'||$proses=='excel'){
 //    }
     
     #ambil data taksasi
-    $sTaksasi="select afdeling, tanggal, blok, seksi, hasisa, haesok, jmlhpokok, persenbuahmatang, jjgmasak, jjgoutput, hkdigunakan, bjr, (bjr*jjgmasak) as kg from ".$dbname.".kebun_taksasi 
-        where afdeling like '".$kebun."%' and afdeling like '%".$afdeling."%' and tanggal like '".$periode."%' 
-        order by tanggal, blok";    
+    $sTaksasi="select a.afdeling, a.tanggal, a.blok, b.namaorganisasi as namablok, a.seksi, a.hasisa, a.haesok, a.jmlhpokok, a.persenbuahmatang, a.jjgmasak, a.jjgoutput, a.hkdigunakan, a.bjr, (a.bjr*a.jjgmasak) as kg from ".$dbname.".kebun_taksasi a
+				left join ".$dbname.".organisasi b on b.kodeorganisasi=a.blok
+		        where a.afdeling like '".$kebun."%' and a.afdeling like '%".$afdeling."%' and a.tanggal like '".$periode."%' 
+				order by a.tanggal, a.blok";
     $restaksasi=mysql_query($sTaksasi);
     while($bar1=mysql_fetch_object($restaksasi)){        
         $kunci=$bar1->tanggal.$bar1->blok;
@@ -73,7 +74,7 @@ if($proses=='preview'||$proses=='excel'){
         $dzArr[$kunci]['hkpanen']+=$bisapanen;    
         $dzArr[$kunci]['counter']+=1; // jumlahdata
         $dzArr[$kunci]['afdeling']=$bar1->afdeling;
-        $dzArr[$kunci]['blok'].=$bar1->blok;
+        $dzArr[$kunci]['blok'].=$bar1->namablok;
         $dzArr[$kunci]['tanggal'].=$bar1->tanggal;
         $dzArr[$kunci]['seksi'].=$bar1->seksi;
         $dzArr[$kunci]['hasisa']+=$bar1->hasisa;
@@ -174,10 +175,32 @@ if($proses=='preview'||$proses=='excel'){
             <td align=right>".number_format($datanya['hkpanen'])."</td>
             <td align=right>".number_format($datanya['bjr'],2)."</td>
             <td align=right>".number_format($datanya['kg'])."</td>";            
-        $tab.="</tr>";                        
-                    
+        $tab.="</tr>";
+			$gthasisa+=$datanya['hasisa'];
+			$gthaesok+=$datanya['haesok'];
+			$gtjmlhpokok+=$datanya['jmlhpokok'];
+			$gtjjgmasak+=$datanya['jjgmasak'];
+			$gthkdigunakan+=$datanya['hkdigunakan'];
+			$gthkpanen+=$datanya['hkpanen'];
+			$gtkg+=$datanya['kg'];
         }
-        
+		$gtpbm=($gtjmlhpokok==0 ? 0 : $gtjjgmasak*100/$gtjmlhpokok);
+		$gtjjgoutput=($gthkdigunakan==0 ? 0 : $gtjjgmasak/$gthkdigunakan);
+		$gtbjr=($gtjjgmasak==0 ? 0 : $gtkg/$gtjjgmasak);
+        $tab.="<tr class=rowcontent>
+				<td bgcolor='#FEDEFE' colspan=3 align=center>Total</td>
+	            <td bgcolor='#FEDEFE' align=right>".number_format($gthasisa,2)."</td>
+		        <td bgcolor='#FEDEFE' align=right>".number_format($gthaesok,2)."</td>
+			    <td bgcolor='#FEDEFE' align=right>".number_format($gthasisa+$gthaesok,2)."</td>
+				<td bgcolor='#FEDEFE' align=right>".number_format($gtjmlhpokok,0)."</td>
+	            <td bgcolor='#FEDEFE' align=right>".number_format($gtpbm,2)."</td>
+		        <td bgcolor='#FEDEFE' align=right>".number_format($gtjjgmasak,0)."</td>
+			    <td bgcolor='#FEDEFE' align=right>".number_format($gtjjgoutput,0)."</td>
+				<td bgcolor='#FEDEFE' align=right>".number_format($gthkdigunakan,0)."</td>
+	            <td bgcolor='#FEDEFE' align=right>".number_format($gthkpanen,0)."</td>
+		        <td bgcolor='#FEDEFE' align=right>".number_format($gtbjr,2)."</td>
+			    <td bgcolor='#FEDEFE' align=right>".number_format($gtkg,0)."</td>
+			</tr>";
 //        $kgsdhi+=$dzArr[$kunci2]['kg'];
 //        $p_kgsdhi+=$dzArr[$kunci2]['p_kg'];
 //        $varian_kg=$dzArr[$kunci2]['p_kg']-$dzArr[$kunci2]['kg'];
@@ -219,8 +242,7 @@ if($proses=='preview'||$proses=='excel'){
         
 //    }
     
-    $tab.="</tbody></table></td></tr></tbody><table>";
-
+    $tab.="</tbody></table>";
 }	
 switch($proses)
 {

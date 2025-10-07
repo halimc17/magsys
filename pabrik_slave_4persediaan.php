@@ -39,7 +39,7 @@ if($kdPbrik=='')
 
     $sql="select * from ".$dbname.".pabrik_masukkeluartangki where ".$where." 
         order by tanggal desc";
-//    exit("Error: ".$sql);
+	//    exit("Error: ".$sql);
     $query=mysql_query($sql) or die(mysql_error());
     while($res=mysql_fetch_assoc($query))
     {
@@ -182,6 +182,7 @@ switch($proses)
                 </tr></thead><tbody>";
 
 if(!empty($tanger))foreach($tanger as $tgl){
+                
 				if($kdTangki==''){
 					$hKdTangki = $_SESSION['lang']['all'];
 				}else{

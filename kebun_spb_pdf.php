@@ -84,16 +84,17 @@ class PDF extends FPDF
                 }*/
 				$this->Cell(3/100*$width,$height,'No',1,0,'C',1);
 				$this->Cell(15/100*$width,$height,$_SESSION['lang']['nospb'],1,0,'C',1);	
-				$this->Cell(8/100*$width,$height,$_SESSION['lang']['tanggal'],1,0,'C',1);	
-				$this->Cell(8/100*$width,$height,$_SESSION['lang']['blok'],1,0,'C',1);	
-				$this->Cell(8/100*$width,$height,$_SESSION['lang']['janjang'],1,0,'C',1);
-                                $this->Cell(10/100*$width,$height,$_SESSION['lang']['kgwb'],1,0,'C',1);
-				$this->Cell(8/100*$width,$height,$_SESSION['lang']['bjr'],1,0,'C',1);
+				$this->Cell(7/100*$width,$height,$_SESSION['lang']['tanggal'],1,0,'C',1);	
+				$this->Cell(10/100*$width,$height,$_SESSION['lang']['blok'],1,0,'C',1);	
+				$this->Cell(7/100*$width,$height,$_SESSION['lang']['janjang'],1,0,'C',1);
+                                $this->Cell(7/100*$width,$height,$_SESSION['lang']['kgwb'],1,0,'C',1);
+				$this->Cell(5/100*$width,$height,$_SESSION['lang']['bjr'],1,0,'C',1);
 				$this->Cell(10/100*$width,$height,$_SESSION['lang']['brondolan'],1,0,'C',1);		
-				$this->Cell(8/100*$width,$height,$_SESSION['lang']['mentah'],1,0,'C',1);
-				$this->Cell(8/100*$width,$height,$_SESSION['lang']['busuk'],1,0,'C',1);
-				$this->Cell(8/100*$width,$height,$_SESSION['lang']['matang'],1,0,'C',1);
-				$this->Cell(8/100*$width,$height,$_SESSION['lang']['lewatmatang'],1,1,'C',1);
+				$this->Cell(7/100*$width,$height,$_SESSION['lang']['mentah'],1,0,'C',1);
+				$this->Cell(7/100*$width,$height,$_SESSION['lang']['busuk'],1,0,'C',1);
+				$this->Cell(7/100*$width,$height,$_SESSION['lang']['matang'],1,0,'C',1);
+				$this->Cell(7/100*$width,$height,$_SESSION['lang']['lewatmatang'],1,0,'C',1);
+				$this->Cell(8/100*$width,$height,$_SESSION['lang']['keterangan'],1,1,'C',1);
             
             }
                 
@@ -119,7 +120,8 @@ class PDF extends FPDF
 		{
 			$kdOrg="substr(b.blok,1,6)";
 		}
-		$str="select a.tanggal,b.* from ".$dbname.".kebun_spbht a inner join ".$dbname.".kebun_spbdt b on a.nospb=b.nospb 
+		$str="select a.tanggal,b.*,c.namaorganisasi from ".$dbname.".kebun_spbht a inner join ".$dbname.".kebun_spbdt b on a.nospb=b.nospb 
+			  left join ".$dbname.".organisasi c on c.kodeorganisasi=b.blok 
 		where a.tanggal like '%".$periode."%' and ".$kdOrg."='".$pt."' order by a.tanggal asc "; 
 		//echo $str;exit();
 		//$str="select * from ".$dbname.".kebun_spbdt where substr(blok,1,6)='".$pt."' and tanggal like '%".$periode."%'";
@@ -133,18 +135,19 @@ class PDF extends FPDF
 			{
 				$no+=1;
 				
-				$pdf->Cell(3/100*$width,$height,$no,1,0,'L',1);
+				$pdf->Cell(3/100*$width,$height,$no,1,0,'C',1);
 				$pdf->Cell(15/100*$width,$height,$res['nospb'],1,0,'L',1);	
-				$pdf->Cell(8/100*$width,$height,tanggalnormal($res['tanggal']),1,0,'C',1);	
-				$pdf->Cell(8/100*$width,$height,$res['blok'],1,0,'L',1);	
-				$pdf->Cell(8/100*$width,$height,number_format($res['jjg'],2),1,0,'L',1);
-                                $pdf->Cell(10/100*$width,$height,number_format($res['kgwb'],2),1,0,'L',1);
-				$pdf->Cell(8/100*$width,$height,number_format($res['bjr'],2),1,0,'L',1);
-				$pdf->Cell(10/100*$width,$height,number_format($res['brondolan'],2),1,0,'L',1);		
-				$pdf->Cell(8/100*$width,$height,number_format($res['mentah'],2),1,0,'L',1);
-				$pdf->Cell(8/100*$width,$height,number_format($res['busuk'],2),1,0,'L',1);
-				$pdf->Cell(8/100*$width,$height,number_format($res['matang'],2),1,0,'L',1);
-				$pdf->Cell(8/100*$width,$height,number_format($res['lewatmatang'],2),1,1,'L',1);	
+				$pdf->Cell(7/100*$width,$height,tanggalnormal($res['tanggal']),1,0,'C',1);	
+				$pdf->Cell(10/100*$width,$height,$res['namaorganisasi'],1,0,'L',1);	
+				$pdf->Cell(7/100*$width,$height,number_format($res['jjg'],2),1,0,'R',1);
+                                $pdf->Cell(7/100*$width,$height,number_format($res['kgwb'],2),1,0,'R',1);
+				$pdf->Cell(5/100*$width,$height,number_format($res['bjr'],2),1,0,'R',1);
+				$pdf->Cell(10/100*$width,$height,number_format($res['brondolan'],2),1,0,'R',1);		
+				$pdf->Cell(7/100*$width,$height,number_format($res['mentah'],2),1,0,'R',1);
+				$pdf->Cell(7/100*$width,$height,number_format($res['busuk'],2),1,0,'R',1);
+				$pdf->Cell(7/100*$width,$height,number_format($res['matang'],2),1,0,'R',1);
+				$pdf->Cell(7/100*$width,$height,number_format($res['lewatmatang'],2),1,0,'R',1);	
+				$pdf->Cell(8/100*$width,$height,$res['keterangan'],1,1,'L',1);	
 			   
 			}
 		}

@@ -33,6 +33,7 @@ $DtTime=date("Y-m-d H:i:s");
         $potsortasi=$_POST['potsortasi'];
         if($potsortasi=='')
             $potsortasi=0;
+	$tf=$_POST['tf'];
 	$sloc=$_POST['sloc'];		
 	$buahbusuk=($_POST['buahbusuk']==''?0:$_POST['buahbusuk']);
 	$buahkrgmatang=($_POST['buahkrgmatang']==''?0:$_POST['buahkrgmatang']);
@@ -40,21 +41,29 @@ $DtTime=date("Y-m-d H:i:s");
 	$janjangkosong=($_POST['janjangkosong']==''?0:$_POST['janjangkosong']);
 	$lwtmatang=($_POST['lwtmatang']==''?0:$_POST['lwtmatang']);		
 	$mentah=($_POST['mentah']==''?0:$_POST['mentah']);
-	$tkpanjang=($_POST['tkpanjang']==''?0:$_POST['tkpanjang']);		
-	$tigakilo=($_POST['tigakilo']==''?0:$_POST['tigakilo']);			
+	$tkpanjang=($_POST['tkpanjang']==''?0:$_POST['tkpanjang']);
+	$tigakilo=($_POST['tigakilo']==''?0:$_POST['tigakilo']);
+	$divisi=$_POST['divisi'];
 
  switch($proses)
  {
 	 case'showData':
-                 $message="Ambil Data";   
-                 $sCob="SELECT * from ".$dbnm.".mstrxtbs WHERE (GI='0' or GI='') and OUTIN=0 and PRODUCTCODE in ('40000001','40000002','40000003','40000004','40000005','40000006','40000007') ORDER BY `TICKETNO2` ASC limit 0,1";
+                 $message="Ambil Data";
+                 //$sCob="SELECT * from ".$dbnm.".mstrxtbs WHERE (GI='0' or GI='') and netto != 0 and OUTIN=0 and PRODUCTCODE in
+                 $sCob="SELECT * from ".$dbnm.".mstrxtbs 
+						WHERE (GI='0' or GI='') and OUTIN=0 and PRODUCTCODE like '4%' 
+						ORDER BY `TICKETNO2` ASC limit 0,1";
                     //echo $sCob;exit();
                     $res=mysql_query($sCob,$corn2) or die(mysql_error());
                 if(mysql_num_rows($res)>0){
                     $result=mysql_fetch_assoc($res);
                     $kbn=$result['UNITCODE'];
                     $idTimbangan=$result['TICKETNO2'];
-                    $tglData=$result['DATEOUT'];
+					if($result['PRODUCTCODE']=='40000003' or $result['PRODUCTCODE']=='40000018' or $result['PRODUCTCODE']=='40000019'){
+						$tglData=$result['DATEIN'];
+					}else{
+						$tglData=$result['DATEOUT'];
+					}
                     $custData=$result['TRPCODE'];
                     $kdBrg=$result['PRODUCTCODE'];
                     $brtMsk=$result['WEI1ST'];
@@ -77,8 +86,9 @@ $DtTime=date("Y-m-d H:i:s");
                     $usrNm=$result['USERID'];
                     $pabrik=$result['MILLCODE'];
                     $brtBrsih=$result['NETTO'];
-                    $potsortasi=$result['KGPOTSORTASI'];
+                    $tf=$result['TF'];
 					$sloc=$result['SLOC'];
+                    $potsortasi=$result['KGPOTSORTASI'];
                     $statusConn=0;
 				
                     $buahbusuk=$result['buahbusuk'];
@@ -89,6 +99,7 @@ $DtTime=date("Y-m-d H:i:s");
 					$mentah=$result['mentah'];
 					$tkpanjang=$result['tkpanjang'];
 					$tigakilo=$result['tigakilo'];
+                    $divisi=$result['DIVCODE'];
 					
                     echo"<tr>
                     <td>".$idTimbangan."</td>
@@ -122,6 +133,7 @@ $DtTime=date("Y-m-d H:i:s");
                             <td align=right id=brtOut>".$brtOut."</td>
 							<td align=right id=sloc>".$sloc."</td>
                             <td align=right id=potsortasi>".$potsortasi."</td>
+							<td id=tf>".$tf."</td>								
 							<td id=usrNm>".$usrNm."</td>								
                             <td id=buahbusuk>".$buahbusuk."</td>
 							<td id=buahkrgmatang>".$buahkrgmatang."</td>
@@ -131,6 +143,7 @@ $DtTime=date("Y-m-d H:i:s");
 							<td id=mentah>".$mentah."</td>
 							<td id=tkpanjang>".$tkpanjang."</td>
 							<td id=tigakilo>".$tigakilo."</td>
+							<td id=divisi>".$divisi."</td>
                             </tr>
                             ";
                     }
@@ -169,9 +182,22 @@ $DtTime=date("Y-m-d H:i:s");
                                 }
                         }
 
+					if($brtBrsih2>0){
+						$jjgsortasi=0;
+						if($potsortasi>0){
+							$jjgsortasi=($jmlhjjg2<100 ? $jmlhjjg2 : 100);
+						}
+					  if($kdBrg2=='40000018' or $kdBrg2=='40000019'){
+                        $sIns="INSERT INTO ".$dbname.".pabrik_outspec (`notransaksi`, `tanggal`, `kodeorg`, `kodecustomer`, `kodebarang`, `jammasuk`, `beratmasuk`, `jamkeluar`, `beratkeluar`, `nokendaraan`, `supir`, `nokontrak`, `nodo`, `nosipb`, `username`, `millcode`, `beratbersih`,`intex`,`timbangonoff`,`sloc`) 
+						       VALUES ('".$idTimbangan2."','".$tglData2."','".$kbn2."','".$custData2."','".$kdBrg2."','".$jmMasuk2."','".$brtMsk2."','".$jmKeluar2."','".$brtOut2."','".$kdVhc2."','".$spir2."','".$kntrkNo2."','".$nodo2."','".$sibno2."','".$usrNm2."','".$pabrik2."','".$brtBrsih2."','".$inTex2."','0','".$sloc."')";
+					  }else{
+                        $sIns="INSERT INTO ".$dbname.".pabrik_timbangan (`notransaksi`, `tanggal`, `kodeorg`, `kodecustomer`, `jumlahtandan1`, `kodebarang`, `jammasuk`, `beratmasuk`, `jamkeluar`, `beratkeluar`, `nokendaraan`, `supir`, `nospb`, `nokontrak`, `nodo`, `nosipb`, `thntm1`, `thntm2`, `thntm3`, `jumlahtandan2`, `jumlahtandan3`, `brondolan`, `username`, `millcode`, `beratbersih`,`trpcode`,`intex`,`timbangonoff`,`kgpotsortasi`,`jjgsortasi`,`sloc`,`divisi`) 
+						       VALUES ('".$idTimbangan2."','".$tglData2."','".$kbn2."','".$custData2."','".$jmlhjjg2."','".$kdBrg2."','".$jmMasuk2."','".$brtMsk2."','".$jmKeluar2."','".$brtOut2."','".$kdVhc2."','".$spir2."','".$spbno2."','".$kntrkNo2."','".$nodo2."','".$sibno2."','".$thnTnm2."','".$thnTnm22."','".$thnTnm32."','".$jmlhjjg22."','".$jmlhjjg32."','".$brndln2."','".$usrNm2."','".$pabrik2."','".$brtBrsih2."','".$tf."','".$inTex2."','0',".$potsortasi.",".$jjgsortasi.",'".$sloc."','".$divisi."')";
+					  }
+					}else{
+                        $sIns="SELECT * from ".$dbname.".pabrik_timbangan where notransaksi='".$idTimbangan2."'";
+					}
 
-                        $sIns="INSERT INTO ".$dbname.".pabrik_timbangan (`notransaksi`, `tanggal`, `kodeorg`, `kodecustomer`, `jumlahtandan1`, `kodebarang`, `jammasuk`, `beratmasuk`, `jamkeluar`, `beratkeluar`, `nokendaraan`, `supir`, `nospb`, `nokontrak`, `nodo`, `nosipb`, `thntm1`, `thntm2`, `thntm3`, `jumlahtandan2`, `jumlahtandan3`, `brondolan`, `username`, `millcode`, `beratbersih`,`intex`,`timbangonoff`,`kgpotsortasi`,`sloc`) 
-						       VALUES ('".$idTimbangan2."','".$tglData2."','".$kbn2."','".$custData2."','".$jmlhjjg2."','".$kdBrg2."','".$jmMasuk2."','".$brtMsk2."','".$jmKeluar2."','".$brtOut2."','".$kdVhc2."','".$spir2."','".$spbno2."','".$kntrkNo2."','".$nodo2."','".$sibno2."','".$thnTnm2."','".$thnTnm22."','".$thnTnm32."','".$jmlhjjg22."','".$jmlhjjg32."','".$brndln2."','".$usrNm2."','".$pabrik2."','".$brtBrsih2."','".$inTex2."','0',".$potsortasi.",'".$sloc."')";
 						if(mysql_query($sIns,$conn2))
                         {
                                 $sUp="update ".$dbnm.".mstrxtbs set GI='".$DtTime."' where TICKETNO2='".$idTimbangan2."' and OUTIN=0";
@@ -198,12 +224,13 @@ $DtTime=date("Y-m-d H:i:s");
 						  ('".$idTimbangan2."','tkpanjang',".$tkpanjang."),
 						  ('".$idTimbangan2."','tigakilo',".$tigakilo.");";
                            @mysql_query($str,$conn2);
-                        //=======================================						   
+                        //=======================================
 					*/
-					}
+                        }
                         else
                         {
                                 $statusConn=4;
+								echo mysql_error($conn2);
 
                         }
 

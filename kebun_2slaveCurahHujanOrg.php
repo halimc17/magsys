@@ -84,15 +84,15 @@ $rowAfd=count($dtAfd);
              $tab.="<td rowspan=2>".$_SESSION['lang']['bulan']."</td>";
              foreach($dtAfd as $listAfd)
              {
-                 $tab.="<td colspan=2>".$listAfd."</td>";
+                 $tab.="<td colspan=2 align='center'>".$listAfd."</td>";
              }
              
-             $tab.="<td colspan=2>".$_SESSION['lang']['rtEstate']."</td></tr><tr>";
+             $tab.="<td colspan=2 align='center'>".$_SESSION['lang']['rtEstate']."</td></tr><tr>";
              foreach($dtAfd as $listAfd)
              {
-                 $tab.="<td>CH</td><td>HH</td>";
+                 $tab.="<td align='center'>CH</td><td align='center'>HH</td>";
              }
-             $tab.="<td>CH</td><td>HH</td>";
+             $tab.="<td align='center'>CH</td><td align='center'>HH</td>";
              $tab.="</tr></thead><tbody>";
              foreach($arrBln as $dtBln=>$nmbulan)
              {
@@ -105,11 +105,11 @@ $rowAfd=count($dtAfd);
 					setIt($sumHr[$dtBln.$listAfd],0);
 					setIt($sumAll[$dtBln],0);
 					setIt($sumAllHari[$dtBln],0);
-					$tab.="<td align=right>".$dataCrh[$dtBln.$listAfd]."</td><td align=right>".$sumHr[$dtBln.$listAfd]."</td>";
+					$tab.="<td align=right>".number_format($dataCrh[$dtBln.$listAfd],2)."</td><td align=right>".number_format($sumHr[$dtBln.$listAfd],0)."</td>";
 					$sumAll[$dtBln]+=$dataCrh[$dtBln.$listAfd];
 					$sumAllHari[$dtBln]+=$sumHr[$dtBln.$listAfd];
 					if($dataCrh[$dtBln.$listAfd]>0)$jumCH+=1;
-					if($sumHr[$dtBln.$listAfd])$jumHH+=1;
+					if($sumHr[$dtBln.$listAfd]>0)$jumHH+=1;
 				}
 				@$rt2CC[$dtBln]=$sumAll[$dtBln]/$jumCH;
 				@$rt2Hr[$dtBln]=$sumAllHari[$dtBln]/$jumHH;
@@ -125,7 +125,7 @@ $rowAfd=count($dtAfd);
 				
 				if($rt2Hr[$dtBln]!=0)
 				{
-				   $tab.="<td align=right>".number_format($rt2Hr[$dtBln],2)."</td>";
+				   $tab.="<td align=right>".number_format($rt2Hr[$dtBln],0)."</td>";
 				}
 				else
 				{
@@ -149,15 +149,15 @@ $rowAfd=count($dtAfd);
              $tab.="<td rowspan=2 ".$bgclr.">".$_SESSION['lang']['bulan']."</td>";
              foreach($dtAfd as $listAfd)
              {
-                 $tab.="<td colspan=2 ".$bgclr.">".$listAfd."</td>";
+                 $tab.="<td colspan=2 align='center' ".$bgclr.">".$listAfd."</td>";
              }
              
-             $tab.="<td colspan=2 ".$bgclr.">".$_SESSION['lang']['rtEstate']."</td></tr><tr>";
+             $tab.="<td colspan=2 align='center' ".$bgclr.">".$_SESSION['lang']['rtEstate']."</td></tr><tr>";
              foreach($dtAfd as $listAfd)
              {
-                 $tab.="<td ".$bgclr.">CH</td><td ".$bgclr.">HH</td>";
+                 $tab.="<td align='center' ".$bgclr.">CH</td><td align='center' ".$bgclr.">HH</td>";
              }
-             $tab.="<td ".$bgclr.">CH</td><td ".$bgclr.">HH</td>";
+             $tab.="<td align='center' ".$bgclr.">CH</td><td align='center' ".$bgclr.">HH</td>";
              $tab.="</tr></thead><tbody>";
              foreach($arrBln as $dtBln=>$nmbulan)
              {
@@ -170,12 +170,13 @@ $rowAfd=count($dtAfd);
 					setIt($sumHr[$dtBln.$listAfd],0);
 					setIt($sumAll[$dtBln],0);
 					setIt($sumAllHari[$dtBln],0);
-					$tab.="<td align=right>".$dataCrh[$dtBln.$listAfd]."</td><td align=right>".$sumHr[$dtBln.$listAfd]."</td>";
+					$tab.="<td align=right>".number_format($dataCrh[$dtBln.$listAfd],2)."</td><td align=right>".number_format($sumHr[$dtBln.$listAfd],0)."</td>";
 					$sumAll[$dtBln]+=$dataCrh[$dtBln.$listAfd];
 					$sumAllHari[$dtBln]+=$sumHr[$dtBln.$listAfd];
 					if($dataCrh[$dtBln.$listAfd]>0)$jumCH+=1;
-					if($sumHr[$dtBln.$listAfd])$jumHH+=1;
+					if($sumHr[$dtBln.$listAfd]>0)$jumHH+=1;
 				}
+
 				@$rt2CC[$dtBln]=$sumAll[$dtBln]/$jumCH;
 				@$rt2Hr[$dtBln]=$sumAllHari[$dtBln]/$jumHH;
 				
@@ -190,7 +191,7 @@ $rowAfd=count($dtAfd);
 				
 				if($rt2Hr[$dtBln]!=0)
 				{
-				   $tab.="<td align=right>".number_format($rt2Hr[$dtBln],2)."</td>";
+				   $tab.="<td align=right>".number_format($rt2Hr[$dtBln],0)."</td>";
 				}
 				else
 				{
@@ -199,10 +200,6 @@ $rowAfd=count($dtAfd);
 				$tab.="</tr>";
             }
             $tab.="</tbody></table>";
-			
-			
-			exit("Error:$tab");
-			
             $tab.="Print Time:".date('Y-m-d H:i:s')."<br />By:".$_SESSION['empl']['name'];	
             $dte=date("His");
             $nop_="curahHujanBlnan_".$dte;
@@ -330,8 +327,11 @@ $rowAfd=count($dtAfd);
             $pdf->AddPage();
             $pdf->SetFillColor(255,255,255);
             $pdf->SetFont('Arial','',7);
+
             foreach($arrBln as $dtBln=>$nmbulan)
              {
+                $jumCH=0;
+                $jumHH=0;
                  $pdf->Cell(60,$height,$nmbulan,1,0,'L',1);
                  foreach($dtAfd as $listAfd)
                  {
@@ -339,15 +339,16 @@ $rowAfd=count($dtAfd);
 					setIt($sumHr[$dtBln.$listAfd],0);
 					setIt($sumAll[$dtBln],0);
 					setIt($sumAllHari[$dtBln],0);
-                     $pdf->Cell(30,$height,$dataCrh[$dtBln.$listAfd],1,0,'R',1);
-                     $pdf->Cell(30,$height,$sumHr[$dtBln.$listAfd],1,0,'R',1);
-                     $sumAll[$dtBln]+=$dataCrh[$dtBln.$listAfd];
-                     $sumAllHari[$dtBln]+=$sumHr[$dtBln.$listAfd];
-					 if($dataCrh[$dtBln.$listAfd]>0)$jumCH+=1;
-					 if($sumHr[$dtBln.$listAfd])$jumHH+=1;
-                 }
-                 @$rt2CC[$dtBln]=$sumAll[$dtBln]/$jumCH;
-                 @$rt2Hr[$dtBln]=$sumAllHari[$dtBln]/$jumHH;
+                     $pdf->Cell(30,$height,number_format($dataCrh[$dtBln.$listAfd],2),1,0,'R',1);
+                     $pdf->Cell(30,$height,number_format($sumHr[$dtBln.$listAfd],0),1,0,'R',1);
+                    $sumAll[$dtBln]+=$dataCrh[$dtBln.$listAfd];
+                    $sumAllHari[$dtBln]+=$sumHr[$dtBln.$listAfd];
+                    if($dataCrh[$dtBln.$listAfd]>0)$jumCH+=1;
+                    if($sumHr[$dtBln.$listAfd]>0)$jumHH+=1;
+                }
+
+                @$rt2CC[$dtBln]=$sumAll[$dtBln]/$jumCH;
+                @$rt2Hr[$dtBln]=$sumAllHari[$dtBln]/$jumHH;
                  
                  if($rt2CC[$dtBln]!=0)
                  {
@@ -360,7 +361,7 @@ $rowAfd=count($dtAfd);
                  
                  if($rt2Hr[$dtBln]!=0)
                  {
-                    $pdf->Cell(30,$height,number_format($rt2Hr[$dtBln],2),1,1,'R',1);
+                    $pdf->Cell(30,$height,number_format($rt2Hr[$dtBln],0),1,1,'R',1);
                  }
                  else
                  {

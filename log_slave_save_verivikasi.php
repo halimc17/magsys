@@ -337,7 +337,7 @@ echo" <table class=\"sortable\" cellspacing=\"1\" border=\"0\">
 
                     $optPur="<option value=''></option>";
                     //$klq="select karyawanid,namakaryawan from ".$dbname.".`datakaryawan` where  (bagian='PUR'or kodejabatan='17') and tanggalkeluar='0000-00-00' order by namakaryawan asc ";
-                    $klq="select karyawanid,namakaryawan from ".$dbname.".`datakaryawan` where  bagian='PRO'  and tanggalkeluar='0000-00-00' order by namakaryawan asc ";
+                    $klq="select karyawanid,namakaryawan from ".$dbname.".`datakaryawan` where bagian='PRO' and (tanggalkeluar>'".date('Y-m-d')."' or tanggalkeluar='0000-00-00') order by namakaryawan asc ";
                     $qry=mysql_query($klq) or die(mysql_error());
 
                     while($rst=mysql_fetch_object($qry))
@@ -554,7 +554,8 @@ echo" <table class=\"sortable\" cellspacing=\"1\" border=\"0\">
          </tr>
          </thead>
          <tbody>";
-             $thnSkrng=date("Y");
+         $thnSkrng=date("Y");
+         //$thnSkrng=$_SESSION['org']['period']['tahun'];
         $limit=25;
         $page=0;
         if(isset($_POST['page']))
@@ -627,7 +628,7 @@ echo" <table class=\"sortable\" cellspacing=\"1\" border=\"0\">
 					
 					$optPur="<option value=''></option>";
                     //$klq="select karyawanid,namakaryawan from ".$dbname.".`datakaryawan` where  (bagian='PUR'or kodejabatan='17') and tanggalkeluar='0000-00-00' order by namakaryawan asc ";
-                    $klq="select karyawanid,namakaryawan from ".$dbname.".`datakaryawan` where bagian='PRO'  and tanggalkeluar='0000-00-00' order by namakaryawan asc ";
+                    $klq="select karyawanid,namakaryawan from ".$dbname.".`datakaryawan` where bagian='PRO' and (tanggalkeluar>'".date('Y-m-d')."' or tanggalkeluar='0000-00-00') order by namakaryawan asc ";
 
                     $qry=mysql_query($klq) or die(mysql_error());
 
@@ -1451,7 +1452,7 @@ echo" <table class=\"sortable\" cellspacing=\"1\" border=\"0\">
 		}
 		$tab.="</tr></thead><tbody id=isiContain>";
 		$sPur="select karyawanid,namakaryawan from ".$dbname.".datakaryawan 
-			where (bagian='PUR' or kodejabatan='17') and kodejabatan!='5' and (tanggalkeluar>'".date('Y-m-d')."' or tanggalkeluar='0000-00-00')  order by namakaryawan asc";
+			where bagian='PRO' and (tanggalkeluar>'".date('Y-m-d')."' or tanggalkeluar='0000-00-00') order by namakaryawan asc";
 		
 		$qPur=fetchData($sPur);
 		$totalPo2=array();
@@ -1670,7 +1671,7 @@ echo" <table class=\"sortable\" cellspacing=\"1\" border=\"0\">
            }
 
            $sPur="select karyawanid,namakaryawan from ".$dbname.".datakaryawan 
-               where (bagian='PUR' or kodejabatan='17') and kodejabatan!='5' and (tanggalkeluar>'".date('Y-m-d')."' or tanggalkeluar='0000-00-00')  order by namakaryawan asc";
+               where bagian='PRO' and (tanggalkeluar>'".date('Y-m-d')."' or tanggalkeluar='0000-00-00') order by namakaryawan asc";
 
            $qPur=fetchData($sPur);
            foreach($qPur as $brsKary)
@@ -2020,7 +2021,7 @@ echo" <table class=\"sortable\" cellspacing=\"1\" border=\"0\">
 		break;
          case 'listVerivikasiPP':
          $optPur="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
-                       $klq="select karyawanid,namakaryawan from ".$dbname.".`datakaryawan` where  (bagian='PUR' or kodejabatan='17') and tanggalkeluar='0000-00-00' order by namakaryawan asc ";
+                       $klq="select karyawanid,namakaryawan from ".$dbname.".`datakaryawan` where bagian='PRO' and (tanggalkeluar>'".date('Y-m-d')."' or tanggalkeluar='0000-00-00') order by namakaryawan asc ";
 
                         $qry=mysql_query($klq) or die(mysql_error());
 
@@ -2122,7 +2123,7 @@ echo" <table class=\"sortable\" cellspacing=\"1\" border=\"0\">
          break;
          case 'listVerivikasiPP2':
          $optPur="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
-                        $klq="select karyawanid,namakaryawan from ".$dbname.".`datakaryawan` where  bagian='PUR' and tanggalkeluar='0000-00-00' order by namakaryawan asc ";
+                        $klq="select karyawanid,namakaryawan from ".$dbname.".`datakaryawan` where bagian='PRO' and (tanggalkeluar>'".date('Y-m-d')."' or tanggalkeluar='0000-00-00') order by namakaryawan asc ";
 
                         $qry=mysql_query($klq) or die(mysql_error());
 

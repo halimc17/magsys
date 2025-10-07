@@ -7,29 +7,29 @@ include('master_mainMenu.php');
 ?>
 <script language=javascript src=js/sdm_5cuti.js></script>
 <?
-OPEN_BOX('',$_SESSION['lang']['cuti']);
+OPEN_BOX('',$_SESSION['lang']['laporan'].' '.$_SESSION['lang']['cuti']);
 
 $optlokasitugas="";
-if(trim($_SESSION['org']['tipeinduk'])=='HOLDING')//user holding dapat menempatkan dimana saja
+if(trim($_SESSION['empl']['tipelokasitugas'])=='HOLDING')//user holding dapat menempatkan dimana saja
 {
     $str="select namaorganisasi,kodeorganisasi from ".$dbname.".organisasi where tipe not in('BLOK','PT','STENGINE','STATION') 
 	      and length(kodeorganisasi)=4 order by namaorganisasi";
-	$res=mysql_query($str);
-	while($bar=mysql_fetch_object($res))
-	{
-			$optlokasitugas.="<option value='".$bar->kodeorganisasi."'>".$bar->namaorganisasi."</option>";	
-	}
 }
-else if(trim($_SESSION['org']['induk']!=''))//user unit hanya dapat menempatkan pada unitnya dan anak unitnya
+else if(trim($_SESSION['empl']['tipelokasitugas']=='KANWIL'))//user unit hanya dapat menempatkan pada unitnya dan anak unitnya
+{
+    $str="select namaorganisasi,kodeorganisasi from ".$dbname.".organisasi where tipe not in('BLOK','PT','STENGINE','STATION') 
+	      and length(kodeorganisasi)=4 and induk='".trim($_SESSION['empl']['kodeorganisasi'])."' order by namaorganisasi";
+}
+else
 {
      $str="select namaorganisasi,kodeorganisasi from ".$dbname.".organisasi where tipe not in('BLOK','PT','STENGINE','STATION') 
 	      and kodeorganisasi='".$_SESSION['empl']['lokasitugas']."' order by namaorganisasi";
+}
 	$res=mysql_query($str);
 	while($bar=mysql_fetch_object($res))
 	{
 			$optlokasitugas.="<option value='".$bar->kodeorganisasi."'>".$bar->namaorganisasi."</option>";	
 	}
-}
 $optperiode='';
 for($x=-1;$x<3;$x++)
 {
@@ -62,6 +62,7 @@ echo"<fieldset><legend>".$_SESSION['lang']['navigasi']."</legend>
 			  <td>
 				<button class=mybutton onclick=\"loadLaporan()\">".$_SESSION['lang']['preview']."</button>
 				<button class=mybutton onclick=\"cutiToExcel(document.getElementById('lokasitugas').options[document.getElementById('lokasitugas').selectedIndex].value,document.getElementById('periode').options[document.getElementById('periode').selectedIndex].value,document.getElementById('karyawan').options[document.getElementById('karyawan').selectedIndex].value,event)\">".$_SESSION['lang']['excel']."</button>
+				<button class=mybutton onclick=\"cutiToPDF(document.getElementById('lokasitugas').options[document.getElementById('lokasitugas').selectedIndex].value,document.getElementById('periode').options[document.getElementById('periode').selectedIndex].value,document.getElementById('karyawan').options[document.getElementById('karyawan').selectedIndex].value,event)\">".$_SESSION['lang']['pdf']."</button>
 			  </td>
 		  </tr>	  
 	   </table>

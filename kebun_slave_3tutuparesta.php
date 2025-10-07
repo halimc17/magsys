@@ -64,7 +64,7 @@ case'getData':
 
     // ambil data periode lalu, untuk antisipasi blok baru ambil dari setup_blok
     $sCek="select * from ".$dbname.".setup_blok where kodeorg like '".$kdOrg."%'
-        and statusblok in ('TB', 'TBM', 'TM') and tahuntanam > 0 and (luasareaproduktif+luasareanonproduktif) > 0
+        and statusblok in ('TB', 'TBM', 'TBM-01', 'TBM-02', 'TBM-03', 'TM') and tahuntanam > 0 and (luasareaproduktif+luasareanonproduktif) > 0
         order by kodeorg";
     $qCek=mysql_query($sCek) or die(mysql_error());
     while($rCek=mysql_fetch_assoc($qCek))
@@ -81,7 +81,7 @@ case'getData':
 
     // ambil data periode lalu, kalo ada data tahun lalu, timpa yang pool data yang dari setup_blok
     $sCek="select * from ".$dbname.".setup_blok_tahunan where kodeorg like '".$kdOrg."%' and tahun = '".$pBef."' 
-        and statusblok in ('TB', 'TBM', 'TM') and (luasareaproduktif+luasareanonproduktif) > 0
+        and statusblok in ('TB', 'TBM', 'TBM-01', 'TBM-02', 'TBM-03', 'TM') and (luasareaproduktif+luasareanonproduktif) > 0
         order by kodeorg";
     $qCek=mysql_query($sCek) or die(mysql_error());
     while($rCek=mysql_fetch_assoc($qCek))
@@ -169,7 +169,7 @@ break;
 case'processData':    
     // ambil data periode lalu, untuk antisipasi blok baru ambil dari setup_blok
     $sCek="select * from ".$dbname.".setup_blok where kodeorg like '".$kdOrg."%'
-        and statusblok in ('TB', 'TBM', 'TM') and (luasareaproduktif+luasareanonproduktif) > 0
+        and statusblok in ('TB', 'TBM', 'TBM-01', 'TBM-02', 'TBM-03', 'TM') and (luasareaproduktif+luasareanonproduktif) > 0
         order by kodeorg";
     $qCek=mysql_query($sCek) or die(mysql_error());
     while($rCek=mysql_fetch_assoc($qCek))
@@ -208,7 +208,7 @@ case'processData':
 
     // ambil data periode lalu, kalo ada data tahun lalu, timpa pool data dari setup_blok
     $sCek="select * from ".$dbname.".setup_blok_tahunan where kodeorg like '".$kdOrg."%' and tahun = '".$pBef."' 
-        and statusblok in ('TB', 'TBM', 'TM') and (luasareaproduktif+luasareanonproduktif) > 0
+        and statusblok in ('TB', 'TBM', 'TBM-01', 'TBM-02', 'TBM-03', 'TM') and (luasareaproduktif+luasareanonproduktif) > 0
         order by kodeorg";
     $qCek=mysql_query($sCek) or die(mysql_error());
     while($rCek=mysql_fetch_assoc($qCek))

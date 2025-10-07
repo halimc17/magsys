@@ -101,8 +101,10 @@ echo"<fieldset><legend>".$_SESSION['lang']['form']."</legend>
 	</thead>
 	<tbody>
 	";
+	//$str="select * from ".$dbname.".sdm_cutidt where karyawanid=".$karyawanid."
+	//      and periodecuti='".$periode."' and kodeorg='".$kodeorg."'";
 	$str="select * from ".$dbname.".sdm_cutidt where karyawanid=".$karyawanid."
-	      and periodecuti='".$periode."' and kodeorg='".$kodeorg."'";
+	      and periodecuti='".$periode."'";
 	$res=mysql_query($str);
 	$no=0;
 	$ttl=0;

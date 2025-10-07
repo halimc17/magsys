@@ -2,8 +2,8 @@
 
 function cancelForm()
 {
-        document.getElementById('tglIzin').disabled=false;
-        document.getElementById('tglIzin').value='';
+        //document.getElementById('tglIzin').disabled=false;
+        //document.getElementById('tglIzin').value='';
         document.getElementById('jam1').value=00;
          q=document.getElementById('jam1');
         for(a=0;a<q.length;a++)
@@ -40,10 +40,12 @@ function cancelForm()
         document.getElementById('jnsIjin').value='';
         document.getElementById('tglAwal').value='';
         document.getElementById('tglEnd').value='';
+        document.getElementById('jumlahhk').value=0;
         document.getElementById('keperluan').value='';
         document.getElementById('ket').value='';
         document.getElementById('atsSblm').value='';
         document.getElementById('atasan').value='';
+        document.getElementById('hrd').value='';
 }
 
 function saveForm()
@@ -63,6 +65,7 @@ function saveForm()
         jamSmp=jam2+":"+mnt2;
         pros=document.getElementById('proses').value;
         hk=document.getElementById('jumlahhk').value;
+		sisacuti=document.getElementById('sis').innerHTML;
         hrd=document.getElementById('hrd').options[document.getElementById('hrd').selectedIndex].value;
         periodec=document.getElementById('periodec').options[document.getElementById('periodec').selectedIndex].value;
         param = "proses="+pros;
@@ -81,9 +84,10 @@ function saveForm()
         param += "&tglAwal="+tglAwal;
         param += "&tglEnd="+tglEnd;
         param += "&jumlahhk="+hk;
+        param += "&sisacuti="+sisacuti;
         param += "&hrd="+hrd;
         param += "&periodec="+periodec;
-        if((jnsIjin=='CUTI' || jnsIjin=='MELAHIRKAN' || jnsIjin=='KAWIN/SUNATAN/WISUDA') && (hk=='0' || hk=='')){
+        if((jnsIjin=='CUTI' || jnsIjin=='MELAHIRKAN' || jnsIjin=='ALASANPENTING') && (hk=='0' || hk=='')){
             alert('Number of day(s) required');
         }else{
             tujuan='sdm_slave_ijin_meninggalkan_kantor.php';
@@ -104,6 +108,16 @@ function saveForm()
                             //alert(con.responseText);
                             //return;				
                             //document.getElementById('contain').innerHTML=con.responseText;
+							sisa=document.getElementById('sis').innerHTML;
+							if (jnsIjin=='CUTI'){
+							if ((sisa-hk) < 0){
+								alert('Jumlah HK(Hari) melebihi jumlah sisa cuti lo untuk periode '+periodec+' dan akan dipotong gaji sebanyak '+(hk-sisa)+' hari.');
+							}
+							}
+						    //if(!confirm('Jumlah HK(Hari) melebihi jumlah sisa cuti untuk periode ".$periodec.". Apakah bersedia dipotong ".$potgaji." hari gaji?')){
+							//   delData(tanggalnormal(document.getElementById('tglIzin').value));
+							//   return;
+                            //}
                             cancelForm();
                             loadNData();
                     }
@@ -169,7 +183,7 @@ function cariBast(num)
 function fillField(keprlan,tanggal,jnsijin,perstjan,statPrstjn,drjam,smpjam,hrd,hk,periodec) 
 {
 
-                param='proses=getKet'+'&tglijin='+tanggal;
+                param='proses=getKet'+'&tglijin='+tanggal+'&jnsIjin='+jnsijin+'&darijam='+drjam;
                 tujuan = 'sdm_slave_ijin_meninggalkan_kantor.php';
                 post_response_text(tujuan, param, respog);			
                 function respog(){
@@ -321,10 +335,10 @@ function printFile(param,tujuan,title,ev)
    content="<iframe frameborder=0 width=100% height=100% src='"+tujuan+"'></iframe>"
    showDialog1(title,content,width,height,ev); 	
 }
-function delData(tgl)
+function delData(tgl,jnsijin,drjam)
 {
         tglijin=tgl;
-        param='tglijin='+tglijin+'&proses=deleteData';
+        param='tglijin='+tglijin+'&jnsIjin='+jnsijin+'&darijam='+drjam+'&proses=deleteData';
         tujuan='sdm_slave_ijin_meninggalkan_kantor.php';
         if(confirm("Deleting, are you sure !!"))
         post_response_text(tujuan, param, respog);
@@ -337,7 +351,8 @@ function delData(tgl)
                                                 alert('ERROR TRANSACTION,\n' + con.responseText);
                                         }
                                         else {
-                                                        loadNData();
+												cancelForm();
+                                                loadNData();
                                         }
                                 }
                                 else {
@@ -373,4 +388,87 @@ function loadSisaCuti(periode,karyawanid)
                 }
             }
        }    
+}
+
+/* by firdausk */
+function toDate(dateStr) {
+    var parts = dateStr.split("-");
+    return new Date(parts[2], parts[1] - 1, parts[0]);
+}
+
+function jumlahhari(){
+	var awal = toDate(document.getElementById('tglAwal').value);
+	var end = toDate(document.getElementById('tglEnd').value);
+    var tglAwal=document.getElementById('tglAwal').value;
+    var tglEnd=document.getElementById('tglEnd').value;
+    var jnsIjin=document.getElementById('jnsIjin').value;
+    var periodec=document.getElementById('periodec').value;
+	if(periodec!=awal.getFullYear() && tglAwal!=''){
+		alert('Tanggal Awal tidak sama dengan Periode Pengabdian, Jika berlanjut harus membuat 2 form transaksi!');
+		document.getElementById('tglAwal').value=''
+		return;
+	}
+	if(periodec!=end.getFullYear() && tglEnd!=''){
+		alert('Tanggal Akhir tidak sama dengan Periode Pengabdian, Jika berlanjut harus membuat 2 form transaksi!');
+		document.getElementById('tglEnd').value=''
+		return;
+	}
+	var day_start = new Date(awal);
+	var day_end = new Date(end);
+	var total_days = ((day_end - day_start) / (1000 * 60 * 60 * 24))+1;
+	//var total_days = Math.round(total_days);
+	//alert(Math.round(total_days));
+	//document.getElementById("jumlahhk").value = Math.round(total_days);
+
+	var param="total_days="+total_days+"&tglAwal="+tglAwal+"&tglEnd="+tglEnd+"&jnsIjin="+jnsIjin;
+    post_response_text('sdm_slave_ijin_meninggalkan_kantor.php?proses=jumlahhari', param, respon);     
+    function respon() {
+        if (con.readyState == 4) {
+            if (con.status == 200) {
+                busy_off();
+                if (!isSaveResponse(con.responseText)) {
+                    alert('ERROR TRANSACTION,\n' + con.responseText);
+                } else {
+                    //=== Success Response
+					document.getElementById('jumlahhk').value=con.responseText;
+					//document.getElementById('contain').innerHTML=con.responseText;
+                }
+            } else {
+                busy_off();
+                error_catch(con.status);
+            }
+        }
+    }
+
+}
+/* by firdausk */
+
+function jumlahijin(){
+    var tglAwal=document.getElementById('tglAwal').value;
+    var tglEnd=document.getElementById('tglEnd').value;
+    jnsIjin=document.getElementById('jnsIjin').options[document.getElementById('jnsIjin').selectedIndex].value;
+    if((jnsIjin=='CUTI' || jnsIjin=='MELAHIRKAN' || jnsIjin=='ALASANPENTING' || jnsIjin=='PERJALANAN' || jnsIjin=='SKRIPSI_TESIS') && (tglAwal!='' || tglEnd!='')){
+       jumlahhari();
+    }else{
+	   document.getElementById("jumlahhk").value = 0;
+    }
+}
+
+function masterPDF(tgl,karywn,jnsijin,drjam,ev)
+{
+        tglijin=tgl;
+        krywnId=karywn;
+        param='proses=prevPdf'+'&tglijin='+tglijin+'&krywnId='+krywnId+'&jnsIjin='+jnsijin+'&darijam='+drjam;
+        tujuan = 'sdm_slave_laporan_ijin_meninggalkan_kantor.php?'+param;	
+ //display window
+   title='Print PDF';
+   width='700';
+   height='400';
+   content="<iframe frameborder=0 width=100% height=100% src='"+tujuan+"'></iframe>"
+   showDialog1(title,content,width,height,ev);
+}
+
+function potonggaji(){
+	var potonggaji=(confirm('Jumlah HK(Hari) melebihi jumlah sisa cuti untuk periode ".$periodec.". Apakah bersedia dipotong ".$potgaji." hari gaji?'))
+	return potonggaji
 }

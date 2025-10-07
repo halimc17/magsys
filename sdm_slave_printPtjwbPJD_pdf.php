@@ -3,9 +3,20 @@ require_once('master_validation.php');
 require_once('config/connection.php');
 require_once('lib/nangkoelib.php');
 require_once('lib/fpdf.php');
+require_once('lib/zLib.php');
 $notransaksi=$_GET['notransaksi'];
 
 //=============
+
+$namadept=  makeOption($dbname, 'sdm_5departemen', 'kode,nama');
+$str="select a.kodeorganisasi,a.namaorganisasi from ".$dbname.".organisasi a where a.kodeorganisasi in (select b.induk from ".$dbname.".sdm_pjdinasht c left join ".$dbname.".organisasi b on c.kodeorg=b.kodeorganisasi where c.notransaksi='".$notransaksi."')";	
+$res=mysql_query($str);
+while($bar=mysql_fetch_object($res))
+{
+  $namaorganisasi=$bar->namaorganisasi;
+  $kodeorganisasi=$bar->kodeorganisasi;
+  $_SESSION['empl']['ptpdf']=$bar->namaorganisasi;
+}
 
 //create Header
 class PDF extends FPDF
@@ -19,7 +30,8 @@ class PDF extends FPDF
                 $this->SetFont('Arial','B',10);
                 $this->SetFillColor(255,255,255);	
                 $this->SetY(5);   
-            $this->Cell(130,5,strtoupper($namapt),0,1,'C');	 
+            //$this->Cell(130,5,strtoupper($namapt),0,1,'C');	 
+            $this->Cell(130,5,strtoupper($_SESSION['empl']['ptpdf']),0,1,'C');	 
                 $this->SetFont('Arial','',15);
             $this->Cell(190,5,'',0,1,'C');
                 $this->SetFont('Arial','',6); 
@@ -115,7 +127,7 @@ while($barw=mysql_fetch_object($resw)){
                 $pernama='';
         $strf="select a.bagian,b.namajabatan,a.namakaryawan from ".$dbname.".datakaryawan a left join
                ".$dbname.".sdm_5jabatan b on a.kodejabatan=b.kodejabatan
-                   where karyawanid=".$persetujuan;	   
+                   where karyawanid=".$persetujuan;   
         $resf=mysql_query($strf);
         while($barf=mysql_fetch_object($resf))
         {
@@ -161,7 +173,7 @@ while($barw=mysql_fetch_object($resw)){
                 $pdf->Cell(50,5," : ".$namakaryawan,0,1,'L');	
         $pdf->SetX(20);	
         $pdf->Cell(30,5,$_SESSION['lang']['bagian'],0,0,'L');	
-                $pdf->Cell(50,5," : ".$bagian,0,1,'L');	
+                $pdf->Cell(50,5," : ".$namadept[$bagian],0,1,'L');	
         $pdf->SetX(20);	
         $pdf->Cell(30,5,$_SESSION['lang']['functionname'],0,0,'L');	
                 $pdf->Cell(50,5," : ".$jabatan,0,1,'L');	
@@ -181,10 +193,10 @@ while($barw=mysql_fetch_object($resw)){
                 $pdf->Cell(30,5,strtoupper($_SESSION['lang']['tujuan']),1,0,'C');	
                 $pdf->Cell(120,5,strtoupper($_SESSION['lang']['tugas']),1,1,'C');	
         $pdf->SetFont('Arial','',10);
-        $pdf->SetX(30);
-        $pdf->Cell(7,5,'1',1,0,'L');
-                $pdf->Cell(30,5,$tujuan1,1,0,'L');	
-                $pdf->Cell(120,5,$tugas1,1,1,'L');	
+        //$pdf->SetX(30);
+        //$pdf->Cell(7,5,'1',1,0,'L');
+        //        $pdf->Cell(30,5,$tujuan1,1,0,'L');	
+        //        $pdf->Cell(120,5,$tugas1,1,1,'L');	
         $pdf->SetX(30);
         $pdf->Cell(7,5,'2',1,0,'L');
                 $pdf->Cell(30,5,$tujuan2,1,0,'L');	
@@ -271,26 +283,36 @@ while($bar=mysql_fetch_object($res))
         $pdf->Cell(20,5,number_format($total1,2,'.','.'),1,1,'R');
         $pdf->Ln();
         $pdf->SetX(30);
-        $pdf->Cell(50,5,$_SESSION['lang']['saldo'].": ".number_format($balance,2,'.','.')." *[".$closure."]",0,1,'L');			
+//        $pdf->Cell(50,5,$_SESSION['lang']['saldo'].": ".number_format($balance,2,'.','.')." *[".$closure."]",0,1,'L');			
 //======================						
 //footer================================
+//    $pdf->Ln();
+//    $pdf->Ln();
     $pdf->Ln();
-    $pdf->Ln();
-    $pdf->Ln();
-        $pdf->Cell(63,5,$_SESSION['lang']['dibuat'],0,0,'C');
-        $pdf->Cell(63,5,$_SESSION['lang']['verifikasi'],0,0,'C');
-        $pdf->Cell(63,5,$_SESSION['lang']['dstujui_oleh'],0,1,'C');        
+        $pdf->Cell(47,5,$_SESSION['lang']['dibuat'],0,0,'C');
+        $pdf->Cell(47,5,$_SESSION['lang']['diketahuioleh'],0,0,'C');        
+        $pdf->Cell(47,5,$_SESSION['lang']['verifikasi'],0,0,'C');
+        $pdf->Cell(47,5,$_SESSION['lang']['dstujui_oleh'],0,1,'C');        
     $pdf->Ln();
     $pdf->Ln();
     $pdf->Ln();
         $pdf->SetFont('Arial','U',10);
-        $pdf->Cell(63,5,$namakaryawan,0,0,'C');
-        $pdf->Cell(63,5,$hnama,0,0,'C');        
-        $pdf->Cell(63,5,$pernama,0,1,'C');
+        $pdf->Cell(47,5,$namakaryawan,0,0,'C');
+        $pdf->Cell(47,5,$pernama,0,0,'C');
+        $pdf->Cell(47,5,$hnama,0,0,'C');        
+        $pdf->Cell(47,5,$pernama,0,1,'C');
         $pdf->SetFont('Arial','B',10);
-        $pdf->Cell(63,5,$_SESSION['lang']['karyawan'],0,0,'C');        
-        $pdf->Cell(63,5,'HRD',0,0,'C');             
-        $pdf->Cell(63,5,$_SESSION['lang']['atasan'],0,1,'C');
-        $pdf->Output();
+        $pdf->Cell(47,5,$_SESSION['lang']['karyawan'],0,0,'C');        
+        $pdf->Cell(47,5,$_SESSION['lang']['atasan'],0,0,'C');
+		if($_SESSION['empl']['tipelokasitugas']=='HOLDING') {
+			$pdf->Cell(47,5,'HRS Staff',0,0,'C');
+			$pdf->Cell(47,5,'HRS Manager',0,1,'C');
+		}else{
+			$pdf->Cell(47,5,'HR & GA',0,0,'C');
+			$pdf->Cell(47,5,'FAO',0,1,'C');
+		}
 
+//footer================================
+    $pdf->Ln();
+	$pdf->Output();
 ?>

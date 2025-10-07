@@ -6,7 +6,7 @@ $kodeorg=$_POST['kodeorg'];
 $blok=$_POST['blok'];
 $norumah=$_POST['norumah'];
 
-$str=" select a.karyawanid,b.namakaryawan,b.lokasitugas,b.bagian,b.jeniskelamin 
+$str=" select a.karyawanid,b.nik,b.namakaryawan,b.lokasitugas,b.bagian,b.jeniskelamin 
        from ".$dbname.".sdm_penghunirumah a 
        left join ".$dbname.".datakaryawan b
 	   on a.karyawanid=b.karyawanid
@@ -32,7 +32,7 @@ while($bar=mysql_fetch_object($res))
 	$no+=1;
  echo"<tr class=rowcontent>
 		 <td>".$no."</td>
-		 <td>".$bar->karyawanid."</td>
+		 <td>".$bar->nik."</td>
 		 <td>".$bar->namakaryawan."</td>
 		 <td>".$bar->jeniskelamin."</td>
 		 <td>".$bar->lokasitugas."</td>

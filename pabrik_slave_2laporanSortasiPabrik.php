@@ -1168,7 +1168,7 @@ switch($proses)
                 elseif($BuahStat==1)
                 {
                     $sOrg="SELECT namaorganisasi,kodeorganisasi FROM ".$dbname.".organisasi WHERE tipe='KEBUN' and kodeorganisasi in(select distinct kodeorg from ".$dbname.".pabrik_timbangan where intex='".$BuahStat."' and millcode='".$kdPbrk."')";
-					echo "warning:".$sOrg;
+					//echo "warning:".$sOrg;
                         //$sOrg="SELECT namaorganisasi,kodeorganisasi FROM ".$dbname.".organisasi WHERE tipe='KEBUN' and induk in(select induk from ".$dbname.".organisasi where tipe='PABRIK')";//echo "warning:".$sOrg;
                 }
                 elseif($BuahStat==2)

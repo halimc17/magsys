@@ -12,6 +12,8 @@
 	$catatan=$_POST['note'];
 	$alamat=$_POST['almt_rmh'];
 	$kde_asset=$_POST['kd_asset'];
+	$jmlbarang=$_POST['jmlbarang'];
+	$keterangan=$_POST['keterangan'];
 	$method=$_POST['method'];
 	$user_id=$_SESSION['standard']['userid'];
 	$kary_id=$_POST['kd_kary'];
@@ -59,7 +61,7 @@
 		}
 		else
 		{
-			$sql="insert into ".$dbname.".sdm_perumahandt (`kodeorg`,`blok`,`norumah`,`kodeasset`) values ('".$kode_org."','".$blok."','".$normh."','".$kde_asset."')";
+			$sql="insert into ".$dbname.".sdm_perumahandt (`kodeorg`,`blok`,`norumah`,`kodeasset`,`jumlah`,`keterangan`) values ('".$kode_org."','".$blok."','".$normh."','".$kde_asset."','".$jmlbarang."','".$keterangan."')";
 			if(mysql_query($sql))
 			{
 			
@@ -111,7 +113,7 @@
 		echo " Gagal,".(mysql_error($conn));
 		break;
 		case'update_asset':
-		$sql="update ".$dbname.".sdm_perumahandt set kodeasset='".$kde_asset."' where `kodeorg`='".$kode_org."' and `blok`='".$blok."' and `norumah`='".$normh."'";
+		$sql="update ".$dbname.".sdm_perumahandt set kodeasset='".$kde_asset."',jumlah='".$jmlbarang."',keterangan='".$keterangan."' where `kodeorg`='".$kode_org."' and `blok`='".$blok."' and `norumah`='".$normh."'";
 		if(mysql_query($sql))
 		echo"";
 		else
@@ -190,7 +192,8 @@
 		$query=mysql_query($str) or die(mysql_error($conn));
 		while($res=mysql_fetch_assoc($query))
 		{
-			$sql3="select namasset from ".$dbname.".sdm_daftarasset where `kodeasset`='".$res['kodeasset']."'";
+			//$sql3="select namasset from ".$dbname.".sdm_daftarasset where `kodeasset`='".$res['kodeasset']."'";
+			$sql3="select namabarang from ".$dbname.".log_5masterbarang where `kodebarang`='".$res['kodeasset']."'";
 			$query3=mysql_query($sql3) or die(mysql_error());
 			$res3=mysql_fetch_assoc($query3);
 			//$res['kodeasset']=$res3['namasset'];
@@ -200,8 +203,10 @@
 			<td>".$res['kodeorg']."</td>
 			<td>".$res['blok']."</td>
 			<td align=center>".$res['norumah']."</td>
-			<td>".$res3['namasset']."</td>
-			<td><img src=images/application/application_edit.png class=resicon  title='Edit' onclick=\"fillFieldAsset('".$res['kodeorg']."','".$res['blok']."','".$res['norumah']."','".$res['kodeasset']."');\" >
+			<td>".$res3['namabarang']."</td>
+			<td align=right>".$res['jumlah']."</td>
+			<td>".$res['keterangan']."</td>
+			<td><img src=images/application/application_edit.png class=resicon  title='Edit' onclick=\"fillFieldAsset('".$res['kodeorg']."','".$res['blok']."','".$res['norumah']."','".$res['kodeasset']."','".$res['jumlah']."','".$res['keterangan']."');\" >
 		<img src=images/application/application_delete.png class=resicon  title='Delete' onclick=\"delAsset('".$res['kodeorg']."','".$res['blok']."','".$res['norumah']."','".$res['kodeasset']."');\" >
 		</td>";
 		}
@@ -235,7 +240,7 @@
 		$query=mysql_query($str) or die(mysql_error($conn));
 		while($res=mysql_fetch_assoc($query))
 		{
-			$sdt_kry="select namakaryawan from ".$dbname.".datakaryawan where `karyawanid`='".$res['karyawanid']."'";
+			$sdt_kry="select namakaryawan,nik,lokasitugas from ".$dbname.".datakaryawan where `karyawanid`='".$res['karyawanid']."'";
 			$qdt_kry=mysql_query($sdt_kry) or die(mysql_error());
 			$rdt_kry=mysql_fetch_assoc($qdt_kry);
 			$no+=1;
@@ -244,7 +249,9 @@
 			<td>".$res['kodeorg']."</td>
 			<td>".$res['blok']."</td>
 			<td>".$res['norumah']."</td>
+			<td>".$rdt_kry['nik']."</td>
 			<td>".$rdt_kry['namakaryawan']."</td>
+			<td>".$rdt_kry['lokasitugas']."</td>
 			<td><img src=images/application/application_edit.png class=resicon  title='Edit' onclick=\"fillFieldPenghuni('".$res['kodeorg']."','".$res['blok']."','".$res['norumah']."','".$res['karyawanid']."');\" >
 		<img src=images/application/application_delete.png class=resicon  title='Delete' onclick=\"delPenghuni('".$res['kodeorg']."','".$res['blok']."','".$res['norumah']."','".$res['karyawanid']."');\" >
 		</td>";

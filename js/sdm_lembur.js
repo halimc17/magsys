@@ -204,18 +204,24 @@ function addDetail() {
 
 }
 
-function editDetail(krywn,tplmbr,jmaktl,ungmkn,ungtrans,unglbhjm) {
+function editDetail(krywn,tplmbr,jmaktl,jmaktl2,ungmkn,ungtrans,unglbhjm,unglbhjm2,noba,beban) {
 //	alert('test');
         if(confirm("Anda yakin ingin mengedit"))
         {
+                getLembur(tplmbr,jmaktl,jmaktl2);
                 document.getElementById('krywnId').value=krywn;
                 document.getElementById('krywnId').disabled=true;
                 document.getElementById('tpLmbr').value=tplmbr;
+                document.getElementById('jam').value=jmaktl;
+                document.getElementById('jam2').value=jmaktl2;
+                document.getElementById('uang_lbhjm').value=unglbhjm;
+                document.getElementById('uang_lbhjm2').value=unglbhjm2;
                 document.getElementById('uang_mkn').value=ungmkn;
                 document.getElementById('uang_trnsprt').value=ungtrans;
-                document.getElementById('uang_lbhjm').value=unglbhjm;
+                document.getElementById('uanglembur').value=parseInt(unglbhjm)+parseInt(unglbhjm2);
+                document.getElementById('noba').value=noba;
+                document.getElementById('beban').value=beban;
                 document.getElementById('proses').value="updateDetail";
-                getLembur(tplmbr,jmaktl);
                 //chngeFormat();
         }
 }
@@ -318,7 +324,7 @@ function addNewRow(body,onDetail) {
     } else
         {
                 // Create Row
-                newRow.innerHTML += "<td><select id='krywnId_"+numRow+"' type='text' style='width:150px' />"+optIsi+"</select></td><td>"+"<select id='tpLmbr_"+numRow+"' />"+optLmbr+"</select></td>"+"<td><select id='jmId_"+numRow+"' type='text' />"+optJm+"</select>:<select id='mntId_"+numRow+"' type='text' />"+optMnt+"</select></td>"+"<td><input type='text' onfocus=\"normal_number_1('"+numRow+"')\" onblur=\"chngeFormat('"+numRow+"')\" maxlength='10' onkeypress='return angka_doang(event)' style='width: 100px;' value='0' class='myinputtextnumber' name=uang_mkn_"+numRow+" id=uang_mkn_"+numRow+"></td>"+"<td><input type='text' onfocus=\"normal_number_1('"+numRow+"')\" onblur=\"chngeFormat('"+numRow+"')\" maxlength='10' onkeypress='return angka_doang(event)' style='width: 100px;' value='0' class='myinputtextnumber' name=uang_trnsprt_"+numRow+" id=uang_trnsprt_"+numRow+"></td>"+"<td><input type='text' onfocus=\"normal_number_1('"+numRow+"')\" onblur=\"chngeFormat('"+numRow+"')\" maxlength='10' onkeypress='return angka_doang(event)' style='width: 100px;' value='0' class='myinputtextnumber' name=uang_lbhjm_"+numRow+" id=uang_lbhjm_"+numRow+"></td>"+"<td><img id='detail_add_"+numRow+"' title='Tambah' class=zImgBtn onclick=\"addDetail('"+numRow+"')\" src='images/save.png'/>"+"&nbsp;<img id='detail_delete_"+numRow+"' />"+"&nbsp;<img id='detail_pass_"+numRow+"' />"+"</td>";
+                newRow.innerHTML += "<td><select id='krywnId_"+numRow+"' type='text' style='width:150px' />"+optIsi+"</select></td><td>"+"<select id='tpLmbr_"+numRow+"' />"+optLmbr+"</select></td>"+"<td><select id='jmId_"+numRow+"' type='text' />"+optJm+"</select>:<select id='mntId_"+numRow+"' type='text' />"+optMnt+"</select></td>"+"<td><input type='text' onfocus=\"normal_number_1('"+numRow+"')\" onblur=\"chngeFormat('"+numRow+"')\" maxlength='10' onkeypress='return angka_doang(event)' style='width: 100px;' value='0' class='myinputtextnumber' name=uang_mkn_"+numRow+" id=uang_mkn_"+numRow+"></td>"+"<td><input type='text' onfocus=\"normal_number_1('"+numRow+"')\" onblur=\"chngeFormat('"+numRow+"')\" maxlength='10' onkeypress='return angka_doang(event)' style='width: 100px;' value='0' class='myinputtextnumber' name=uang_trnsprt_"+numRow+" id=uang_trnsprt_"+numRow+"></td>"+"<td><input type='text' onfocus=\"normal_number_1('"+numRow+"')\" onblur=\"chngeFormat('"+numRow+"')\" maxlength='10' onkeypress='return angka_doang(event)' style='width: 100px;' value='0' class='myinputtextnumber' name=uang_lbhjm_"+numRow+" id=uang_lbhjm_"+numRow+"></td>"+"<td><input type='text' maxlength='30' style='width: 180px;' class='myinputtext' name=noba_"+numRow+" id=noba_"+numRow+"></td>"+"<td><img id='detail_add_"+numRow+"' title='Tambah' class=zImgBtn onclick=\"addDetail('"+numRow+"')\" src='images/save.png'/>"+"&nbsp;<img id='detail_delete_"+numRow+"' />"+"&nbsp;<img id='detail_pass_"+numRow+"' />"+"</td>";
           }
   }
 /* Function switchEditAdd
@@ -402,8 +408,12 @@ function cek_data()
         var rtpLmbr = document.getElementById('tpLmbr').options[document.getElementById('tpLmbr').selectedIndex].value;
         var rungMkn = document.getElementById('uang_mkn').value;
         var jam=document.getElementById('jam').options[document.getElementById('jam').selectedIndex].value;
+        var jam2=document.getElementById('jam2').options[document.getElementById('jam2').selectedIndex].value;
         var rungTrans = document.getElementById('uang_trnsprt').value;
         var rungLbhjm = document.getElementById('uang_lbhjm').value;
+        var rungLbhjm2 = document.getElementById('uang_lbhjm2').value;
+        var noba = document.getElementById('noba').value;
+        var beban = document.getElementById('beban').value;
         pros=document.getElementById('proses').value;
         
         if(pros!="updateDetail")
@@ -419,8 +429,12 @@ function cek_data()
         param += "&krywnId="+rkrywn;
         param += "&ungTrans="+rungTrans;
         param += "&ungLbhjm="+rungLbhjm;
+        param += "&ungLbhjm2="+rungLbhjm2;
         param += "&ungMkn="+rungMkn;
         param += "&Jam="+jam;
+        param += "&Jam2="+jam2;
+        param += "&noba="+noba
+        param += "&beban="+beban;
 
         tujuan='sdm_slave_lembur.php';
         //alert(param);
@@ -467,10 +481,15 @@ function bersihFormDet()
                 document.getElementById('krywnId').value='';
                 document.getElementById('krywnId').disabled=false;
                 document.getElementById('tpLmbr').value='';
+                document.getElementById('jam').value='';
+                document.getElementById('jam2').value='';
                 document.getElementById('uang_mkn').value='0';
                 document.getElementById('uang_trnsprt').value='0';
                 document.getElementById('uang_lbhjm').value='0';
-                document.getElementById('jam').value='';
+                document.getElementById('uang_lbhjm2').value='0';
+                document.getElementById('uanglembur').value='0';
+                document.getElementById('noba').value='';
+                document.getElementById('beban').value='';
                 document.getElementById('proses').value="";
 }
 function delDetail(kdorg,tgl,krywn)
@@ -784,6 +803,16 @@ function normal_number_3()
         tiga=document.getElementById('uang_lbhjm');
         tiga.value=remove_comma(tiga);
 }
+function normal_number_4()
+{
+        empat=document.getElementById('uang_lbhjm2');
+        empat.value=remove_comma(empat);
+}
+function normal_number_5()
+{
+        lima=document.getElementById('uanglembur');
+        lima.value=remove_comma(lima);
+}
 function chngeFormat()
 {
         if(document.getElementById('uang_mkn').value!=0)
@@ -801,10 +830,20 @@ function chngeFormat()
                 tiga=document.getElementById('uang_lbhjm');
                 change_number(tiga);  
         }
+        if(document.getElementById('uang_lbhjm2').value!=0)
+        {
+                empat=document.getElementById('uang_lbhjm2');
+                change_number(empat);  
+        }
+        if(document.getElementById('uang_lembur').value!=0)
+        {
+                lima=document.getElementById('uang_lembur');
+                change_number(lima);  
+        }
 }
-function getLembur(tplmbr,basisjam)
+function getLembur(tplmbr,basisjam,basisjam2)
 {
-        if((tplmbr=='')&&(basisjam==''))
+        if((tplmbr=='')&&(basisjam=='' || basisjam2==''))
         {
                 tipeLembur=document.getElementById('tpLmbr').options[document.getElementById('tpLmbr').selectedIndex].value;
                 param='tpLembur='+tipeLembur+'&proses=getBasis';
@@ -813,7 +852,8 @@ function getLembur(tplmbr,basisjam)
         {
                 tipeLembur=tplmbr;
                 bsisJam=basisjam;
-                param='tpLembur='+tipeLembur+'&proses=getBasis'+'&basisJam='+bsisJam;
+                bsisJam2=basisjam2;
+                param='tpLembur='+tipeLembur+'&proses=getBasis'+'&basisJam='+bsisJam+'&basisJam2='+bsisJam2;
         }
         tujuan='sdm_slave_lembur.php';
         post_response_text(tujuan, param, respog);	
@@ -825,7 +865,9 @@ function getLembur(tplmbr,basisjam)
                                         alert('ERROR TRANSACTION,\n' + con.responseText);
                                 }
                                 else {
-                                        document.getElementById('jam').innerHTML=con.responseText;
+									ar=con.responseText.split("###");
+									document.getElementById('jam').innerHTML=ar[0];
+									document.getElementById('jam2').innerHTML=ar[1];
                                 }
                         }
                         else {
@@ -837,13 +879,16 @@ function getLembur(tplmbr,basisjam)
 }
 function getUangLem()
 {
-        basis=document.getElementById('jam').options[document.getElementById('jam').selectedIndex].value;
+        jam=document.getElementById('jam').options[document.getElementById('jam').selectedIndex].value;
+        jam2=document.getElementById('jam2').options[document.getElementById('jam2').selectedIndex].value;
+        //basis=document.getElementById('jam').options[document.getElementById('jam').selectedIndex].value;
+		basis=jam+jam2;
         idKry=document.getElementById('krywnId').options[document.getElementById('krywnId').selectedIndex].value;
         kodeOrg=document.getElementById('kdOrg').options[document.getElementById('kdOrg').selectedIndex].value;
         tpeLmbr=document.getElementById('tpLmbr').options[document.getElementById('tpLmbr').selectedIndex].value;
         tanggal=document.getElementById('tglAbsen').value;
         tahun=tanggal.substr(6, 4);
-        param='basisJam='+basis+'&proses=getUang'+'&krywnId='+idKry+'&kodeOrg='+kodeOrg+'&tpLmbr='+tpeLmbr+'&tahun='+tahun;
+        param='basisJam='+basis+'&proses=getUang'+'&krywnId='+idKry+'&kodeOrg='+kodeOrg+'&tpLmbr='+tpeLmbr+'&tahun='+tahun+'&Jam='+jam+'&Jam2='+jam2;
         tujuan='sdm_slave_lembur.php';
         post_response_text(tujuan, param, respog);	
         function respog(){
@@ -854,7 +899,15 @@ function getUangLem()
                                         alert('ERROR TRANSACTION,\n' + con.responseText);
                                 }
                                 else {
-                                        document.getElementById('uang_lbhjm').value=con.responseText;
+									ar=con.responseText.split("###");
+									document.getElementById('uanglembur').value=ar[0];
+									if(jam!='0' || jam!=''){
+										document.getElementById('uang_lbhjm').value=ar[1];
+									}
+									if(jam2!='0' || jam2!=''){
+										document.getElementById('uang_lbhjm2').value=ar[0]-ar[1];
+									}
+									//document.getElementById('uang_lbhjm').value=con.responseText;
                                 }
                         }
                         else {

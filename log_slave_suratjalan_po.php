@@ -14,6 +14,7 @@ $query = "select distinct
 		a.jumlahpesan,a.satuan
 	from ".$dbname.".log_po_vw a
 	where ".$where;
+
 $data = fetchData($query);
 
 $q2 = "SELECT nopo,kodebarang,nopp,sum(jumlah) as jumlah FROM ".$dbname.".`log_rinciankono` where nopo like '%".$_POST['po']."%'";

@@ -53,8 +53,25 @@ $arr="##kdOrg##periode##tpKary";
 
 <script language=javascript src=js/zTools.js></script>
 <script language=javascript src=js/zReport.js></script>
-
 <link rel=stylesheet type=text/css href=style/zTable.css>
+<script>
+	function showpopup(kdUnit,periode,nmkary,idkary,tipe,ev){
+		param='kdUnit='+kdUnit+'&periode='+periode+'&idkary='+idkary+'&tipe='+tipe;
+		//alert(param);
+		tujuan='sdm_slave_2laporanPremi_showpopup.php'+"?"+param;
+		width='1200';
+		height='460';
+		content="<iframe frameborder=0 width=100% height=100% src='"+tujuan+"'></iframe>"
+		showDialog1('Detail Premi '+kdUnit+' '+periode+' '+nmkary+' - '+tipe,content,width,height,ev); 
+	}
+
+	function Clear1(){
+		document.getElementById('kdOrg').value='';
+		document.getElementById('periode').value='';
+		document.getElementById('tpKary').value='';
+		document.getElementById('printContainer').innerHTML='';
+	}
+</script>
 
 <div>
 <fieldset style="float: left;">

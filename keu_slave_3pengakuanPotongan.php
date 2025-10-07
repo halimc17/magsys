@@ -55,7 +55,7 @@ while($bar=mysql_fetch_object($res)){
 
 $tanggal=  str_replace("-", "",$_POST['periode'])."28";
                  
-$str=" select a.idkomponen,a.karyawanid,a.jumlah,b.namakaryawan from ".$dbname.".sdm_gaji a
+$str=" select a.idkomponen,a.karyawanid,a.jumlah,b.namakaryawan,b.subbagian,b.tipekaryawan from ".$dbname.".sdm_gaji a
            left join ".$dbname.".datakaryawan b on a.karyawanid=b.karyawanid where a.kodeorg='".$_SESSION['empl']['lokasitugas']."' 
            and a.periodegaji='".$_POST['periode']."' and a.idkomponen in (select idkomponen from ".$dbname.".keu_5pengakuanpotongan)";
 $res=mysql_query($str);
@@ -63,7 +63,9 @@ while($bar=mysql_fetch_object($res)){
 	if(!isset($total[$bar->idkomponen])) $total[$bar->idkomponen]=0;
     $total[$bar->idkomponen]+=$bar->jumlah;
     $nama[$bar->karyawanid]=$bar->namakaryawan;
+    $subbagian[$bar->karyawanid]=$bar->subbagian;
     $rinci[$bar->idkomponen][$bar->karyawanid]=$bar->jumlah;
+    $tipekaryawan[$bar->karyawanid]=$bar->tipekaryawan;
 }
 #penambahan gapok untuk perhitungan jamsostek porsi perusahaan
 $strGapok=" select idkomponen,karyawanid,jumlah from ".$dbname.".sdm_gaji where kodeorg='".$_SESSION['empl']['lokasitugas']."' 
@@ -88,6 +90,7 @@ while($rPersn=mysql_fetch_assoc($qPersn)){
 		$ketPersn[44]=strtoupper($rPersn['jenisbpjs']);
 	}else{
 		$persenJamsostek[3]=$rPersn['bebanperusahaan'];
+		$persenJamsostek_lanjut[3]=$rPersn['bebanperusahaan']-2;
 		$awlJrn[3]='001';
 		$ketPersn[3]=strtoupper($rPersn['jenisbpjs']);
 	}
@@ -205,14 +208,31 @@ elseif(isset($_POST['method']) and $_POST['method']=='post'){
 
 			#jika potongan jamsoste ditambahkan perhitungan jamsostek perusahan per kary
 			if(($komponen==3)||($komponen==44)){
-				@$jamPrhsn=$dtGapok[$karid]*$persenJamsostek[$komponen]/100;
+				if($tipekaryawan[$karid]==6){
+					@$jamPrhsn=$dtGapok[$karid]*$persenJamsostek_lanjut[$komponen]/100;
+				}else{
+					@$jamPrhsn=$dtGapok[$karid]*$persenJamsostek[$komponen]/100;
+				}
 				$totalJamsostek+=$jamPrhsn;
+				$totalbpjs[$komponen][$subbagian[$karid]]+=$jamPrhsn;
 			}
 		}
 		if(($komponen==3)||($komponen==44)){
 			$noUrut2=0;
 			$noUrut2++;
-			$sJrnid="select jurnalid,noakundebet,noakunkredit from ".$dbname.".keu_5parameterjurnal where jurnalid='SDMJP'";
+			if($komponen==44){
+				if(substr($_SESSION['empl']['lokasitugas'],3,1)=='M'){
+					$sJrnid="select jurnalid,noakundebet,noakunkredit from ".$dbname.".keu_5parameterjurnal where jurnalid='SDMKM'";
+				}else{
+					$sJrnid="select jurnalid,noakundebet,noakunkredit from ".$dbname.".keu_5parameterjurnal where jurnalid='SDMKP'";
+				}
+			}else{
+				if(substr($_SESSION['empl']['lokasitugas'],3,1)=='M'){
+					$sJrnid="select jurnalid,noakundebet,noakunkredit from ".$dbname.".keu_5parameterjurnal where jurnalid='SDMJM'";
+				}else{
+					$sJrnid="select jurnalid,noakundebet,noakunkredit from ".$dbname.".keu_5parameterjurnal where jurnalid='SDMJP'";
+				}
+			}
 			$qJrnid=mysql_query($sJrnid) or die(mysql_error($conn));
 			$rJrnid=mysql_fetch_assoc($qJrnid);
 					$nojurnal2=$tanggal."/".$_SESSION['empl']['lokasitugas']."/".$rJrnid['jurnalid']."/".$awlJrn[$komponen];
@@ -237,7 +257,132 @@ elseif(isset($_POST['method']) and $_POST['method']=='post'){
 
 					# Data Detail
 					# Debet
-					$dataRes['detail'][] = array(
+					if(substr($_SESSION['empl']['lokasitugas'],3,1)=='E'){
+						if($komponen==44){
+							$bpjs="bpjs";
+						}else{
+							$bpjs="jms";
+						}
+						$strBPJS="select sum(f.upah) as totalupah from (select a.notransaksi,a.tipetransaksi,a.tanggal,a.kodeorg as divisi,if(a.tipetransaksi='PNN',b.nik,c.nik) as nik ,b.kodeorg as blok,if(a.tipetransaksi='PNN','611010101',b.kodekegiatan) as kodekegiatan ,if(a.tipetransaksi='PNN',b.upahkerja+b.upahpremi,c.umr+c.insentif) as upah from ".$dbname.".kebun_aktifitas a left join ".$dbname.".kebun_prestasi b on a.notransaksi=b.notransaksi left join ".$dbname.".kebun_kehadiran c on a.notransaksi=c.notransaksi where a.tanggal like '".$_POST['periode']."%' and a.kodeorg = '".$_SESSION['empl']['lokasitugas']."') f where f.nik in (select j.karyawanid from ".$dbname.".datakaryawan j where j.lokasitugas='".$_SESSION['empl']['lokasitugas']."' and j.".$bpjs."<>'')";
+						$resBPJS=mysql_query($strBPJS);
+						$totalupah=0;
+						while($barBPJS=mysql_fetch_object($resBPJS)){
+							$totalupah=$barBPJS->totalupah;
+						}
+						if($totalupah>0){
+							$strBPJS="select f.kodekegiatan,f.blok,sum(f.upah) as upah from (select a.notransaksi,a.tipetransaksi,a.tanggal,a.kodeorg as divisi,if(a.tipetransaksi='PNN',b.nik,c.nik) as nik ,b.kodeorg as blok,if(a.tipetransaksi='PNN','611010101',b.kodekegiatan) as kodekegiatan ,if(a.tipetransaksi='PNN',b.upahkerja+b.upahpremi,c.umr+c.insentif) as upah from ".$dbname.".kebun_aktifitas a left join ".$dbname.".kebun_prestasi b on a.notransaksi=b.notransaksi left join ".$dbname.".kebun_kehadiran c on a.notransaksi=c.notransaksi where a.tanggal like '".$_POST['periode']."%' and a.kodeorg = '".$_SESSION['empl']['lokasitugas']."') f where f.nik in (select j.karyawanid from ".$dbname.".datakaryawan j where j.lokasitugas='".$_SESSION['empl']['lokasitugas']."' and j.".$bpjs."<>'') GROUP BY f.kodekegiatan,f.blok";
+							$resBPJS=mysql_query($strBPJS);
+							while($barBPJS=mysql_fetch_object($resBPJS)){
+								$dataRes['detail'][] = array(
+								'nojurnal'=>$nojurnal2,
+								'tanggal'=>$tanggal,
+								'nourut'=>$noUrut2,
+								'noakun'=>substr($barBPJS->kodekegiatan,0,7),
+								'keterangan'=> "BPJS ".$ketPersn[$komponen]." : PORSI PT UNIT ".$_SESSION['empl']['lokasitugas'],
+								'jumlah'=>($barBPJS->upah/$totalupah)*$totalJamsostek,
+								'matauang'=>'IDR',
+								'kurs'=>'1',
+								'kodeorg'=>$_SESSION['empl']['lokasitugas'],
+								'kodekegiatan'=>$barBPJS->kodekegiatan,
+								'kodeasset'=>'',
+								'kodebarang'=>'',
+								'nik'=>'',
+								'kodecustomer'=>'',
+								'kodesupplier'=>'',
+								'noreferensi'=>'ALK_POT:'.$komponen,
+								'noaruskas'=>'',
+								'kodevhc'=>'',
+								'nodok'=>'',
+								'kodeblok'=>$barBPJS->blok,
+								'revisi'=>'0',
+								'kodesegment'=>$defSegment
+								);
+								$noUrut2++;
+							}
+						}else{
+							$dataRes['detail'][] = array(
+							'nojurnal'=>$nojurnal2,
+							'tanggal'=>$tanggal,
+							'nourut'=>$noUrut2,
+							'noakun'=>$rJrnid['noakundebet'],
+							'keterangan'=> "BPJS ".$ketPersn[$komponen]." : PORSI PT UNIT ".$_SESSION['empl']['lokasitugas'],
+							'jumlah'=>$totalJamsostek,
+							'matauang'=>'IDR',
+							'kurs'=>'1',
+							'kodeorg'=>$_SESSION['empl']['lokasitugas'],
+							'kodekegiatan'=>'',
+							'kodeasset'=>'',
+							'kodebarang'=>'',
+							'nik'=>'',
+							'kodecustomer'=>'',
+							'kodesupplier'=>'',
+							'noreferensi'=>'ALK_POT:'.$komponen,
+							'noaruskas'=>'',
+							'kodevhc'=>'',
+							'nodok'=>'',
+							'kodeblok'=>'',
+							'revisi'=>'0',
+							'kodesegment'=>$defSegment
+							);
+						}
+					}else if(substr($_SESSION['empl']['lokasitugas'],3,1)=='M'){
+						//exit('Warning: '.$komponen.' - '.$totalJamsostek);
+						foreach($totalbpjs[$komponen] as $subbagid =>$jlhpersubbag) {
+							//exit('Warning: '.$totalbpjs[1].' - '.$subbagid.' - '.$jlhpersubbag);
+							if($komponen==44){
+								//if(substr($subbagid,0,5)=='SKDM0' or $subbagid=='SKDM11' or $subbagid=='SKDM21'){
+								if($subbagid=='SKDM10'){
+									$sJrnid="select jurnalid,noakundebet,noakunkredit from ".$dbname.".keu_5parameterjurnal where jurnalid='SDMKM'";
+								}else if(substr($subbagid,0,5)=='SKDM0' or $subbagid=='SKDM11'){
+									$sJrnid="select jurnalid,noakundebet,noakunkredit from ".$dbname.".keu_5parameterjurnal where jurnalid='SDMKO'";
+								}else{
+									$sJrnid="select jurnalid,noakundebet,noakunkredit from ".$dbname.".keu_5parameterjurnal where jurnalid='SDMKP'";
+								}
+							}else{
+								if($subbagid=='SKDM10'){
+									$sJrnid="select jurnalid,noakundebet,noakunkredit from ".$dbname.".keu_5parameterjurnal where jurnalid='SDMJM'";
+								}else if(substr($subbagid,0,5)=='SKDM0' or $subbagid=='SKDM11'){
+									$sJrnid="select jurnalid,noakundebet,noakunkredit from ".$dbname.".keu_5parameterjurnal where jurnalid='SDMJO'";
+								}else{
+									$sJrnid="select jurnalid,noakundebet,noakunkredit from ".$dbname.".keu_5parameterjurnal where jurnalid='SDMJP'";
+								}
+							}
+							$qJrnid=mysql_query($sJrnid) or die(mysql_error($conn));
+							$rJrnid=mysql_fetch_assoc($qJrnid);
+							$dataRes['detail'][] = array(
+							'nojurnal'=>$nojurnal2,
+							'tanggal'=>$tanggal,
+							'nourut'=>$noUrut2,
+							'noakun'=>$rJrnid['noakundebet'],
+							'keterangan'=> "BPJS ".$ketPersn[$komponen]." : PORSI PT UNIT ".$_SESSION['empl']['lokasitugas'].' - '.$subbagid,
+							'jumlah'=>$totalbpjs[$komponen][$subbagid],
+							'matauang'=>'IDR',
+							'kurs'=>'1',
+							'kodeorg'=>$_SESSION['empl']['lokasitugas'],
+							'kodekegiatan'=>'',
+							'kodeasset'=>'',
+							'kodebarang'=>'',
+							'nik'=>'',
+							'kodecustomer'=>'',
+							'kodesupplier'=>'',
+							'noreferensi'=>'ALK_POT:'.$komponen,
+							'noaruskas'=>'',
+							'kodevhc'=>'',
+							'nodok'=>'',
+							'kodeblok'=>$subbagid,
+							'revisi'=>'0',
+							'kodesegment'=>$defSegment
+							);
+							$noUrut2++;
+						}
+					}else{
+						if($_SESSION['empl']['lokasitugas']=='KACB'){
+							$sJrnidk="select jurnalid,noakundebet from ".$dbname.".keu_5parameterjurnal where jurnalid='SAPI0'";
+							$qJrnidk=mysql_query($sJrnidk) or die(mysql_error($conn));
+							$rJrnidk=mysql_fetch_assoc($qJrnidk);
+							$rJrnid['noakundebet']=$rJrnidk['noakundebet'];
+						}
+						$dataRes['detail'][] = array(
 						'nojurnal'=>$nojurnal2,
 						'tanggal'=>$tanggal,
 						'nourut'=>$noUrut2,
@@ -259,8 +404,9 @@ elseif(isset($_POST['method']) and $_POST['method']=='post'){
 						'nodok'=>'',
 						'kodeblok'=>'',
 						'revisi'=>'0',
-					   'kodesegment'=>$defSegment
-					);
+						'kodesegment'=>$defSegment
+						);
+					}
 			$noUrut2++;
 					# Kredit
 					$dataRes['detail'][] = array(

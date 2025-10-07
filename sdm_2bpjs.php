@@ -17,9 +17,8 @@ echo open_body();
 
 	function batal()
 	{
-		document.getElementById('kdsup').value='';
-		document.getElementById('tgl2').value='';	
-		document.getElementById('tgl1').value='';
+		document.getElementById('kdorg').value='';
+		document.getElementById('thn').value='';	
 		document.getElementById('printContainer').innerHTML='';	
 	}
 
@@ -38,17 +37,17 @@ while ($data=mysql_fetch_assoc($qry))
 {
 	$optOrg.="<option value=".$data['kodeorg'].">".$data['kodeorg']."</option>";
 }  
-
+/*
 $optThn="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
-$iTahun="select distinct(substr(periodegaji,1,4)) as tahun from ".$dbname.".sdm_gajidetail_vw ";
+$iTahun="select distinct(substr(periodegaji,1,4)) as tahun from ".$dbname.".sdm_gajidetail_vw order by periodegaji desc";
 $nTahun=  mysql_query($iTahun) or die (mysql_error($conn));
 while ($dTahun=  mysql_fetch_assoc($nTahun))
 {
     $optThn.="<option value=".$dTahun['tahun'].">".$dTahun['tahun']."</option>";
 }
-
+*/
 $optThn="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
-$iTahun="select distinct(substr(periodegaji,1,4)) as tahun from ".$dbname.".sdm_gajidetail_vw ";
+$iTahun="select distinct(substr(periodegaji,1,4)) as tahun from ".$dbname.".sdm_gajidetail_vw order by periodegaji desc";
 $nTahun=  mysql_query($iTahun) or die (mysql_error($conn));
 while ($dTahun=  mysql_fetch_assoc($nTahun))
 {
@@ -90,7 +89,8 @@ echo "
 		</td>
 	</tr>
 </table>
-</fieldset>";//<button onclick=zPdf('pabrik_slave_2hargatbs','".$arr."','printContainer') class=mybutton name=preview id=preview>".$_SESSION['lang']['pdf']."</button>
+</fieldset>";
+//<button onclick=zPdf('pabrik_slave_2hargatbs','".$arr."','printContainer') class=mybutton name=preview id=preview>".$_SESSION['lang']['pdf']."</button>
 
 echo "
 <fieldset style='clear:both'><legend><b>".$_SESSION['lang']['printArea']."</b></legend>

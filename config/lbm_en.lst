@@ -2,7 +2,6 @@
 00_COVER=lbm_sampul=COVER
 01_AREAL STATEMENT=lbm_aresta=AREAL STATEMENT
 
-
 041 EMPLOYEES AND HOUSING=lbm_karyawan_perumahan=EMPLOYEES AND HOUSING
 042 WORKERS AND LIABILITY=lbm_pekerja_tanggungan=WORKERS AND LIABILITY
 043 EMPLOYEES MUTATIONS=lbm_mutasi_karyawan=EMPLOYEES MUTATIONS
@@ -15,8 +14,8 @@
 053 RAINFALL=lbm_curah_hujan=RAINFALL
 06_HARVESTING OUTPUT=lbm_output_potong_buah=HARVESTING OUTPUT
 07_HARVESTING CYCLE=lbm_pusingan_potong_buah=HARVESTING CYCLE
+070HARVESTING CYCLE PER BLOCK=lbm_pusingan_potong_buah_blok=HARVESTING CYCLE PER BLOCK
 071HARVESTING ROTATION=lbm_rotasi_potong_buah=HARVESTING ROTATION
-
 
 10_MATURE UPKEEP (HA-HK)=lbm_pemeliharan_tm=MATURE UPKEEP (HA-HK)
 11_IMMATURE UPKEEP (HA-HK)=lbm_pemeliharan_tbm=IMMATURE UPKEEP (HA-HK)
@@ -41,7 +40,6 @@
 254 TRANSIT HEAVY EQUIPMENT=lbm_transit_ab=TRANSIT HEAVY EQUIPMENT
 255 TRANSIT SUPPORTING MACHINE=lbm_transit_penunjang=TRANSIT SUPPORTING MACHINE
 
-
 MATURE UPKEEP COST=lbm_analisa_biayapemeliharaan=MATURE UPKEEP COST- Assistant Monthly Report
 NEW PLANTING COST=lbm_analisa_biayapemeliharaan_tb=NEW PLANTING COST- Assistant Monthly Report
 PRODUCTION per BLOCK=lbm_produksi_perblok=PRODUCTION per BLOCK- Assistant Monthly Report
@@ -49,3 +47,4 @@ MOTNLY PRODUCTION=lbm_produksi_bulanan=MOTNLY PRODUCTION- Assistant Monthly Repo
 FFB AVG WEIGHT=lbm_bjr=FFB AVG WEIGHT- Assistant Monthly Report
 DIVIDION FERTILIZING=lbm_pemupukan_afd=DIVIDION FERTILIZING- Assistant Monthly Report
 SPRAYING=lbm_semprot=SPRAYING- Assistant Monthly Report
+MONTHLY HARVEST CONTROL=lbm_rkp_cekancak=MONTHLY HARVEST CONTROL

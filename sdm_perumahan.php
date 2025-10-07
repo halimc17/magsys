@@ -12,9 +12,19 @@ $frm[2]='';
 <script type="text/javascript" src="js/sdm_perumahan.js"></script>
 <?php
 $soptOrg='';
-$sorg="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi where
-      tipe in('KEBUN','KANWIL','PABRIK')
-      order by kodeorganisasi";
+if($_SESSION['empl']['tipelokasitugas']=='HOLDING'){
+	$sorg="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi 
+			where tipe in ('KEBUN','KANWIL','PABRIK')
+			order by kodeorganisasi";
+}elseif($_SESSION['empl']['tipelokasitugas']=='KANWIL'){
+	$sorg="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi 
+			where tipe in ('KEBUN','KANWIL','PABRIK') and induk='".$_SESSION['empl']['induk']."'
+			order by kodeorganisasi";
+}else{
+	$sorg="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi 
+			where kodeorganisasi='".$_SESSION['empl']['lokasitugas']."' 
+			order by kodeorganisasi";
+}
 $qorg=mysql_query($sorg) or die(mysql_error());
 global $kd_org;
 while($rorg=mysql_fetch_assoc($qorg))
@@ -45,7 +55,26 @@ while($bar=mysql_fetch_object($res))
     $opt_tipe_rmh.="<option value='".$bar->jenis."'>".$bar->jenis.": ".$bar->nama."</option>";
 }
 $opt_kompleks='';
-$str="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi where tipe in('KEBUN','AFDELING','PABRIK') order by kodeorganisasi";
+if($_SESSION['empl']['tipelokasitugas']=='HOLDING'){
+	$str="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi where tipe='HOLDING' order by kodeorganisasi";
+}elseif($_SESSION['empl']['tipelokasitugas']=='KANWIL'){
+	$nm_komplek="induk='".$_SESSION['empl']['induk']."'";
+	$str="select kodeorganisasi from ".$dbname.".organisasi where tipe<>'HOLDING' and induk='".$_SESSION['empl']['induk']."' 
+		  order by kodeorganisasi";
+	$res=mysql_query($str);
+	while($bar=mysql_fetch_object($res)){
+		$nm_komplek.=" or induk like '".$bar->kodeorganisasi."%'";
+	}
+	$nm_komplek="(".$nm_komplek.")";
+	$str="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi where tipe in('KANWIL','KEBUN','AFDELING','PABRIK') 
+		  and ".$nm_komplek."
+		  order by kodeorganisasi";
+}else{
+	$str="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi where tipe in('KEBUN','AFDELING','PABRIK') 
+		  and kodeorganisasi like '".$_SESSION['empl']['lokasitugas']."%' 
+		  order by kodeorganisasi";
+}
+//exit('Warning: '.$str);
 $res=mysql_query($str);
 while($bar=mysql_fetch_object($res))
 {
@@ -57,9 +86,9 @@ OPEN_BOX('',$_SESSION['lang']['manajemenperumahan']."<br>");
 $frm[0].="<fieldset><legend>".$_SESSION['lang']['data_rmh']."".$thn_skrg."</legend>";
 $frm[0].="<table cellspacing=1 border=0>
 <tr><td>".$_SESSION['lang']['kodeorg']."</td><td>:</td><td>
-<select id=kode_org name=kode_org onChange=load_data() style=width:200px;><option value=></option>".$soptOrg."</select></td></tr>
+<select id=kode_org name=kode_org onChange=load_data() style=width:200px;><option value=''></option>".$soptOrg."</select></td></tr>
 <tr><td>".$_SESSION['lang']['komplek_rmh']."</td><td>:</td><td>
-<select id=nm_kompleks>".$opt_kompleks."</select>    
+<select id=nm_kompleks><option value=''></option>".$opt_kompleks."</select>    
 </td></tr>
 <tr><td>Blok Rumah</td><td>:</td><td>
 <input type=text class=myinputtext id=blok_rmh name=blok_rmh maxlength=4 onkeypress=\"return tanpa_kutip(event);\" style=width:200px; /></td></tr>
@@ -77,7 +106,7 @@ $frm[0].="<table cellspacing=1 border=0>
 <input type=text class=myinputtext id=almt_rmh name=almt_rmh maxlength=60 onkeypress=\"return tanpa_kutip(event);\" style=width:200px; /></td></tr>
 <tr><td colspan=3>
 <button class=mybutton id=save_kepala name=save_kepala onclick=save_header() >".$_SESSION['lang']['save']."</button>
-<button class=mybutton id=cancel_kepala name=cancel_kepala onclick=clear_save_form() >".$_SESSION['lang']['cancel']."</button>
+<button class=mybutton id=cancel_kepala name=cancel_kepala onclick=clear_save_form(1) >".$_SESSION['lang']['cancel']."</button>
 </table>";
 $frm[0].="</fieldset>";
 $frm[0].="<fieldset><legend>".$_SESSION['lang']['datatersimpan']."</legend>
@@ -101,11 +130,11 @@ $frm[0].="</tbody></table></fieldset>";
 
 //assseettt
 $optAset='';
-$saset="select kodeasset,namasset from ".$dbname.".sdm_daftarasset where tipeasset='PRT'";
+$saset="select kodebarang,namabarang from ".$dbname.".log_5masterbarang where kelompokbarang in ('903','904','905','906') order by namabarang";
 $qaset=mysql_query($saset) or die(mysql_error());
 while($raset=mysql_fetch_assoc($qaset))
 {
-	$optAset.="<option value=".$raset['kodeasset'].">".$raset['namasset']."</option>";
+	$optAset.="<option value=".$raset['kodebarang'].">".$raset['namabarang']."</option>";
 }
 
 $frm[1].="<fieldset><legend>".$_SESSION['lang']['data_rmh']."</legend>";
@@ -118,8 +147,12 @@ $frm[1].="<table cellspacing=1 border=0>
 <select id=no_rmh_asset name=no_rmh_asset style=width:235px></select>
 <!--<input type=text class=myinputtext id=no_rmh_asset name=no_rmh_asset maxlength=4 onkeypress=\"return angka_doang(event);\" />--></td></tr>
 <tr><td>".$_SESSION['lang']['namaaset']."</td><td>:</td><td><select id=kode_asset name=kode_asset style=width:235px><option value=></option>".$optAset."</select></td></tr>
+<tr><td>".$_SESSION['lang']['jumlah']."</td><td>:</td><td>
+<input type=text class=myinputtextnumber id=jmlbarang name=jmlbarang maxlength=2 value=0 onkeypress=\"return angka_doang(event);\" style=width:30px; /></td></tr>
+<tr><td>".$_SESSION['lang']['keterangan']."</td><td>:</td><td>
+<input type=text class=myinputtext id=keterangan name=keterangan onkeypress=\"return tanpa_kutip(event);\" style=width:400px; /></td></tr>
 
-<tr><td colspan=3><button class=mybutton onclick=save_asset() >".$_SESSION['lang']['save']."</button><button class=mybutton onclick=clear_save_form_asset() >".$_SESSION['lang']['cancel']."</button>
+<tr><td colspan=3><button class=mybutton onclick=save_asset() >".$_SESSION['lang']['save']."</button><button class=mybutton onclick=clear_save_form_asset(1) >".$_SESSION['lang']['cancel']."</button>
 </table>";
 
 $frm[1].="</fieldset>";
@@ -132,6 +165,8 @@ $frm[1].="<fieldset><legend>".$_SESSION['lang']['datatersimpan']."</legend>
 		<td>".$_SESSION['lang']['blok']."</td>
 		<td>".$_SESSION['lang']['no_rmh']."</td>
 		<td>".$_SESSION['lang']['namaaset']."</td>
+		<td>".$_SESSION['lang']['jumlah']."</td>
+		<td>".$_SESSION['lang']['keterangan']."</td>
 		<td>Action</td>
 		</tr></thead><tbody id=containasset>
 		";
@@ -168,7 +203,7 @@ $frm[2].="<table cellspacing=1 border=0>
 <!--<input type=text class=myinputtext id=no_rmh_penghuni name=no_rmh_penghuni maxlength=4 onkeypress=\"return angka_doang(event);\" />--></td></tr>
 <tr><td>".$_SESSION['lang']['namakaryawan']."</td><td>:</td><td><select id=kode_karyawan name=kode_karyawan style=width:200px></select></td></tr>
 
-<tr><td colspan=3><button class=mybutton onclick=save_penghuni() >".$_SESSION['lang']['save']."</button><button class=mybutton onclick=clear_save_form_penghuni() >".$_SESSION['lang']['cancel']."</button>
+<tr><td colspan=3><button class=mybutton onclick=save_penghuni() >".$_SESSION['lang']['save']."</button><button class=mybutton onclick=clear_save_form_penghuni(1) >".$_SESSION['lang']['cancel']."</button>
 </table>";
 
 $frm[2].="</fieldset>";
@@ -180,7 +215,9 @@ $frm[2].="<fieldset><legend>".$_SESSION['lang']['datatersimpan']."</legend>
 		<td>".$_SESSION['lang']['kodeorg']."</td>
 		<td>".$_SESSION['lang']['blok']."</td>
 		<td>".$_SESSION['lang']['no_rmh']."</td>
+		<td>".$_SESSION['lang']['nik']."</td>
 		<td>".$_SESSION['lang']['namakaryawan']."</td>
+		<td>".$_SESSION['lang']['unit']."</td>
 		<td>Action</td>
 		</tr></thead><tbody id=containpenghuni>
 		";

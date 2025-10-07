@@ -1,4 +1,4 @@
-<?php
+<?
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -14,7 +14,7 @@ include('master_mainMenu.php');
 OPEN_BOX();
 $optTopografi = makeOption($dbname,'setup_topografi','topografi,keterangan');
 $arr="##afd##jenispremi##kelaspohon##basis##premilebih##premilibur##".
-	"premiliburcapaibasis##topografi##premitopografi##premibrondolan##method";
+	"premiliburcapaibasis##topografi##premitopografi##premibrondolan##jenisbasis##premilebih2##premilebih3##method";
 
 $sAfd="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi where tipe='PT'";
 $qAfd=mysql_query($sAfd) or die(mysql_error());
@@ -35,6 +35,11 @@ while($cTopo=mysql_fetch_assoc($bTopo))
 $optJenis = array(
 	'KERJA' => 'Hari Kerja',
 	'LIBUR' => 'Hari Libur'
+);
+
+$optJenisbasis = array(
+	'KG'  => 'Kilogram',
+	'JJG' => 'Janjang'
 );
 
 $sKls="select * from ".$dbname.".kebun_5kelaspohon";
@@ -67,17 +72,22 @@ echo"<fieldset>
             <tr>
                 <td>".$_SESSION['lang']['basisjjg']."</td>
                 <td>".makeElement('basis','textnum',0,array('style'=>'width:150px','maxlength'=>10))."</td>
+                <td>".makeElement('jenisbasis','select',"",array(),$optJenisbasis)."</td>
             </tr>
             <tr>
-                <td>".$_SESSION['lang']['premilebihbasis']."(Rp/JJG)</td>
+                <td>".$_SESSION['lang']['premilebihbasis']."(Rp/Sat) ke - 1 - </td>
 				<td>".makeElement('premilebih','textnum',0,array('style'=>'width:150px','maxlength'=>10))."</td>
+                <td><center> ke - 2 - </center></td>
+				<td>".makeElement('premilebih2','textnum',0,array('style'=>'width:150px','maxlength'=>10))."</td>
+                <td> ke - 3 - </td>
+				<td>".makeElement('premilebih3','textnum',0,array('style'=>'width:150px','maxlength'=>10))."</td>
             </tr>
             <tr>
                 <td>".$_SESSION['lang']['premi']." ".$_SESSION['lang']['harilibur']." (Rp/Hr)</td>
 				<td>".makeElement('premilibur','textnum',0,array('style'=>'width:150px','maxlength'=>10))."</td>
             </tr>
 			<tr>
-                <td>".$_SESSION['lang']['premi']." ".$_SESSION['lang']['harilibur']." Capai Basis (Rp/Hr)</td>
+                <td>".$_SESSION['lang']['premi']." Capai Basis (Rp/Hr)</td>
 				<td>".makeElement('premiliburcapaibasis','textnum',0,array('style'=>'width:150px','maxlength'=>10))."</td>
             </tr>
             <tr>

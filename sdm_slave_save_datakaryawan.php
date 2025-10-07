@@ -76,6 +76,16 @@ switch($method){
 		$strx="delete from ".$dbname.".datakaryawan where karyawanid=".$karyawanid;
 	break;
 	case 'update':
+		$skry="select nik,namakaryawan,tanggallahir,noktp,tanggalkeluar from ".$dbname.".datakaryawan where (tanggalkeluar='' or tanggalkeluar='0000-00-00') and namakaryawan = '".$namakaryawan."' and tanggallahir='".$tanggallahir."' and karyawanid<>'".$karyawanid."'";
+		$qkry=mysql_query($skry) or die(mysql_error($conn));
+		$duplikatdata=0;
+		while($bkry=mysql_fetch_object($qkry)){
+			$duplikatdata=1;
+		}
+		if($duplikatdata==1){
+			exit('Warning: Duplikat Data Nama Karyawan dan tanggal lahir sama...!'.$skry);
+		}
+		//
 		$qData = selectQuery($dbname,'datakaryawan','*',"karyawanid='".$karyawanid."'");
 		$resData = fetchData($qData);
 		$oldData = $resData[0];
@@ -129,6 +139,15 @@ switch($method){
 		break;
 	
 	case 'insert':
+		$skry="select nik,namakaryawan,tanggallahir,noktp,tanggalkeluar from ".$dbname.".datakaryawan where (tanggalkeluar='' or tanggalkeluar='0000-00-00') and namakaryawan = '".$namakaryawan."' and tanggallahir='".$tanggallahir."'";
+		$qkry=mysql_query($skry) or die(mysql_error($conn));
+		$duplikatdata=0;
+		while($bkry=mysql_fetch_object($qkry)){
+			$duplikatdata=1;
+		}
+		if($duplikatdata==1){
+			exit('Warning: Duplikat Data Nama Karyawan dan tanggal lahir sama...!');
+		}
 		//Generate NIK Karyawan
 		$sReg="select t1.kodepenerimaankaryawan, t1.regional from ".$dbname.".bgt_regional t1
 				left join ".$dbname.".bgt_regional_assignment t2

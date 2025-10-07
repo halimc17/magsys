@@ -474,8 +474,10 @@ $dcek=count($dtKegiatan);
         @$prsnA1Si[$lstKegiatan]=($dtRupiahRealTmSi[$lstKegiatan]/$dtRupiahBgtTmSi[$lstKegiatan])*100;
         $tab.="<td align=right>".number_format($prsnA1Si[$lstKegiatan],0)."</td>";
         $tab.="<td align=right>".number_format($dtRupiahBgtThn[$lstKegiatan],0)."</td>";
+		if($rRealLuas2['luasbgt']!=0){
         $rpHa3[$lstKegiatan]=$dtRupiahBgtThn[$lstKegiatan]/$rRealLuas2['luasbgt'];
-        $tab.="<td align=right>".number_format($rpHa3[$lstKegiatan],0)."</td>";
+		}
+		$tab.="<td align=right>".number_format($rpHa3[$lstKegiatan],0)."</td>";
         $tab.="</tr>";
         $sub1+=$dtRupiahRealTm[$lstKegiatan];
         $sub2+=$dtRupiahBgtTm[$lstKegiatan];

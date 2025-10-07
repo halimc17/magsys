@@ -63,10 +63,16 @@ if($proses=='excel'||$proses=='preview')
     exit("Error: Field Tidak Boleh Kosong");
     }
     //total estate bulan ini
-    $sEstate="select distinct sum(jumlah) as jumlah,tipekaryawan,idkomponen,count(a.karyawanid) as org,left(tipe,7) as tipe from ".$dbname.".sdm_gajidetail_vw a
-             left join ".$dbname.".datakaryawan b on a.karyawanid=b.karyawanid left join ".$dbname.".sdm_5tipekaryawan c on b.tipekaryawan=c.id
-             where (plus=1 or idkomponen='30' or idkomponen='31' or idkomponen='37' ) and (a.kodeorg='".$kdUnit."' and lokasitugas='".$kdUnit."') and periodegaji='".$periode."' group by tipekaryawan,idkomponen";
-    //exit("Error:".$sEstate);
+    $sEstate=  "select a.karyawanid,(a.jumlah) as jumlah,b.tipekaryawan,a.idkomponen,count(a.karyawanid) as org,left(c.tipe,7) as tipe 
+				from ".$dbname.".sdm_gajidetail_vw a
+				left join ".$dbname.".datakaryawan b on a.karyawanid=b.karyawanid 
+				left join ".$dbname.".sdm_5tipekaryawan c on b.tipekaryawan=c.id
+				where (a.plus=1 or a.idkomponen='30' or a.idkomponen='31' or a.idkomponen='37' ) 
+					and (a.kodeorg='".$kdUnit."' and b.lokasitugas='".$kdUnit."') 
+					and a.periodegaji='".$periode."' 
+				group by a.karyawanid,b.tipekaryawan,a.idkomponen
+				order by b.tipekaryawan,a.karyawanid,a.plus desc,a.idkomponen";
+    //exit("Warning: ".$sEstate);
     $qEstate=mysql_query($sEstate) or die(mysql_error($conn));
     $rowData=mysql_num_rows($qEstate);
     if($rowData==0)
@@ -75,7 +81,8 @@ if($proses=='excel'||$proses=='preview')
     }
     while($rEstate=mysql_fetch_assoc($qEstate))
     {
-        $totalOrg+=$rEstate['org'];
+        //$totalOrg+=$rEstate['org'];
+        $totalOrg[$rEstate['karyawanid']]=1;
         if($rEstate['idkomponen']=='37')
         {
              $totalJumlah-=$rEstate['jumlah'];
@@ -85,7 +92,7 @@ if($proses=='excel'||$proses=='preview')
             $totalJumlah+=$rEstate['jumlah'];
         }
  
-        if($rEstate['idkomponen']<3 or $rEstate['idkomponen']=='30' or $rEstate['idkomponen']=='31' or $rEstate['idkomponen']=='37')
+        if($rEstate['idkomponen']<3 or $rEstate['idkomponen']=='30' or $rEstate['idkomponen']=='31' or $rEstate['idkomponen']=='37' or $rEstate['idkomponen']=='56')
         {
             if($rEstate['idkomponen']=='37')
             {
@@ -96,59 +103,70 @@ if($proses=='excel'||$proses=='preview')
             {
                $gapok[$rEstate['tipe'].pokok]+=$rEstate['jumlah'];
             }
-            $orggapo[$rEstate['tipe'].pokok]+=$rEstate['org'];
-           
-
+            //$orggapo[$rEstate['tipe'].pokok]+=$rEstate['org'];
+			$orggapo[$rEstate['tipe'].pokok][$rEstate['karyawanid']]=1;
         }
        
-        if($rEstate['idkomponen']=='33')
+        if($rEstate['idkomponen']=='33' or $rEstate['idkomponen']=='58')
         {
             $lembur[$rEstate['tipe'].lemprem]+=$rEstate['jumlah'];
-            $orglemb[$rEstate['tipe'].lemprem]+=$rEstate['org'];
+            //$orglemb[$rEstate['tipe'].lemprem]+=$rEstate['org'];
+            $orglemb[$rEstate['tipe'].lemprem][$rEstate['karyawanid']]=1;
         }
         if($rEstate['idkomponen']=='32')
         {
             $premi[panen]+=$rEstate['jumlah'];
-            $orgpremi[panen]+=$rEstate['org'];
+            //$orgpremi[panen]+=$rEstate['org'];
+            $orgpremi[panen][$rEstate['karyawanid']]=1;
         }
         if($rEstate['idkomponen']=='16')
         {
             $lembur[$rEstate['tipe'].prem]+=$rEstate['jumlah'];
-            $orglemb[$rEstate['tipe'].prem]+=$rEstate['org'];
+            //$orglemb[$rEstate['tipe'].prem]+=$rEstate['org'];
+            $orglemb[$rEstate['tipe'].prem][$rEstate['karyawanid']]=1;
         }
         if($rEstate['idkomponen']=='26')
         {
             $bonus[$rEstate['tipe'].bonthr]=$rEstate['jumlah'];
-            $orgbonthr[$rEstate['tipe'].bonthr]=$rEstate['org'];
+            //$orgbonthr[$rEstate['tipe'].bonthr]=$rEstate['org'];
+            $orgbonthr[$rEstate['tipe'].bonthr][$rEstate['karyawanid']]=1;
         }
         if($rEstate['idkomponen']=='28')
         {
             $bonus[bonthr]+=$rEstate['jumlah'];
-            $orgbonthr[bonthr]+=$rEstate['org'];
+            //$orgbonthr[bonthr]+=$rEstate['org'];
+            $orgbonthr[bonthr][$rEstate['karyawanid']]=1;
         }
         if($rEstate['idkomponen']=='14')
         {
             $rapel[rapel]+=$rEstate['jumlah'];
-            $orgrapel[rapel]+=$rEstate['org'];
+            //$orgrapel[rapel]+=$rEstate['org'];
+            $orgrapel[rapel][$rEstate['karyawanid']]=1;
         }
          if($rEstate['idkomponen']=='40')
         {
             $premTtp[$rEstate['tipe'].premttp]+=$rEstate['jumlah'];
-            $orgpremTtp[$rEstate['tipe'].premttp]+=$rEstate['org'];
+            //$orgpremTtp[$rEstate['tipe'].premttp]+=$rEstate['org'];
+            $orgpremTtp[$rEstate['tipe'].premttp][$rEstate['karyawanid']]=1;
         }
     }
     //total estate bulan lalu
-    $sEstate="select distinct sum(jumlah) as jumlah,tipekaryawan,idkomponen,count(a.karyawanid) as org,left(tipe,7) as tipe from ".$dbname.".sdm_gajidetail_vw a
-             left join ".$dbname.".datakaryawan b on a.karyawanid=b.karyawanid left join ".$dbname.".sdm_5tipekaryawan c on b.tipekaryawan=c.id
-             where (plus=1 or idkomponen='30' or idkomponen='31' or idkomponen='37' ) and (a.kodeorg='".$kdUnit."' and lokasitugas='".$kdUnit."') and periodegaji='".$periodelama."' group by tipekaryawan,idkomponen";
+    $sEstate="select a.karyawanid,(a.jumlah) as jumlah,b.tipekaryawan,a.idkomponen,count(a.karyawanid) as org,left(c.tipe,7) as tipe 
+				from ".$dbname.".sdm_gajidetail_vw a
+				left join ".$dbname.".datakaryawan b on a.karyawanid=b.karyawanid 
+				left join ".$dbname.".sdm_5tipekaryawan c on b.tipekaryawan=c.id
+				where (a.plus=1 or a.idkomponen='30' or a.idkomponen='31' or a.idkomponen='37' ) 
+					and (a.kodeorg='".$kdUnit."' and b.lokasitugas='".$kdUnit."') 
+					and a.periodegaji='".$periodelama."' 
+				group by a.karyawanid,b.tipekaryawan,a.idkomponen
+				order by b.tipekaryawan,a.karyawanid,a.plus desc,a.idkomponen";
     //exit("Error:".$sEstate);
     $qEstate=mysql_query($sEstate) or die(mysql_error($conn));
     while($rEstate=mysql_fetch_assoc($qEstate))
     {
-        $totalOrgBl+=$rEstate['org'];
-
-        
-         if($rEstate['idkomponen']=='37')
+        //$totalOrgBl+=$rEstate['org'];
+        $totalOrgBl[$rEstate['karyawanid']]=1;
+        if($rEstate['idkomponen']=='37')
         {
             $totalJumlahBl-=$rEstate['jumlah'];
         }
@@ -156,7 +174,7 @@ if($proses=='excel'||$proses=='preview')
         {
             $totalJumlahBl+=$rEstate['jumlah'];
         }
-        if($rEstate['idkomponen']<3 or $rEstate['idkomponen']=='30' or $rEstate['idkomponen']=='31' or $rEstate['idkomponen']=='37')
+        if($rEstate['idkomponen']<3 or $rEstate['idkomponen']=='30' or $rEstate['idkomponen']=='31' or $rEstate['idkomponen']=='37' or $rEstate['idkomponen']=='56')
         {
             if($rEstate['idkomponen']=='37')
             {
@@ -166,50 +184,64 @@ if($proses=='excel'||$proses=='preview')
             {
                 $gapokL[$rEstate['tipe'].pokok]+=$rEstate['jumlah'];
             }
-            $orggapoL[$rEstate['tipe'].pokok]+=$rEstate['org'];
+            //$orggapoL[$rEstate['tipe'].pokok]+=$rEstate['org'];
+            $orggapoL[$rEstate['tipe'].pokok][$rEstate['karyawanid']]=1;
         }
         
-        if($rEstate['idkomponen']=='33')
+        if($rEstate['idkomponen']=='33' or $rEstate['idkomponen']=='58')
         {
             $lemburL[$rEstate['tipe'].lemprem]+=$rEstate['jumlah'];
-            $orglembL[$rEstate['tipe'].lemprem]+=$rEstate['org'];
+            //$orglembL[$rEstate['tipe'].lemprem]+=$rEstate['org'];
+            $orglembL[$rEstate['tipe'].lemprem][$rEstate['karyawanid']]=1;
         }
         if($rEstate['idkomponen']=='32')
         {
             $premiL[panen]+=$rEstate['jumlah'];
-            $orgpremiL[panen]+=$rEstate['org'];
+            //$orgpremiL[panen]+=$rEstate['org'];
+            $orgpremiL[panen][$rEstate['karyawanid']]=1;
         }
         if($rEstate['idkomponen']=='16')
         {
             $lemburL[$rEstate['tipe'].prem]+=$rEstate['jumlah'];
-            $orglembL[$rEstate['tipe'].prem]+=$rEstate['org'];
+            //$orglembL[$rEstate['tipe'].prem]+=$rEstate['org'];
+            $orglembL[$rEstate['tipe'].prem][$rEstate['karyawanid']]=1;
         }
         if($rEstate['idkomponen']=='26')
         {
             $bonusL[$rEstate['tipe'].bonthr]=$rEstate['jumlah'];
-            $orgbonthrL[$rEstate['tipe'].bonthr]=$rEstate['org'];
+            //$orgbonthrL[$rEstate['tipe'].bonthr]=$rEstate['org'];
+            $orgbonthrL[$rEstate['tipe'].bonthr][$rEstate['karyawanid']]=1;
         }
         if($rEstate['idkomponen']=='28')
         {
             $bonusL[bonthr]+=$rEstate['jumlah'];
-            $orgbonthrL[bonthr]+=$rEstate['org'];
+            //$orgbonthrL[bonthr]+=$rEstate['org'];
+            $orgbonthrL[bonthr][$rEstate['karyawanid']]=1;
         }
         if($rEstate['idkomponen']=='14')
         {
             $rapelL[rapel]+=$rEstate['jumlah'];
-            $orgrapelL[rapel]+=$rEstate['org'];
+            //$orgrapelL[rapel]+=$rEstate['org'];
+            $orgrapelL[rapel][$rEstate['karyawanid']]=1;
         }
         if($rEstate['idkomponen']=='40')
         {
             $premTtpL[$rEstate['tipe'].premttp]+=$rEstate['jumlah'];
-            $orgpremTtpL[$rEstate['tipe'].premttp]+=$rEstate['org'];
+            //$orgpremTtpL[$rEstate['tipe'].premttp]+=$rEstate['org'];
+            $orgpremTtpL[$rEstate['tipe'].premttp][$rEstate['karyawanid']]=1;
         }
     }
     //subbagian
     //total subbagian estate bulan ini
-    $sEstate="select distinct sum(jumlah) as jumlah,subbagian,idkomponen,count(a.karyawanid) as org,left(tipe,7) as tipe from ".$dbname.".sdm_gajidetail_vw a
-             left join ".$dbname.".datakaryawan b on a.karyawanid=b.karyawanid left join ".$dbname.".sdm_5tipekaryawan c on b.tipekaryawan=c.id
-             where (plus=1 or idkomponen='30' or idkomponen='31' or idkomponen='37' ) and (a.kodeorg='".$kdUnit."' and lokasitugas='".$kdUnit."') and periodegaji='".$periode."' group by subbagian,tipekaryawan,idkomponen";
+    $sEstate=  "select a.karyawanid,(a.jumlah) as jumlah,b.subbagian,a.idkomponen,count(a.karyawanid) as org,left(c.tipe,7) as tipe 
+				from ".$dbname.".sdm_gajidetail_vw a
+				left join ".$dbname.".datakaryawan b on a.karyawanid=b.karyawanid 
+				left join ".$dbname.".sdm_5tipekaryawan c on b.tipekaryawan=c.id
+				where (a.plus=1 or a.idkomponen='30' or a.idkomponen='31' or a.idkomponen='37' ) 
+					and (a.kodeorg='".$kdUnit."' and b.lokasitugas='".$kdUnit."') 
+					and a.periodegaji='".$periode."'
+					group by a.karyawanid,b.subbagian,b.tipekaryawan,a.idkomponen
+					order by b.subbagian,b.tipekaryawan,a.karyawanid,a.idkomponen";
     $qEstate=mysql_query($sEstate) or die(mysql_error($conn));
     while($rEstate=mysql_fetch_assoc($qEstate))
     {
@@ -217,7 +249,8 @@ if($proses=='excel'||$proses=='preview')
         {
             $rEstate['subbagian']="Kantor";
         }
-        $totalOrg2[$rEstate['subbagian']]+=$rEstate['org'];
+        //$totalOrg2[$rEstate['subbagian']]+=$rEstate['org'];
+        $totalOrg2[$rEstate['subbagian']][$rEstate['karyawanid']]=1;
 
         if($rEstate['idkomponen']=='37')
         {
@@ -228,7 +261,7 @@ if($proses=='excel'||$proses=='preview')
             $totalJumlah2[$rEstate['subbagian']]+=$rEstate['jumlah'];
         }
         $lstSub[$rEstate['subbagian']]=$rEstate['subbagian'];
-        if($rEstate['idkomponen']<3 or $rEstate['idkomponen']=='30' or $rEstate['idkomponen']=='31' or $rEstate['idkomponen']=='37')
+        if($rEstate['idkomponen']<3 or $rEstate['idkomponen']=='30' or $rEstate['idkomponen']=='31' or $rEstate['idkomponen']=='37' or $rEstate['idkomponen']=='56')
         {
             if($rEstate['idkomponen']=='37')
             {
@@ -239,59 +272,74 @@ if($proses=='excel'||$proses=='preview')
                 $gapok[$rEstate['subbagian']][$rEstate['tipe'].pokok]+=$rEstate['jumlah'];
             }
             
-            $orggapo[$rEstate['subbagian']][$rEstate['tipe'].pokok]+=$rEstate['org'];
+            //$orggapo[$rEstate['subbagian']][$rEstate['tipe'].pokok]+=$rEstate['org'];
+            $orggapo[$rEstate['subbagian']][$rEstate['tipe'].pokok][$rEstate['karyawanid']]=1;
         }
        
-        if($rEstate['idkomponen']=='33')
+        if($rEstate['idkomponen']=='33' or $rEstate['idkomponen']=='58')
         {
             $lembur[$rEstate['subbagian']][$rEstate['tipe'].lemprem]+=$rEstate['jumlah'];
-            $orglemb[$rEstate['subbagian']][$rEstate['tipe'].lemprem]+=$rEstate['org'];
+            //$orglemb[$rEstate['subbagian']][$rEstate['tipe'].lemprem]+=$rEstate['org'];
+            $orglemb[$rEstate['subbagian']][$rEstate['tipe'].lemprem][$rEstate['karyawanid']]=1;
         }
         if($rEstate['idkomponen']=='32')
         {
             $premi[$rEstate['subbagian']][panen]+=$rEstate['jumlah'];
-            $orgpremi[$rEstate['subbagian']][panen]+=$rEstate['org'];
+            //$orgpremi[$rEstate['subbagian']][panen]+=$rEstate['org'];
+            $orgpremi[$rEstate['subbagian']][panen][$rEstate['karyawanid']]=1;
         }
         if($rEstate['idkomponen']=='16')
         {
             $lembur[$rEstate['subbagian']][$rEstate['tipe'].prem]+=$rEstate['jumlah'];
-            $orglemb[$rEstate['subbagian']][$rEstate['tipe'].prem]+=$rEstate['org'];
+            //$orglemb[$rEstate['subbagian']][$rEstate['tipe'].prem]+=$rEstate['org'];
+            $orglemb[$rEstate['subbagian']][$rEstate['tipe'].prem][$rEstate['karyawanid']]=1;
         }
         if($rEstate['idkomponen']=='26')
         {
             $bonus[$rEstate['subbagian']][$rEstate['tipe'].bonthr]=$rEstate['jumlah'];
-            $orgbonthr[$rEstate['subbagian']][$rEstate['tipe'].bonthr]=$rEstate['org'];
+            //$orgbonthr[$rEstate['subbagian']][$rEstate['tipe'].bonthr]=$rEstate['org'];
+            $orgbonthr[$rEstate['subbagian']][$rEstate['tipe'].bonthr][$rEstate['karyawanid']]=1;
         }
         if($rEstate['idkomponen']=='28')
         {
             $bonus[$rEstate['subbagian']][bonthr]+=$rEstate['jumlah'];
-            $orgbonthr[$rEstate['subbagian']][bonthr]+=$rEstate['org'];
+            //$orgbonthr[$rEstate['subbagian']][bonthr]+=$rEstate['org'];
+            $orgbonthr[$rEstate['subbagian']][bonthr][$rEstate['karyawanid']]=1;
         }
         if($rEstate['idkomponen']=='14')
         {
             $rapel[$rEstate['subbagian']][rapel]+=$rEstate['jumlah'];
-            $orgrapel[$rEstate['subbagian']][rapel]+=$rEstate['org'];
+            //$orgrapel[$rEstate['subbagian']][rapel]+=$rEstate['org'];
+            $orgrapel[$rEstate['subbagian']][rapel][$rEstate['karyawanid']]=1;
         }
         if($rEstate['idkomponen']=='40')
         {
             $premTtp[$rEstate['subbagian']][$rEstate['tipe'].premttp]+=$rEstate['jumlah'];
-            $orgpremTtp[$rEstate['subbagian']][$rEstate['tipe'].premttp]+=$rEstate['org'];
+            //$orgpremTtp[$rEstate['subbagian']][$rEstate['tipe'].premttp]+=$rEstate['org'];
+            $orgpremTtp[$rEstate['subbagian']][$rEstate['tipe'].premttp][$rEstate['karyawanid']]=1;
         }
     }
     //total subbagian  estate bulan lalu
-    $sEstate="select distinct sum(jumlah) as jumlah,subbagian,idkomponen,count(a.karyawanid) as org,left(tipe,7) as tipe from ".$dbname.".sdm_gajidetail_vw a
-             left join ".$dbname.".datakaryawan b on a.karyawanid=b.karyawanid left join ".$dbname.".sdm_5tipekaryawan c on b.tipekaryawan=c.id
-             where (plus=1 or idkomponen='30' or idkomponen='31' or idkomponen='37' ) and (a.kodeorg='".$kdUnit."' and lokasitugas='".$kdUnit."') and periodegaji='".$periodelama."' group by subbagian,tipekaryawan,idkomponen";
+    $sEstate="select a.karyawanid,(a.jumlah) as jumlah,b.subbagian,a.idkomponen,count(a.karyawanid) as org,left(c.tipe,7) as tipe 
+				from ".$dbname.".sdm_gajidetail_vw a
+				left join ".$dbname.".datakaryawan b on a.karyawanid=b.karyawanid 
+				left join ".$dbname.".sdm_5tipekaryawan c on b.tipekaryawan=c.id
+				where (a.plus=1 or a.idkomponen='30' or a.idkomponen='31' or a.idkomponen='37' ) 
+					and (a.kodeorg='".$kdUnit."' and b.lokasitugas='".$kdUnit."') 
+					and a.periodegaji='".$periodelama."'
+					group by a.karyawanid,b.subbagian,b.tipekaryawan,a.idkomponen
+					order by b.subbagian,b.tipekaryawan,a.karyawanid,a.idkomponen";
     //echo $sEstate;
     $qEstate=mysql_query($sEstate) or die(mysql_error($conn));
     while($rEstate=mysql_fetch_assoc($qEstate))
     {
       
-         if($rEstate['subbagian']=='')
+        if($rEstate['subbagian']=='')
         {
             $rEstate['subbagian']="Kantor";
         }
-        $totalOrgBl2[$rEstate['subbagian']]+=$rEstate['org'];
+        //$totalOrgBl2[$rEstate['subbagian']]+=$rEstate['org'];
+        $totalOrgBl2[$rEstate['subbagian']][$rEstate['karyawanid']]=1;
         if($rEstate['idkomponen']=='37')
         {
               $totalJumlahBl2[$rEstate['subbagian']]-=$rEstate['jumlah'];
@@ -300,10 +348,9 @@ if($proses=='excel'||$proses=='preview')
         {
             $totalJumlahBl2[$rEstate['subbagian']]+=$rEstate['jumlah'];
         }
-       
-         $lstSub[$rEstate['subbagian']]=$rEstate['subbagian'];
+        $lstSub[$rEstate['subbagian']]=$rEstate['subbagian'];
          
-        if($rEstate['idkomponen']<3 or $rEstate['idkomponen']=='30' or $rEstate['idkomponen']=='31' or $rEstate['idkomponen']=='37')
+        if($rEstate['idkomponen']<3 or $rEstate['idkomponen']=='30' or $rEstate['idkomponen']=='31' or $rEstate['idkomponen']=='37' or $rEstate['idkomponen']=='56')
         {
             if($rEstate['idkomponen']=='37')
             {
@@ -313,46 +360,52 @@ if($proses=='excel'||$proses=='preview')
             {
                $gapokL[$rEstate['subbagian']][$rEstate['tipe'].pokok]+=$rEstate['jumlah'];
             }
-            
-            $orggapoL[$rEstate['subbagian']][$rEstate['tipe'].pokok]+=$rEstate['org'];
+            //$orggapoL[$rEstate['subbagian']][$rEstate['tipe'].pokok]+=$rEstate['org'];
+            $orggapoL[$rEstate['subbagian']][$rEstate['tipe'].pokok][$rEstate['karyawanid']]=1;
         }
-        if($rEstate['idkomponen']=='33')
+        if($rEstate['idkomponen']=='33' or $rEstate['idkomponen']=='58')
         {
             $lemburL[$rEstate['subbagian']][$rEstate['tipe'].lemprem]+=$rEstate['jumlah'];
-            $orglembL[$rEstate['subbagian']][$rEstate['tipe'].lemprem]+=$rEstate['org'];
+            //$orglembL[$rEstate['subbagian']][$rEstate['tipe'].lemprem]+=$rEstate['org'];
+            $orglembL[$rEstate['subbagian']][$rEstate['tipe'].lemprem][$rEstate['karyawanid']]=1;
         }
         if($rEstate['idkomponen']=='32')
         {
             $premiL[$rEstate['subbagian']][panen]+=$rEstate['jumlah'];
-            $orgpremiL[$rEstate['subbagian']][panen]+=$rEstate['org'];
+            //$orgpremiL[$rEstate['subbagian']][panen]+=$rEstate['org'];
+            $orgpremiL[$rEstate['subbagian']][panen][$rEstate['karyawanid']]=1;
         }
         if($rEstate['idkomponen']=='16')
         {
             $lemburL[$rEstate['subbagian']][$rEstate['tipe'].prem]+=$rEstate['jumlah'];
-            $orglembL[$rEstate['subbagian']][$rEstate['tipe'].prem]+=$rEstate['org'];
+            //$orglembL[$rEstate['subbagian']][$rEstate['tipe'].prem]+=$rEstate['org'];
+            $orglembL[$rEstate['subbagian']][$rEstate['tipe'].prem][$rEstate['karyawanid']]=1;
         }
         if($rEstate['idkomponen']=='26')
         {
             $bonusL[$rEstate['subbagian']][$rEstate['tipe'].bonthr]=$rEstate['jumlah'];
-            $orgbonthrL[$rEstate['subbagian']][$rEstate['tipe'].bonthr]=$rEstate['org'];
+            //$orgbonthrL[$rEstate['subbagian']][$rEstate['tipe'].bonthr]=$rEstate['org'];
+            $orgbonthrL[$rEstate['subbagian']][$rEstate['tipe'].bonthr][$rEstate['karyawanid']]=1;
         }
         if($rEstate['idkomponen']=='28')
         {
             $bonusL[$rEstate['subbagian']][bonthr]+=$rEstate['jumlah'];
-            $orgbonthrL[$rEstate['subbagian']][bonthr]+=$rEstate['org'];
+            //$orgbonthrL[$rEstate['subbagian']][bonthr]+=$rEstate['org'];
+            $orgbonthrL[$rEstate['subbagian']][bonthr][$rEstate['karyawanid']]=1;
         }
         if($rEstate['idkomponen']=='14')
         {
             $rapelL[$rEstate['subbagian']][rapel]+=$rEstate['jumlah'];
-            $orgrapelL[$rEstate['subbagian']][rapel]+=$rEstate['org'];
+            //$orgrapelL[$rEstate['subbagian']][rapel]+=$rEstate['org'];
+            $orgrapelL[$rEstate['subbagian']][rapel][$rEstate['karyawanid']]=1;
         }
         if($rEstate['idkomponen']=='40')
         {
             $premTtpL[$rEstate['subbagian']][$rEstate['tipe'].premttp]+=$rEstate['jumlah'];
-            $orgpremTtpL[$rEstate['subbagian']][$rEstate['tipe'].premttp]+=$rEstate['org'];
+            //$orgpremTtpL[$rEstate['subbagian']][$rEstate['tipe'].premttp]+=$rEstate['org'];
+            $orgpremTtpL[$rEstate['subbagian']][$rEstate['tipe'].premttp][$rEstate['karyawanid']]=1;
         }
-       
-    }
+	}
     
     $tab.="<table cellpadding=1 cellspacing=1 border=".$brd." class=sortable><thead>";
     $tab.="<tr><td rowspan=2 ".$bgclr." align=center>No.</td>";
@@ -361,110 +414,178 @@ if($proses=='excel'||$proses=='preview')
     $tab.="<td colspan=2 ".$bgclr." align=center>".$_SESSION['lang']['bulanlalu']."</td></tr>";
     $tab.="<tr><td ".$bgclr." align=center>".$_SESSION['lang']['orang']."</td><td ".$bgclr." align=center>".$_SESSION['lang']['rp']."</td>";
     $tab.="<td ".$bgclr." align=center>".$_SESSION['lang']['orang']."</td><td ".$bgclr." align=center>".$_SESSION['lang']['rp']."</td></tr></thead><tbody>";
-    $tab.="<tr><td colspan=6>Estate</td></tr>";
-    //=$orggapo[KBL.pokok]+$orglemb[KBL.lemprem]+$orggapo[KHT.pokok]+$orglemb[KHT.lemprem]+$orggapo[KHL.pokok]+$orglemb[KHL.lemprem]+$orggapo[Kontrak.pokok]
+    $tab.="<tr><td colspan=6>".$_SESSION['lang']['all']."</td></tr>";
+    //=$orggapo[KBL.pokok]+$orglemb[KBL.lemprem]+$orggapo[KHT.pokok]+$orglemb[KHT.lemprem]+$orggapo[PHL.pokok]+$orglemb[PHL.lemprem]+$orggapo[Kontrak.pokok]
     $tab.="<tr class=rowcontent><td>1.</td><td>Kary. Bulanan (KBL)</td>
-          <td align=right>".$orggapo[KBL.pokok]."</td>
-          <td align=right>".number_format($gapok[KBL.pokok],0)."</td>
-          <td align=right>".$orggapoL[KBL.pokok]."</td>
-          <td align=right>".number_format($gapokL[KBL.pokok],0)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','1','KBL','1,2,30,31,37,56','',event)>".count($orggapo[KBL.pokok])."</td>
+		  <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','1','KBL','1,2,30,31,37,56','',event)>".number_format($gapok[KBL.pokok],2)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','1','KBL','1,2,30,31,37,56','',event)>".count($orggapoL[KBL.pokok])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','1','KBL','1,2,30,31,37,56','',event)>".number_format($gapokL[KBL.pokok],2)."</td>
           </tr>";
     $tab.="<tr class=rowcontent><td>2.</td><td>Lembur KBL</td>
-          <td align=right>".$orglemb[KBL.lemprem]."</td>
-          <td align=right>".number_format($lembur[KBL.lemprem],0)."</td>
-          <td align=right>".$orglembL[KBL.lemprem]."</td>
-          <td align=right>".number_format($lemburL[KBL.lemprem],0)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','1','KBL','33,58','',event)>".count($orglemb[KBL.lemprem])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','1','KBL','33,58','',event)>".number_format($lembur[KBL.lemprem],2)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','1','KBL','33,58','',event)>".count($orglembL[KBL.lemprem])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','1','KBL','33,58','',event)>".number_format($lemburL[KBL.lemprem],2)."</td>
           </tr>";
     $tab.="<tr class=rowcontent><td>3.</td><td>Premi Pengawas KBL</td>
-          <td align=right>".$orglemb[KBL.prem]."</td>
-          <td align=right>".number_format($lembur[KBL.prem],0)."</td>
-          <td align=right>".$orglembL[KBL.prem]."</td>
-          <td align=right>".number_format($lemburL[KBL.prem],0)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','1','KBL','16','',event)>".count($orglemb[KBL.prem])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','1','KBL','16','',event)>".number_format($lembur[KBL.prem],2)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','1','KBL','16','',event)>".count($orglembL[KBL.prem])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','1','KBL','16','',event)>".number_format($lemburL[KBL.prem],2)."</td>
           </tr>";
     $tab.="<tr class=rowcontent><td>4.</td><td>Kary. Harian Tetap (KHT)</td>
-          <td align=right>".$orggapo[KHT.pokok]."</td>
-          <td align=right>".number_format($gapok[KHT.pokok],0)."</td>
-          <td align=right>".$orggapoL[KHT.pokok]."</td>
-          <td align=right>".number_format($gapokL[KHT.pokok],0)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','3','KHT','1,2,30,31,37,56','',event)>".count($orggapo[KHT.pokok])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','3','KHT','1,2,30,31,37,56','',event)>".number_format($gapok[KHT.pokok],2)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','3','KHT','1,2,30,31,37,56','',event)>".count($orggapoL[KHT.pokok])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','3','KHT','1,2,30,31,37,56','',event)>".number_format($gapokL[KHT.pokok],2)."</td>
           </tr>";
     $tab.="<tr class=rowcontent><td>5.</td><td>Lembur KHT</td>
-          <td align=right>".$orglemb[KHT.lemprem]."</td>
-          <td align=right>".number_format($lembur[KHT.lemprem],0)."</td>
-          <td align=right>".$orglembL[KHT.lemprem]."</td>
-          <td align=right>".number_format($lemburL[KHT.lemprem],0)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','3','KHT','33,58','',event)>".count($orglemb[KHT.lemprem])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','3','KHT','33,58','',event)>".number_format($lembur[KHT.lemprem],2)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','3','KHT','33,58','',event)>".count($orglembL[KHT.lemprem])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','3','KHT','33,58','',event)>".number_format($lemburL[KHT.lemprem],2)."</td>
           </tr>";
     $tab.="<tr class=rowcontent><td>6.</td><td>Premi Pengawas KHT</td>
-          <td align=right>".$orglemb[KHT.prem]."</td>
-          <td align=right>".number_format($lembur[KHT.prem],0)."</td>
-          <td align=right>".$orglembL[KHT.prem]."</td>
-          <td align=right>".number_format($lemburL[KHT.prem],0)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','3','KHT','16','',event)>".count($orglemb[KHT.prem])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','3','KHT','16','',event)>".number_format($lembur[KHT.prem],2)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','3','KHT','16','',event)>".count($orglembL[KHT.prem])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','3','KHT','16','',event)>".number_format($lemburL[KHT.prem],2)."</td>
           </tr>";
-    $tab.="<tr class=rowcontent><td>7.</td><td>Buruh Harian Lepas (BHL)</td>
-          <td align=right>".$orggapo[KHL.pokok]."</td>
-          <td align=right>".number_format($gapok[KHL.pokok],0)."</td>
-          <td align=right>".$orggapoL[KHL.pokok]."</td>
-          <td align=right>".number_format($gapokL[KHL.pokok],0)."</td>
+    $tab.="<tr class=rowcontent><td>7.</td><td>Pegawai Harian Lepas (PHL)</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','4','PHL','1,2,30,31,37,56','',event)>".count($orggapo[PHL.pokok])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','4','PHL','1,2,30,31,37,56','',event)>".number_format($gapok[PHL.pokok],2)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','4','PHL','1,2,30,31,37,56','',event)>".count($orggapoL[PHL.pokok])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','4','PHL','1,2,30,31,37,56','',event)>".number_format($gapokL[PHL.pokok],2)."</td>
           </tr>";
-    $tab.="<tr class=rowcontent><td>8.</td><td>Lembur KHL</td>
-          <td align=right>".$orglemb[KHL.lemprem]."</td>
-          <td align=right>".number_format($lembur[KHL.lemprem],0)."</td>
-          <td align=right>".$orglembL[KHL.lemprem]."</td>
-          <td align=right>".number_format($lemburL[KHL.lemprem],0)."</td>
+    $tab.="<tr class=rowcontent><td>8.</td><td>Lembur PHL</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','4','PHL','33,58','',event)>".count($orglemb[PHL.lemprem])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','4','PHL','33,58','',event)>".number_format($lembur[PHL.lemprem],2)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','4','PHL','33,58','',event)>".count($orglembL[PHL.lemprem])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','4','PHL','33,58','',event)>".number_format($lemburL[PHL.lemprem],2)."</td>
           </tr>";
-    $tab.="<tr class=rowcontent><td>9.</td><td>Premi Pengawasan KHL</td>
-          <td align=right>".$orglemb[KHL.prem]."</td>
-          <td align=right>".number_format($lembur[KHL.prem],0)."</td>
-          <td align=right>".$orglembL[KHL.prem]."</td>
-          <td align=right>".number_format($lemburL[KHL.prem],0)."</td>
+    $tab.="<tr class=rowcontent><td>9.</td><td>Premi Pengawasan PHL</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','4','PHL','16','',event)>".count($orglemb[PHL.prem])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','4','PHL','16','',event)>".number_format($lembur[PHL.prem],2)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','4','PHL','16','',event)>".count($orglembL[PHL.prem])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','4','PHL','16','',event)>".number_format($lemburL[PHL.prem],2)."</td>
           </tr>";
     $tab.="<tr class=rowcontent><td>10.</td><td>Kary. Kontrak</td>
-          <td align=right>".$orggapo[Kontrak.pokok]."</td>
-          <td align=right>".number_format($gapok[Kontrak.pokok],0)."</td>
-          <td align=right>".$orggapoL[Kontrak.pokok]."</td>
-          <td align=right>".number_format($gapokL[Kontrak.pokok],0)."</td>
+		  <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','2','Kontrak','1,2,30,31,37,56','',event)>".count($orggapo[Kontrak.pokok])."</td>
+		  <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','2','Kontrak','1,2,30,31,37,56','',event)>".number_format($gapok[Kontrak.pokok],2)."</td>
+		  <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','2','Kontrak','1,2,30,31,37,56','',event)>".count($orggapoL[Kontrak.pokok])."</td>
+		  <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','2','Kontrak','1,2,30,31,37,56','',event)>".number_format($gapokL[Kontrak.pokok],2)."</td>
           </tr>";
     $tab.="<tr class=rowcontent><td>11.</td><td>Lembur Kary. Kontrak</td>
-          <td align=right>".$orglemb[Kontrak.lemprem]."</td>
-          <td align=right>".number_format($lembur[Kontrak.lemprem],0)."</td>
-          <td align=right>".$orglembL[Kontrak.lemprem]."</td>
-          <td align=right>".number_format($lemburL[Kontrak.lemprem],0)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','2','Kontrak','33,58','',event)>".count($orglemb[Kontrak.lemprem])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','2','Kontrak','33,58','',event)>".number_format($lembur[Kontrak.lemprem],2)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','2','Kontrak','33,58','',event)>".count($orglembL[Kontrak.lemprem])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','2','Kontrak','33,58','',event)>".number_format($lemburL[Kontrak.lemprem],2)."</td>
           </tr>";
     $tab.="<tr class=rowcontent><td>12.</td><td>Premi Pengawas Kary. Kontrak</td>
-          <td align=right>".$orglemb[Kontrak.prem]."</td>
-          <td align=right>".number_format($lembur[Kontrak.prem],0)."</td>
-          <td align=right>".$orglembL[Kontrak.prem]."</td>
-          <td align=right>".number_format($lemburL[Kontrak.prem],0)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','2','Kontrak','16','',event)>".count($orglemb[Kontrak.prem])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','2','Kontrak','16','',event)>".number_format($lembur[Kontrak.prem],2)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','2','Kontrak','16','',event)>".count($orglembL[Kontrak.prem])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','2','Kontrak','16','',event)>".number_format($lemburL[Kontrak.prem],2)."</td>
           </tr>";
-    $tab.="<tr class=rowcontent><td>13.</td><td>Premi Panen</td>
-          <td align=right>".$orgpremi[panen]."</td>
-          <td align=right>".number_format($premi[panen],0)."</td>
-          <td align=right>".$orgpremiL[panen]."</td>
-          <td align=right>".number_format($premiL[panen],0)."</td>
+    $tab.="<tr class=rowcontent><td>13.</td><td>Premi</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','','','32','',event)>".count($orgpremi[panen])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','','','32','',event)>".number_format($premi[panen],2)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','','','32','',event)>".count($orgpremiL[panen])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','','','32','',event)>".number_format($premiL[panen],2)."</td>
           </tr>";
     $tab.="<tr class=rowcontent><td>14.</td><td>THR/Bonus Karyawan</td>
-          <td align=right>".$orgbonthr[bonthr]."</td>
-          <td align=right>".number_format($bonus[bonthr],0)."</td>
-          <td align=right>".$orgbonthrL[bonthr]."</td>
-          <td align=right>".number_format($bonusL[bonthr],0)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','','','26,28,46,47','',event)>".count($orgbonthr[bonthr])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','','','26,28,46,47','',event)>".number_format($bonus[bonthr],2)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','','','26,28,46,47','',event)>".count($orgbonthrL[bonthr])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','','','26,28,46,47','',event)>".number_format($bonusL[bonthr],2)."</td>
           </tr>";
  
       $tab.="<tr class=rowcontent><td>15.</td><td>Rapel</td>
-          <td align=right>".$orgrapel[rapel]."</td>
-          <td align=right>".number_format($rapel[rapel],0)."</td>
-          <td align=right>".$orgrapelL[bonthr]."</td>
-          <td align=right>".number_format($rapelL[rapel],0)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','','','14','',event)>".count($orgrapel[rapel])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','','','14','',event)>".number_format($rapel[rapel],2)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','','','14','',event)>".count($orgrapelL[bonthr])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','','','14','',event)>".number_format($rapelL[rapel],2)."</td>
           </tr>";
       $tab.="<tr class=rowcontent><td>16.</td><td>Premi Tetap</td>
-          <td align=right>".$orgpremTtp[premttp]."</td>
-          <td align=right>".number_format($premTtp[premttp],0)."</td>
-          <td align=right>".$orgpremTtpL[premttp]."</td>
-          <td align=right>".number_format($premTtpL[premttp],0)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','','','40','',event)>".count($orgpremTtp[premttp])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','','','40','',event)>".number_format($premTtp[premttp],2)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','','','40','',event)>".count($orgpremTtpL[premttp])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','','','40','',event)>".number_format($premTtpL[premttp],2)."</td>
           </tr>";
     $tab.="<tr class=rowcontent><td colspan=2>".$_SESSION['lang']['total']."</td>
-          <td align=right>".$totalOrg."</td>
-          <td align=right>".number_format($totalJumlah,0)."</td>
-          <td align=right>".$totalOrgBl."</td>
-          <td align=right>".number_format($totalJumlahBl,0)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','','','','',event)>".count($totalOrg)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','','','','',event)>".number_format($totalJumlah,2)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','','','','',event)>".count($totalOrgBl)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','','','','',event)>".number_format($totalJumlahBl,2)."</td>
           </tr>";
     
     $nor=16;
@@ -472,110 +593,178 @@ if($proses=='excel'||$proses=='preview')
     {
     $nor+=1;
     $tab.="<tr><td colspan=6>".$dtSub."</td></tr>";
-    //=$orggapo[KBL.pokok]+$orglemb[KBL.lemprem]+$orggapo[KHT.pokok]+$orglemb[KHT.lemprem]+$orggapo[KHL.pokok]+$orglemb[KHL.lemprem]+$orggapo[Kontrak.pokok]
+    //=$orggapo[KBL.pokok]+$orglemb[KBL.lemprem]+$orggapo[KHT.pokok]+$orglemb[KHT.lemprem]+$orggapo[PHL.pokok]+$orglemb[PHL.lemprem]+$orggapo[Kontrak.pokok]
    $tab.="<tr class=rowcontent><td>".$nor.".</td><td>Kary. Bulanan (KBL)</td>
-          <td align=right>".$orggapo[$dtSub][KBL.pokok]."</td>
-          <td align=right>".number_format($gapok[$dtSub][KBL.pokok],0)."</td>
-          <td align=right>".$orggapoL[$dtSub][KBL.pokok]."</td>
-          <td align=right>".number_format($gapokL[$dtSub][KBL.pokok],0)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','1','KBL','1,2,30,31,37,56','".$dtSub."',event)>".count($orggapo[$dtSub][KBL.pokok])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','1','KBL','1,2,30,31,37,56','".$dtSub."',event)>".number_format($gapok[$dtSub][KBL.pokok],2)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','1','KBL','1,2,30,31,37,56','".$dtSub."',event)>".count($orggapoL[$dtSub][KBL.pokok])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','1','KBL','1,2,30,31,37,56','".$dtSub."',event)>".number_format($gapokL[$dtSub][KBL.pokok],2)."</td>
           </tr>";
    $tab.="<tr class=rowcontent><td>".($nor+1).".</td><td>Lembur KBL</td>
-          <td align=right>".$orglemb[$dtSub][KBL.lemprem]."</td>
-          <td align=right>".number_format($lembur[$dtSub][KBL.lemprem],0)."</td>
-          <td align=right>".$orglembL[$dtSub][KBL.lemprem]."</td>
-          <td align=right>".number_format($lemburL[$dtSub][KBL.lemprem],0)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','1','KBL','33,58','".$dtSub."',event)>".count($orglemb[$dtSub][KBL.lemprem])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','1','KBL','33,58','".$dtSub."',event)>".number_format($lembur[$dtSub][KBL.lemprem],2)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','1','KBL','33,58','".$dtSub."',event)>".count($orglembL[$dtSub][KBL.lemprem])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','1','KBL','33,58','".$dtSub."',event)>".number_format($lemburL[$dtSub][KBL.lemprem],2)."</td>
           </tr>";
    $tab.="<tr class=rowcontent><td>".($nor+2).".</td><td>Premi Pengawas KBL</td>
-          <td align=right>".$orglemb[$dtSub][KBL.prem]."</td>
-          <td align=right>".number_format($lembur[$dtSub][KBL.prem],0)."</td>
-          <td align=right>".$orglembL[$dtSub][KBL.prem]."</td>
-          <td align=right>".number_format($lemburL[$dtSub][KBL.prem],0)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','1','KBL','16','".$dtSub."',event)>".count($orglemb[$dtSub][KBL.prem])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','1','KBL','16','".$dtSub."',event)>".number_format($lembur[$dtSub][KBL.prem],2)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','1','KBL','16','".$dtSub."',event)>".count($orglembL[$dtSub][KBL.prem])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','1','KBL','16','".$dtSub."',event)>".number_format($lemburL[$dtSub][KBL.prem],2)."</td>
           </tr>";
     
      $tab.="<tr class=rowcontent><td>".($nor+3).".</td><td>Kary. Harian Tetap (KHT)</td>
-          <td align=right>".$orggapo[$dtSub][KHT.pokok]."</td>
-          <td align=right>".number_format($gapok[$dtSub][KHT.pokok],0)."</td>
-          <td align=right>".$orggapoL[$dtSub][KHT.pokok]."</td>
-          <td align=right>".number_format($gapokL[$dtSub][KHT.pokok],0)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','3','KHT','1,2,30,31,37,56','".$dtSub."',event)>".count($orggapo[$dtSub][KHT.pokok])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','3','KHT','1,2,30,31,37,56','".$dtSub."',event)>".number_format($gapok[$dtSub][KHT.pokok],2)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','3','KHT','1,2,30,31,37,56','".$dtSub."',event)>".count($orggapoL[$dtSub][KHT.pokok])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','3','KHT','1,2,30,31,37,56','".$dtSub."',event)>".number_format($gapokL[$dtSub][KHT.pokok],2)."</td>
           </tr>";
     $tab.="<tr class=rowcontent><td>".($nor+4).".</td><td>Lembur KHT</td>
-          <td align=right>".$orglemb[$dtSub][KHT.lemprem]."</td>
-          <td align=right>".number_format($lembur[$dtSub][KHT.lemprem],0)."</td>
-          <td align=right>".$orglembL[$dtSub][KHT.lemprem]."</td>
-          <td align=right>".number_format($lemburL[$dtSub][KHT.lemprem],0)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','3','KHT','33,58','".$dtSub."',event)>".count($orglemb[$dtSub][KHT.lemprem])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','3','KHT','33,58','".$dtSub."',event)>".number_format($lembur[$dtSub][KHT.lemprem],2)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','3','KHT','33,58','".$dtSub."',event)>".count($orglembL[$dtSub][KHT.lemprem])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','3','KHT','33,58','".$dtSub."',event)>".number_format($lemburL[$dtSub][KHT.lemprem],2)."</td>
           </tr>";
     $tab.="<tr class=rowcontent><td>".($nor+5).".</td><td>Premi Pengawas KHT</td>
-          <td align=right>".$orglemb[$dtSub][KHT.prem]."</td>
-          <td align=right>".number_format($lembur[$dtSub][KHT.prem],0)."</td>
-          <td align=right>".$orglembL[$dtSub][KHT.prem]."</td>
-          <td align=right>".number_format($lemburL[$dtSub][KHT.prem],0)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','3','KHT','16','".$dtSub."',event)>".count($orglemb[$dtSub][KHT.prem])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','3','KHT','16','".$dtSub."',event)>".number_format($lembur[$dtSub][KHT.prem],2)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','3','KHT','16','".$dtSub."',event)>".count($orglembL[$dtSub][KHT.prem])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','3','KHT','16','".$dtSub."',event)>".number_format($lemburL[$dtSub][KHT.prem],2)."</td>
           </tr>";
-    $tab.="<tr class=rowcontent><td>".($nor+6).".</td><td>Buruh Harian Lepas (BHL)</td>
-          <td align=right>".$orggapo[$dtSub][KHL.pokok]."</td>
-          <td align=right>".number_format($gapok[$dtSub][KHL.pokok],0)."</td>
-          <td align=right>".$orggapoL[$dtSub][KHL.pokok]."</td>
-          <td align=right>".number_format($gapokL[$dtSub][KHL.pokok],0)."</td>
+    $tab.="<tr class=rowcontent><td>".($nor+6).".</td><td>Pegawai Harian Lepas (PHL)</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','4','PHL','1,2,30,31,37,56','".$dtSub."',event)>".count($orggapo[$dtSub][PHL.pokok])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','4','PHL','1,2,30,31,37,56','".$dtSub."',event)>".number_format($gapok[$dtSub][PHL.pokok],2)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','4','PHL','1,2,30,31,37,56','".$dtSub."',event)>".count($orggapoL[$dtSub][PHL.pokok])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','4','PHL','1,2,30,31,37,56','".$dtSub."',event)>".number_format($gapokL[$dtSub][PHL.pokok],2)."</td>
           </tr>";
-    $tab.="<tr class=rowcontent><td>".($nor+7).".</td><td>Lembur BHL</td>
-          <td align=right>".$orglemb[$dtSub][KHL.lemprem]."</td>
-          <td align=right>".number_format($lembur[$dtSub][KHL.lemprem],0)."</td>
-          <td align=right>".$orglembL[$dtSub][KHL.lemprem]."</td>
-          <td align=right>".number_format($lemburL[$dtSub][KHL.lemprem],0)."</td>
+    $tab.="<tr class=rowcontent><td>".($nor+7).".</td><td>Lembur PHL</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','4','PHL','33,58','".$dtSub."',event)>".count($orglemb[$dtSub][PHL.lemprem])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','4','PHL','33,58','".$dtSub."',event)>".number_format($lembur[$dtSub][PHL.lemprem],2)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','4','PHL','33,58','".$dtSub."',event)>".count($orglembL[$dtSub][PHL.lemprem])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','4','PHL','33,58','".$dtSub."',event)>".number_format($lemburL[$dtSub][PHL.lemprem],2)."</td>
           </tr>";
-     $tab.="<tr class=rowcontent><td>".($nor+8).".</td><td>Premi Pengawas BHL</td>
-          <td align=right>".$orglemb[$dtSub][KHL.prem]."</td>
-          <td align=right>".number_format($lembur[$dtSub][KHL.prem],0)."</td>
-          <td align=right>".$orglembL[$dtSub][KHL.prem]."</td>
-          <td align=right>".number_format($lemburL[$dtSub][KHL.prem],0)."</td>
+     $tab.="<tr class=rowcontent><td>".($nor+8).".</td><td>Premi Pengawas PHL</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','4','PHL','16','".$dtSub."',event)>".count($orglemb[$dtSub][PHL.prem])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','4','PHL','16','".$dtSub."',event)>".number_format($lembur[$dtSub][PHL.prem],2)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','4','PHL','16','".$dtSub."',event)>".count($orglembL[$dtSub][PHL.prem])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','4','PHL','16','".$dtSub."',event)>".number_format($lemburL[$dtSub][PHL.prem],2)."</td>
           </tr>";
     $tab.="<tr class=rowcontent><td>".($nor+9).".</td><td>Kary. Kontrak</td>
-          <td align=right>".$orggapo[$dtSub][Kontrak.pokok]."</td>
-          <td align=right>".number_format($gapok[$dtSub][Kontrak.pokok],0)."</td>
-          <td align=right>".$orggapoL[$dtSub][Kontrak.pokok]."</td>
-          <td align=right>".number_format($gapokL[$dtSub][Kontrak.pokok],0)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','2','Kontrak','1,2,30,31,37,56','".$dtSub."',event)>".count($orggapo[$dtSub][Kontrak.pokok])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','2','Kontrak','1,2,30,31,37,56','".$dtSub."',event)>".number_format($gapok[$dtSub][Kontrak.pokok],2)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','2','Kontrak','1,2,30,31,37,56','".$dtSub."',event)>".count($orggapoL[$dtSub][Kontrak.pokok])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+		  showpopup('".$kdUnit."','".$periodelama."','2','Kontrak','1,2,30,31,37,56','".$dtSub."',event)>".number_format($gapokL[$dtSub][Kontrak.pokok],2)."</td>
           </tr>";
     $tab.="<tr class=rowcontent><td>".($nor+10).".</td><td>Lembur Kary. Kontrak</td>
-          <td align=right>".$orglemb[$dtSub][Kontrak.lemprem]."</td>
-          <td align=right>".number_format($lembur[$dtSub][Kontrak.lemprem],0)."</td>
-          <td align=right>".$orglembL[$dtSub][Kontrak.lemprem]."</td>
-          <td align=right>".number_format($lemburL[$dtSub][Kontrak.lemprem],0)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','2','Kontrak','33,58','".$dtSub."',event)>".count($orglemb[$dtSub][Kontrak.lemprem])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','2','Kontrak','33,58','".$dtSub."',event)>".number_format($lembur[$dtSub][Kontrak.lemprem],2)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','2','Kontrak','33,58','".$dtSub."',event)>".count($orglembL[$dtSub][Kontrak.lemprem])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','2','Kontrak','33,58','".$dtSub."',event)>".number_format($lemburL[$dtSub][Kontrak.lemprem],2)."</td>
           </tr>";
      $tab.="<tr class=rowcontent><td>".($nor+11).".</td><td>Premi Pengawas Kary. Kontrak</td>
-          <td align=right>".$orglemb[$dtSub][Kontrak.prem]."</td>
-          <td align=right>".number_format($lembur[$dtSub][Kontrak.prem],0)."</td>
-          <td align=right>".$orglembL[$dtSub][Kontrak.prem]."</td>
-          <td align=right>".number_format($lemburL[$dtSub][Kontrak.prem],0)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','2','Kontrak','16','".$dtSub."',event)>".count($orglemb[$dtSub][Kontrak.prem])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','2','Kontrak','16','".$dtSub."',event)>".number_format($lembur[$dtSub][Kontrak.prem],2)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','2','Kontrak','16','".$dtSub."',event)>".count($orglembL[$dtSub][Kontrak.prem])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','2','Kontrak','16','".$dtSub."',event)>".number_format($lemburL[$dtSub][Kontrak.prem],2)."</td>
           </tr>";
-    $tab.="<tr class=rowcontent><td>".($nor+12).".</td><td>Premi Panen</td>
-          <td align=right>".$orgpremi[$dtSub][panen]."</td>
-          <td align=right>".number_format($premi[$dtSub][panen],0)."</td>
-          <td align=right>".$orgpremiL[$dtSub][panen]."</td>
-          <td align=right>".number_format($premiL[$dtSub][panen],0)."</td>
+    $tab.="<tr class=rowcontent><td>".($nor+12).".</td><td>Premi</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','','','32','".$dtSub."',event)>".count($orgpremi[$dtSub][panen])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','','','32','".$dtSub."',event)>".number_format($premi[$dtSub][panen],2)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','','','32','".$dtSub."',event)>".count($orgpremiL[$dtSub][panen])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','','','32','".$dtSub."',event)>".number_format($premiL[$dtSub][panen],2)."</td>
           </tr>";
     $tab.="<tr class=rowcontent><td>".$nor=($nor+13).".</td><td>THR/Bonus Karyawan</td>
-          <td align=right>".$orgbonthr[$dtSub][bonthr]."</td>
-          <td align=right>".number_format($bonus[$dtSub][bonthr],0)."</td>
-          <td align=right>".$orgbonthrL[$dtSub][bonthr]."</td>
-          <td align=right>".number_format($bonusL[$dtSub][bonthr],0)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','','','26,28,46,47','".$dtSub."',event)>".count($orgbonthr[$dtSub][bonthr])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','','','26,28,46,47','".$dtSub."',event)>".number_format($bonus[$dtSub][bonthr],2)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','','','26,28,46,47','".$dtSub."',event)>".count($orgbonthrL[$dtSub][bonthr])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','','','26,28,46,47','".$dtSub."',event)>".number_format($bonusL[$dtSub][bonthr],2)."</td>
           </tr>";
      $tab.="<tr class=rowcontent><td>".$nor=($nor+14).".</td><td>Rapel</td>
-          <td align=right>".$orgrapel[$dtSub][rapel]."</td>
-          <td align=right>".number_format($rapel[$dtSub][rapel],0)."</td>
-          <td align=right>".$orgrapelL[$dtSub][rapel]."</td>
-          <td align=right>".number_format($rapelL[$dtSub][rapel],0)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','','','14','".$dtSub."',event)>".count($orgrapel[$dtSub][rapel])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','','','14','".$dtSub."',event)>".number_format($rapel[$dtSub][rapel],2)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','','','14','".$dtSub."',event)>".count($orgrapelL[$dtSub][rapel])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','','','14','".$dtSub."',event)>".number_format($rapelL[$dtSub][rapel],2)."</td>
           </tr>";
      $tab.="<tr class=rowcontent><td>".$nor=($nor+15).".</td><td>Premi Tetap</td>
-       <td align=right>".$orgpremTtp[$dtSub][premttp]."</td>
-          <td align=right>".number_format($premTtp[$dtSub][premttp],0)."</td>
-          <td align=right>".$orgpremTtpL[$dtSub][premttp]."</td>
-          <td align=right>".number_format($premTtpL[$dtSub][premttp],0)."</td>
+		  <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','','','40','".$dtSub."',event)>".count($orgpremTtp[$dtSub][premttp])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','','','40','".$dtSub."',event)>".number_format($premTtp[$dtSub][premttp],2)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','','','40','".$dtSub."',event)>".count($orgpremTtpL[$dtSub][premttp])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','','','40','".$dtSub."',event)>".number_format($premTtpL[$dtSub][premttp],2)."</td>
           </tr>";
  
     $tab.="<tr class=rowcontent><td colspan=2>".$_SESSION['lang']['subtotal']."</td>
-          <td align=right>".$totalOrg2[$dtSub]."</td>
-          <td align=right>".number_format($totalJumlah2[$dtSub],0)."</td>
-          <td align=right>".$totalOrgBl2[$dtSub]."</td>
-          <td align=right>".number_format($totalJumlahBl2[$dtSub],0)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','','','','".$dtSub."',event)>".count($totalOrg2[$dtSub])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periode."','','','','".$dtSub."',event)>".number_format($totalJumlah2[$dtSub],2)."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','','','','".$dtSub."',event)>".count($totalOrgBl2[$dtSub])."</td>
+          <td align=right style=\"cursor: pointer\" onclick=
+			showpopup('".$kdUnit."','".$periodelama."','','','','".$dtSub."',event)>".number_format($totalJumlahBl2[$dtSub],2)."</td>
           </tr>";
     }
 $tab.="</tbody></table>";

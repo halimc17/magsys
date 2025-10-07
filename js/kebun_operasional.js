@@ -519,7 +519,7 @@ function postingData(numRow) {
                     x=document.getElementById('tr_'+numRow);
                     x.cells[8].innerHTML='';
                     x.cells[9].innerHTML='';
-                    x.cells[10].innerHTML="<img class=\"zImgOffBtn\" title=\"Posting\" src=\"images/skyblue/posted.png\">";
+                    x.cells[12].innerHTML="<img class=\"zImgOffBtn\" title=\"Posting\" src=\"images/skyblue/posted.png\">";
                 }
             } else {
                 busy_off();

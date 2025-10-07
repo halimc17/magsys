@@ -1,100 +1,104 @@
 /**
  * @author repindra.ginting
  */
- 
+
 function loadData()
 {
-		kary=document.getElementById('karyidCari').options[document.getElementById('karyidCari').selectedIndex].value;
-		jnsCut=document.getElementById('jnsCuti').options[document.getElementById('jnsCuti').selectedIndex].value;
-		periodeawal=document.getElementById('periodeawal').value;
-		periodeakhir=document.getElementById('periodeakhir').value;
-        param='proses=loadData'+'&jnsCuti='+jnsCut+'&karyidCari='+kary+'&periodeawal='+periodeawal+'&periodeakhir='+periodeakhir;
-        tujuan='sdm_slave_laporan_ijin_meninggalkan_kantor.php';
-        post_response_text(tujuan, param, respog);
+	kary=document.getElementById('karyidCari').options[document.getElementById('karyidCari').selectedIndex].value;
+	jnsCut=document.getElementById('jnsCuti').options[document.getElementById('jnsCuti').selectedIndex].value;
+	periodeawal=document.getElementById('periodeawal').value;
+	periodeakhir=document.getElementById('periodeakhir').value;
+	unit=document.getElementById('unit').value;
+	param='proses=loadData'+'&jnsCuti='+jnsCut+'&karyidCari='+kary+'&periodeawal='+periodeawal+'&periodeakhir='+periodeakhir+'&unit='+unit;
+	tujuan='sdm_slave_laporan_ijin_meninggalkan_kantor.php';
+	post_response_text(tujuan, param, respog);
 
-                function respog(){
-                        if (con.readyState == 4) {
-                                if (con.status == 200) {
-                                        busy_off();
-                                        if (!isSaveResponse(con.responseText)) {
-                                                alert('ERROR TRANSACTION,\n' + con.responseText);
-                                        }
-                                        else {
-                                                document.getElementById('container').innerHTML=con.responseText;
-                                        }
-                                }
-                                else {
-                                        busy_off();
-                                        error_catch(con.status);
-                                }
-                        }
-                }	
-
+	function respog(){
+		if (con.readyState == 4) {
+			if (con.status == 200) {
+				busy_off();
+				if (!isSaveResponse(con.responseText)) {
+					alert('ERROR TRANSACTION,\n' + con.responseText);
+				}
+				else {
+					document.getElementById('container').innerHTML=con.responseText;
+				}
+			}
+			else {
+				busy_off();
+				error_catch(con.status);
+			}
+		}
+	}	
 }
 
 function cariBast(num)
 {
-				kary=document.getElementById('karyidCari').options[document.getElementById('karyidCari').selectedIndex].value;
-				jnsCut=document.getElementById('jnsCuti').options[document.getElementById('jnsCuti').selectedIndex].value;
-				periodeawal=document.getElementById('periodeawal').value;
-				periodeakhir=document.getElementById('periodeakhir').value;
-                param='proses=loadData'+'&jnsCuti='+jnsCut+'&karyidCari='+kary+'&periodeawal='+periodeawal+'&periodeakhir='+periodeakhir;
-                param+='&page='+num;
-                tujuan = 'sdm_slave_laporan_ijin_meninggalkan_kantor.php';
-                post_response_text(tujuan, param, respog);			
-                function respog(){
-                        if (con.readyState == 4) {
-                                if (con.status == 200) {
-                                        busy_off();
-                                        if (!isSaveResponse(con.responseText)) {
-                                                alert('ERROR TRANSACTION,\n' + con.responseText);
-                                        }
-                                        else {
-                                                document.getElementById('container').innerHTML=con.responseText;
-                                        }
-                                }
-                                else {
-                                        busy_off();
-                                        error_catch(con.status);
-                                }
-                        }
-                }	
+	kary=document.getElementById('karyidCari').options[document.getElementById('karyidCari').selectedIndex].value;
+	jnsCut=document.getElementById('jnsCuti').options[document.getElementById('jnsCuti').selectedIndex].value;
+	periodeawal=document.getElementById('periodeawal').value;
+	periodeakhir=document.getElementById('periodeakhir').value;
+	unit=document.getElementById('unit').value;
+	param='proses=loadData'+'&jnsCuti='+jnsCut+'&karyidCari='+kary+'&periodeawal='+periodeawal+'&periodeakhir='+periodeakhir+'&unit='+unit;
+	param+='&page='+num;
+	tujuan = 'sdm_slave_laporan_ijin_meninggalkan_kantor.php';
+	post_response_text(tujuan, param, respog);			
+	function respog(){
+		if (con.readyState == 4) {
+			if (con.status == 200) {
+				busy_off();
+				if (!isSaveResponse(con.responseText)) {
+					alert('ERROR TRANSACTION,\n' + con.responseText);
+				}
+				else {
+					document.getElementById('container').innerHTML=con.responseText;
+				}
+			}
+			else {
+				busy_off();
+				error_catch(con.status);
+			}
+		}
+	}	
 }
+
 function dtReset()
 {
     document.getElementById('karyidCari').value='';
     document.getElementById('jnsCuti').value='';
     loadData();
-
 }
+
 function getCariDt()
 {
     kary=document.getElementById('karyidCari').options[document.getElementById('karyidCari').selectedIndex].value;
     jnsCut=document.getElementById('jnsCuti').options[document.getElementById('jnsCuti').selectedIndex].value;
 	periodeawal=document.getElementById('periodeawal').value;
 	periodeakhir=document.getElementById('periodeakhir').value;
-    param='proses=cariData'+'&jnsCuti='+jnsCut+'&karyidCari='+kary+'&periodeawal='+periodeawal+'&periodeakhir='+periodeakhir;
+	unit=document.getElementById('unit').value;
+    param='proses=cariData'+'&jnsCuti='+jnsCut+'&karyidCari='+kary+'&periodeawal='+periodeawal+'&periodeakhir='+periodeakhir+'&unit='+unit;
     tujuan='sdm_slave_laporan_ijin_meninggalkan_kantor.php';
     post_response_text(tujuan, param, respog);
 
-            function respog(){
-                    if (con.readyState == 4) {
-                            if (con.status == 200) {
-                                    busy_off();
-                                    if (!isSaveResponse(con.responseText)) {
-                                            alert('ERROR TRANSACTION,\n' + con.responseText);
-                                    }
-                                    else {
-                                            document.getElementById('container').innerHTML=con.responseText;
-                                    }
-                            }
-                            else {
-                                    busy_off();
-                                    error_catch(con.status);
-                            }
-                    }
-            }	
+	function respog(){
+		if (con.readyState == 4) {
+			if (con.status == 200) {
+				busy_off();
+				if (!isSaveResponse(con.responseText)) {
+					alert('ERROR TRANSACTION,\n' + con.responseText);
+				}
+				else {
+					document.getElementById('container').innerHTML=con.responseText;
+				}
+			}
+			else {
+				busy_off();
+				error_catch(con.status);
+			}
+		}
+	}	
 }
+
 function cariData(num)
 {
                 kary=document.getElementById('karyidCari').options[document.getElementById('karyidCari').selectedIndex].value;
@@ -121,11 +125,12 @@ function cariData(num)
                         }
                 }	
 }
-function appSetuju(tgl,krywnid)
+
+function appSetuju(tgl,krywnid,jnsijin,drjam)
 {
     tglijin=tgl;
     krywnId=krywnid;
-    param='proses=appSetuju'+'&tglijin='+tglijin+'&krywnId='+krywnId+'&stat=1';
+    param='proses=appSetuju'+'&tglijin='+tglijin+'&krywnId='+krywnId+'&jnsIjin='+jnsijin+'&darijam='+drjam+'&stat=1';
     tujuan = 'sdm_slave_laporan_ijin_meninggalkan_kantor.php';
 
                 post_response_text(tujuan, param, respog);			
@@ -149,12 +154,13 @@ function appSetuju(tgl,krywnid)
                 }	
 
 }
-function appDitolak(tgl,krywnid)
+
+function appDitolak(tgl,krywnid,jnsijin,drjam)
 {
     tglijin=tgl;
     krywnId=krywnid;
     ket=document.getElementById('koments').value;
-    param='proses=appSetuju'+'&tglijin='+tglijin+'&krywnId='+krywnId+'&stat=2'+'&ket='+ket;
+    param='proses=appSetuju'+'&tglijin='+tglijin+'&krywnId='+krywnId+'&jnsIjin='+jnsijin+'&darijam='+drjam+'&stat=2'+'&ket='+ket;
     tujuan = 'sdm_slave_laporan_ijin_meninggalkan_kantor.php';
 
                 post_response_text(tujuan, param, respog);			
@@ -179,16 +185,18 @@ function appDitolak(tgl,krywnid)
                 }	
 
 }
-function showAppTolak(tgl,karywn,ev)
+
+function showAppTolak(tgl,karywn,jnsijin,drjam,ev)
 {
         title="Reason for rejection";
         content="<fieldset><legend>Reason for rejection</legend>\n\
-    <table><tr><td><textarea id=koments onkeypress=return tanpa_kutip(event)></textarea></td></tr><tr><td align=center><button class=mybutton id=dtlForm onclick=appDitolak('"+tgl+"','"+karywn+"')>"+tolak+"</button>";
+    <table><tr><td><textarea id=koments onkeypress=return tanpa_kutip(event)></textarea></td></tr><tr><td align=center><button class=mybutton id=dtlForm onclick=appDitolak('"+tgl+"','"+karywn+"','"+jnsijin+"','"+drjam+"')>"+tolak+"</button>";
         width='220';
         height='120';
         showDialog1(title,content,width,height,ev);	
 }
-function showAppForward(tgl,karywn,ev)
+
+function showAppForward(tgl,karywn,jnsijin,drjam,ev)
 {
         title="Forward Approval";
         content="<div id=contentForm></div>";
@@ -196,13 +204,14 @@ function showAppForward(tgl,karywn,ev)
         height='110';
         showDialog1(title,content,width,height,ev);	
 }
-function showAppForw(tgl,karywn,ev)
+
+function showAppForw(tgl,karywn,jnsijin,drjam,ev)
 {
     showAppForward(tgl,karywn,ev)
     tglijin=tgl;
     krywnId=karywn;
 
-    param='proses=formForward'+'&tglijin='+tglijin+'&krywnId='+krywnId;
+    param='proses=formForward'+'&tglijin='+tglijin+'&krywnId='+krywnId+'&jnsIjin='+jnsijin+'&darijam='+drjam;
     tujuan = 'sdm_slave_laporan_ijin_meninggalkan_kantor.php';
 
                 post_response_text(tujuan, param, respog);			
@@ -225,6 +234,7 @@ function showAppForw(tgl,karywn,ev)
                 }
 
 }
+
 function AppForw()
 {
     krywnId=document.getElementById('karyaid').value;
@@ -254,6 +264,7 @@ function AppForw()
                         }
                 }
 }
+
 function printFile(param,tujuan,title,ev)
 {
    tujuan=tujuan+"?"+param;  
@@ -262,11 +273,12 @@ function printFile(param,tujuan,title,ev)
    content="<iframe frameborder=0 width=100% height=100% src='"+tujuan+"'></iframe>"
    showDialog1(title,content,width,height,ev); 	
 }
-function previewPdf(tgl,karywn,ev)
+
+function previewPdf(tgl,karywn,jnsijin,drjam,ev)
 {
         tglijin=tgl;
         krywnId=karywn;
-        param='proses=prevPdf'+'&tglijin='+tglijin+'&krywnId='+krywnId;
+        param='proses=prevPdf'+'&tglijin='+tglijin+'&krywnId='+krywnId+'&jnsIjin='+jnsijin+'&darijam='+drjam;
         tujuan = 'sdm_slave_laporan_ijin_meninggalkan_kantor.php?'+param;	
  //display window
    title='Print PDF';
@@ -299,11 +311,11 @@ function detailData(ev,tujuan)
    showDialog1('Detail Allocation',content,width,height,ev); 
 }
 
-function appSetujuHRD(tgl,krywnid)
+function appSetujuHRD(tgl,krywnid,jnsijin,drjam)
 {
     tglijin=tgl;
     krywnId=krywnid;
-    param='proses=appSetujuHRD'+'&tglijin='+tglijin+'&krywnId='+krywnId+'&stat=1';
+    param='proses=appSetujuHRD'+'&tglijin='+tglijin+'&krywnId='+krywnId+'&jnsIjin='+jnsijin+'&darijam='+drjam+'&stat=1';
     tujuan = 'sdm_slave_laporan_ijin_meninggalkan_kantor.php';
 
                 post_response_text(tujuan, param, respog);			
@@ -327,22 +339,22 @@ function appSetujuHRD(tgl,krywnid)
                 }  
 }
 
-function showAppTolakHRD(tgl,karywn,ev)
+function showAppTolakHRD(tgl,karywn,jnsijin,drjam,ev)
 {
         title="Reason for rejection";
         content="<fieldset><legend>Reason for rejection</legend>\n\
-                 <table><tr><td><textarea id=koments onkeypress=return tanpa_kutip(event)></textarea></td></tr><tr><td align=center><button class=mybutton id=dtlForm onclick=appDitolakHRD('"+tgl+"','"+karywn+"')>"+tolak+"</button>";
+                 <table><tr><td><textarea id=koments onkeypress=return tanpa_kutip(event)></textarea></td></tr><tr><td align=center><button class=mybutton id=dtlForm onclick=appDitolakHRD('"+tgl+"','"+karywn+"','"+jnsijin+"','"+drjam+"')>"+tolak+"</button>";
         width='220';
         height='120';
         showDialog1(title,content,width,height,ev);	
 }
 
-function appDitolakHRD(tgl,krywnid)
+function appDitolakHRD(tgl,krywnid,jnsijin,drjam)
 {
     tglijin=tgl;
     krywnId=krywnid;
     ket=document.getElementById('koments').value;
-    param='proses=appSetujuHRD'+'&tglijin='+tglijin+'&krywnId='+krywnId+'&stat=2'+'&ket='+ket;
+    param='proses=appSetujuHRD'+'&tglijin='+tglijin+'&krywnId='+krywnId+'&jnsIjin='+jnsijin+'&darijam='+drjam+'&stat=2'+'&ket='+ket;
     tujuan = 'sdm_slave_laporan_ijin_meninggalkan_kantor.php';
 
                 post_response_text(tujuan, param, respog);			
@@ -365,7 +377,27 @@ function appDitolakHRD(tgl,krywnid)
                                 }
                         }
                 }	
-
 }
 
-
+function getKary(){
+    unit=document.getElementById('unit').value; 
+    param='unit='+unit;
+    param+='&proses=getKary';
+    tujuan='sdm_slave_laporan_ijin_meninggalkan_kantor.php';
+    post_response_text(tujuan, param, respog);
+    function respog(){
+        if(con.readyState==4){
+            if (con.status == 200){
+                busy_off();
+                if (!isSaveResponse(con.responseText)){
+					alert('ERROR TRANSACTION,\n' + con.responseText);
+                }else{
+                    document.getElementById('karyidCari').innerHTML=con.responseText;
+                }
+            }else{
+                busy_off();
+                error_catch(con.status);
+            }
+        }	
+	}  	
+}

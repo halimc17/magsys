@@ -44,7 +44,8 @@ switch($proses) {
 		$optKary = makeOption($dbname,'datakaryawan','karyawanid,nik,subbagian,namakaryawan',$whereKary,'6');
 		$optKeg = makeOption($dbname,'setup_kegiatan','kodekegiatan,namakegiatan',$whereKeg);
 		#$optOrg = makeOption($dbname,'organisasi','kodeorganisasi,namaorganisasi',$whereOrg);
-		$optOrg = getOrgBelow($dbname,$param['afdeling'],false,'blok');
+		//$optOrg = getOrgBelow($dbname,$param['afdeling'],false,'blok');
+		$optOrg = makeOption($dbname,'organisasi','kodeorganisasi,namaorganisasi',"induk like'".$param['afdeling']."%' and tipe='BLOK' and detail='1'");
 		$optThTanam= makeOption($dbname,'setup_blok','kodeorg,tahuntanam',
 			"kodeorg='".key($optOrg)."'");
 		$optBin = array('1'=>'Ya','0'=>'Tidak');
@@ -154,13 +155,14 @@ switch($proses) {
 		}
 		$theForm2->_elements[8]->_attr['title'] = 'Upah harian';
 		$theForm2->addEls('luaspanen',$_SESSION['lang']['luaspanen'],'0','textnum','R',10);
+		$theForm2->_elements[9]->_attr['onkeyup'] = "countPremi()";
 		$theForm2->addEls('brondolan',$_SESSION['lang']['brondolan'],'0','textnum','R',10);
 		$theForm2->_elements[10]->_attr['onkeyup'] = "countPremi()";
 		$theForm2->addEls('upahpremi',$_SESSION['lang']['premilebihbasis'],'0','textnum','R',10);
 		if($libur==false){
 			if($regional!='KALTIM')$theForm2->_elements[11]->_attr['disabled'] = 'disabled';
 		}else $theForm2->_elements[11]->_attr['disabled'] = 'disabled';
-		$theForm2->_elements[11]->_attr['title'] = 'Hasil Kerja > Basis * Premi Lebih Basis';
+		$theForm2->_elements[11]->_attr['title'] = 'Premi = Premi Capai Basis + Premi Lebih Basis + Premi Brondolan + dll';
 		
 		//$theForm2->addEls('premibasis','','0','hidden','R',10);
 		//if($regional!='KALTIM')$theForm2->_elements[12]->_attr['disabled'] = 'disabled';
@@ -395,13 +397,13 @@ switch($proses) {
         if($libur==false){
             if($regional!='KALTIM'){
                 // ambil premi basis
-                //$query = "SELECT afdeling, basis, premibasis, premilebihbasis
+                //$query = "SELECT afdeling, basis, premi_basis, premilebihbasis
                 //    FROM ".$dbname.".`kebun_5basispanen2`
                 //    WHERE afdeling LIKE '".substr($data['kodeorg'],0,6)."' limit 1
                 //    ";
                 //$res = fetchData($query);
                 //if(!empty($res)) {
-                //    $premibasis=$res[0]['premibasis'];            
+                //    $premi_basis=$res[0]['premi_basis'];            
                 //}
 
                 // cek janjang taksasi
@@ -431,7 +433,7 @@ switch($proses) {
                 $jjgmasak=$jjgmasak*1.1;
         //        echo "error:".$jjgmasak.",".$hasilkerja;
 
-                // kalo janjang panen>(janjang masak taksasi x 1.1), set premibasis=53000 where premibasis>53000 and notransaksi=notransaksi
+                // kalo janjang panen>(janjang masak taksasi x 1.1), set premi_basis=53000 where premi_basis>53000 and notransaksi=notransaksi
                 //if($hasilkerja>$jjgmasak){
                 //    $query="UPDATE `".$dbname."`.`kebun_prestasi` SET `premibasis` = '".$premibasis."' 
                 //        WHERE `notransaksi` = '".$param['notransaksi']."' and `kodeorg` ='".$param['kodeorg']."' AND `premibasis` > '".$premibasis."'";
@@ -441,8 +443,9 @@ switch($proses) {
                 //    }
                 //}
             }
-			proporsiUpah($param);
+			//proporsiUpah($param);
         }
+			proporsiUpah($param);
         break;
 	
     case 'edit':
@@ -556,13 +559,13 @@ switch($proses) {
         if($libur==false){
             if($regional!='KALTIM'){
                 // ambil premi basis
-                //$query = "SELECT afdeling, basis, premibasis, premilebihbasis
+                //$query = "SELECT afdeling, basis, premi_basis, premilebihbasis
                 //    FROM ".$dbname.".`kebun_5basispanen2`
                 //    WHERE afdeling LIKE '".substr($data['kodeorg'],0,6)."' limit 1
                 //    ";
                 //$res = fetchData($query);
                 //if(!empty($res)) {
-                //    $premibasis=$res[0]['premibasis'];            
+                //    $premi_basis=$res[0]['premi_basis'];            
                 //}
 
                 // cek janjang taksasi
@@ -593,7 +596,7 @@ switch($proses) {
         //        echo "error:".$jjgmasak.",".$hasilkerja;
 
                 // janjang output di taksasi itu udah dikali 1.1
-                // kalo janjang panen>(janjang masak taksasi x 1.1), set premibasis=53000 where premibasis>53000 and notransaksi=notransaksi
+                // kalo janjang panen>(janjang masak taksasi x 1.1), set premi_basis=53000 where premi_basis>53000 and notransaksi=notransaksi
                 //if($hasilkerja>$jjgmasak){
                 //    $query="UPDATE `".$dbname."`.`kebun_prestasi` SET `premibasis` = '".$premibasis."' 
                 //        WHERE `notransaksi` = '".$param['notransaksi']."' and `kodeorg` ='".$param['kodeorg']."' AND `premibasis` > '".$premibasis."'";
@@ -603,8 +606,9 @@ switch($proses) {
                 //    }
                 //}                    
             }
-			proporsiUpah($param);
+			//proporsiUpah($param);
         }
+			proporsiUpah($param);
 		break;
 	
     case 'delete':
@@ -732,7 +736,7 @@ switch($proses) {
         
         $basis=0;
         // ambil basis yang paling kecil
-        $query = "SELECT bjr, afdeling, basis, premibasis, premilebihbasis
+        $query = "SELECT bjr, afdeling, basis, premi_basis, premilebihbasis
             FROM ".$dbname.".`kebun_5basispanen2`
             WHERE afdeling LIKE '".$afdelingafdelingafdeling."' order by bjr asc limit 1
             ";
@@ -741,7 +745,7 @@ switch($proses) {
 				$bjrpalingkecil=$res[0]['bjr'];
 		}
         // ambil basis yang paling besar
-        $query = "SELECT bjr, afdeling, basis, premibasis, premilebihbasis
+        $query = "SELECT bjr, afdeling, basis, premi_basis, premilebihbasis
             FROM ".$dbname.".`kebun_5basispanen2`
             WHERE afdeling LIKE '".$afdelingafdelingafdeling."' order by bjr desc limit 1
             ";
@@ -755,14 +759,14 @@ switch($proses) {
         if($bjr>$bjrpalingbesar)$bjr2=$bjrpalingbesar;
         
         // ambil basis berdasarkan bjr + afdeling
-        $query = "SELECT afdeling, basis, premibasis, premilebihbasis
+        $query = "SELECT afdeling, basis, premi_basis, premilebihbasis
             FROM ".$dbname.".`kebun_5basispanen2`
             WHERE afdeling LIKE '".$afdelingafdelingafdeling."' and bjr = ".round($bjr2,2)."
             ";
 		$res = fetchData($query);
 		if(!empty($res)) {
 				$basis=$res[0]['basis'];
-				$premibasis=$res[0]['premibasis'];            
+				$premi_basis=$res[0]['premi_basis'];            
 				$premilebihbasis=$res[0]['premilebihbasis'];            
 		}
         
@@ -863,10 +867,10 @@ switch($proses) {
   
         // itung premi basis (kalo 2x basis, dapet 2x... dst)
         @$kalibasis=floor($janjangjanjangjanjang/$basis);        
-        $premibasis=$premibasis*$kalibasis;            
+        $premi_basis=$premi_basis*$kalibasis;            
 
         $hasilkerjakg=round($bjr*$janjangjanjangjanjang,2);
-        $hasilhasilhasil=$hasilkerjakg.'##'.$basis.'##'.$premibasis.'##'.$premilebihbasis.'##'.$upahpenalty.'##'.$upahharian.'##'.$batasproporsi;
+        $hasilhasilhasil=$hasilkerjakg.'##'.$basis.'##'.$premi_basis.'##'.$premilebihbasis.'##'.$upahpenalty.'##'.$upahharian.'##'.$batasproporsi;
         echo $hasilhasilhasil;
 		break;
         
@@ -901,23 +905,23 @@ switch($proses) {
 		}
         
         // ambil basis berdasarkan bjr + afdeling
-        $query = "SELECT afdeling, basis, premibasis, premilebihbasis
+        $query = "SELECT afdeling, basis, premi_basis, premilebihbasis
             FROM ".$dbname.".`kebun_5basispanen2`
             WHERE afdeling LIKE '".$afdelingafdelingafdeling."' and bjr = ".round($bjr2,2)."
             ";
 		$res = fetchData($query);
 		if(!empty($res)) {
 				$basis=$res[0]['basis'];
-				$premibasis=$res[0]['premibasis'];            
+				$premi_basis=$res[0]['premi_basis'];            
 				$premilebihbasis=$res[0]['premilebihbasis'];            
 		}
         $hasil33=$hasilhasilhasil*$premilebihbasis;
         
         // itung premi basis (kalo 2x basis, dapet 2x... dst)
         @$kalibasis=floor($hasilhasilhasil/$basis);        
-        $premibasis=$premibasis*$kalibasis;                    
+        $premi_basis=$premi_basis*$kalibasis;                    
         
-        echo $hasil3.'##'.$hasil33.'##'.$basis.'##'.$premibasis;
+        echo $hasil3.'##'.$hasil33.'##'.$basis.'##'.$premi_basis;
 		break;
 	
     case 'updUpah':
@@ -925,7 +929,7 @@ switch($proses) {
 		$qUMR = selectQuery($dbname,'sdm_5gajipokok','sum(jumlah) as nilai',
 			"karyawanid=".$firstKary." and tahun=".$param['tahun']." and idkomponen in (1,31)");
 		$Umr = fetchData($qUMR);
-        $upahharian=round($Umr[0]['nilai']/25);
+        $upahharian=round($Umr[0]['nilai']/25,2);
         $luaspanen=$param['luaspanen'];
         $hasilkerja=$param['hasilkerja'];
         $basis=$param['basis'];
@@ -1002,7 +1006,7 @@ switch($proses) {
         //    
         //}
         
-		echo round($upahharian).'##'.round($upahpenalty);
+		echo round($upahharian,2).'##'.round($upahpenalty,2);
 		break;
         
     case 'updUpah2': // if($regional=='KALTIM')
@@ -1034,8 +1038,79 @@ switch($proses) {
 		$resBlok = fetchData($qBlok);
 		if(empty($resBlok)) exit("Warning: Areal Statement blok ".$param['blok']." belum ada");
 		$dataBlok = $resBlok[0];
-		
+                
+                ##hasil kg
+                $iBjr="select bjr from ".$dbname.".kebun_5bjr where kodeorg='".$param['blok']."' order by tahunproduksi DESC limit 1 ";
+                $nBjr=  mysql_query($iBjr) or die (mysql_error($conn));
+                $dBjr=mysql_fetch_assoc($nBjr);
+                    $hasilkg=  number_format($param['hasilkerja']*$dBjr['bjr'],2);
+                    $hasilkerjakg=  str_replace(",", "", $hasilkg);
+		//if($hasilkerjakg-$param['brondolan']<0) exit("Warning: Hasil Kerja (KG) lebih kecil dari Brondolan...!");
+
+	  	//exit("Warning: ".$param['hasilkerja']." Kg, ".$hasilkerjakg." Kgx");
 		// Get Basis Panen dan Ketentuan Premi
+
+ 	    $topografi=$dataBlok['topografi'];
+		$kelaspohon='0';
+		if($_SESSION['org']['kodeorganisasi']=='MPA'){
+			if($dBjr['bjr']<=0){
+				exit("Warning: BJR belum disetup pada Blok ".$param['blok']." di KEBUN->Setup->Tabel BJR");
+			}elseif($dBjr['bjr']<=6){
+				$kelaspohon='1';
+			}elseif($dBjr['bjr']<=10){
+				$kelaspohon='2';
+			}elseif($dBjr['bjr']>10){
+				$kelaspohon='3';
+			}else{
+				$kelaspohon='3';
+			}
+		}else{
+			if($dBjr['bjr']<=0){
+				exit("Warning: BJR belum disetup pada Blok ".$param['blok']." di KEBUN->Setup->Tabel BJR");
+			}elseif($dBjr['bjr']<7){
+				$kelaspohon='1';
+			}elseif($dBjr['bjr']<=10){
+				$kelaspohon='2';
+			}elseif($dBjr['bjr']<=13){
+				$kelaspohon='3';
+			}elseif($dBjr['bjr']<=16){
+				$kelaspohon='4';
+			}elseif($dBjr['bjr']<=19){
+				$kelaspohon='5';
+			}else{
+				$kelaspohon='6';
+			}
+		}
+	
+		$jenisPremi = ($libur) ? 'LIBUR': 'KERJA';
+		$whereBasis = "afdeling='".$_SESSION['org']['kodeorganisasi']."'
+			and jenispremi='".$jenisPremi."'
+			and kelaspohon='".$kelaspohon."'
+			and topografi='".$dataBlok['topografi']."'";
+		$qBasis = selectQuery($dbname,'kebun_5basispanen2',"*",$whereBasis);
+		$resBasis = fetchData($qBasis);
+		if(empty($resBasis)) exit("Warning: Basis Panen belum ada untuk\nPT ".
+								  $_SESSION['org']['kodeorganisasi']."\nJenis Premi ".$jenisPremi.
+								  "\nKelas Pohon ".$kelaspohon."\nTopografi ".
+								  $dataBlok['topografi']);
+		$rumusPremi = $resBasis[0];
+
+		// Get Rate Premi Lebih Basis Hari Kerja, jika hari libur
+		// digunakan untuk perhitungan denda
+		if($libur) {
+			$whereBasis1 = "afdeling='".$_SESSION['org']['kodeorganisasi']."'
+				and jenispremi='KERJA'
+				and kelaspohon='".$kelaspohon."'
+				and topografi='".$dataBlok['topografi']."'";
+			$qBasis1 = selectQuery($dbname,'kebun_5basispanen2',"*",$whereBasis1);
+			$resBasis1 = fetchData($qBasis1);
+			if(empty($resBasis1)) exit("Warning: Basis Panen belum ada untuk\nPT ".
+									  $_SESSION['org']['kodeorganisasi']."\nJenis Premi KERJA".
+									  "\nKelas Pohon ".$kelaspohon."\nTopografi ".
+									  $dataBlok['topografi']);
+		}
+
+		/*
 		$jenisPremi = ($libur) ? 'LIBUR': 'KERJA';
 		$whereBasis = "afdeling='".$_SESSION['org']['kodeorganisasi']."'
 			and jenispremi='".$jenisPremi."'
@@ -1048,7 +1123,7 @@ switch($proses) {
 								  "\nKelas Pohon ".$dataBlok['kelaspohon']."\nTopografi ".
 								  $dataBlok['topografi']);
 		$rumusPremi = $resBasis[0];
-		
+
 		// Get Rate Premi Lebih Basis Hari Kerja, jika hari libur
 		// digunakan untuk perhitungan denda
 		if($libur) {
@@ -1063,7 +1138,7 @@ switch($proses) {
 									  "\nKelas Pohon ".$dataBlok['kelaspohon']."\nTopografi ".
 									  $dataBlok['topografi']);
 		}
-		
+		*/
 		// Get Denda
 		$qDenda = selectQuery($dbname,'kebun_5dendapanen',"*",
 							  "kodeorg='".substr($param['blok'],0,4)."'");
@@ -1106,32 +1181,80 @@ switch($proses) {
 		}
 		
 		// 2. Premi Kehadiran
-		if(!$libur) {
+		//if(!$libur) {
 			$premi += $rumusPremi['premitopografi'];
-		}
+		//}
 		
 		// 3. Premi Over Basis
-		$jjg = $param['hasilkerja'];
-		$overJjg = $jjg - $rumusPremi['basis'];
-		if($libur) {
-			$premi += $jjg * $rumusPremi['premilebihbasis'];
-		} else {
-			if($overJjg > 0) {
-				$premi += $overJjg * $rumusPremi['premilebihbasis'];
-				$premilebih += $overJjg * $rumusPremi['premilebihbasis'];
-			}
-		}
-		
-		// 4. Premi Brondolan
-		$premi += $param['brondolan'] * $rumusPremi['premibrondolan'];
+	       $hasiltbs=0;
+		   $bataslebih=0;
+		   $kgbrondolan=0;
+  		   if($rumusPremi['jenisbasis']=='JJG'){
+		      $hasiltbs = $param['hasilkerja'];
+			  $bataslebih=60;
+		      $kgbrondolan=0;
+		   }else{
+		      $hasiltbs = $hasilkerjakg;
+			  $bataslebih=300;
+		      //$kgbrondolan=$param['brondolan'];
+		      $kgbrondolan=0;
+           }
+
+  	       //exit("Warning: ".$hasiltbs." ".$rumusPremi['jenisbasis']." ".$bataslebih." ".$rumusPremi['jenisbasis']." ");
+
+           $overbasis = $hasiltbs - $rumusPremi['basis'];
+  		   //Capai Basis
+		   if($overbasis>=0){
+			  $premi += $rumusPremi['premiliburcapaibasis'];
+			  $premilebih += $rumusPremi['premiliburcapaibasis'];
+           }
+		   if($libur) {
+	  	      $premi += ($hasiltbs-$kgbrondolan) * $rumusPremi['premilebihbasis'];
+		   }else {
+              //Over Basis 1-300 Kg
+			  if($overbasis-$kgbrondolan <=0){
+			     $premi += 0 * $rumusPremi['premilebihbasis'];
+				 $premilebih += 0 * $rumusPremi['premilebihbasis'];
+			  }elseif($overbasis-$kgbrondolan >=$bataslebih){
+			     $premi += $bataslebih * $rumusPremi['premilebihbasis'];
+				 $premilebih += $bataslebih * $rumusPremi['premilebihbasis'];
+			  }else{
+			     $premi += ($overbasis-$kgbrondolan) * $rumusPremi['premilebihbasis'];
+				 $premilebih += ($overbasis-$kgbrondolan) * $rumusPremi['premilebihbasis'];
+			  }
+              //Over Basis 301-600 Kg
+			  if($overbasis-$kgbrondolan-$bataslebih <=0){
+			     $premi += 0 * $rumusPremi['premilebihbasis2'];
+				 $premilebih += 0 * $rumusPremi['premilebihbasis2'];
+			  }elseif($overbasis-$kgbrondolan-$bataslebih >=$bataslebih){
+			     $premi += $bataslebih * $rumusPremi['premilebihbasis2'];
+				 $premilebih += $bataslebih * $rumusPremi['premilebihbasis2'];
+			  }elseif($overbasis-$kgbrondolan-$bataslebih <$bataslebih){
+			     $premi += ($overbasis-$kgbrondolan-$bataslebih) * $rumusPremi['premilebihbasis2'];
+				 $premilebih += ($overbasis-$kgbrondolan-$bataslebih) * $rumusPremi['premilebihbasis2'];
+			  }
+              //Over Basis 601-Lebih Kg
+			  if($overbasis-$kgbrondolan-($bataslebih*2) <=0){
+			     $premi += 0 * $rumusPremi['premilebihbasis3'];
+				 $premilebih += 0 * $rumusPremi['premilebihbasis3'];
+			  }elseif($overbasis-$kgbrondolan-($bataslebih*2) >0){
+			     $premi += ($overbasis-$kgbrondolan-($bataslebih*2)) * $rumusPremi['premilebihbasis3'];
+				 $premilebih += ($overbasis-$kgbrondolan-($bataslebih*2)) * $rumusPremi['premilebihbasis3'];
+			  }
+
+		   }
+
+		// 4. Premi Brondolan (Pindah ke baris 1289)
+		//$premi += $param['brondolan'] * $rumusPremi['premibrondolan'];
 		
 		// 5. Premi Hari Libur
 		if($libur) {
-			if($overJjg >= 0) {
-				$premi += $rumusPremi['premiliburcapaibasis'];
-			} else {
+			//if($overJjg >= 0) {
+			//	//$premi += $rumusPremi['premiliburcapaibasis'];
+			//	$premi += $rumusPremi['premilibur'];
+			//} else {
 				$premi += $rumusPremi['premilibur'];
-			}
+			//}
 		}
 		
 		/**
@@ -1143,25 +1266,38 @@ switch($proses) {
 			"karyawanid=".$firstKary." and tahun=".$param['tahun']." and idkomponen in (1,31)");
 		$Umr = fetchData($qUMR);
         $upahharian=round($Umr[0]['nilai']/25);
-		
 		$basis = $rumusPremi['basis'];
-		$capaibasis= ($basis - $param['hasilkerja'])/$basis;
-		$upahpenalty=0;
-		if(!($libur) and !empty($resRegion) and
-		   $resRegion[0]['regional']=='PAPUA' and
-		   $capaibasis < 1 and $capaibasis > 0) {
-			$upahpenalty = $upahharian * $capaibasis;
+ 		//$capaibasis= ($basis - $param['hasilkerja'])/$basis;
+		$batasluaspanen=0;
+		if($_SESSION['org']['kodeorganisasi']=='MPA'){
+ 			$batasluaspanen=3;
+		}else{
+		   if($topografi=='B1'){
+ 			  $batasluaspanen=4;
+		   }else{
+ 		      $batasluaspanen=5;
+           }
 		}
-                
-                
-                ##hasil kg
-                
-                $iBjr="select bjr from ".$dbname.".kebun_5bjr where kodeorg='".$param['blok']."' ";
-                $nBjr=  mysql_query($iBjr) or die (mysql_error($conn));
-                $dBjr=mysql_fetch_assoc($nBjr);
-                    $hasilkg=  number_format($jjg*$dBjr['bjr'],2);
-                    $hasilkerjakg=  str_replace(",", "", $hasilkg);
-		
+		$capaibasis=0;
+		if($basis>0){
+	 		$capaibasis= ($basis - $hasiltbs)/$basis;
+		}
+		$upahpenalty=0;
+		//if(!($libur) and !empty($resRegion) and ($capaibasis < 1 and $capaibasis > 0) and ($param['luaspanen']<$batasluaspanen or $param['brondolan']==0)){
+		if(!($libur) and !empty($resRegion) and ($capaibasis < 1 and $capaibasis > 0) and $param['luaspanen']<$batasluaspanen){
+			$upahpenalty = round($upahharian * $capaibasis,2);
+		}else if(!($libur) and !empty($resRegion) and ($capaibasis < 1 and $capaibasis > 0) and $param['luaspanen']>=$batasluaspanen){
+			//if($param['brondolan']==0){
+			//	$upahpenalty = round($upahharian * $capaibasis,2);
+			//}
+		}
+  	    //exit("Warning: ".$topografi." Ha dan ".$param['luaspanen']." Ha ");
+		if(!($libur) and ($capaibasis < 1 and $capaibasis > 0)){
+			$premi += $param['brondolan'] * $rumusPremi['premibrondolan'];
+		}else{
+			$premi += $param['brondolan'] * $rumusPremi['premibrondolan'];
+		}
+
 		$res = array(
 			'dendajjg' => $denda['jjg'],
 			'dendarp' => $denda['rp'],
@@ -1170,7 +1306,7 @@ switch($proses) {
 			'basis' => $rumusPremi['basis'],
 			'hari' => $jenisPremi,
 			'upahpenalty' => $upahpenalty,
-                        'hasilkerjakg' => $hasilkerjakg
+            'hasilkerjakg' => $hasilkerjakg
 		);//indra
 		echo json_encode($res);
 		break;
@@ -1181,28 +1317,34 @@ switch($proses) {
 
 function cekPrestasi($param) {
 	global $dbname;
-	
+	/*
 	// Cek Panen hanya di 1 blok
 	$qPnn = selectQuery($dbname,'kebun_prestasi_vw','karyawanid',
 						"karyawanid='".$param['nik']."' and tanggal='".
 						tanggalsystem($param['tanggal'])."'");
 	$resPnn = fetchData($qPnn);
 	if(!empty($resPnn)) exit("Warning: Pemanen hanya dapat terdaftar di 1 kali dalam hari yang sama");
-	
+	*/
 	// Cek Perawatan
 	// Jika sudah ada di perawatan tidak bisa input panen
 	// Jika karyawan ada pekerjaan panen dan perawatan, maka harus malekukan input panen terlebih dahulu
+	$qAbs = selectQuery($dbname,'kebun_prestasi_vw','karyawanid',
+						"karyawanid='".$param['nik']."' and tanggal='".tanggalsystem($param['tanggal'])."' and notransaksi<>'".$param['notransaksi']."'");
+	$resAbs = fetchData($qAbs);
+	if(!empty($resAbs)) {
+		exit("Warning: Karyawan sudah terdaftar di kemandoran panen lain");
+	}
+
 	$qAbs = selectQuery($dbname,'kebun_kehadiran_vw','karyawanid',
 						"karyawanid='".$param['nik']."' and tanggal='".tanggalsystem($param['tanggal'])."'");
 	$resAbs = fetchData($qAbs);
-	
 	if(!empty($resAbs)) {
 		exit("Warning: Karyawan sudah terdaftar di kegiatan perawatan");
 	}
 }
 
 
-function proporsiUpah($param) {
+function proporsiUpah_Lama($param) {
 	global $dbname;
 	global $conn;
 	
@@ -1241,4 +1383,296 @@ function proporsiUpah($param) {
 			}
 		}
 	}
+}
+
+
+function proporsiUpah($param) {
+	global $dbname;
+	global $conn;
+	
+	// Get Region
+	$qRegion = selectQuery($dbname,'bgt_regional_assignment','regional',
+						   "kodeunit = '".substr($param['kodeorg'],0,4)."'");
+	$resRegion = fetchData($qRegion);
+	// Cek Hari Libur
+	$qLibur = selectQuery($dbname,'sdm_5harilibur',"*","tanggal='".
+						  tanggalsystem($param['tanggal'])."' and ".
+						  "keterangan='libur' and kebun in ('GLOBAL','".
+						  substr($param['kodeorg'],0,4)."')");
+	$resLibur = fetchData($qLibur);
+	$libur = false;
+	if(!empty($resLibur)) $libur = true;
+	//if($libur) exit;
+	
+	// Get Tahun
+	$tmpTgl = explode('-',$param['tanggal']);
+	$tahun = $tmpTgl[2];
+	
+	// Get UMR
+	$qUMR = selectQuery($dbname,'sdm_5gajipokok','sum(jumlah) as nilai',
+		"karyawanid=".$param['nik']." and tahun=".$tahun." and idkomponen in (1,31)");
+	$Umr = fetchData($qUMR);
+	$upahharian=round($Umr[0]['nilai']/25,2);
+
+	// Get Sum Data Panen Total Hasil Kerja
+    $where2 = "a.notransaksi='".$param['notransaksi']."' and a.nik='".$param['nik']."'";
+    $where  = "notransaksi='".$param['notransaksi']."' and nik='".$param['nik'].
+	          "' and kodeorg='".$param['kodeorg']."' and kodesegment='".$param['kodesegment']."'";
+    //$qsPres = "SELECT sum(a.hasilkerja) as totaltbs,sum(a.hasilkerjakg) as totaltbskg,sum(a.hasilkerjakg-a.brondolan) as totaltbsnet,sum(a.luaspanen) as totalluaspanen FROM `".$dbname."`.`kebun_prestasi` a WHERE ".$where2;
+    $qsPres = "SELECT sum(a.hasilkerja) as totaltbs,sum(a.hasilkerjakg) as totaltbskg,sum(a.hasilkerjakg) as totaltbsnet,sum(a.luaspanen) as totalluaspanen FROM `".$dbname."`.`kebun_prestasi` a WHERE ".$where2;
+    $qDetail=mysql_query($qsPres) or die(mysql_error($conn));
+	if(empty($qDetail)) exit;
+    while($rDetail=mysql_fetch_assoc($qDetail))
+    {
+      $totaltbs=$rDetail['totaltbs'];
+      $totaltbskg=$rDetail['totaltbskg'];
+      $totaltbsnet=$rDetail['totaltbsnet'];
+      $totalluaspanen=$rDetail['totalluaspanen'];
+    }          
+
+	// Get Sum Data Panen Proporsi Basis
+	$qsPres = "SELECT a.*,b.topografi FROM `".$dbname."`.`kebun_prestasi` a LEFT JOIN `".$dbname."`.`setup_blok` b on a.kodeorg=b.kodeorg WHERE ".$where2;
+    $qDetail=mysql_query($qsPres) or die(mysql_error($conn));
+    $totalbasispro=0;
+  	$batasluaspanen=0;
+	$jenisbasis='KG';
+  	$totalpremikehadiran=0;
+  	$totalpremilibur=0;
+  	$totalpremicapaibasis=0;
+  	$totalbrondolan=0;
+  	$totalpremibrondolan=0;
+	while($rDetail=mysql_fetch_assoc($qDetail))
+    {
+	   $bjr=$rDetail['hasilkerjakg']/$rDetail['hasilkerja'];
+
+       //Ambil Tabel Premi
+ 	    $topografi=$rDetail['topografi'];
+		$kelaspohon='0';
+		if($_SESSION['org']['kodeorganisasi']=='MPA'){
+			if($bjr<=0){
+				exit("Warning: BJR belum disetup pada Blok di KEBUN->Setup->Tabel BJR");
+			}elseif($bjr<=6){
+				$kelaspohon='1';
+			}elseif($bjr<=10){
+				$kelaspohon='2';
+			}elseif($bjr>10){
+				$kelaspohon='3';
+			}else{
+				$kelaspohon='3';
+			}
+		}else{
+			if($bjr<=0){
+				exit("Warning: BJR belum disetup pada Blok di KEBUN->Setup->Tabel BJR");
+			}elseif($bjr<7){
+				$kelaspohon='1';
+			}elseif($bjr<=10){
+				$kelaspohon='2';
+			}elseif($bjr<=13){
+				$kelaspohon='3';
+			}elseif($bjr<=16){
+				$kelaspohon='4';
+			}elseif($bjr<=19){
+				$kelaspohon='5';
+			}else{
+				$kelaspohon='6';
+			}
+		}
+		$jenisPremi = ($libur) ? 'LIBUR': 'KERJA';
+		$whereBasis = "afdeling='".$_SESSION['org']['kodeorganisasi']."'
+			and jenispremi='".$jenisPremi."'
+			and kelaspohon='".$kelaspohon."'
+			and topografi='".$topografi."'";
+		$qBasis = selectQuery($dbname,'kebun_5basispanen2',"*",$whereBasis);
+		$resBasis = fetchData($qBasis);
+		if(empty($resBasis)) exit("Warning: Basis Panen belum ada untuk\nPT ".
+								  $_SESSION['org']['kodeorganisasi']."\nJenis Premi ".$jenisPremi.
+								  "\nKelas Pohon ".$kelaspohon."\nTopografi ".$topografi);
+		$rumusPremi = $resBasis[0];
+		$jenisbasis=$rumusPremi['jenisbasis'];
+	    if($jenisbasis=='JJG'){
+	       $totalbasispro +=$rumusPremi['basis']*($rDetail['hasilkerja']/$totaltbs);
+           if($topografi=='B1'){
+			   if($_SESSION['org']['kodeorganisasi']=='MPA'){
+				$batasluaspanen +=3*($rDetail['hasilkerja']/$totaltbs);
+			   }else{
+				$batasluaspanen +=4*($rDetail['hasilkerja']/$totaltbs);
+			   }
+           }else{
+			   if($_SESSION['org']['kodeorganisasi']=='MPA'){
+				$batasluaspanen +=3*($rDetail['hasilkerja']/$totaltbs);
+			   }else{
+ 				$batasluaspanen +=5*($rDetail['hasilkerja']/$totaltbs);
+			   }
+           }
+   		  $totalpremikehadiran += $rumusPremi['premitopografi']*($rDetail['hasilkerja']/$totaltbs);
+ 		  $totalpremilibur += $rumusPremi['premilibur']*($rDetail['hasilkerja']/$totaltbs);
+		  $totalpremicapaibasis += $rumusPremi['premiliburcapaibasis']*($rDetail['hasilkerja']/$totaltbs);
+	    }else{
+	      //$totalbasispro +=$rumusPremi['basis']*(($rDetail['hasilkerjakg']-$rDetail['brondolan'])/$totaltbsnet);
+	      $totalbasispro +=$rumusPremi['basis']*(($rDetail['hasilkerjakg'])/$totaltbsnet);
+          if($topografi=='B1'){
+			 if($_SESSION['org']['kodeorganisasi']=='MPA'){
+				$batasluaspanen +=3*($rDetail['hasilkerjakg']/$totaltbskg);
+			 }else{
+				$batasluaspanen +=4*($rDetail['hasilkerjakg']/$totaltbskg);
+			 }
+          }else{
+			 if($_SESSION['org']['kodeorganisasi']=='MPA'){
+				$batasluaspanen +=3*($rDetail['hasilkerjakg']/$totaltbskg);
+			 }else{
+ 				$batasluaspanen +=5*($rDetail['hasilkerjakg']/$totaltbskg);
+			 }
+          }
+   		  $totalpremikehadiran += $rumusPremi['premitopografi']*($rDetail['hasilkerjakg']/$totaltbskg);
+ 		  $totalpremilibur += $rumusPremi['premilibur']*($rDetail['hasilkerjakg']/$totaltbskg);
+		  $totalpremicapaibasis += $rumusPremi['premiliburcapaibasis']*($rDetail['hasilkerjakg']/$totaltbskg);
+		}
+		$totalbrondolan += $rDetail['brondolan'];
+		$totalpremibrondolan += $rumusPremi['premibrondolan']*$rDetail['brondolan'];
+	}
+
+	// Get Data Panen
+    $qPres = "SELECT a.*,b.topografi FROM `".$dbname."`.`kebun_prestasi` a LEFT JOIN `".$dbname."`.`setup_blok` b on a.kodeorg=b.kodeorg WHERE ".$where2;
+    $resPres=mysql_query($qPres) or die(mysql_error($conn));
+	// Iterasi per transaksi
+    while($rowPres=mysql_fetch_assoc($resPres))
+    {
+       $notransaksi=$rowPres['notransaksi'];
+       $nik        =$rowPres['nik'];
+       $kodeorg    =$rowPres['kodeorg'];
+       $kodesegment=$rowPres['kodesegment'];
+	   $bjr        =$rowPres['hasilkerjakg']/$rowPres['hasilkerja'];
+	   $brondolan  =$rowPres['brondolan'];
+	   $premicapaibasis=0;
+       $hasiltbs=0;
+	   $bataslebih=0;
+	   $kgbrondolan=0;
+
+	   //Ambil Tabel Premi
+ 	    $topografi=$rowPres['topografi'];
+		$kelaspohon='0';
+		if($_SESSION['org']['kodeorganisasi']=='MPA'){
+			if($bjr<=0){
+				exit("Warning: BJR belum disetup pada Blok di KEBUN->Setup->Tabel BJR");
+			}elseif($bjr<=6){
+				$kelaspohon='1';
+			}elseif($bjr<=10){
+				$kelaspohon='2';
+			}elseif($bjr>10){
+				$kelaspohon='3';
+			}else{
+				$kelaspohon='3';
+			}
+		}else{
+			if($bjr<=0){
+				exit("Warning: BJR belum disetup pada Blok di KEBUN->Setup->Tabel BJR");
+			}elseif($bjr<7){
+				$kelaspohon='1';
+			}elseif($bjr<=10){
+				$kelaspohon='2';
+			}elseif($bjr<=13){
+				$kelaspohon='3';
+			}elseif($bjr<=16){
+				$kelaspohon='4';
+			}elseif($bjr<=19){
+				$kelaspohon='5';
+			}else{
+				$kelaspohon='6';
+			}
+		}
+		$jenisPremi = ($libur) ? 'LIBUR': 'KERJA';
+		$whereBasis = "afdeling='".$_SESSION['org']['kodeorganisasi']."'
+			and jenispremi='".$jenisPremi."'
+			and kelaspohon='".$kelaspohon."'
+			and topografi='".$topografi."'";
+		$qBasis = selectQuery($dbname,'kebun_5basispanen2',"*",$whereBasis);
+		$resBasis = fetchData($qBasis);
+		if(empty($resBasis)) exit("Warning: Basis Panen belum ada untuk\nPT ".
+								  $_SESSION['org']['kodeorganisasi']."\nJenis Premi ".$jenisPremi.
+								  "\nKelas Pohon ".$kelaspohon."\nTopografi ".$topografi);
+		$rumusPremi = $resBasis[0];
+		$jenisbasis=$rumusPremi['jenisbasis'];
+
+	   if($jenisbasis=='JJG'){
+	      $hasiltbs   =$rowPres['hasilkerja'];
+	      $kgbrondolan=0;
+		  $totalhasiltbs=$totaltbs;
+		  $totalhasiltbsnet=$totaltbs;
+		  $bataslebih=60*($hasiltbs-$kgbrondolan)/$totalhasiltbsnet;
+	   }else{
+	      $hasiltbs   =$rowPres['hasilkerjakg'];
+	      //$kgbrondolan=$brondolan;
+	      $kgbrondolan=0;
+          $totalhasiltbs=$totaltbskg;
+		  $totalhasiltbsnet=$totaltbsnet;
+		  $bataslebih=300*($hasiltbs-$kgbrondolan)/$totalhasiltbsnet;
+	   }
+       $upahkerja  =round($upahharian*($hasiltbs-$kgbrondolan)/$totalhasiltbsnet,2);
+	   $premikehadiran=round($totalpremikehadiran*($hasiltbs-$kgbrondolan)/$totalhasiltbsnet,2);
+	   $premilibur=round($totalpremilibur*($hasiltbs-$kgbrondolan)/$totalhasiltbsnet,2);
+	   if($totalhasiltbs>=$totalbasispro){
+  		 $premicapaibasis=round($totalpremicapaibasis*($hasiltbs-$kgbrondolan)/$totalhasiltbsnet,2);
+	   }
+	   //$premibrondolan=round($totalpremibrondolan*($brondolan/$totalbrondolan),2);
+	   //$premibrondolan=round($brondolan*$rumusPremi['premibrondolan'],2);
+
+		// 3. Premi Over Basis
+		   $premi=0;
+           $overbasis = ($totalhasiltbsnet-$totalbasispro)*(($hasiltbs-$kgbrondolan)/$totalhasiltbsnet);
+		   if($libur){
+			  $upahkerja=0;
+	  	      $premi=($hasiltbs-$kgbrondolan)*$rumusPremi['premilebihbasis'];
+		   }else {
+              //Over Basis 1-300 Kg
+			  if($overbasis<=0){
+			     $premi += 0 * $rumusPremi['premilebihbasis'];
+			  }elseif($overbasis>=$bataslebih){
+			     $premi += $bataslebih * $rumusPremi['premilebihbasis'];
+			  }else{
+			     $premi += ($overbasis) * $rumusPremi['premilebihbasis'];
+			  }
+              //Over Basis 301-600 Kg
+			  if($overbasis-$bataslebih <=0){
+			     $premi += 0 * $rumusPremi['premilebihbasis2'];
+			  }elseif($overbasis-$bataslebih >=$bataslebih){
+			     $premi += $bataslebih * $rumusPremi['premilebihbasis2'];
+			  }elseif($overbasis-$bataslebih <$bataslebih){
+			     $premi += ($overbasis-$bataslebih) * $rumusPremi['premilebihbasis2'];
+			  }
+              //Over Basis 601-Lebih Kg
+			  if($overbasis-($bataslebih*2) <=0){
+			     $premi += 0 * $rumusPremi['premilebihbasis3'];
+			  }elseif($overbasis-($bataslebih*2) >0){
+			     $premi += ($overbasis-($bataslebih*2)) * $rumusPremi['premilebihbasis3'];
+			  }
+		   }
+
+       //Denda
+ 	   $capaibasis= ($totalbasispro - $totalhasiltbs)/$totalbasispro;
+	   $totalupahpenalty=0;
+	   if(!($libur) and ($capaibasis < 1 and $capaibasis > 0) and round($totalluaspanen,2)<round($batasluaspanen,2)){
+		  $totalupahpenalty = round($upahharian * $capaibasis,2);
+	   }
+
+		if(!($libur) and ($capaibasis < 1 and $capaibasis > 0)){
+			//$premibrondolan=0;
+			$premibrondolan=round($brondolan*$rumusPremi['premibrondolan'],2);
+		}else{
+			$premibrondolan=round($brondolan*$rumusPremi['premibrondolan'],2);
+		}
+	   $upahpremi=round($premikehadiran+$premilibur+$premicapaibasis+$premibrondolan+$premi,2);
+	   $premibasis=round($premicapaibasis+$premi,2);
+
+
+	   $upahpenalty=round($totalupahpenalty*($hasiltbs-$kgbrondolan)/$totalhasiltbsnet,2);
+	   $where  = "notransaksi='".$notransaksi."' and nik='".$nik.
+	             "' and kodeorg='".$kodeorg."' and kodesegment='".$kodesegment."'";
+
+	   // Update Data Upah
+       //$qUpd="UPDATE `".$dbname."`.`kebun_prestasi` SET `upahkerja` = '".$upahkerja."',`upahpenalty` = '".$upahpenalty."',`upahpremi` = '".$upahpremi."',`premibasis` = '".$premibasis."' WHERE ".$where;
+       $qUpd="UPDATE `".$dbname."`.`kebun_prestasi` SET `upahkerja` = '".$upahkerja."',`upahpenalty` = '".$upahpenalty."',`upahpremi` = '".$upahpremi."' WHERE ".$where;
+	   if(!mysql_query($qUpd)) {
+	  	  exit("Proporsi Error: ".mysql_error($conn));
+	   }
+    }          
 }

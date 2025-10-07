@@ -125,7 +125,7 @@ while($bar=mysql_fetch_object($res))
     $ttlLuastm+=$bar->luas;
 }
 $str="select sum(hathnini) as luas,thntnm from ".$dbname.".bgt_blok where 
-      kodeblok like '".$kodeOrg."%' and statusblok in ('TB','TBM') and tahunbudget='".$thnBudget."'  ";
+      kodeblok like '".$kodeOrg."%' and statusblok like 'TB%' and tahunbudget='".$thnBudget."'  ";
 $res=mysql_query($str);
 while($bar=mysql_fetch_object($res))
 {

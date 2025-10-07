@@ -1,5 +1,4 @@
-<?
-//@Copy nangkoelframework
+<?//@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 include_once('lib/zLib.php');
@@ -14,6 +13,7 @@ if($_SESSION['empl']['tipelokasitugas']=='HOLDING'){
 	$sOrg="select namaorganisasi,kodeorganisasi from ".$dbname.".organisasi where tipe='KEBUN'";
 }else{
 	$sOrg="select namaorganisasi,kodeorganisasi from ".$dbname.".organisasi where kodeorganisasi='".$_SESSION['empl']['lokasitugas']."'";
+    $optOrg.="<option value='EXTM'>Eksternal Pabrik</option>";
 }
 $qOrg=mysql_query($sOrg) or die(mysql_error($conn));
 while($rOrg=mysql_fetch_assoc($qOrg))

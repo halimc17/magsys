@@ -15,11 +15,10 @@ $karyawanidsave=$_POST['karyawanidsave'];
 $jumlahsave=$_POST['jumlahsave'];
 $kdorgsave=$_POST['kdorgsave'];
 
-
 $unit=$_POST['unit'];
 $jenis=$_POST['jenis'];
+$tipe=$_POST['tipe'];
 
-	
 
 switch($proses)
 {
@@ -28,7 +27,8 @@ switch($proses)
         
         #delete dlo semua 
         $iDel="delete from ".$dbname.".sdm_gaji where kodeorg='".$unit."' "
-            . " and periodegaji='".$per."' and idkomponen='".$jenis."' ";
+            . " and periodegaji='".$per."' and idkomponen='".$jenis."' and karyawanid in 
+			(select karyawanid from ".$dbname.".datakaryawan where tipekaryawan='".$tipe."')";
         //exit("Error:$iDel");
         if(mysql_query($iDel))
         {

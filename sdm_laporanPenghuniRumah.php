@@ -8,9 +8,20 @@ echo open_body();
 <?
 include('master_mainMenu.php');
 OPEN_BOX('',$_SESSION['lang']['penghuni']);
-$str="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi 
-      where tipe not in('STENGINE','BLOK','PT','HOLDING','GUDANG','STATION')
-	  order by kodeorganisasi";
+
+if($_SESSION['empl']['tipelokasitugas']=='HOLDING'){
+	$str="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi 
+			where tipe in ('KEBUN','KANWIL','PABRIK')
+			order by kodeorganisasi";
+}elseif($_SESSION['empl']['tipelokasitugas']=='KANWIL'){
+	$str="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi 
+			where tipe in ('KEBUN','KANWIL','PABRIK') and induk='".$_SESSION['empl']['induk']."'
+			order by kodeorganisasi";
+}else{
+	$str="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi 
+			where kodeorganisasi='".$_SESSION['empl']['lokasitugas']."' 
+			order by kodeorganisasi";
+}
 $res=mysql_query($str);
 $optorg.="";
 while($bar=mysql_fetch_object($res))

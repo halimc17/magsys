@@ -109,7 +109,12 @@ $optKondisi.="<option value='rusak'>Rusak</option>";
 
 #default mesin
 $optMesin="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
-	
+
+$optNomor="<option value=''></option>";
+for($x=1;$x<=20;$x++){
+	$optNomor.="<option value='".$x."'>".$x."</option>";
+}
+
 ?>
 
 <!--HEADER UNTUK BUAT BARU SAMA LIST-->
@@ -226,13 +231,13 @@ echo "
             <td>Jam Mulai</td>
             <td>:</td>
             <td><input type=text class=myinputtext id=tglMulai name=tglMulai onmousemove=setCalendar(this.id) onkeypress=return false;  maxlength=10 style=width:150px;/>
-                <select id=jmMulai>".$jm."</select>:<select id=mnMulai>".$mnt."</select></td>
+                <select id=jmMulai onchange='getJam(1)'>".$jm."</select>:<select id=mnMulai onchange='getJam(1)'>".$mnt."</select></td>
         </tr>
         <tr>
             <td>".$_SESSION['lang']['jamselesai']."</td>
             <td>:</td>
             <td><input onkeypress=\"return tanpa_kutip(event)\" type=text class=myinputtext id=tglSelesai name=tglSelesai onmousemove=setCalendar(this.id) onkeypress=return false;  maxlength=10 style=width:150px;/>
-                <select id=jmSelesai>".$jm."</select>:<select id=mnSelesai>".$mnt."</select></td>
+                <select id=jmSelesai onchange='getJam(2)'>".$jm."</select>:<select id=mnSelesai onchange='getJam(2)'>".$mnt."</select></td>
         </tr>
         <tr>
             <td>".$_SESSION['lang']['jumlahjamperbaikan']."</td>
@@ -325,8 +330,9 @@ $frm[1].="<table border=0 cellpadding=1 cellspacing=1>";
 $frm[1].="
         <tr>
             <td>".$_SESSION['lang']['nourut']."</td>
-            <td>:</td>		
-            <td><input type=text id=nomor size=2 onkeypress=\"return angka_doang(event);\" class=myinputtextnumber style=\"width:150px;\"></td>
+            <td>:</td>
+            <td><input type=text id=nomor size=2 onkeyup='getPrev()' class=myinputtextnumber style=\"width:150px;\"></td>
+			<!--<td><select id=nomor onchange='getPrev()'>".$optNomor."</select></td>-->
 	</tr>
         <tr>
             <td>Item Check</td>

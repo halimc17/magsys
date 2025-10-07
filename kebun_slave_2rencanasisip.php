@@ -3,6 +3,7 @@ require_once('master_validation.php');
 require_once('config/connection.php');
 require_once('lib/nangkoelib.php');
 require_once('lib/fpdf.php');
+require_once('lib/zLib.php');
 
 $proses=checkPostGet('proses','');
 $lksiTgs=$_SESSION['empl']['lokasitugas'];
@@ -10,6 +11,7 @@ $kdOrg=checkPostGet('kdOrg','');
 $kdAfd=checkPostGet('kdAfd','');
 $periode=checkPostGet('periode','');
 
+$optNm=makeOption($dbname, 'organisasi', 'kodeorganisasi,namaorganisasi');
 if($kdAfd=='')
     $kdAfd=$kdOrg;
 
@@ -143,7 +145,7 @@ if ($proses=='excel' or $proses=='preview'){
 //            $stream.="<tr class=rowcontent onclick=detailsisip('".$blk."','".$periode."')>";
             $stream.="<tr class=rowcontent>";
                         $stream.="<td align=center>".$no."</td>
-                        <td align=center>".$blk."</td>
+                        <td align=center>".$optNm[$blk]."</td>
                         <td align=right>".number_format($cek_rencana[$blk],0)."</td>
                         <td align=right>".number_format($cek_sisip[$blk],0)."</td>    
                         <td align=right>".number_format($rencana[$blk],0)."</td>
@@ -343,7 +345,7 @@ switch($proses)
 //            echo "</pre>";
             
             $pdf->Cell(3/100*$width,$height,$no,1,0,'C',1);
-            $pdf->Cell(8/100*$width,$height,$blk,1,0,'C',1);		
+            $pdf->Cell(8/100*$width,$height,$optNm[$blk],1,0,'C',1);		
             $pdf->Cell(8/100*$width,$height,number_format($pokok[$blk],0),1,0,'R',1);			
             $pdf->Cell(15/100*$width,$height,number_format($sph[$blk],0),1,0,'R',1);		
             $pdf->Cell(8/100*$width,$height,number_format($pokokmati[$blk],0),1,0,'R',1);

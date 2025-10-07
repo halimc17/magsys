@@ -114,7 +114,12 @@ else
            $kamusKar[$kar['karyawanid']]['npwp']=$kar['npwp']; 
         }   
       
-      
+      if($kar['tipekaryawan']==2)
+         $tipekaryawan[$kar['karyawanid']]='Kontrak';
+      else if($kar['tipekaryawan']==1)
+         $tipekaryawan[$kar['karyawanid']]='KBL';
+      else
+         $tipekaryawan[$kar['karyawanid']]='Kontrak Karya';      
     }  
 }
 #1ambil semua komponen dari gajipokok=====================
@@ -653,10 +658,11 @@ else
     }
       
     
-    $iKerja="select * from ".$dbname.".sdm_5bpjs where lokasibpjs='".$bpjsOrg."' and jenisbpjs='ketanagakerjaan' ";
+    $iKerja="select * from ".$dbname.".sdm_5bpjs where lokasibpjs='".$bpjsOrg."' and jenisbpjs='ketenagakerjaan' ";
     $nKerja=  mysql_query($iKerja) or die (mysql_error($conn));
     $dKerja=  mysql_fetch_assoc($nKerja);
         $bpjsKerja=$dKerja['bebankaryawan'];
+        $bpjsKerja_lanjut=$dKerja['bebankaryawan']-1;
         
         
 
@@ -690,7 +696,7 @@ else
             'periodegaji'=>$param['periodegaji'],
             'karyawanid'=>$key,
             'idkomponen'=>3,   
-            'jumlah'=>($bpjsKerja/100*$nilai),
+            'jumlah'=>($tipekaryawan[$key]=='Kontrak Karya' ? $bpjsKerja_lanjut/100*$nilai : $bpjsKerja/100*$nilai),
             'pengali'=>1);  
           }
     } 

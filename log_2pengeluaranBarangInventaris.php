@@ -10,15 +10,34 @@ OPEN_BOX();
 <script language=javascript1.2 src="js/log_2pengeluaranBarangInventaris.js"></script>
 <script language="javascript1.2" src="js/zReport.js"></script>
 <?
+
+### begin get nama unit ###
+$optUnit="<option value=''>".$_SESSION['lang']['all']."</option>";
+$iUnit="select kodeorganisasi, namaorganisasi from ".$dbname.".organisasi where length(kodeorganisasi)=4 order by induk,kodeorganisasi";
+$nUnit=mysql_query($iUnit) or die(mysql_error($conn));
+while($dUnit=mysql_fetch_assoc($nUnit))
+{
+    $optUnit.="<option value=".$dUnit['kodeorganisasi'].">".$dUnit['namaorganisasi']."</option>";
+}
+### end get nama unit ###
+
 ### BEGIN GET EXITING PERIODE ###
-$str="select DISTINCT(DATE_FORMAT(tanggal,'%Y-%m')) AS periode from ".$dbname.".log_transaksi_vw
-      order by tanggal desc";
+//$str="select DISTINCT(DATE_FORMAT(tanggal,'%Y-%m')) AS periode from ".$dbname.".log_transaksi_vw order by tanggal desc";
+$str="select DISTINCT(periode) AS periode from ".$dbname.".setup_periodeakuntansi order by periode desc";
 $res=mysql_query($str);
 $num_rows = mysql_num_rows($res);
-$optperiode="";
+$optperiode="<option value=''>".$_SESSION['lang']['all']."</option>";
 if($num_rows >= 1){
 	while($bar=mysql_fetch_object($res))
 	{
+		$no+=1;
+		if($no==1){
+			$optperiode.="<option value='".substr($bar->periode,0,4)."'>".substr($bar->periode,0,4)."</option>";
+		}else
+		if(substr($bar->periode,5,2)=='12')
+		{
+			$optperiode.="<option value='".substr($bar->periode,0,4)."'>".substr($bar->periode,0,4)."</option>";
+		}
 		$optperiode.="<option value='".$bar->periode."'>".substr($bar->periode,5,2)."-".substr($bar->periode,0,4)."</option>";
 	}
 }else{
@@ -30,6 +49,10 @@ $arr="##kodebarang##nopo##periode";
 echo"<fieldset style='float: left;'>
 		<legend><b>Laporan Penerimaan Barang Inventaris</b></legend>
 		<table cellspacing=1 border=0>
+			<tr>
+				<td>".$_SESSION['lang']['unit']."</td>
+				<td><select id=unit>".$optUnit."</select></td>
+			</tr>
 			<tr>
 				<td>".$_SESSION['lang']['kodebarang']."</td>
 				<td><input type=text size=10 maxlength=10 id=kodebarang placeholder='".$_SESSION['lang']['caribarang']."' class=myinputtext onkeypress=\"return false;\" onclick=\"showWindowBarang('".$_SESSION['lang']['find']." ".$_SESSION['lang']['namabarang']."',event);\">

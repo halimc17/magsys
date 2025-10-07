@@ -137,6 +137,20 @@ else
        echo "Error: Warehouse transaction that has not been posted\r<br>".$stm; 
        exit();
     }
+    #periksa Tutup Gudang
+    $str="select kodeorg,periode from ".$dbname.".setup_periodeakuntansi where tutupbuku=0 and kodeorg like '".$_SESSION['empl']['lokasitugas']."%' 
+			and kodeorg <> '".$_SESSION['empl']['lokasitugas']."'
+            and periode = '".$param['periode']."'";
+    $res=mysql_query($str);
+    $stm='';
+    if(mysql_num_rows($res)>0){
+        while($bar=mysql_fetch_object($res))
+        {
+             $stm.="Gudang:".$bar->kodeorg."->Periode:".$bar->periode."";
+         }
+       echo "Error: Warehouse transaction that has not been Closed\r".$stm; 
+       exit();
+    }
 	/*
 	#cek penerimaan barang mutasi tambahan jamhari 23062013
     $scekMut="select * from ".$dbname.".log_transaksiht where kodegudang like '".$_SESSION['empl']['lokasitugas']."%'
@@ -196,7 +210,7 @@ if(mysql_num_rows($res)>0){
             $transit=$bar->saldo;
         }
 }
-if($transit>10 && $transit!='')#lebih dari  10 rupiah
+if($transit>100 && $transit!='')#lebih dari  10 rupiah
 {
     exit(" Error: Transit account has not been allocated correctly, remains:".$transit);
 }
@@ -235,7 +249,7 @@ if($_SESSION['empl']['tipelokasitugas']=='HOLDING'){
             INNER JOIN ".$dbname.".pmn_kontrakjual d on a.nokontrak = d.nokontrak 
             WHERE date(a.tanggal) between '".$currstart."' and '".$currend.
                 "'and a.nokontrak in (select nokontrak from ".$dbname.".pmn_kontrakjual where tanggalkontrak like '".substr($currstart,0,4)."%') 
-                  and a.millcode in (select kodeorganisasi from ".$dbname.".organisasi where induk='".$_SESSION['org']['kodeorganisasi']."' and tipe='PABRIK')";
+                  and a.millcode in (select kodeorganisasi from ".$dbname.".organisasi where induk='".$_SESSION['org']['kodeorganisasi']."' and (tipe='PABRIK' or tipe='HOLDING'))";
         $resJual = fetchData($qJual);
         if(!empty($resJual)) {
             $listTiket = '';
@@ -1307,8 +1321,19 @@ switch($proses) {
 //        exit;
         $resCek = fetchData($qCek);
         if(!empty($resCek)) {
-            echo ' Error : This period has been closed(Before).';
-            exit;
+            $sPeriode="select periode from ".$dbname.".setup_periodeakuntansi 
+                       where kodeorg='".$_SESSION['empl']['lokasitugas']."' order by periode desc limit 1";
+            $qPeriode=mysql_query($sPeriode) or die(mysql_error($conn));
+            $rPeriode=mysql_fetch_assoc($qPeriode);
+            if($rPeriode['periode']==$param['periode']){
+                $sDel="delete from ".$dbname.".keu_jurnalht where nojurnal='".$nojurnal."'";
+                if(!mysql_query($sDel)){
+                    exit("warning :".$sDel." ".mysql_error($conn));
+                }
+            }else{
+                echo ' Error : This period has been closed(Before).';
+                exit;    
+            }
         }
         
          $query = "select count(*) as x from ".$dbname.".keu_jurnaldt_vw where 

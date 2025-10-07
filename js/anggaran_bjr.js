@@ -248,3 +248,26 @@ function loadData ()
               }	
          }  
 }
+
+function getthntanam(){
+	kodeorg=document.getElementById('kodeorg').value; 
+    param='kodeorg='+kodeorg;
+    param+='&method=getthntanam';
+	tujuan='setup_slave_save_anggaran_bjr.php';
+    post_response_text(tujuan, param, respog);
+    function respog(){
+        if(con.readyState==4){
+            if (con.status == 200){
+                busy_off();
+                if (!isSaveResponse(con.responseText)){
+                        alert('ERROR TRANSACTION,\n' + con.responseText);
+                }else{
+                    document.getElementById('thntanam').value=con.responseText;
+                }
+            }else{
+                busy_off();
+                error_catch(con.status);
+            }
+        }	
+	}  	
+}

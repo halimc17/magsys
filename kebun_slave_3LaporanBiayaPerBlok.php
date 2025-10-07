@@ -22,22 +22,24 @@ if($intiplasma!='')
 	
 
 $whereJ = "t1.periode = '".$periode."' and t1.kodeorg = '".$unit."' and (t1.noakun LIKE '126%' or t1.noakun LIKE '128%' or t1.noakun LIKE '611%' or t1.noakun LIKE '621%')";
-$str="select t1.kodeblok, t2.tahuntanam, t2.luasareaproduktif, t2.statusblok, SUM(t1.debet-t1.kredit) AS totalbiaya from ".$dbname.".keu_jurnaldt_vw t1
+$str="select a.*,b.namaorganisasi from (select t1.kodeblok, t2.tahuntanam, t2.luasareaproduktif, t2.statusblok, SUM(t1.debet-t1.kredit) AS totalbiaya from ".$dbname.".keu_jurnaldt_vw t1
 	  left join ".$dbname.".setup_blok t2
 	  on t1.kodeblok = t2.kodeorg
       where ".$whereJ." ".$whrip."
 	  and t2.tahuntanam != '0'
 	  and char_length(t1.kodeblok) > 6
       group by t1.kodeblok
-	  order by t2.tahuntanam DESC";
+	  order by t2.tahuntanam DESC) a left join ".$dbname.".organisasi b on a.kodeblok=b.kodeorganisasi";
 
 $res=mysql_query($str) or die(mysql_error($conn)." ".$str);
 $num_rows = mysql_num_rows($res);
 
 $stream="Periode : ".substr($periode,5,2)."-".substr($periode,0,4)."<br>
 		Unit : ".$unit;
-$stream.="<table cellspacing='1' cellpadding='5' border='0' class='sortable'>
-			<thead class=rowheader>
+//$stream.="<table cellspacing='1' cellpadding='5' border='0' class='sortable'>";
+if($proses=='excel')$stream.="<table cellspacing='1' cellpadding='5' border='1' class='sortable'>";
+else				$stream.="<table cellspacing='1' cellpadding='5' border='0' class='sortable'>";
+$stream.="<thead class=rowheader>
 			<tr>
 			<td style='width:30px; text-align:center;'>No</td>
 			<td style='text-align:center; width:100px;'>".$_SESSION['lang']['kodeblok']."</td>
@@ -53,7 +55,7 @@ while($bar=mysql_fetch_object($res))
 {
     $stream.="<tr class=rowcontent style='cursor:pointer;' title='Click untuk melihat detail' onclick=\"lihatDetail('".$bar->kodeblok."','".$periode."',event);\">
                 <td style='text-align:right;'>".$no."</td>
-                <td>".$bar->kodeblok."</td>    
+                <td>".$bar->namaorganisasi."</td>    
                 <td style='text-align:center'>".$bar->tahuntanam."</td>  
                 <td style='text-align:right'>".$bar->luasareaproduktif."</td>
                 <td>".$bar->statusblok."</td>
@@ -209,7 +211,7 @@ switch($proses)
 				$no+=1;
 				$pdf->SetX(80);
 				$pdf->Cell(7/100*$width,$height,$no,1,0,'R',1);		
-				$pdf->Cell(15/100*$width,$height,$bar->kodeblok,1,0,'L',1);		
+				$pdf->Cell(15/100*$width,$height,$bar->namaorganisasi,1,0,'L',1);		
 				$pdf->Cell(14/100*$width,$height,$bar->tahuntanam,1,0,'L',1);		
 				$pdf->Cell(15/100*$width,$height,$bar->luasareaproduktif,1,0,'R',1);		
 				$pdf->Cell(15/100*$width,$height,$bar->statusblok,1,0,'L',1);		

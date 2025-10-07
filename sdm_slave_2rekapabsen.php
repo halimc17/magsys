@@ -22,7 +22,7 @@ $idKry=checkPostGet('idKry','');
 $tipeKary=checkPostGet('tipeKary','');
 $sistemGaji=checkPostGet('sistemGaji','');
 
-function dates_inbetween($date1, $date2){
+function dates_inbetwee($date1, $date2){
 
     $day = 60*60*24;
 
@@ -45,6 +45,19 @@ function dates_inbetween($date1, $date2){
     }
     return $dates_array;
 }
+
+	function dates_inbetween($date1, $date2){ //Function Baru
+		$date1 = date('Y-m-d',strtotime($date1));
+		$date2 = date('Y-m-d',strtotime($date2));
+		$dates_array = array();
+		$dates_array[] = $date1;
+		$tgl = $date1;
+		while($tgl<$date2){
+			$dates_array[]=date('Y-m-d',strtotime('+1 days',strtotime(substr($tgl,0,10))));
+			$tgl=date('Y-m-d',strtotime('+1 days',strtotime(substr($tgl,0,10))));
+		}
+		return $dates_array;
+	}
 
 $where = $wherez = $dmna = "";
 
@@ -86,9 +99,10 @@ $where = $wherez = $dmna = "";
         if($sistemGaji=='Bulanan')$wherez=" and sistemgaji = 'Bulanan'";        
         if($sistemGaji=='Harian')$wherez=" and sistemgaji = 'Harian'";        
 
-$sGetKary="select a.karyawanid,a.nik,b.namajabatan,a.namakaryawan,subbagian from ".$dbname.".datakaryawan a 
-           left join ".$dbname.".sdm_5jabatan b on a.kodejabatan=b.kodejabatan where
-           ".$where." ".$wherez." order by namakaryawan asc";    
+$sGetKary="select a.karyawanid,a.nik,b.namajabatan,a.namakaryawan,subbagian,d.tipe as namatipe from ".$dbname.".datakaryawan a 
+           left join ".$dbname.".sdm_5jabatan b on a.kodejabatan=b.kodejabatan
+           left join ".$dbname.".sdm_5tipekaryawan d on a.tipekaryawan=d.id 
+		   where ".$where." ".$wherez." order by namakaryawan asc";    
   // echo $sGetKary; 
 $rGetkary=fetchData($sGetKary);
 foreach($rGetkary as $row => $kar)
@@ -96,6 +110,7 @@ foreach($rGetkary as $row => $kar)
    // $resData[$kar['karyawanid']][]=$kar['karyawanid'];
     $namakar[$kar['karyawanid']]=$kar['namakaryawan'];
     $nikkar[$kar['karyawanid']]=$kar['nik'];
+    $namatipe[$kar['karyawanid']]=$kar['namatipe'];
     $nmJabatan[$kar['karyawanid']]=$kar['namajabatan'];
     $sbgnb[$kar['karyawanid']]=$kar['subbagian'];
 }  
@@ -160,6 +175,7 @@ switch($proses)
         <td>No</td>
         <td>".$_SESSION['lang']['nama']."</td>
         <td>".$_SESSION['lang']['nik']."</td>
+        <td>".$_SESSION['lang']['tipe']."</td>
         <td>".$_SESSION['lang']['jabatan']."</td>
         <td>".$_SESSION['lang']['subunit']."</td>";
         $klmpkAbsn=array();
@@ -183,11 +199,9 @@ switch($proses)
         $hasilAbsn[]=array();
         //get karyawan
 
-		
-
-                        
-                        $sPrestasi="select a.upahkerja,b.tanggal,a.jumlahhk,a.nik,a.notransaksi from ".$dbname.".kebun_prestasi a left join ".$dbname.".kebun_aktifitas b on a.notransaksi=b.notransaksi 
-                            where b.notransaksi like '%PNN%' and ".$dimanaPnjng3." and b.tanggal between '".$tgl1."' and '".$tgl2."'";
+						$sPrestasi="select a.upahkerja,b.tanggal,a.jumlahhk,a.nik,a.notransaksi from ".$dbname.".kebun_prestasi a 
+						left join ".$dbname.".kebun_aktifitas b on a.notransaksi=b.notransaksi 
+						where (b.notransaksi like '%PNN%' or b.notransaksi like '%/BM/%') and ".$dimanaPnjng3." and b.tanggal between '".$tgl1."' and '".$tgl2."'";
                          //exit("Error".$sPrestasi);
                         $rPrestasi=fetchData($sPrestasi);
                         foreach ($rPrestasi as $presBrs =>$resPres)
@@ -210,7 +224,7 @@ switch($proses)
                         }
                         
                         $sKehadiran="select jhk,absensi,tanggal,karyawanid,notransaksi from ".$dbname.".kebun_kehadiran_vw 
-                            where tanggal between  '".$tgl1."' and '".$tgl2."' and ".$dimanaPnjng2."";
+                            where tanggal between  '".$tgl1."' and '".$tgl2."' and ".$dimanaPnjng2." order by karyawanid,jhk desc";
                           //exit("Error".$sKehadiran);
                         $rkehadiran=fetchData($sKehadiran);
                         foreach ($rkehadiran as $khdrnBrs =>$resKhdrn)
@@ -246,7 +260,7 @@ $dzstr="SELECT tanggal,nikmandor,a.notransaksi FROM ".$dbname.".kebun_aktifitas 
     left join ".$dbname.".kebun_prestasi b on a.notransaksi=b.notransaksi
     left join ".$dbname.".datakaryawan c on a.nikmandor1=c.karyawanid
     where a.tanggal between '".$tgl1."' and '".$tgl2."' and ".$dimanaPnjng3." and c.namakaryawan is not NULL";
-echo $dzstr;
+//echo $dzstr;
 //exit("Error".$dzstr);
 $dzres=mysql_query($dzstr);
 while($dzbar=mysql_fetch_object($dzres))
@@ -351,6 +365,7 @@ foreach($resData as $hslBrs => $hslAkhir)
 		echo"
 		<td>".$namakar[$hslAkhir[0]]."</td>
 		<td>".$nikkar[$hslAkhir[0]]."</td>
+		<td>".$namatipe[$hslAkhir[0]]."</td>
 		<td>".$nmJabatan[$hslAkhir[0]]."</td>
 		<td>".$sbgnb[$hslAkhir[0]]."</td>
 		";
@@ -407,7 +422,7 @@ foreach($resData as $hslBrs => $hslAkhir)
     }	
 }
         $coldt=count($klmpkAbsn);
-        echo"<tr class=rowcontent><td colspan=5>".$_SESSION['lang']['total']." ".$_SESSION['lang']['absensi']."</td>";
+        echo"<tr class=rowcontent><td colspan=6>".$_SESSION['lang']['total']." ".$_SESSION['lang']['absensi']."</td>";
         foreach($test as $barisTgl =>$isiTgl)
         {
 			setIt($totTgl[$isiTgl],0);
@@ -607,8 +622,9 @@ class PDF extends FPDF
                         
                         
                         
-                        $sPrestasi="select a.upahkerja,b.tanggal,a.jumlahhk,a.nik from ".$dbname.".kebun_prestasi a left join ".$dbname.".kebun_aktifitas b on a.notransaksi=b.notransaksi 
-                            where b.notransaksi like '%PNN%' and ".$dimanaPnjng3." and b.tanggal between '".$tgl1."' and '".$tgl2."'";
+			$sPrestasi="select a.upahkerja,b.tanggal,a.jumlahhk,a.nik from ".$dbname.".kebun_prestasi a 
+						left join ".$dbname.".kebun_aktifitas b on a.notransaksi=b.notransaksi 
+						where (b.notransaksi like '%PNN%' or b.notransaksi like '%/BM/%') and ".$dimanaPnjng3." and b.tanggal between '".$tgl1."' and '".$tgl2."'";
                         //exit("Error".$sPrestasi);
                         $rPrestasi=fetchData($sPrestasi);
                         foreach ($rPrestasi as $presBrs =>$resPres)
@@ -628,7 +644,7 @@ class PDF extends FPDF
                         } 
                         
                         $sKehadiran="select jhk,absensi,tanggal,karyawanid from ".$dbname.".kebun_kehadiran_vw 
-                            where tanggal between  '".$tgl1."' and '".$tgl2."' and ".$dimanaPnjng2."";
+                            where tanggal between  '".$tgl1."' and '".$tgl2."' and ".$dimanaPnjng2." order by karyawanid,jhk desc";
                         //exit("Error".$sKehadiran);
                         $rkehadiran=fetchData($sKehadiran);
                         foreach ($rkehadiran as $khdrnBrs =>$resKhdrn)
@@ -784,9 +800,10 @@ $sAbsn="select absensi,tanggal,karyawanid from ".$dbname.".sdm_absensidt
         <td bgcolor=#DEDEDE align=center>No</td>
         <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['nama']."</td>
         <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['nik']."</td>
+        <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['tipekaryawan']."</td>
         <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['jabatan']."</td>
         <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['bagian']."</td>
-         <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['subunit']."</td>";
+        <td bgcolor=#DEDEDE align=center>".$_SESSION['lang']['subunit']."</td>";
         $klmpkAbsn=array();
         foreach($test as $ar => $isi)
         {
@@ -850,28 +867,29 @@ $sAbsn="select absensi,tanggal,karyawanid from ".$dbname.".sdm_absensidt
         if($sistemGaji=='Harian')$wherez=" and sistemgaji = 'Harian'";        
         $resData[]=array();
         $hasilAbsn[]=array();
-        $sGetKary="select a.karyawanid,a.nik,b.namajabatan,a.namakaryawan,c.nama,subbagian from ".$dbname.".datakaryawan a 
-           left join ".$dbname.".sdm_5jabatan b on a.kodejabatan=b.kodejabatan 
+        $sGetKary="select a.karyawanid,a.nik,b.namajabatan,a.namakaryawan,c.nama,subbagian,d.tipe as namatipe from ".$dbname.".datakaryawan a 
+           left join ".$dbname.".sdm_5jabatan b on a.kodejabatan=b.kodejabatan
            left join ".$dbname.".sdm_5departemen c on a.bagian=c.kode
-           where
-           ".$where." ".$wherez."order by namakaryawan asc";  
+           left join ".$dbname.".sdm_5tipekaryawan d on a.tipekaryawan=d.id 
+           where ".$where." ".$wherez."order by namakaryawan asc";  
          $namakar=Array();
         $nmJabatan=Array();
         $rGetkary=fetchData($sGetKary);
         foreach($rGetkary as $row => $kar)
     {
-
           $namakar[$kar['karyawanid']]=$kar['namakaryawan'];
           $nikkar[$kar['karyawanid']]=$kar['nik'];
+          $namatipe[$kar['karyawanid']]=$kar['namatipe'];
           $nmJabatan[$kar['karyawanid']]=$kar['namajabatan'];
           $nmBagian[$kar['karyawanid']]=$kar['nama'];
-           $sbgnb[$kar['karyawanid']]=$kar['subbagian'];
-    }  
+          $sbgnb[$kar['karyawanid']]=$kar['subbagian'];
+    }
                 
 
                         
-                        $sPrestasi="select a.upahkerja,b.tanggal,a.jumlahhk,a.nik from ".$dbname.".kebun_prestasi a left join ".$dbname.".kebun_aktifitas b on a.notransaksi=b.notransaksi 
-                            where b.notransaksi like '%PNN%' and ".$dimanaPnjng3." and b.tanggal between '".$tgl1."' and '".$tgl2."'";
+			$sPrestasi="select a.upahkerja,b.tanggal,a.jumlahhk,a.nik from ".$dbname.".kebun_prestasi a 
+						left join ".$dbname.".kebun_aktifitas b on a.notransaksi=b.notransaksi 
+						where (b.notransaksi like '%PNN%' or b.notransaksi like '%/BM/%') and ".$dimanaPnjng3." and b.tanggal between '".$tgl1."' and '".$tgl2."'";
                         //exit("Error".$sPrestasi);
                         $rPrestasi=fetchData($sPrestasi);
                         foreach ($rPrestasi as $presBrs =>$resPres)
@@ -892,7 +910,7 @@ $sAbsn="select absensi,tanggal,karyawanid from ".$dbname.".sdm_absensidt
                         } 
                         
                         $sKehadiran="select jhk,absensi,tanggal,karyawanid from ".$dbname.".kebun_kehadiran_vw 
-                            where tanggal between  '".$tgl1."' and '".$tgl2."' and ".$dimanaPnjng2."";
+                            where tanggal between  '".$tgl1."' and '".$tgl2."' and ".$dimanaPnjng2." order by karyawanid,jhk desc";
                         //exit("Error".$sKehadiran);
                         $rkehadiran=fetchData($sKehadiran);
                         foreach ($rkehadiran as $khdrnBrs =>$resKhdrn)
@@ -999,6 +1017,7 @@ $sAbsn="select absensi,tanggal,karyawanid,catu from ".$dbname.".sdm_absensidt
                                 $stream.="
                                 <td>".$namakar[$hslAkhir[0]]."</td>
                                 <td>'".$nikkar[$hslAkhir[0]]."</td>
+                                <td>".$namatipe[$hslAkhir[0]]."</td>
                                 <td>".$nmJabatan[$hslAkhir[0]]."</td>
                                 <td>".$nmBagian[$hslAkhir[0]]."</td>
                                 <td>".$sbgnb[$hslAkhir[0]]."</td>
@@ -1057,7 +1076,7 @@ $sAbsn="select absensi,tanggal,karyawanid,catu from ".$dbname.".sdm_absensidt
                         }	
         }
          $coldt=count($klmpkAbsn);
-        $stream.="<tr class=rowcontent><td colspan=6>".$_SESSION['lang']['total']."</td>";
+        $stream.="<tr class=rowcontent><td colspan=7>".$_SESSION['lang']['total']."</td>";
         foreach($test as $barisTgl =>$isiTgl)
         {
 			setIt($totTgl[$isiTgl],0);

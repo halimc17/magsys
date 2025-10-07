@@ -17,13 +17,16 @@ if($intiplasmatahun!='')
 }
 
 #ambil  blok dan tahun tanam
-$str="select kodeorg,tahuntanam,luasareaproduktif,intiplasma from ".$dbname.".setup_blok where kodeorg like '".$unit."%' ".$inplas." ";
+//$str="select kodeorg,tahuntanam,luasareaproduktif,intiplasma from ".$dbname.".setup_blok where kodeorg like '".$unit."%' ".$inplas." ";
+$str="select a.*,b.namaorganisasi from (select kodeorg,tahuntanam,luasareaproduktif,intiplasma from ".$dbname.".setup_blok where kodeorg like '".$unit."%' ".$inplas.") a
+	  left join ".$dbname.".organisasi b on a.kodeorg=b.kodeorganisasi order by a.kodeorg";
 $res=mysql_query($str);
 while($bar=mysql_fetch_object($res))
 {
     $kodeblok[$bar->kodeorg]=$bar->kodeorg;
     $thntanam[$bar->kodeorg]=$bar->tahuntanam;
     $luas[$bar->kodeorg]=$bar->luasareaproduktif;
+    $namablok[$bar->kodeorg]=$bar->namaorganisasi;
 }
 #ambil 
 $str="select sum(totalkg) as kg, left(tanggal,7) as periode,blok from ".$dbname.".kebun_spb_vw where blok like '".$unit."%'
@@ -106,7 +109,7 @@ foreach($kodeblok as $blk =>$val)
     @$tpvs=0;
     $stream.="<tr class=rowcontent>
               <td>".$no."</td>
-               <td>".$blk."</td>
+               <td>".$namablok[$blk]."</td>
                <td>".$thntanam[$blk]."</td>
                <td align=right>".$luas[$blk]."</td>                   
                 ";

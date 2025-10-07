@@ -323,7 +323,7 @@ function savePengobatan()
         {
                 alert('Date is obligatory');
                 document.getElementById('tangal').focus();			
-        }else if(bebanperusahaan > plafon && jenisbiaya != 'RWINP'){
+        }else if(bebanperusahaan > plafon && (jenisbiaya != 'RWINP' && jenisbiaya != 'RWJLN')){
 				alert('Beban perusahaan harus lebih kecil atau sama dengan dari nilai plafond');
                 document.getElementById('byrs').focus();
 		}else if(bebanperusahaan <= 0){

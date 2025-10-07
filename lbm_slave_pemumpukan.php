@@ -116,10 +116,10 @@ while($rThTnm=mysql_fetch_assoc($qThTnm))
 {
     $thnTanamTm[]=$rThTnm['tahuntanam'];
 }
-$sThTnm="select distinct tahuntanam from ".$dbname.".setup_blok where statusblok='TBM' and substr(kodeorg,1,4)='".$kdUnit."' order by tahuntanam asc";
+$sThTnm="select distinct tahuntanam from ".$dbname.".setup_blok where statusblok like 'TBM%' and substr(kodeorg,1,4)='".$kdUnit."' order by tahuntanam asc";
 if($afdId!='')
 {
-    $sThTnm="select distinct tahuntanam from ".$dbname.".setup_blok where statusblok='TBM' and substr(kodeorg,1,6)='".$afdId."' order by tahuntanam asc";
+    $sThTnm="select distinct tahuntanam from ".$dbname.".setup_blok where statusblok like 'TBM%' and substr(kodeorg,1,6)='".$afdId."' order by tahuntanam asc";
 }
 $qThTnm=mysql_query($sThTnm) or die(mysql_error());
 while($rThTnm=mysql_fetch_assoc($qThTnm))
@@ -138,68 +138,55 @@ while($rThTnm=mysql_fetch_assoc($qThTnm))
     $thnTanamTb[]=$rThTnm['tahuntanam'];
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 //luas tm
-$sThnTnm="select distinct tahuntanam,sum(luasareaproduktif) as luas,sum(jumlah) as jumlah,kodebarang from ".$dbname.".setup_blok  a 
-    left join ".$dbname.". bgt_lbm_material_vw b on a.kodeorg=b.kodeorg
-    where substr(a.kodeorg,1,4)='".$kdUnit."' and statusblok='TM' and tahunbudget='".$thn[0]."' and substr(kodebarang,1,3)='311' 
-    group by tahuntanam,kodebarang order by a.tahuntanam asc";
+$sThnTnm="select distinct a.tahuntanam,sum(a.luasareaproduktif) as luas,sum(b.jumlah) as jumlah,b.kodebarang from ".$dbname.".setup_blok  a 
+    left join ".$dbname.".bgt_lbm_material_vw b on a.kodeorg=b.kodeorg
+    where substr(a.kodeorg,1,4)='".$kdUnit."' and a.statusblok='TM' and b.tahunbudget='".$thn[0]."' and substr(b.kodebarang,1,3)='311' 
+    group by a.tahuntanam,b.kodebarang order by a.tahuntanam asc";
 if($afdId!='')
 {
-  $sThnTnm="select distinct tahuntanam,sum(luasareaproduktif) as luas,sum(jumlah) as jumlah,kodebarang from ".$dbname.".setup_blok  a 
-    left join ".$dbname.". bgt_lbm_material_vw b on a.kodeorg=b.kodeorg
-    where substr(a.kodeorg,1,6)='".$afdId."' and statusblok='TM' and tahunbudget='".$thn[0]."' and substr(kodebarang,1,3)='311' 
-    group by tahuntanam,kodebarang order by a.tahuntanam asc";  
+  $sThnTnm="select distinct a.tahuntanam,sum(a.luasareaproduktif) as luas,sum(b.jumlah) as jumlah,b.kodebarang from ".$dbname.".setup_blok  a 
+    left join ".$dbname.".bgt_lbm_material_vw b on a.kodeorg=b.kodeorg
+    where substr(a.kodeorg,1,6)='".$afdId."' and a.statusblok='TM' and b.tahunbudget='".$thn[0]."' and substr(b.kodebarang,1,3)='311' 
+    group by a.tahuntanam,b.kodebarang order by a.tahuntanam asc"; 
 }
 //echo $sThnTnm;
 $qThnTnm=mysql_query($sThnTnm) or die(mysql_error());
 while($rThnTnm=  mysql_fetch_assoc($qThnTnm))
 {
-    
+    $dtBarang[$rThnTnm['kodebarang']]=$rThnTnm['kodebarang'];
     $dtBarangTm[$rThnTnm['kodebarang']]=$rThnTnm['kodebarang'];
     $lsProduktifTm[$rThnTnm['tahuntanam']]=$rThnTnm['luas'];
     $jmTm[$rThnTnm['tahuntanam']][$rThnTnm['kodebarang']]=$rThnTnm['jumlah'];
 }
 
-
-
 $sRealisasi="select distinct kodebarang,sum(kwantitas) as jumlah,tahuntanam from ".$dbname.".kebun_pakai_material_vw a
              left join ".$dbname.".setup_blok b on a.kodeorg=b.kodeorg where 
-             a.kodeorg like '".$kdUnit."%' and notransaksi like '%TM%' and substr(tanggal,1,7) between '".$thn[0]."-01' and '".$periode."'
+             a.kodeorg like '".$kdUnit."%' and notransaksi like '%TM%' and substr(tanggal,1,10) between '".$thn[0]."-01' and '".$periode."'
              and substr(kodebarang,1,3)='311' group by tahuntanam,kodebarang order by tahuntanam asc";
 if($afdId!='')
 {
     $sRealisasi="select distinct kodebarang,sum(kwantitas) as jumlah,tahuntanam from ".$dbname.".kebun_pakai_material_vw a
              left join ".$dbname.".setup_blok b on a.kodeorg=b.kodeorg where 
-             a.kodeorg like '".$kdUnit."%' and notransaksi like '%TM%' and substr(tanggal,1,7) between '".$thn[0]."-01' and '".$periode."'
+             a.kodeorg like '".$kdUnit."%' and notransaksi like '%TM%' and substr(tanggal,1,10) between '".$thn[0]."-01' and '".$periode."'
              and substr(kodebarang,1,3)='311' group by tahuntanam,kodebarang order by tahuntanam asc";
 }
 
 $qRealisasi=mysql_query($sRealisasi) or die(mysql_error());
 while($rRealisasi=mysql_fetch_assoc($qRealisasi))
 {
+    $dtBarang[$rRealisasi['kodebarang']]=$rRealisasi['kodebarang'];
     $jmTmRi[$rRealisasi['tahuntanam']][$rRealisasi['kodebarang']]=$rRealisasi['jumlah'];
 }
 //luas tbm
 $sThnTnm="select distinct tahuntanam,sum(luasareaproduktif) as luas,sum(jumlah) as jumlah,kodebarang from ".$dbname.".setup_blok  a 
-    left join ".$dbname.". bgt_lbm_material_vw b on a.kodeorg=b.kodeorg
-    where substr(a.kodeorg,1,4)='".$kdUnit."' and statusblok='TBM' and tahunbudget='".$thn[0]."' and substr(kodebarang,1,3)='311' group by tahuntanam,kodebarang  order by a.kodeorg asc";
+    left join ".$dbname.".bgt_lbm_material_vw b on a.kodeorg=b.kodeorg
+    where substr(a.kodeorg,1,4)='".$kdUnit."' and statusblok like 'TBM%' and tahunbudget='".$thn[0]."' and substr(kodebarang,1,3)='311' group by tahuntanam,kodebarang  order by a.kodeorg asc";
 if($afdId!='')
 {
    $sThnTnm="select distinct tahuntanam,sum(luasareaproduktif) as luas,sum(jumlah) as jumlah,kodebarang from ".$dbname.".setup_blok  a 
-    left join ".$dbname.". bgt_lbm_material_vw b on a.kodeorg=b.kodeorg
-    where substr(a.kodeorg,1,6)='".$afdId."' and statusblok='TBM' and tahunbudget='".$thn[0]."' and substr(kodebarang,1,3)='311' group by tahuntanam,kodebarang  order by a.kodeorg asc"; 
+    left join ".$dbname.".bgt_lbm_material_vw b on a.kodeorg=b.kodeorg
+    where substr(a.kodeorg,1,6)='".$afdId."' and statusblok like 'TBM%' and tahunbudget='".$thn[0]."' and substr(kodebarang,1,3)='311' group by tahuntanam,kodebarang  order by a.kodeorg asc"; 
 }
 //echo $sThnTnm;
 $qThnTnm=mysql_query($sThnTnm) or die(mysql_error());
@@ -212,21 +199,22 @@ while($rThnTnm=  mysql_fetch_assoc($qThnTnm))
 }
 $sRealisasi="select distinct tahuntanam,kodebarang,sum(kwantitas) as jumlah from ".$dbname.".setup_blok a  
     left join ".$dbname.".kebun_pakai_material_vw b on a.kodeorg=b.kodeorg
-    where substr(a.kodeorg,1,4)='".$kdUnit."' and statusblok='TBM' and substr(notransaksi,15,3)='TBM' and (substr(tanggal,1,7) between '".$thn[0]."-01' and '".$periode."') and substr(kodebarang,1,3)='311' group by tahuntanam,kodebarang order by a.tahuntanam asc";
+    where substr(a.kodeorg,1,4)='".$kdUnit."' and statusblok like 'TBM%' and substr(notransaksi,15,3)='TBM' and (substr(tanggal,1,10) between '".$thn[0]."-01' and '".$periode."') and substr(kodebarang,1,3)='311' group by tahuntanam,kodebarang order by a.tahuntanam asc";
 //echo $sRealisasi;
 $qRealisasi=mysql_query($sRealisasi) or die(mysql_error());
 while($rRealisasi=mysql_fetch_assoc($qRealisasi))
 {
+    $dtBarang[$rRealisasi['kodebarang']]=$rRealisasi['kodebarang'];
     $jmTbmRi[$rRealisasi['tahuntanam']][$rRealisasi['kodebarang']]+=$rRealisasi['jumlah'];
 }
 //luas tb
 $sThnTnm="select distinct tahuntanam,sum(luasareaproduktif) as luas,sum(jumlah) as jumlah,kodebarang from ".$dbname.".setup_blok  a 
-    left join ".$dbname.". bgt_lbm_material_vw b on a.kodeorg=b.kodeorg
+    left join ".$dbname.".bgt_lbm_material_vw b on a.kodeorg=b.kodeorg
     where substr(a.kodeorg,1,4)='".$kdUnit."' and statusblok='TB' and tahunbudget='".$thn[0]."' and substr(kodebarang,1,3)='311' group by tahuntanam,kodebarang order by a.kodeorg asc";
 if($afdId!='')
 {
     $sThnTnm="select distinct tahuntanam,sum(luasareaproduktif) as luas,sum(jumlah) as jumlah,kodebarang from ".$dbname.".setup_blok  a 
-    left join ".$dbname.". bgt_lbm_material_vw b on a.kodeorg=b.kodeorg
+    left join ".$dbname.".bgt_lbm_material_vw b on a.kodeorg=b.kodeorg
     where substr(a.kodeorg,1,6)='".$afdId."' and statusblok='TB' and tahunbudget='".$thn[0]."' and substr(kodebarang,1,3)='311' group by tahuntanam,kodebarang order by a.kodeorg asc";
 }
 $qThnTnm=mysql_query($sThnTnm) or die(mysql_error());
@@ -239,18 +227,19 @@ while($rThnTnm=  mysql_fetch_assoc($qThnTnm))
 }
 $sRealisasi="select distinct tahuntanam,kodebarang,sum(kwantitas) as jumlah from ".$dbname.".setup_blok a  
     left join ".$dbname.".kebun_pakai_material_vw b on a.kodeorg=b.kodeorg
-    where substr(a.kodeorg,1,4)='".$kdUnit."' and statusblok='TBM' and substr(notransaksi,15,2)='TB' and (substr(tanggal,1,7) between '".$thn[0]."-01' and '".$periode."') and substr(kodebarang,1,3)='311' group by tahuntanam,kodebarang order by a.tahuntanam asc";
+    where substr(a.kodeorg,1,4)='".$kdUnit."' and statusblok like 'TBM%' and substr(notransaksi,15,2)='TB' and (substr(tanggal,1,10) between '".$thn[0]."-01' and '".$periode."') and substr(kodebarang,1,3)='311' group by tahuntanam,kodebarang order by a.tahuntanam asc";
 //echo $sRealisasi;
 if($afdId!='')
 {
     $sRealisasi="select distinct tahuntanam,kodebarang,sum(kwantitas) as jumlah from ".$dbname.".setup_blok a  
     left join ".$dbname.".kebun_pakai_material_vw b on a.kodeorg=b.kodeorg
-    where substr(a.kodeorg,1,6)='".$afdId."' and statusblok='TBM' and substr(notransaksi,15,2)='TB' and (substr(tanggal,1,7) between '".$thn[0]."-01' and '".$periode."') and substr(kodebarang,1,3)='311' group by tahuntanam,kodebarang order by a.tahuntanam asc";
+    where substr(a.kodeorg,1,6)='".$afdId."' and statusblok like 'TBM%' and substr(notransaksi,15,2)='TB' and (substr(tanggal,1,10) between '".$thn[0]."-01' and '".$periode."') and substr(kodebarang,1,3)='311' group by tahuntanam,kodebarang order by a.tahuntanam asc";
 
 }
 $qRealisasi=mysql_query($sRealisasi) or die(mysql_error());
 while($rRealisasi=mysql_fetch_assoc($qRealisasi))
 {
+    $dtBarang[$rRealisasi['kodebarang']]=$rRealisasi['kodebarang'];
     $jmTbRi[$rRealisasi['tahuntanam']][$rRealisasi['kodebarang']]+=$rRealisasi['jumlah'];
 }
 
@@ -286,7 +275,7 @@ $iPtathn="select sum(a.jumlah) as jumlah,b.tahuntanam as tahuntanam,a.kodebarang
         . " from ".$dbname.".pta_dt a left join ".$dbname.".setup_blok b"
         . " on a.alokasibiaya=b.kodeorg where a.alokasibiaya like '%".$sortUnit."%' "
         . " and a.tanggal like '%".$thn[0]."%' and substr(a.kodebarang,1,3)='311' "
-        . " and b.statusblok='TBM' group by tahuntanam,kodebarang";
+        . " and b.statusblok like 'TBM%' group by tahuntanam,kodebarang";
 $nPtathn=  mysql_query($iPtathn) or die (mysql_error($conn));
 while($dPtathn=  mysql_fetch_assoc($nPtathn))
 {
@@ -298,7 +287,7 @@ $iPtasb="select sum(a.jumlah) as jumlah,b.tahuntanam as tahuntanam,a.kodebarang 
         . " on a.alokasibiaya=b.kodeorg where a.alokasibiaya like '%".$sortUnit."%' "
         . " and substr(a.kodebarang,1,3)='311' and "
         . " tanggal between '".$thn[0]."-01-01' and LAST_DAY('".$periode."-15') "
-        . " and b.statusblok='TBM' group by tahuntanam,kodebarang";
+        . " and b.statusblok like 'TBM%' group by tahuntanam,kodebarang";
 $nPtasb=  mysql_query($iPtasb) or die (mysql_error($conn));
 while($dPtasb=  mysql_fetch_assoc($nPtasb))
 {

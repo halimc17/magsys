@@ -113,7 +113,8 @@ function cariFile()
     periode=document.getElementById('periode');
     periode=periode.options[periode.selectedIndex].value;    
     
-    tujuan='rencana_slave_getGisFile.php';
+    //tujuan='rencana_slave_getGisFile.php';
+    tujuan='umum_slave_2daftarfile.php';
     param='kodeorg='+kodeorg+'&periode='+periode+'&kode='+kode;
     post_response_text(tujuan, param, respog);		
 

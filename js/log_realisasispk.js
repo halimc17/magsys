@@ -54,7 +54,8 @@ function choosePage(obj,shows,where) {
 }
 
 function showEdit(num) {
-    var workField = document.getElementById('workField');
+    
+	var workField = document.getElementById('workField');
     var trans = document.getElementById('notransaksi_'+num).getAttribute('value');
     var kodeorg = document.getElementById('kodeorg_'+num).getAttribute('value');
     var param = "numRow="+num+"&notransaksi="+trans+"&kodeorg="+kodeorg;
@@ -212,6 +213,7 @@ function addData(numRow1,numRow2,theme) {
 }
 
 function saveData(numRow1,numRow2) {
+
 if(cekKP(numRow1,numRow2)!='KP')//tambahan dz, cek apakah kontrak plus?
     if(cekReal(numRow1,numRow2)==false) {
         alert('Actual realization larger than contract volume');
@@ -344,6 +346,7 @@ function postingData(numRow1,numRow2,theme) {
     param += "&notransaksi="+getValue('notransaksi')+"&kodeblok="+blok+"&kodesegment="+segment+"&kodekegiatan="+keg;
     param += "&blokalokasi="+getValue('blokalokasi_'+numRow1+'_'+numRow2);
     param += "&tanggal="+getValue('tanggal_'+numRow1+'_'+numRow2);
+    param += "&hasilkerjarealisasi="+remove_comma(document.getElementById('hasilkerjarealisasi_'+numRow1+'_'+numRow2));
     //param += "&hasilkerjarealisasi="+getValue('hasilkerjarealisasi_'+numRow1+'_'+numRow2);
     //param += "&hkrealisasi="+getValue('hkrealisasi_'+numRow1+'_'+numRow2);
 	// diedit oleh ginting menambahkan remove comma yang sebelumnya getValue
@@ -385,6 +388,7 @@ function postingData(numRow1,numRow2,theme) {
 }
 
 function cekReal(numRow1,numRow2) {
+    alert(numRow1+'___'+numRow2);
     var tbody = document.getElementById('detailBody_'+numRow1);
     var hk = document.getElementById('hk_'+numRow1).getAttribute('value');
     var hasil = document.getElementById('hasilkerjajumlah_'+numRow1).getAttribute('value');

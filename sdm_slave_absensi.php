@@ -172,7 +172,7 @@ $perGjSkrg=$dPer['periode'];
                                     $_POST['insentif']=0;
                                 }
                                 if($_POST['premidt']==''){
-                                    $_POST['premi']=0;
+                                    $_POST['premidt']=0;
                                 }
                                 /*if(($asbensiId=='H')||($asbensiId=='AS')){
                                     if($_POST['premidt']!=$_POST['premi']){
@@ -232,8 +232,10 @@ $perGjSkrg=$dPer['periode'];
                                
                                 
                         //$sDetIns="insert into ".$dbname.".sdm_absensidt (`kodeorg`,`tanggal`, `karyawanid`, `shift`, `absensi`, `jam`,`jamPlg`, `penjelasan`,`catu`,`penaltykehadiran`) values ('".$kdOrg."','".$tgl."','".$krywnId."','".$shifTid."','".$asbensiId."','".$Jam."','".$Jam2."','".$ket."',".$catu.",".$penaltykehadiran.")";
+                        //$sDetIns="insert into ".$dbname.".sdm_absensidt (`kodeorg`,`tanggal`, `karyawanid`, `shift`, `absensi`, `jam`,`jamPlg`, `penjelasan`,`catu`,`penaltykehadiran`,`premi`,`insentif`) 
+                        //                  values ('".$kdOrg."','".$tgl."','".$krywnId."','".$shifTid."','".$asbensiId."','".$Jam."','".$Jam2."','".$ket."',".$catu.",".$penaltykehadiran.",".$_POST['premidt'].",".$_POST['insentif'].")";
                         $sDetIns="insert into ".$dbname.".sdm_absensidt (`kodeorg`,`tanggal`, `karyawanid`, `shift`, `absensi`, `jam`,`jamPlg`, `penjelasan`,`catu`,`penaltykehadiran`,`premi`,`insentif`) 
-                                          values ('".$kdOrg."','".$tgl."','".$krywnId."','".$shifTid."','".$asbensiId."','".$Jam."','".$Jam2."','".$ket."',".$catu.",".$penaltykehadiran.",".$_POST['premidt'].",".$_POST['insentif'].")";
+                                          values ('".$kdOrg."','".$tgl."','".$krywnId."','".$shifTid."','".$asbensiId."','".$Jam."','".$Jam2."','".$ket."',".$catu.",".$penaltykehadiran.",".$_POST['premi'].",".$_POST['insentif'].")";
                                 //exit("error:".$sDetIns);
                                 //echo "warning:test".$dins;
                                 if(mysql_query($sDetIns))

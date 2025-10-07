@@ -90,8 +90,37 @@ if($_SESSION['empl']['tipelokasitugas']=='KEBUN'){
     exit("warning: Silakan jalankan Proses pada menu Pengadaan>Proses>Intergrity Check BKM");
   }
 }
-/*
  #pengecekan apakah ada barang mutasi yang belum diterimakan
+/*
+  $scekMut="select * from ".$dbname.".log_transaksiht 
+			where tanggal between '".$awal."' and '".$akhir."' and notransaksi in (
+				select a.notransaksi from ".$dbname.".log_transaksi_vw a 
+				left join ".$dbname.".log_transaksidt b on a.notransaksireferensi=b.notransaksi and a.kodebarang=b.kodebarang
+				where a.tipetransaksi=7 and a.gudangx like '".substr($gudang,0,4)."%' and a.kodegudang like '".substr($gudang,0,4)."%' 
+				and ((a.jumlah-if(isnull(b.jumlah),0,b.jumlah)>0) or (a.notransaksireferensi='' or a.notransaksireferensi is null)))
+			and gudangx like '".substr($gudang,0,4)."%'
+			order by notransaksi";
+*/
+  $scekMut="select * from ".$dbname.".log_transaksiht 
+			where tanggal between '".$awal."' and '".$akhir."' and notransaksi in (
+				select a.notransaksi from ".$dbname.".log_transaksi_vw a 
+				left join ".$dbname.".log_transaksidt b on a.notransaksireferensi=b.notransaksi and a.kodebarang=b.kodebarang
+				where a.tipetransaksi=7 and a.gudangx like '".substr($gudang,0,4)."%' and substr(a.kodegudang,3,2)<>'HO' 
+				and ((a.jumlah-if(isnull(b.jumlah),0,b.jumlah)>0) or (a.notransaksireferensi='' or a.notransaksireferensi is null)))
+			and gudangx like '".substr($gudang,0,4)."%'
+			order by notransaksi";
+  //exit('Warning: '.$scekMut);
+  $qcekMut=mysql_query($scekMut) or die(mysql_error($conn));
+  if(mysql_num_rows($qcekMut)>0)
+  {
+      echo "Masih ada notransaksi mutasi belum diterimakan:\n";
+      while($rcekMut=  mysql_fetch_object($qcekMut)){
+          echo $rcekMut->notransaksi." : ".tanggalnormal($rcekMut->tanggal)." : ".$rcekMut->gudangx."\n";
+      }
+     exit("Warning: Cek Menu PENGADAAN->Transaksi->Administrasi_Gudang->Penerimaan_Barang_Mutasi!");
+  }
+
+/*
  #cek penerimaan barang mutasi tambahan jamhari 23062013
   $scekMut="select * from ".$dbname.".log_transaksiht where kodegudang like '".substr($gudang,0,4)."%'
             and tanggal between '".$awal."' and '".$akhir."' and tipetransaksi=7 
@@ -144,8 +173,15 @@ if($_SESSION['empl']['tipelokasitugas']=='KEBUN'){
         $rpmasuk[$bar->kodebarang]+=$bar->rpmasuk;
     }    
 
-  #ambil rupiah per barang per gudang menjadi tambahan rpmasuk    
-    $sJrn="select kodebarang,jumlah from ".$dbname.".keu_jurnaldt where  nojurnal like '%EXP01%' and tanggal between '".$awal."' and '".$akhir."' and right(noreferensi,6)='".$gudang."' and kodebarang!=''";
+  #ambil rupiah per barang per gudang menjadi tambahan rpmasuk
+    //$sJrn="select kodebarang,jumlah from ".$dbname.".keu_jurnaldt where nojurnal like '%EXP01%' and tanggal between '".$awal."' and '".$akhir."' and right(noreferensi,6)='".$gudang."' and kodebarang!=''";
+    $sJrn="select kodebarang,jumlah from ".$dbname.".keu_jurnaldt where (nojurnal like '%EXP01%' or nojurnal like '%INVM1%') and tanggal between '".$awal."' and '".$akhir."' and right(noreferensi,6)='".$gudang."' and kodebarang!='' and (keterangan like 'Biaya Kirim%' or keterangan like 'PBBKB%')";
+    $qJrn=mysql_query($sJrn) or die(mysql_error($conn));
+    while($rJrn=mysql_fetch_assoc($qJrn)){
+      $rpmasuk[$rJrn['kodebarang']]+=$rJrn['jumlah'];  
+    }
+
+    $sJrn="select kodebarang,jumlah from ".$dbname.".keu_jurnaldt where  nojurnal like '%INVM1%' and tanggal between '".$awal."' and '".$akhir."' and right(noreferensi,6)='".$gudang."' and kodebarang!=''";
     $qJrn=mysql_query($sJrn) or die(mysql_error($conn));
     while($rJrn=mysql_fetch_assoc($qJrn)){
       $rpmasuk[$rJrn['kodebarang']]+=$rJrn['jumlah'];  

@@ -52,13 +52,21 @@ switch($blokStatus) {
 	exit;
 	break;
 }
+
+# Posting --> Jabatan
+$postJabatan = getPostingJabatan('rawatkebun');
+
 if($_SESSION['empl']['subbagian']=='')
 {
     $whereCont .= " and kodeorg='".$_SESSION['empl']['lokasitugas']."'";
 }
 else
 {
-    $whereCont .= " and kodeorg='".$_SESSION['empl']['lokasitugas']."' and updateby='".$_SESSION['standard']['userid']."'";
+	if(in_array($_SESSION['empl']['kodejabatan'],$postJabatan)) {
+       $whereCont .= " and kodeorg='".$_SESSION['empl']['lokasitugas']."'";
+    }else{
+       $whereCont .= " and kodeorg='".$_SESSION['empl']['lokasitugas']."' and updateby='".$_SESSION['standard']['userid']."'";
+	}
 }
 $whereContArr[] = array('kodeorg',$_SESSION['empl']['lokasitugas']);
 ?>
@@ -129,7 +137,7 @@ $header = array(
 # Content
 $cols = "notransaksi,kodeorg,tanggal,nikmandor,nikmandor1,nikasisten,keranimuat,jurnal,updateby";
 $query = selectQuery($dbname,'kebun_aktifitas',$cols,$whereCont,
-    "tanggal desc, notransaksi desc",false,10,1);
+    "jurnal, tanggal desc, notransaksi desc",false,10,1);
 $data = fetchData($query);
 $totalRow = getTotalRow($dbname,'kebun_aktifitas',$whereCont);
 if(!empty($data)) {
@@ -240,9 +248,6 @@ foreach($dataShow as $key=>$row) {
     isset($optKarRow[$row['updateby']]) ? $dataShow[$key]['updateby'] = $optKarRow[$row['updateby']]:null;
 }
 
-# Posting --> Jabatan
-$postJabatan = getPostingJabatan('rawatkebun');
-
 # Make Table
 $tHeader = new rTable('headTable','headTableBody',$header,$data,$dataShow);
 $tHeader->_printAttr = array($tipeVal);
@@ -251,17 +256,17 @@ $tHeader->addAction('showEdit','Edit','images/'.$_SESSION['theme']."/edit.png");
 $tHeader->_actions[0]->addAttr($tipeVal);
 $tHeader->addAction('deleteData','Delete','images/'.$_SESSION['theme']."/delete.png");
 #$tHeader->addAction('approveData','Approve','images/'.$_SESSION['theme']."/approve.png");
-$tHeader->addAction('postingData','Posting','images/'.$_SESSION['theme']."/posting.png");
-$tHeader->_actions[2]->setAltImg('images/'.$_SESSION['theme']."/posted.png");
-if(!in_array($_SESSION['empl']['kodejabatan'],$postJabatan)) {
-    $tHeader->_actions[2]->_name='';
-}
 $tHeader->addAction('detailPDF','Print Data Detail','images/'.$_SESSION['theme']."/pdf.jpg");
+$tHeader->_actions[2]->addAttr('event');
+$tHeader->_actions[2]->addAttr($tipeVal);
+$tHeader->addAction('detailData','Print Data Detail','images/'.$_SESSION['theme']."/zoom.png");
 $tHeader->_actions[3]->addAttr('event');
 $tHeader->_actions[3]->addAttr($tipeVal);
-$tHeader->addAction('detailData','Print Data Detail','images/'.$_SESSION['theme']."/zoom.png");
-$tHeader->_actions[4]->addAttr('event');
-$tHeader->_actions[4]->addAttr($tipeVal);
+$tHeader->addAction('postingData','Posting','images/'.$_SESSION['theme']."/posting.png");
+$tHeader->_actions[4]->setAltImg('images/'.$_SESSION['theme']."/posted.png");
+if(!in_array($_SESSION['empl']['kodejabatan'],$postJabatan)) {
+    $tHeader->_actions[4]->_name='';
+}
 $tHeader->pageSetting(1,$totalRow,10);
 $tHeader->setWhere($whereContArr);
 //$tHeader->_switchException = array();

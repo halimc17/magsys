@@ -20,12 +20,13 @@ while($rKebun=mysql_fetch_assoc($qKebun))
 }
 
 $optBlok="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
-$sBlok="select kodeorg, statusblok, tahuntanam from ".$dbname.".setup_blok 
-    where kodeorg like '".$_SESSION['empl']['lokasitugas']."%' and luasareaproduktif>0 order by kodeorg asc";
+$sBlok="select a.kodeorg, a.statusblok, a.tahuntanam, b.namaorganisasi from ".$dbname.".setup_blok a
+		left join ".$dbname.".organisasi b on a.kodeorg=b.kodeorganisasi
+		where a.kodeorg like '".$_SESSION['empl']['lokasitugas']."%' and a.luasareaproduktif>0 order by a.kodeorg asc";
 $qBlok=mysql_query($sBlok) or die(mysql_error());
 while($rBlok=mysql_fetch_assoc($qBlok))
 {
-    $optBlok.="<option value='".$rBlok['kodeorg']."'>".$rBlok['kodeorg']." - ".$rBlok['statusblok']." - ".$rBlok['tahuntanam']."</option>";
+    $optBlok.="<option value='".$rBlok['kodeorg']."'>".$rBlok['namaorganisasi']." - ".$rBlok['statusblok']." - ".$rBlok['tahuntanam']."</option>";
 }
 
 $sAlsRncaSisip="select kodealasanrencanasisip, deskripsi from ".$dbname.".kebun_5alasanrencanasisip order by deskripsi asc";
@@ -36,8 +37,13 @@ while($rAlsRncaSisip=mysql_fetch_assoc($qAlsRncaSisip))
 	$optKeterangan.="<option value='".$rAlsRncaSisip['kodealasanrencanasisip']."'>".$rAlsRncaSisip['deskripsi']."</option>";
 }
 
-$tahun=date("Y");
 $optPeriode="";
+$tahun=date("Y")-1;
+for ($i = 12; $i <= 12; $i++) {
+    if(strlen($i)==1)$ii='0'.$i; else $ii=$i;
+    $optPeriode.="<option value='".$tahun."-".$ii."'>".$tahun."-".$ii."</option>";
+}
+$tahun=date("Y");
 for ($i = 1; $i <= 12; $i++) {
     if(strlen($i)==1)$ii='0'.$i; else $ii=$i;
     $optPeriode.="<option value='".$tahun."-".$ii."'>".$tahun."-".$ii."</option>";
@@ -104,9 +110,10 @@ $where = "";
 if(substr($_SESSION['empl']['lokasitugas'],2,2) != "HO") {
 	$where = " WHERE t1.blok like '".$_SESSION['empl']['lokasitugas']."%' ";
 }
-$str1="select t1.*, t2.deskripsi from ".$dbname.".kebun_rencanasisip t1 
-	left join ".$dbname.".kebun_5alasanrencanasisip t2
-	on t1.keterangan=t2.kodealasanrencanasisip ".$where."
+$str1="select t1.*, t2.deskripsi, t3.namaorganisasi from ".$dbname.".kebun_rencanasisip t1 
+	left join ".$dbname.".kebun_5alasanrencanasisip t2 on t1.keterangan=t2.kodealasanrencanasisip 
+	left join ".$dbname.".organisasi t3 on t1.blok=t3.kodeorganisasi 
+	".$where."
 	order by t1.periode desc, t1.blok";
 $res1=mysql_query($str1);
 echo"<table class=sortable cellspacing=1 border=0 style='width:800px;'>
@@ -128,7 +135,7 @@ while($bar1=mysql_fetch_object($res1))
     $no+=1;
     echo"<tr class=rowcontent>
         <td>".$bar1->periode."</td>
-        <td>".$bar1->blok."</td>
+        <td>".$bar1->namaorganisasi."</td>
         <td align=right>".number_format($bar1->pokok)."</td>
         <td align=right>".number_format($bar1->sph,2)."</td>
         <td align=right>".number_format($bar1->pokokmati)."</td>

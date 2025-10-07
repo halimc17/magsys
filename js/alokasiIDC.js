@@ -33,7 +33,9 @@ function getAfd()
 {
     
     alokasi=document.getElementById('alokasi').value;
-    param='alokasi='+alokasi+'&aksi=getAfd';    
+    stsblok=document.getElementById('stsblok').value;
+    param='alokasi='+alokasi+'&stsblok='+stsblok+'&aksi=getAfd';    
+    //param='alokasi='+alokasi+'&aksi=getAfd';    
     
     //alert(param);
     tujuan='keu_slave_alokasiIDC.php';
@@ -87,6 +89,7 @@ function ambilAlokasi()
                             }
                             else {
                                     document.getElementById('alokasi').innerHTML=con.responseText;
+                                    document.getElementById('stsblok').value='';
                             }
                     }
                     else {
@@ -100,6 +103,7 @@ function ambilBlok(kebun)
 {
     val=document.getElementById('nokas').options[document.getElementById('nokas').selectedIndex].value;
     alokasi=document.getElementById('alokasi').options[document.getElementById('alokasi').selectedIndex].value;
+    stsblok=document.getElementById('stsblok').options[document.getElementById('stsblok').selectedIndex].value;
     tanggal=document.getElementById('tanggal').value;
     afdeling=document.getElementById('afdeling');
    
@@ -108,7 +112,7 @@ function ambilBlok(kebun)
     val=val.split("#");
     jumlah=val[1];    
 //    param='kodeorg='+alokasi+'&jumlah='+jumlah+'&tanggal='+tanggal+'&aksi=ambilBlok'+'&tm='+tm;
-    param='kodeorg='+alokasi+'&jumlah='+jumlah+'&tanggal='+tanggal+'&aksi=ambilBlok';
+    param='kodeorg='+alokasi+'&stsblok='+stsblok+'&jumlah='+jumlah+'&tanggal='+tanggal+'&aksi=ambilBlok';
     
     if(afdeling) 
     {
@@ -141,6 +145,7 @@ function saveDistribusi(kebun)
 val=document.getElementById('nokas').options[document.getElementById('nokas').selectedIndex].value;
 debet=document.getElementById('debet').options[document.getElementById('debet').selectedIndex].value;
 kredit=document.getElementById('kredit').options[document.getElementById('kredit').selectedIndex].value;
+stsblok=document.getElementById('stsblok').options[document.getElementById('stsblok').selectedIndex].value;
 tanggal=document.getElementById('tanggal').value;
 afdeling=document.getElementById('afdeling');
 tujuan = 'keu_slave_alokasiIDC.php';
@@ -154,6 +159,10 @@ tujuan = 'keu_slave_alokasiIDC.php';
     if(afdeling) 
     {
         param+='&afdeling='+afdeling.value;
+    }
+    if(stsblok!='') 
+    {
+        param+='&stsblok='+stsblok;
     }
     //alert(param);
     if(confirm('Anda yakin sudah benar..?')){
@@ -204,4 +213,39 @@ function hapusIni(nojurnal,tanggal,kodeorg)
                     }
                 }
             }     
+}
+
+function getStsBlok()
+{
+    
+    alokasi=document.getElementById('alokasi').value;
+    stsblok=document.getElementById('stsblok').value;
+    param='alokasi='+alokasi+'&stsblok='+stsblok+'&aksi=getAfd';    
+    
+    //alert(param);
+    tujuan='keu_slave_alokasiIDC.php';
+    post_response_text(tujuan, param, respog);    
+    function respog()
+    {
+      if(con.readyState==4)
+      {
+        if (con.status == 200) {
+                    busy_off();
+                    if (!isSaveResponse(con.responseText)) {
+                            alert('ERROR TRANSACTION,\n' + con.responseText);
+                            
+                    }
+                    else {
+                        //alert(con.responseText);
+                        //document.getElementById('afdeling').innerHTML=con.responseText; 
+                        ambilBlok();
+                    }
+                }
+                else {
+                    busy_off();
+                    error_catch(con.status);
+                    
+                }
+      }	
+     } 
 }

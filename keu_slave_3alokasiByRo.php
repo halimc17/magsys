@@ -187,7 +187,7 @@ $noUrut=1;
     foreach($penerima['unit'] as $key=>$val){
          if($luaspenerima[$val]>0){
              $str="select luasareaproduktif as luastbm,kodeorg from ".$dbname.".setup_blok where left(kodeorg,4)='".$val."' 
-                       and statusblok in('LC','TB','TBM','TBM1','TBM2','TBM3','TBMPRO','BBT')";
+                       and statusblok in('LC','TB','TBM','TBM-01','TBM-02','TBM-03','TBMPRO','BBT')";
              $res=mysql_query($str);
              while($bar=mysql_fetch_object($res))
              {

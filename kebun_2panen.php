@@ -44,6 +44,17 @@ $optgudang="<option value=''>".$_SESSION['lang']['all']."</option>";
 //
 //}
 
+//=================ambil divisi;
+$str="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi
+                where tipe='AFDELING'";
+$res=mysql_query($str);
+$optdivisi="<option value=''>".$_SESSION['lang']['all']."</option>";
+//while($bar=mysql_fetch_object($res))
+//{
+//	$optdivisi.="<option value='".$bar->kodeorganisasi."'>".$bar->namaorganisasi."</option>";
+//
+//}
+
 //<button class=mybutton id=create_new name=create_new onclick=createNew() >".$_SESSION['lang']['new']."</button>
 
 $optpil="<option value='fisik'>".$_SESSION['lang']['fisik']."</option>";
@@ -101,20 +112,20 @@ $frm[0].="<span id=printPanel style='display:none;'>
        <table class=sortable cellspacing=1 border=0 width=100%>
              <thead>
                     <tr>
-                          <td align=center width=50>No.</td>
-                          <td align=center width=150>".$_SESSION['lang']['tanggal']."</td>
+                          <td align=center>No.</td>
+                          <td align=center width=65>".$_SESSION['lang']['tanggal']."</td>
                           <td align=center>".$_SESSION['lang']['afdeling']."</td>
                           <td align=center>".$_SESSION['lang']['lokasi']."</td>
                           <td align=center>".$_SESSION['lang']['intiplasma']."</td>
                           <td align=center>".$_SESSION['lang']['tahuntanam']."</td>    
                           <td align=center>".$_SESSION['lang']['janjang']."</td>
-                          <td align=center>".$_SESSION['lang']['hasilkerjad']." (Kg)</td>    
+                          <td align=center>".$_SESSION['lang']['hasilkerjad']." (Kg)</td>
+                          <td align=center>".$_SESSION['lang']['jumlahhk']."</td>
                           <td align=center>".$_SESSION['lang']['upahkerja']."</td>
                           <td align=center>".$_SESSION['lang']['upahpenalty']."</td>
-                          <td align=center>".$_SESSION['lang']['premibasis']."</td>
                           <td align=center>".$_SESSION['lang']['upahpremi']."</td>
-                          <td align=center>".$_SESSION['lang']['jumlahhk']."</td>
                           <td align=center>".$_SESSION['lang']['rupiahpenalty']."</td>
+                          <td align=center>".$_SESSION['lang']['total']."</td>
                         </tr>  
                  </thead>
                  <tbody id=container>
@@ -217,7 +228,12 @@ $frm[3].="<table cellspacing=1 border=0>
 			<tr>
 				<td>".$_SESSION['lang']['unit']."</td>
 				<td>:</td>
-				<td><select id=unit_3 name=unit_3 style=width:150px; onchange=bersih_3()>".$optgudang."</select></td>
+				<td><select id=unit_3 name=unit_3 style=width:150px; onchange=getDiv_3()>".$optgudang."</select></td>
+			</tr>
+			<tr>
+				<td>".$_SESSION['lang']['afdeling']."</td>
+				<td>:</td>
+				<td><select id=divisi_3 name=divisi_3 style=width:150px; onchange=bersih_3()>".$optdivisi."</select></td>
 			</tr>
 			<tr>
 				<td>".$_SESSION['lang']['intiplasma']."</td>
@@ -253,7 +269,7 @@ $hfrm[2]=$_SESSION['lang']['laporanpanen']." per ".$_SESSION['lang']['orang'];
 $hfrm[3]=$_SESSION['lang']['laporanpanen']." SPB vs WB";
 //$hfrm[1]=$_SESSION['lang']['list'];
 //draw tab, jangan ganti parameter pertama, krn dipakai di javascript
-drawTab('FRM',$hfrm,$frm,200,900);
+drawTab('FRM',$hfrm,$frm,200,1000);
 //===============================================
 
 close_body();

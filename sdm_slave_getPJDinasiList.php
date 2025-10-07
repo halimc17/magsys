@@ -4,21 +4,25 @@ require_once('config/connection.php');
 require_once('lib/nangkoelib.php');
 
 if($_SESSION['empl']['tipelokasitugas']=='HOLDING') {
-	$whereKary = " and bagian = 'HHRS'";
+	$whereKary = " and bagian = 'HHRS' and lokasitugas like '%HO'";
 } else {
-	$whereKary = " and bagian = 'HRA' and
-		kodeorganisasi='".$_SESSION['org']['kodeorganisasi']."'";
+	$whereKary = " and bagian = 'HRA' and lokasitugas not like '%HO' and kodeorganisasi='".$_SESSION['org']['kodeorganisasi']."'";
 }
 
+//ambil karyawan permanen
 $str="select namakaryawan,karyawanid from ".$dbname.".datakaryawan
       where (tanggalkeluar = '0000-00-00' or tanggalkeluar > '".date("Y-m-d")."') and
-	  tipekaryawan in ('0','7','8') ".$whereKary." and
+	  tipekaryawan in ('0','2','7','8','9') ".$whereKary." and
 	  karyawanid <>".$_SESSION['standard']['userid']. " order by namakaryawan";
+
 $res=mysql_query($str);
-$optKar="<option value=''></option>";
+// $optKar="<option value=''></option>";
+$optKar = "";
+$optKar2="<option value=''></option>";
 while($bar=mysql_fetch_object($res))
 {
 	$optKar.="<option value='".$bar->karyawanid."'>".$bar->namakaryawan."</option>";
+	$optKar2.="<option value='".$bar->karyawanid."'>".$bar->namakaryawan."</option>";
 }	
 
 //limit/page
@@ -94,16 +98,38 @@ while($bar=mysql_fetch_object($res))
      $sthrd=$_SESSION['lang']['disetujui'];
   else{
      $sthrd=$_SESSION['lang']['wait_approve'];
-	 $sthrd.="<br> &nbsp ".$_SESSION['lang']['ganti'].":<select style='width:100px;'  onchange=ganti(this.options[this.selectedIndex].value,'hrd','".$bar->notransaksi."')>".$optKar."</select>";
+	 $sthrd.="<br> &nbsp ".$_SESSION['lang']['ganti'].":<select style='width:100px;'  onchange=ganti(this.options[this.selectedIndex].value,'hrd','".$bar->notransaksi."')>".$optKar2."</select>";
   }
+
+  $tujuan=$bar->tujuan1;
+  if($bar->tujuan2!=''){
+	$tujuan=$bar->tujuan2;
+  }elseif($bar->tujuan3!=''){
+	$tujuan=$bar->tujuan3;
+  }elseif($bar->tujuanlain!=''){
+	$tujuan=$bar->tujuanlain;
+  }
+
+	if(($bar->uangmuka==0 and $bar->dibayar==0) or $bar->statushrd==2){
+		$dibayar='';
+	}else if($bar->dibayar>0){
+		$dibayar='Sudah dibayar';
+	}else{
+		$dibayar='Belum dibayar';
+	}
+
 	echo"<tr class=rowcontent>
-	  <td>".$no."</td>
+	  <td align=center>".$no."</td>
 	  <td>".$bar->notransaksi."</td>
 	  <td>".$namakaryawan."</td>
-	  <td>".tanggalnormal($bar->tanggalbuat)."</td>
-	  <td>".$bar->tujuan2."</td>
+	  <td align=center>".tanggalnormal($bar->tanggalbuat)."</td>
+	  <td>".$tujuan."</td>
 	  <td>".$stpersetujuan."</td>
-	  <td>".$sthrd."</td>	
+	  <td>".$sthrd."</td>";
+	if($_SESSION['empl']['tipelokasitugas']=='HOLDING'){
+	  echo"<td align=right>".number_format($bar->uangmuka,2,'.',',')."</td>";
+	}
+	echo"<td align=center>".$dibayar."</td>
 	  <td align=center>
 	     <img src=images/pdf.jpg class=resicon  title='".$_SESSION['lang']['pdf']."' onclick=\"previewPJD('".$bar->notransaksi."',event);\"> 
        ".$add."

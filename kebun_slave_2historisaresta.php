@@ -20,7 +20,7 @@ if(($proses=='getData')or($proses=='excel')){
 	$bulankecil='00';
     
     // ambil data awal tahun, kalo ada data tahun ini, timpa yang setup_blok
-    $sCek="select * from ".$dbname.".setup_blok_tahunan where kodeorg like '".$kdOrg."%' and tahun like '".$tahun."%' and length(tahun)=6 and statusblok in ('TB', 'TBM', 'TM') and (luasareaproduktif+luasareanonproduktif) > 0";
+    $sCek="select * from ".$dbname.".setup_blok_tahunan where kodeorg like '".$kdOrg."%' and tahun like '".$tahun."%' and length(tahun)=6 and statusblok in ('TB', 'TBM','TBM-01','TBM-02','TBM-03','TM') and (luasareaproduktif+luasareanonproduktif) > 0";
 		// kodeorg like '".$kdOrg."%' and tahun like '".$tahun."%' and length(tahun)=6 and statusblok in ('TB', 'TBM', 'TM') and (luasareaproduktif+luasareanonproduktif) > 0
 		// echo $sCek;
     $qCek=mysql_query($sCek) or die(mysql_error());

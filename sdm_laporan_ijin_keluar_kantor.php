@@ -10,94 +10,151 @@ echo open_body();
     </script>
 <?
 include('master_mainMenu.php');
-OPEN_BOX('','<b>'.strtoupper($_SESSION['lang']['izinkntor']).'</b>');
+//OPEN_BOX('','<b>'.strtoupper($_SESSION['lang']['izinkntor']).'</b>');
+OPEN_BOX('','<b>'.strtoupper($_SESSION['lang']['daftar']).' '.strtoupper($_SESSION['lang']['ijin']).'/'.strtoupper($_SESSION['lang']['cuti']).'</b>');
 
-//Lokasi Tugas
-$optlokasitugas="";
-if(trim($_SESSION['org']['tipeinduk'])=='HOLDING')//user holding dapat menempatkan dimana saja
-{
-    $str="select namaorganisasi,kodeorganisasi from ".$dbname.".organisasi where tipe not in('BLOK','PT','STENGINE','STATION') 
-	      and length(kodeorganisasi)=4 order by namaorganisasi";
-	$res=mysql_query($str);
-	while($bar=mysql_fetch_object($res))
-	{
-			$optlokasitugas.="<option value='".$bar->kodeorganisasi."'>".$bar->namaorganisasi."</option>";	
-	}
+##untuk pilihan Unit
+//exit('Warning: '.$_SESSION['empl']['tipelokasitugas'].' = '.$_SESSION['empl']['bagian']);
+if($_SESSION['empl']['tipelokasitugas'] == 'HOLDING'){
+	$optUnit="<option value=''>".$_SESSION['lang']['all']."</option>";
+	$iUnit="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi where length(kodeorganisasi)=4 order by induk,kodeorganisasi";
+}else if($_SESSION['empl']['tipelokasitugas'] == 'KANWIL' 
+//or ($_SESSION['empl']['bagian'] == 'HHRD' || $_SESSION['empl']['bagian'] == 'HHRS' || $_SESSION['empl']['bagian'] == 'HRA'|| substr($_SESSION['empl']['bagian'],0,3) == 'URD')
+){
+	$optUnit="<option value=''>".$_SESSION['lang']['all']."</option>";
+	$iUnit="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi where length(kodeorganisasi)=4 and kodeorganisasi not like '%HO' and induk='".$_SESSION['empl']['induk']."' order by induk,kodeorganisasi";
+}else{
+	$optUnit="<option value=''>".$_SESSION['lang']['all']."</option>";
+	$iUnit="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi where kodeorganisasi='".$_SESSION['empl']['lokasitugas']."' ";
 }
-else if(trim($_SESSION['org']['induk']!=''))//user unit hanya dapat menempatkan pada unitnya dan anak unitnya
+$nUnit=mysql_query($iUnit) or die(mysql_error($conn));
+while($dUnit=mysql_fetch_assoc($nUnit))
 {
-     $str="select namaorganisasi,kodeorganisasi from ".$dbname.".organisasi where tipe not in('BLOK','PT','STENGINE','STATION') 
-	      and kodeorganisasi='".$_SESSION['empl']['lokasitugas']."' order by namaorganisasi";
-	$res=mysql_query($str);
-	while($bar=mysql_fetch_object($res))
-	{
-			$optlokasitugas.="<option value='".$bar->kodeorganisasi."'>".$bar->namaorganisasi."</option>";	
-	}
+    $optUnit.="<option value=".$dUnit['kodeorganisasi'].">".$dUnit['namaorganisasi']."</option>";
 }
 
 $strApp = "select distinct(a.karyawanid) as karyawanid, b.namakaryawan from ".$dbname.".sdm_ijin a, ".$dbname.".datakaryawan b where a.karyawanid = b.karyawanid and (a.persetujuan1='".$_SESSION['standard']['userid']."' or hrd='".$_SESSION['standard']['userid']."')";
 $qryApp = mysql_query($strApp);
 
 $optKary='';
-if($_SESSION['empl']['tipelokasitugas'] == 'HOLDING' and ($_SESSION['empl']['bagian'] == 'HHRD' || $_SESSION['empl']['bagian'] == 'HHRS')){
+if($_SESSION['empl']['tipelokasitugas'] == 'HOLDING' and ($_SESSION['empl']['bagian'] == 'HHRD' || $_SESSION['empl']['bagian'] == 'HHRS' || $_SESSION['empl']['bagian'] == 'HHSE' || $_SESSION['empl']['bagian'] == 'HRA'|| substr($_SESSION['empl']['bagian'],0,3) == 'URD')){
 	$optKary="<option value=''>".$_SESSION['lang']['all']."</option>";
-	$sKary="select distinct karyawanid,namakaryawan from ".$dbname.".datakaryawan where tipekaryawan in(0,1,7,8) order by namakaryawan asc";
+	//$sKary="select distinct karyawanid,namakaryawan from ".$dbname.".datakaryawan where tipekaryawan in(0,1,2,3,6,7,8,9) and lokasitugas='".$unit."'
+	//		order by namakaryawan asc";
+	$sKary="select distinct(a.karyawanid) as karyawanid, b.namakaryawan from ".$dbname.".sdm_ijin a
+			LEFT JOIN ".$dbname.".datakaryawan b on a.karyawanid = b.karyawanid
+			where if(b.subbagian='',b.lokasitugas,left(b.subbagian,4)) like '%".$unit."%' 
+			order by namakaryawan asc";
 	$qKary=mysql_query($sKary) or die(mysql_error($sKary));
 	while($rKary=mysql_fetch_assoc($qKary))
 	{
 		$optKary.="<option value='".$rKary['karyawanid']."'>".$rKary['namakaryawan']."</option>";
 	}
-}else if($_SESSION['empl']['tipelokasitugas'] == 'KANWIL' and $_SESSION['empl']['bagian'] == 'HRA'){
+}else if($_SESSION['empl']['tipelokasitugas'] == 'KANWIL' and ($_SESSION['empl']['bagian'] == 'HHRD' || $_SESSION['empl']['bagian'] == 'HHRS' || $_SESSION['empl']['bagian'] == 'HRA'|| substr($_SESSION['empl']['bagian'],0,3) == 'URD')){
 	$optKary="<option value=''>".$_SESSION['lang']['all']."</option>";
-	$optJenis=$optKary;
-	$sKary="select distinct karyawanid,namakaryawan from ".$dbname.".datakaryawan where tipekaryawan in(0,1,7,8) and kodeorganisasi = '".$_SESSION['empl']['kodeorganisasi']."' order by namakaryawan asc";
+	//$sKary="select distinct karyawanid,namakaryawan from ".$dbname.".datakaryawan where substr(lokasitugas,3,2)!='HO' and tipekaryawan in(0,1,2,3,7,8) and kodeorganisasi = '".$_SESSION['empl']['kodeorganisasi']."' and lokasitugas='".$unit."' order by namakaryawan asc";
+	$sKary="select distinct(a.karyawanid) as karyawanid, b.namakaryawan from ".$dbname.".sdm_ijin a
+			LEFT JOIN ".$dbname.".datakaryawan b on a.karyawanid = b.karyawanid
+			where substr(b.lokasitugas,3,2)!='HO' and b.kodeorganisasi = '".$_SESSION['empl']['kodeorganisasi']."' 
+			and if(b.subbagian='',b.lokasitugas,left(b.subbagian,4)) like '%".$unit."%' 
+			order by namakaryawan asc";
 	$qKary=mysql_query($sKary) or die(mysql_error($sKary));
 	while($rKary=mysql_fetch_assoc($qKary))
 	{
 		$optKary.="<option value='".$rKary['karyawanid']."'>".$rKary['namakaryawan']."</option>";
 	}
 }else{
-	$optKary.="<option value='".$_SESSION['standard']['userid']."'>".$_SESSION['empl']['name']."</option>";
+	if(($_SESSION['empl']['bagian'] == 'HHRD' || $_SESSION['empl']['bagian'] == 'HHRS' || $_SESSION['empl']['bagian'] == 'HRA'|| substr($_SESSION['empl']['bagian'],0,3) == 'URD')){
+		$optKary="<option value=''>".$_SESSION['lang']['all']."</option>";
+		$sKary="select distinct(a.karyawanid) as karyawanid, b.namakaryawan from ".$dbname.".sdm_ijin a
+				LEFT JOIN ".$dbname.".datakaryawan b on a.karyawanid = b.karyawanid
+				where substr(b.lokasitugas,3,2)!='HO' and if(b.subbagian='',b.lokasitugas,left(b.subbagian,4))='".$_SESSION['empl']['lokasitugas']."' 
+				order by namakaryawan asc";
+		//exit('Warning: '.$sKary);
+		$qKary=mysql_query($sKary) or die(mysql_error($sKary));
+		while($rKary=mysql_fetch_assoc($qKary)){
+			$optKary.="<option value='".$rKary['karyawanid']."'>".$rKary['namakaryawan']."</option>";
+		}
+	}else{
+		$optKary="";
+		$sKary="select distinct(a.karyawanid) as karyawanid, b.namakaryawan from ".$dbname.".sdm_ijin a, ".$dbname.".datakaryawan b 
+				where a.karyawanid=b.karyawanid and (a.persetujuan1='".$_SESSION['standard']['userid']."' or hrd='".$_SESSION['standard']['userid']."')";
+		$qKary=mysql_query($sKary) or die(mysql_error($sKary));
+		while($rKary=mysql_fetch_assoc($qKary))
+		{
+			$optKary.="<option value='".$rKary['karyawanid']."'>".$rKary['namakaryawan']."</option>";
+		}
+		$optKary.="<option value='".$_SESSION['standard']['userid']."'>".$_SESSION['empl']['name']."</option>";
+	}
 }
 while($resApp=mysql_fetch_assoc($qryApp)){
 	$optKary.="<option value='".$resApp['karyawanid']."'>".$resApp['namakaryawan']."</option>";
 }
-$optJenis='';
-$optJenis="<option value=''>".$_SESSION['lang']['all']."</option>";
-$arragama=getEnum($dbname,'sdm_ijin','jenisijin');
-foreach($arragama as $kei=>$fal)
-{
-	if($_SESSION['language']=='ID'){
-		$optJenis.="<option value='".$kei."'>".$fal."</option>";
-	}else{
-		switch($fal){
-			case 'TERLAMBAT':
-				$fal='Late for work';
-				break;
-			case 'KELUAR':
-				$fal='Out of Office';
-				break;         
-			case 'PULANGAWAL':
-				$fal='Home early';
-				break;     
-			case 'IJINLAIN':
-				$fal='Other purposes';
-				break;   
-			case 'CUTI':
-				$fal='Leave';
-				break;       
-			case 'MELAHIRKAN':
-				$fal='Maternity';
-				break;           
-			default:
-				$fal='Wedding, Circumcision or Graduation';
-				break;                              
-		}
-		$optJenis.="<option value='".$kei."'>".$fal."</option>";       
-	}                    
-}
+$optJenis="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
+                $arragama=getEnum($dbname,'sdm_ijin','jenisijin');
+                foreach($arragama as $kei=>$fal)
+                {
+					$ada=0;
+                       switch($fal){
+                          case 'CUTI':
+                               $fal=($_SESSION['language']=='ID' ? 'Cuti' : 'Leave');
+							   $ada=1;
+                               break;
+                          case 'TERLAMBAT':
+                               $fal=($_SESSION['language']=='ID' ? 'Terlambat Datang' : 'Late for work');
+							   $ada=1;
+                               break;
+                          case 'KELUAR':
+                               $fal=($_SESSION['language']=='ID' ? 'Keluar Kantor' : 'Out of Office');
+ 							   $ada=1;
+                               break;         
+                          case 'PULANGAWAL':
+                               $fal=($_SESSION['language']=='ID' ? 'Pulang lebih awal' : 'Home early');
+ 							   $ada=1;
+                               break;
+                          case 'MELAHIRKAN':
+                               $fal=($_SESSION['language']=='ID' ? 'Melahirkan (90 hari)' : 'Maternity (90 days)');
+ 							   $ada=1;
+                               break;
+                          case 'MENIKAH':
+                               $fal=($_SESSION['language']=='ID' ? 'Pegawai Menikah (3 hari)' : 'Married (3 days)');
+ 							   $ada=1;
+                               break;
+                          case 'ANAKNIKAH':
+                               $fal=($_SESSION['language']=='ID' ? 'Menikahkan anak (2 hari)' : 'Child Married (2 days)');
+ 							   $ada=1;
+                               break;
+                          case 'ANAKHITAN':
+                               $fal=($_SESSION['language']=='ID' ? 'Mengkhitankan anak (2 hari)' : 'Child Circumcision (2 days)');
+ 							   $ada=1;
+                               break;
+                          case 'BAPTIS':
+                               $fal=($_SESSION['language']=='ID' ? 'Membaptis anak (2 hari)' : 'Child Baptism (2 days)');
+ 							   $ada=1;
+                               break;
+                          case 'ISTRILAHIR':
+                               $fal=($_SESSION['language']=='ID' ? 'Istri melahirkan (2 hari)' : 'Wife Maternity (2 days)');
+ 							   $ada=1;
+                               break;
+                          case 'KLGUTMMATI':
+                               $fal=($_SESSION['language']=='ID' ? 'Suami/Istri, Orang Tua/Mertua, Anak/Menantu meninggal dunia (2 hari)' : 'Family Death (2 days)');
+ 							   $ada=1;
+                               break;
+                          case '1RMH_MATI':
+                               $fal=($_SESSION['language']=='ID' ? 'Keluarga serumah meninggal dunia (1 hari)' : 'Same House Death (1 days)');
+ 							   $ada=1;
+                               break;
+                          default:
+ 							   $ada=0;
+                               break;
+                        }
+					if($ada==1){
+						$optJenis.="<option value='".$kei."'>".$fal."</option>";
+					}
+                }
 
-$tglSkrg = date("d-m-Y");
+$tglSkrg = date("01-m-Y");
+$tglSkrg2 = date("d-m-Y");
 
 echo"<fieldset><legend>".$_SESSION['lang']['navigasi']."</legend>
 	   <table>
@@ -106,13 +163,18 @@ echo"<fieldset><legend>".$_SESSION['lang']['navigasi']."</legend>
 			  <td>:</td>
 			  <td>
 					<input type=text class=myinputtext id=periodeawal onmousemove=setCalendar(this.id) onkeypress=return false;  size=10 maxlength=10 readonly='true' value='".$tglSkrg."' /> s/d 
-					<input type=text class=myinputtext id=periodeakhir onmousemove=setCalendar(this.id) onkeypress=return false;  size=10 maxlength=10 readonly='true' value='".$tglSkrg."' />
+					<input type=text class=myinputtext id=periodeakhir onmousemove=setCalendar(this.id) onkeypress=return false;  size=10 maxlength=10 readonly='true' value='".$tglSkrg2."' />
 			  </td>
 		  </tr>
 		  <tr>
 		      <td>".$_SESSION['lang']['jeniscuti']."</td>
 			  <td>:</td>
 			  <td><select id=jnsCuti>".$optJenis."</select></td>
+		  </tr>
+		  <tr>
+		      <td>".$_SESSION['lang']['unit']."</td>
+			  <td>:</td>
+			  <td><select id=unit onchange=getKary()>".$optUnit."</select></td>
 		  </tr>
 		  <tr>
 		      <td>".$_SESSION['lang']['namakaryawan']."</td>
@@ -145,6 +207,7 @@ echo "<div style='width:100%;height:600px;overflow:scroll;'>
                     <tr>
                           <td align=center>No.</td>
                           <td align=center>".$_SESSION['lang']['tanggal']."</td>
+                          <td align=center>".$_SESSION['lang']['nik']."</td>
                           <td align=center>".$_SESSION['lang']['nama']."</td>
                           <td align=center>".$_SESSION['lang']['keperluan']."</td>
                           <td align=center>".$_SESSION['lang']['jenisijin']."</td>  

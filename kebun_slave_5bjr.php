@@ -117,7 +117,8 @@ $optNmOrg=makeOption($dbname, 'organisasi', 'kodeorganisasi,namaorganisasi');
                     echo $optBlok;
                 break;
 		case'update':
-		if(($thnProd=='')||($jmBjr=='')||($kelaspohon==''))
+		//if(($thnProd=='')||($jmBjr=='')||($kelaspohon==''))
+		if($jmBjr==''||$thnProd==''||$kdBlok=='')
 		{
 			echo"warning:Field tidak boleh kosong";
 			exit();

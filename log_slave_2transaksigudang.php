@@ -34,7 +34,7 @@ if($jenis=='9')$jenis='';
 $tipetransaksi = "a.tipetransaksi like '%".$jenis."%'";
 
 $str="select tanggalmulai, tanggalsampai from ".$dbname.".setup_periodeakuntansi
-    where periode ='".$periode."' and kodeorg='".$unit."'";
+    where periode like '".$periode."%' and kodeorg='".$unit."' order by periode";
 if($unit=='sumatera')
     $str="select tanggalmulai, tanggalsampai from ".$dbname.".setup_periodeakuntansi
         where periode ='".$periode."' and kodeorg in ('MRKE10','SKSE10','SOGM20','SSRO21','WKNE10')";
@@ -44,33 +44,38 @@ if($unit=='kalimantan')
 $res=mysql_query($str);
 while($bar=mysql_fetch_object($res))
 {
-    $tanggalmulai=$bar->tanggalmulai;
-    $tanggalsampai=$bar->tanggalsampai;
+	$no+=1;
+	if($no==1){
+		$tanggalmulai=$bar->tanggalmulai;
+    }
+	$tanggalsampai=$bar->tanggalsampai;
 }
 
 if($kodebarang==''){
     $str="select a.tanggal, a.kodebarang, b.namabarang, a.jumlah, a.satuan, a.hargasatuan, a.hargarata, a.nopo, 
-        c.namasupplier, a.kodeblok, a.kodemesin, a.notransaksi, d.gudangx, a.tipetransaksi, d.statusjurnal 
+        c.namasupplier, a.kodeblok, a.kodemesin, a.notransaksi, d.gudangx, a.tipetransaksi, a.statusjurnal, d.statusjurnal, e.namaorganisasi
         from ".$dbname.".log_transaksi_vw a
         left join ".$dbname.".log_5masterbarang b on a.kodebarang=b.kodebarang  
         left join ".$dbname.".log_5supplier c on a.idsupplier=c.supplierid  
         left join ".$dbname.".log_transaksiht d on a.notransaksi=d.notransaksi  
+        left join ".$dbname.".organisasi e on a.kodeblok=e.kodeorganisasi
         where a.tanggal>='".$tanggalmulai."' and a.tanggal<='".$tanggalsampai."' 
         and ".$tipetransaksi." and a.kodegudang = '".$unit."'
         order by a.tanggal, a.tipetransaksi";
 }
 else{
     $str="select a.tanggal, a.kodebarang, b.namabarang, a.jumlah, a.satuan, a.hargasatuan, a.hargarata, a.nopo, 
-        c.namasupplier, a.kodeblok, a.kodemesin, a.notransaksi, d.gudangx, a.tipetransaksi, a.statusjurnal, d.statusjurnal
+        c.namasupplier, a.kodeblok, a.kodemesin, a.notransaksi, d.gudangx, a.tipetransaksi, a.statusjurnal, d.statusjurnal, e.namaorganisasi
         from ".$dbname.".log_transaksi_vw a
         left join ".$dbname.".log_5masterbarang b on a.kodebarang=b.kodebarang  
         left join ".$dbname.".log_5supplier c on a.idsupplier=c.supplierid  
         left join ".$dbname.".log_transaksiht d on a.notransaksi=d.notransaksi  
+        left join ".$dbname.".organisasi e on a.kodeblok=e.kodeorganisasi
         where a.tanggal>='".$tanggalmulai."' and a.tanggal<='".$tanggalsampai."' and ".$tipetransaksi."
         and a.kodegudang = '".$unit."' and a.kodebarang = '".$kodebarang."' 
         order by a.tanggal, a.tipetransaksi";
     $str22="select sum(saldoawalqty) as saldoawalqty, avg(hargaratasaldoawal) as hargaratasaldoawal, sum(nilaisaldoawal) as nilaisaldoawal from ".$dbname.".log_5saldobulanan where kodegudang = '".$unit."'
-        and kodebarang = '".$kodebarang."' and periode = '".$periode."'";                
+        and kodebarang = '".$kodebarang."' and periode = '".(strlen($periode)==4 ? $periode.'-01' : $periode)."'";                
 	$res22=mysql_query($str22);
 	if(mysql_num_rows($res22)>0)
 	while($bar22=mysql_fetch_object($res22))
@@ -125,6 +130,7 @@ else
         if($jenis=='3')echo"<td align=center>".$_SESSION['lang']['sumber']."</td>";
         if($jenis=='7')echo"<td align=center>".$_SESSION['lang']['tujuan']."</td>";
         if(($jenis=='5')or($jenis=='6'))echo"<td align=center>".$_SESSION['lang']['kodeblok']."</td>";
+        if(($jenis=='5')or($jenis=='6'))echo"<td align=center>".$_SESSION['lang']['blok']."</td>";
         if(($jenis=='5')or($jenis=='6'))echo"<td align=center>".$_SESSION['lang']['kodevhc']."</td>";
         echo"<td align=center>".$_SESSION['lang']['notransaksi']."</td>";
     echo"</tr></thead><tbody>";  
@@ -155,8 +161,8 @@ else
             if($jenis==''){
                 
             }else{
-                echo"<td align=right>".number_format($hargaratasaldoawal)."</td>";
-                echo"<td align=right>".number_format($nilaisaldoawal)."</td>";
+                echo"<td align=right>".number_format($hargaratasaldoawal,2)."</td>";
+                echo"<td align=right>".number_format($nilaisaldoawal,2)."</td>";
             }
             echo"<td></td>";
             echo"<td></td>";
@@ -169,6 +175,8 @@ else
         // 5 = Pengeluaran
         // 6 = Pengembalian penerimaan
         // 7 = Pengeluaran mutasi
+		$tothrg=0;
+		$totjml=0;
 		$no=0;
         while($bar=mysql_fetch_object($res))
         {
@@ -198,16 +206,17 @@ else
                 echo"<td align=right>".number_format($saldo,2)."</td>";
             }else{
                 echo"<td align=right>".number_format($bar->jumlah,2)."</td>";
+                $totjml+=$bar->jumlah;
             }
             echo"<td>".$bar->satuan."</td>";
             if($jenis==''){
                 
             }else{
                 if(($jenis=='0')or($jenis=='1')or($jenis=='3'))
-                    echo"<td align=right>".number_format($bar->hargasatuan)."</td>"; 
+                    echo"<td align=right>".number_format($bar->hargasatuan,2)."</td>"; 
                 else
-                    echo"<td align=right>".number_format($bar->hargarata)."</td>";
-                echo"<td align=right>".number_format($total)."</td>";
+                    echo"<td align=right>".number_format($bar->hargarata,2)."</td>";
+                echo"<td align=right>".number_format($total,2)."</td>";
             }
 //            if(($jenis=='0')or($jenis=='1')or($jenis=='2')or($jenis=='3'))echo"<td nowrap>".$bar->nopo."</td>";
 //            if(($jenis=='0')or($jenis=='1')or($jenis=='2')or($jenis=='3'))echo"<td nowrap>".$bar->namasupplier."</td>";
@@ -215,8 +224,9 @@ else
             if(($jenis=='0')or($jenis=='1')or($jenis=='2'))echo"<td nowrap>".$bar->namasupplier."</td>";
             if($jenis=='7')echo"<td>".$bar->gudangx."</td>";
             if($jenis=='3')echo"<td>".$bar->gudangx."</td>";
-            if(($jenis=='5')or($jenis=='6'))echo"<td>".$bar->kodeblok."</td>";
-            if(($jenis=='5')or($jenis=='6'))echo"<td>".$bar->kodemesin."</td>";
+            if(($jenis=='5')or($jenis=='6'))echo"<td nowrap>".$bar->kodeblok."</td>";
+            if(($jenis=='5')or($jenis=='6'))echo"<td nowrap>".$bar->namaorganisasi."</td>";
+            if(($jenis=='5')or($jenis=='6'))echo"<td nowrap>".$bar->kodemesin."</td>";
             if($jenis==''){
                 if($bar->tipetransaksi<5)$keluarmasuk=$bar->nopo." ".$bar->namasupplier." ".$bar->gudangx;
                 if($bar->tipetransaksi>4)$keluarmasuk=$bar->kodeblok." ".$bar->kodemesin." ".$bar->gudangx;
@@ -224,6 +234,7 @@ else
             }
             echo"<td nowrap>".$bar->notransaksi."</td>";
             echo"</tr>";
+			$tothrg+=$total;
         } 
         if($jenis==''){
         echo"<tr class=rowcontent>
@@ -231,8 +242,24 @@ else
             echo"<td align=right>".number_format($totmas,2)."</td>";
             echo"<td align=right>".number_format($totkel,2)."</td>";
             echo"<td align=right>".number_format($saldo,2)."</td>";
-            echo"<td colspan=3>".$satuan."</td>";
+            echo"<td>".$satuan."</td>";
+            echo"<td colspan=2></td>";
         echo"</tr>";
+		}else{
+			if($kodebarang<>''){
+				echo"<tr class=rowcontent>
+					<td align=center colspan=5>Total</td>";
+					echo"<td align=right>".number_format($totjml,2)."</td>";
+					echo"<td>".$satuan."</td>";
+					echo"<td align=right>".number_format($tothrg/$totjml,2)."</td>";
+					echo"<td align=right>".number_format($tothrg,2)."</td>";
+					if($jenis=='5'){
+						echo"<td colspan=4></td>";
+					}else{
+						echo"<td colspan=3></td>";
+					}
+				echo"</tr>";
+			}
         }    
     echo"</tbody<tfoot><tr><td colspan=11>*Baris berwarna oranye berarti transaksi belum di posting</td></tr></tfoot>";
 

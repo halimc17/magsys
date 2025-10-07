@@ -227,7 +227,7 @@ function getpreview2(){
         }
     }    
     post_response_text(tujuan, param, respon);    
-} 
+}
 
 function printFile(param,tujuan,title,ev)
 {
@@ -242,9 +242,11 @@ function printFile(param,tujuan,title,ev)
 function getexcel(ev,tujuan){
     pt=document.getElementById('pt').options[document.getElementById('pt').selectedIndex].value;
     unit=document.getElementById('unit').options[document.getElementById('unit').selectedIndex].value;
+    afdeling=document.getElementById('afdeling').options[document.getElementById('afdeling').selectedIndex].value;
     periode=document.getElementById('periode').options[document.getElementById('periode').selectedIndex].value;
-    judul='Report Ms.Excel';	
-    param='pt='+pt+'&unit='+unit+'&periode='+periode+'&proses=excel';
+    inti=document.getElementById('inti').options[document.getElementById('inti').selectedIndex].value;
+    judul='Report Ms.Excel';
+    param='pt='+pt+'&unit='+unit+'&afdeling='+afdeling+'&periode='+periode+'&inti='+inti+'&proses=excel';
     printFile(param,tujuan,judul,ev)    
 } 
 
@@ -258,10 +260,8 @@ function getexcel1(ev,tujuan){
     printFile(param,tujuan,judul,ev)    
 } 
 
-
-
 function getexcel2(ev,tujuan){
-pt=document.getElementById('pt2').options[document.getElementById('pt2').selectedIndex].value;
+	pt=document.getElementById('pt2').options[document.getElementById('pt2').selectedIndex].value;
     unit=document.getElementById('unit2').options[document.getElementById('unit2').selectedIndex].value;
     afdeling=document.getElementById('afdeling2').options[document.getElementById('afdeling2').selectedIndex].value;
     periode=document.getElementById('periode2').options[document.getElementById('periode2').selectedIndex].value;
@@ -272,7 +272,6 @@ pt=document.getElementById('pt2').options[document.getElementById('pt2').selecte
     //param='periode='+periode+'&proses=excel';
     printFile(param,tujuan,judul,ev)    
 } 
-
 
 function getpdf(ev,tujuan)
 {

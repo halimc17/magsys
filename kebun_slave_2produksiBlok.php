@@ -2,7 +2,9 @@
 require_once('master_validation.php');
 require_once('config/connection.php');
 require_once('lib/nangkoelib.php');
+require_once('lib/zLib.php');
 
+$optNm=makeOption($dbname, 'organisasi', 'kodeorganisasi,namaorganisasi');
 $proses=$_GET['proses'];
 switch ($proses){
 	case 'preview':
@@ -124,8 +126,13 @@ switch ($proses){
         echo"</pre>";
         
         
- $stream="Produksi_Per_Blok ".$param['idKebun']." Periode:".$param['periode']."
-         <table class=sortable border=0 cellspacing=1>
+ $stream="Produksi_Per_Blok ".$param['idKebun']." Periode:".$param['periode']."";
+ if($proses=='excel'){
+	$stream.="<table class=sortable border=1 cellspacing=1>";
+ }else{
+	$stream.="<table class=sortable border=0 cellspacing=1>";
+ }
+ $stream.="
           <thead>
           <tr class=rowheader>
              <td>No</td>
@@ -189,7 +196,7 @@ switch ($proses){
                 $stream.="<tr class=rowcontent>
                            <td>".$a."</td>
                            <td>".$param['periode']."-".$tttt."</td>
-                           <td>".$bl."</td>
+                           <td>".$optNm[$bl]."</td>
                            <td>".$tt[$bl]."</td>
                             <td align=right>".number_format($jjgpanen[$param['periode']."-".$tttt][$bl])."</td>
                             <td align=right>".number_format($jjgangkut[$param['periode']."-".$tttt][$bl])."</td>    

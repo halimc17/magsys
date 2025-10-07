@@ -20,7 +20,8 @@ $col1 = 'tanggal,nik,a.kodeorg,hasilkerja,jumlahhk,upahkerja,upahpenalty,upahpre
 $cols[] = explode(',',$col1);
 //$query = selectQuery($dbname,'kebun_prestasi',$col1,
 //    "notransaksi='".$param['notransaksi']."'");
-$query="select ".$col1." from ".$dbname.".kebun_prestasi a left join ".$dbname.".kebun_aktifitas b on a.notransaksi=b.notransaksi where a.notransaksi='".$param['notransaksi']."'";
+$query="select a.*,d.namaorganisasi from (select ".$col1." from ".$dbname.".kebun_prestasi a left join ".$dbname.".kebun_aktifitas b on a.notransaksi=b.notransaksi where 		a.notransaksi='".$param['notransaksi']."') a
+		left join ".$dbname.".organisasi d on a.kodeorg=d.kodeorganisasi";
 //exit("Error".$query);
 $data[] = fetchData($query);
 $align[] = explode(",","L,L,L,R,R,R,R,R");
@@ -29,11 +30,12 @@ $length[] = explode(",","10,10,15,10,10,15,15,15");
 
 
 //getNamakaryawan
-$sDtKaryawn="select karyawanid,namakaryawan from ".$dbname.".datakaryawan order by namakaryawan asc";
+$sDtKaryawn="select karyawanid,namakaryawan,nik from ".$dbname.".datakaryawan order by namakaryawan asc";
 $rData=fetchData($sDtKaryawn);
 foreach($rData as $brKary =>$rNamakaryawan)
 {
     $RnamaKary[$rNamakaryawan['karyawanid']]=$rNamakaryawan['namakaryawan'];
+    $RnikKary[$rNamakaryawan['karyawanid']]=$rNamakaryawan['nik'];
 }
 $sOrg="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi order by namaorganisasi asc";
 //exit("Error".$sOrg);
@@ -87,7 +89,7 @@ switch($proses) {
         $pdf->SetFont('Arial','B',8);
         $pdf->Cell(10/100*$width,$height,$_SESSION['lang']['tanggal'],1,0,'C',1);
         $pdf->Cell(15/100*$width,$height,$_SESSION['lang']['nik'],1,0,'C',1);
-        $pdf->Cell(13/100*$width,$height,$_SESSION['lang']['kodeorg'],1,0,'C',1);
+        $pdf->Cell(13/100*$width,$height,$_SESSION['lang']['blok'],1,0,'C',1);
         $pdf->Cell(5/100*$width,$height,$_SESSION['lang']['jjg'],1,0,'C',1);
         $pdf->Cell(6/100*$width,$height,$_SESSION['lang']['luas'],1,0,'C',1);
         $pdf->Cell(8/100*$width,$height,$_SESSION['lang']['upahkerja'],1,0,'C',1);
@@ -103,7 +105,7 @@ switch($proses) {
         {
             $pdf->Cell(10/100*$width,$height,tanggalnormal($rData['tanggal']),1,0,'C',1);
             $pdf->Cell(15/100*$width,$height,$RnamaKary[$rData['nik']],1,0,'L',1);
-            $pdf->Cell(13/100*$width,$height,$rData['kodeorg'],1,0,'C',1);
+            $pdf->Cell(13/100*$width,$height,$rData['namaorganisasi'],1,0,'C',1);
             $pdf->Cell(5/100*$width,$height,$rData['hasilkerja'],1,0,'R',1);
             $pdf->Cell(6/100*$width,$height,number_format($rData['luaspanen'],2),1,0,'R',1);
             $pdf->Cell(8/100*$width,$height,number_format($rData['upahkerja'],0),1,0,'R',1);
@@ -166,7 +168,7 @@ switch($proses) {
         
         case'html':
             
-           
+        $totkg=0;
         $tab="<link rel=stylesheet type=text/css href=style/generic.css>";
         $tab.="<fieldset><legend>".$title."</legend>";
         $tab.="<table cellpadding=1 cellspacing=1 border=0 width=65% class=sortable><tbody class=rowcontent>";
@@ -178,8 +180,10 @@ switch($proses) {
         $tab.="<tr class=rowheader>";
         $tab.="<td align=center>".$_SESSION['lang']['tanggal']."</td>";
         $tab.="<td  align=center>".$_SESSION['lang']['nik']."</td>";
-        $tab.="<td  align=center>".$_SESSION['lang']['kodeorg']."</td>";
+        $tab.="<td  align=center>".$_SESSION['lang']['namakaryawan']."</td>";
+        $tab.="<td  align=center>".$_SESSION['lang']['blok']."</td>";
         $tab.="<td  align=center>".$_SESSION['lang']['jjg']."</td>";
+        $tab.="<td  align=center>".$_SESSION['lang']['kg']."</td>";
         $tab.="<td  align=center>".$_SESSION['lang']['luas']."</td>";
         $tab.="<td  align=center>".$_SESSION['lang']['upahkerja']."</td>";
         $tab.="<td  align=center>".$_SESSION['lang']['upahpenalty']."</td>";
@@ -196,11 +200,13 @@ switch($proses) {
         $tab.="</tr></thead><tbody>";
         
         
-        $isiQuery="a.notransaksi,a.nik,a.kodekegiatan,a.kodeorg as kodeblok,a.tahuntanam,a.hasilkerja,a.hasilkerjakg,
+        $isiQuery="a.notransaksi as anotransaksi,a.nik,a.kodekegiatan,a.kodeorg as kodeblok,a.tahuntanam,a.hasilkerja,a.hasilkerjakg,
             a.jumlahhk,a.norma,a.outputminimal,a.upahkerja,a.upahpenalty,a.upahpremi,a.premibasis,a.umr,a.statusblok,
             a.pekerjaanpremi,a.penalti1,a.penalti2,a.penalti3,a.penalti4,a.penalti5,a.penalti6,a.penalti7,a.penalti8,
             a.penalti9,a.penalti10,a.rupiahpenalty,a.luaspanen,a.kodesegment,a.brondolan,a.jjgpenalty,b.*";
-        $queryhtml="select ".$isiQuery." from ".$dbname.".kebun_prestasi a left join ".$dbname.".kebun_aktifitas b on a.notransaksi=b.notransaksi where a.notransaksi='".$param['notransaksi']."'";
+        $queryhtml="select a.*,d.namaorganisasi from (select ".$isiQuery." from ".$dbname.".kebun_prestasi a 
+					left join ".$dbname.".kebun_aktifitas b on a.notransaksi=b.notransaksi where a.notransaksi='".$param['notransaksi']."') a
+					left join ".$dbname.".organisasi d on a.kodeblok=d.kodeorganisasi";
         $qData=mysql_query($queryhtml) or die(mysql_error($conn));
         while($rData=mysql_fetch_assoc($qData)){
             
@@ -213,7 +219,8 @@ switch($proses) {
                     $libur=$dLibur['libur'];
                     
                     $day = date('D', strtotime($rData['tanggal']));
-                    if($day=='Sun')$cekminggu=1; 
+                    //if($day=='Sun')$cekminggu=1; 
+                    if($day=='Sun')$cekminggu=0;
                     else $cekminggu=0;
                     $ceklibur=$libur+$cekminggu;
                     
@@ -250,9 +257,11 @@ switch($proses) {
             
                 $tab.="<tr class=rowcontent>";
                 $tab.="<td>".tanggalnormal($rData['tanggal'])."</td>";
+                $tab.="<td>".$RnikKary[$rData['nik']]."</td>";
                 $tab.="<td>".$RnamaKary[$rData['nik']]."</td>";
-                $tab.="<td>".$rData['kodeblok']."</td>";
-                $tab.="<td align=right>".$rData['hasilkerja']."</td>";
+                $tab.="<td>".$rData['namaorganisasi']."</td>";
+                $tab.="<td align=right>".number_format($rData['hasilkerja'],0)."</td>";
+                $tab.="<td align=right>".number_format($rData['hasilkerjakg'],2)."</td>";
                 $tab.="<td align=right>".number_format($rData['luaspanen'],2)."</td>";
                 $tab.="<td align=right>".number_format($rData['upahkerja'],0)."</td>";
                 $tab.="<td align=right>".number_format($rData['upahpenalty'],0)."</td>";
@@ -295,6 +304,7 @@ switch($proses) {
                 $tab.="<td align=right>".number_format($sisa,0)."</td>";
                 $tab.="</tr>";
                 $totJanjang+=$rData['hasilkerja'];
+                $totkg+=$rData['hasilkerjakg'];
                 $totUpahKerja+=$rData['upahkerja'];
                 $totUpahKerjapenalty+=$rData['upahpenalty'];
                 $totUpahPremi+=$rData['upahpremi'];
@@ -311,8 +321,9 @@ switch($proses) {
                 
         }
         $tab.="<tr class=rowcontent>";
-        $tab.="<td colspan=3>".$_SESSION['lang']['total']."</td>";
+        $tab.="<td colspan=4>".$_SESSION['lang']['total']."</td>";
         $tab.="<td align=right>".number_format($totJanjang,0)."</td>";
+        $tab.="<td align=right>".number_format($totkg,2)."</td>";
         $tab.="<td align=right>".number_format($totLuas,2)."</td>";
         $tab.="<td align=right>".number_format($totUpahKerja,0)."</td>";
         $tab.="<td align=right>".number_format($totUpahKerjapenalty,0)."</td>";
@@ -352,9 +363,11 @@ switch($proses) {
         $tab.="<table cellpadding=1 cellspacing=1 border=1 class=sortable><thead>";
         $tab.="<tr class=rowheader>";
         $tab.="<td bgcolor=#CCCCCC align=center>".$_SESSION['lang']['tanggal']."</td>";
-        $tab.="<td bgcolor=#CCCCCC  align=center>".$_SESSION['lang']['nik']."</td>";
-        $tab.="<td bgcolor=#CCCCCC  align=center>".$_SESSION['lang']['kodeorg']."</td>";
+        $tab.="<td bgcolor=#CCCCCC align=center>".$_SESSION['lang']['nik']."</td>";
+        $tab.="<td bgcolor=#CCCCCC align=center>".$_SESSION['lang']['namakaryawan']."</td>";
+        $tab.="<td bgcolor=#CCCCCC align=center>".$_SESSION['lang']['blok']."</td>";
         $tab.="<td bgcolor=#CCCCCC align=center>".$_SESSION['lang']['jjg']."</td>";
+        $tab.="<td bgcolor=#CCCCCC align=center>".$_SESSION['lang']['kg']."</td>";
         $tab.="<td bgcolor=#CCCCCC align=center>".$_SESSION['lang']['luas']."</td>";
         $tab.="<td bgcolor=#CCCCCC align=center>".$_SESSION['lang']['upahkerja']."</td>";
         $tab.="<td bgcolor=#CCCCCC align=center>".$_SESSION['lang']['upahpenalty']."</td>";
@@ -371,22 +384,20 @@ switch($proses) {
         $tab.="</tr></thead><tbody>";
         
         
-        $isiQuery="a.notransaksi,a.nik,a.kodekegiatan,a.kodeorg as kodeblok,a.tahuntanam,a.hasilkerja,a.hasilkerjakg,
+        $isiQuery="a.notransaksi as anotransaksi,a.nik,a.kodekegiatan,a.kodeorg as kodeblok,a.tahuntanam,a.hasilkerja,a.hasilkerjakg,
             a.jumlahhk,a.norma,a.outputminimal,a.upahkerja,a.upahpenalty,a.upahpremi,a.premibasis,a.umr,a.statusblok,
             a.pekerjaanpremi,a.penalti1,a.penalti2,a.penalti3,a.penalti4,a.penalti5,a.penalti6,a.penalti7,a.penalti8,
             a.penalti9,a.penalti10,a.rupiahpenalty,a.luaspanen,a.kodesegment,a.brondolan,a.jjgpenalty,b.*";
-        $queryhtml="select ".$isiQuery." from ".$dbname.".kebun_prestasi a left join ".$dbname.".kebun_aktifitas b on a.notransaksi=b.notransaksi where a.notransaksi='".$param['notransaksi']."'";
-
+        $queryhtml="select a.*,d.namaorganisasi from (select ".$isiQuery." from ".$dbname.".kebun_prestasi a 
+					left join ".$dbname.".kebun_aktifitas b on a.notransaksi=b.notransaksi where a.notransaksi='".$param['notransaksi']."') a
+					left join ".$dbname.".organisasi d on a.kodeblok=d.kodeorganisasi";
         
         $qData=mysql_query($queryhtml) or die(mysql_error($conn));
         while($rData=mysql_fetch_assoc($qData)){
             
-                
                 $iLibur="select count(*) as libur from ".$dbname.".sdm_5harilibur where tanggal='".$rData['tanggal']."' and "
                         . " keterangan='libur' and kebun in ('GLOBAL','".$rData['kodeorg']."') ";
-                
-               
-                
+                              
                 $nLibur=  mysql_query($iLibur) or die (mysql_error($conn));
                 $dLibur=  mysql_fetch_assoc($nLibur);
                     $libur=$dLibur['libur'];
@@ -394,10 +405,6 @@ switch($proses) {
                     $day = date('D', strtotime($rData['tanggal']));
                     if($day=='Sun')$cekminggu=1; else $cekminggu=0;
                     $ceklibur=$libur+$cekminggu;
-                    
-                  
-                        
-                    
                     
                     if($ceklibur>0)
                     {
@@ -408,16 +415,11 @@ switch($proses) {
                         $jenisPremi='KERJA';
                     }
                     
-                    
-                   
-                    
                 $iTopo=" select * from ".$dbname.".setup_blok where kodeorg='".$rData['kodeblok']."' ";
                
                 $nTopo=  mysql_query($iTopo) or die (mysql_error($conn));
                 $dTopo=  mysql_fetch_assoc($nTopo);
                   
-                    
-                
                 $iBasis="select * from ".$dbname.".kebun_5basispanen2 where afdeling='".$_SESSION['org']['kodeorganisasi']."'"
                         . " and jenispremi='".$jenisPremi."' and topografi='".$dTopo['topografi']."'"
                         . " and kelaspohon='".$dTopo['kelaspohon']."' ";
@@ -426,13 +428,13 @@ switch($proses) {
                 
                 //echo $iBasis;
                 
-                
-            
                 $tab.="<tr class=rowcontent>";
                 $tab.="<td>".tanggalnormal($rData['tanggal'])."</td>";
+                $tab.="<td>".$RnikKary[$rData['nik']]."</td>";
                 $tab.="<td>".$RnamaKary[$rData['nik']]."</td>";
-                $tab.="<td>".$rData['kodeblok']."</td>";
-                $tab.="<td align=right>".$rData['hasilkerja']."</td>";
+                $tab.="<td>".$rData['namaorganisasi']."</td>";
+                $tab.="<td align=right>".number_format($rData['hasilkerja'],0)."</td>";
+                $tab.="<td align=right>".number_format($rData['hasilkerjakg'],2)."</td>";
                 $tab.="<td align=right>".number_format($rData['luaspanen'],2)."</td>";
                 $tab.="<td align=right>".number_format($rData['upahkerja'],0)."</td>";
                 $tab.="<td align=right>".number_format($rData['upahpenalty'],0)."</td>";
@@ -475,6 +477,7 @@ switch($proses) {
                 $tab.="<td align=right>".number_format($sisa,0)."</td>";
                 $tab.="</tr>";
                 $totJanjang+=$rData['hasilkerja'];
+                $totkg+=$rData['hasilkerjakg'];
                 $totUpahKerja+=$rData['upahkerja'];
                 $totUpahKerjapenalty+=$rData['upahpenalty'];
                 $totUpahPremi+=$rData['upahpremi'];
@@ -491,8 +494,9 @@ switch($proses) {
                 
         }
         $tab.="<tr class=rowcontent>";
-        $tab.="<td colspan=3><b>".$_SESSION['lang']['total']."</td>";
+        $tab.="<td colspan=4><b>".$_SESSION['lang']['total']."</td>";
         $tab.="<td align=right><b>".number_format($totJanjang,0)."</td>";
+        $tab.="<td align=right><b>".number_format($totkg,2)."</td>";
         $tab.="<td align=right><b>".number_format($totLuas,2)."</td>";
         $tab.="<td align=right><b>".number_format($totUpahKerja,0)."</td>";
         $tab.="<td align=right><b>".number_format($totUpahKerjapenalty,0)."</td>";

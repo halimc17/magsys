@@ -83,14 +83,14 @@ while($bar=mysql_fetch_object($res))
 		$pernama=$barf->namakaryawan;
 	}	 
 	
-	//ambil jabatan, hrd
+	//ambil jabatan, karyawan perdin
 	$hjabatan='';
 	$hbagian='';
 	$hnama='';
 	$hgolongan='';
 	$strf="select a.bagian,b.namajabatan,a.namakaryawan,a.kodegolongan from ".$dbname.".datakaryawan a left join
 	       ".$dbname.".sdm_5jabatan b on a.kodejabatan=b.kodejabatan
-		   where karyawanid=".$hrd;	
+		   where karyawanid=".$karyawanid;	
 	$resf=mysql_query($strf);
 	while($barf=mysql_fetch_object($resf))
 	{
@@ -116,17 +116,42 @@ while($bar=mysql_fetch_object($res))
 	$qRegional = selectQuery($dbname,'bgt_regional_assignment','regional',"kodeunit='".$tujuan2."'");
 	$resRegional = fetchData($qRegional);
 	$reg = $resRegional[0]['regional'];
-	
+	if(empty($reg)){
+		$qRegional = selectQuery($dbname,'bgt_regional_assignment','regional',"kodeunit='".$tujuan3."'");
+		$resRegional = fetchData($qRegional);
+		$reg = $resRegional[0]['regional'];
+		if(empty($reg)){
+			$qRegional = selectQuery($dbname,'bgt_regional_assignment','regional',"regional='".$tujuanlain."'");
+			$resRegional = fetchData($qRegional);
+			$reg = $resRegional[0]['regional'];
+			if(empty($reg)){
+				$reg='KALIMANTAN';
+			}
+		}
+	}
+
+	// Get Hari Libur
+	$strlibur="select count(*) as jumlahlibur from ".$dbname.".sdm_5harilibur where kebun in ('HOLDING','GLOBAL') and keterangan='libur' and (tanggal>='".$bar->tanggalperjalanan."' and tanggal<='".$bar->tanggalkembali."')";
+	$reslibur=mysql_query($strlibur);
+	$jmlhrlibur=0;
+	while($barlibur=mysql_fetch_object($reslibur))
+	{ 
+		$jmlhrlibur=$barlibur->jumlahlibur;
+	}
+
 	//Get Uang Muka
 	function getRangeTanggal($tglAwal,$tglAkhir){
 		$jlh = strtotime($tglAkhir) -  strtotime($tglAwal);
 		$jlhHari = $jlh / (3600*24);
 		return $jlhHari + 1;
 	}
-	$jlhHari=getRangeTanggal($bar->tanggalperjalanan,$bar->tanggalkembali);
+	$jlhHari=round(getRangeTanggal($bar->tanggalperjalanan,$bar->tanggalkembali));
+    $jmlharilokal=$jlhHari-$jmlhrlibur;
+	//exit('Warning:'.$jlhHari." - ".$jmlhrlibur." = ".$jmlharilokal."  ".$strlibur);
+/*
 	$sUangMuka="select sum(sekali) as satu, sum(perhari) as dua, sum(hariketiga) as tiga
 		from ".$dbname.".sdm_5uangmukapjd where regional='".$reg."' and
-		kodegolongan='".$hgolongan."' and jenis not in (7,11)";
+		kodegolongan='".$hgolongan."' and jenis in (2,6,9,10,11)";
 	$rUangMuka=mysql_query($sUangMuka);
 	// exit("error : ".$sUangMuka);
 	if($rUangMuka) {
@@ -151,13 +176,15 @@ while($bar=mysql_fetch_object($res))
 				$jlhUangMuka += $rpUS['perhari'] * ($jlhHari - 2);
 			}
 		}
-	}
+*/
+//	}
   }
   
  
   echo"<div style=\"height:300px;width:600;overflow:scroll;\">";
-   echo $_SESSION['lang']['perjalanandinas'].":
-      <table class=standard cellspacing=1>
+   echo $_SESSION['lang']['perjalanandinas'].": 
+     <img src=images/pdf.jpg class=resicon  title='PUK ".$_SESSION['lang']['pdf']."' onclick=\"previewPUKPJDPDF('".$notransaksi."',event);\">
+     <table class=standard cellspacing=1>
 	 <tr class=rowcontent>
 	    <td>".$_SESSION['lang']['nama']."</td>
 		<td>".$namakaryawan."</td>
@@ -186,24 +213,86 @@ while($bar=mysql_fetch_object($res))
 			 <input type=checkbox id=mess disabled ".($mess==1?'checked':'')."> ".$_SESSION['lang']['mess']."
 			 <input type=checkbox id=hotel disabled ".($hotel==1?'checked':'')."> ".$_SESSION['lang']['hotel']."
         </td>
-	 </tr>	
+	 </tr>
+	 </table>
+	 <table>";
+
+	if($jlhHari == 1){
+		$sUangMuka="select a.*,b.id,b.keterangan as namajenis from ".$dbname.".sdm_5uangmukapjd a left join ".$dbname.".sdm_5jenisbiayapjdinas b on b.id=a.jenis 
+		where a.regional='".$reg."' and a.kodegolongan='".$hgolongan."' and a.jenis in (2,6,7) order by a.jenis";
+	}else{
+		$sUangMuka="select a.*,b.id,b.keterangan as namajenis from ".$dbname.".sdm_5uangmukapjd a left join ".$dbname.".sdm_5jenisbiayapjdinas b on b.id=a.jenis 
+		where a.regional='".$reg."' and a.kodegolongan='".$hgolongan."' and a.jenis in (2,6,8,9,10,11) order by a.jenis";
+	}
+	$rUangMuka=mysql_query($sUangMuka);
+	$jlhUangMuka=0;
+	if($rUangMuka) {
+		$nilaipjd=0;
+		while($bUangMuka=mysql_fetch_object($rUangMuka)) {
+			if(($pesawat+$darat+$laut)==0 and $bUangMuka->jenis=='2'){
+				continue;
+			}
+			if(($hotel==0 or substr($kodeorg,2,2)=='HO') and $bUangMuka->jenis=='8'){
+				continue;
+			}
+			if($bUangMuka->sekali!=0){
+				$nilaipjd=$bUangMuka->sekali;
+				$jmlkali=1;
+			}
+			if($bUangMuka->perhari!=0){
+				if($bUangMuka->jenis==10){
+				   $nilaipjd=$bUangMuka->perhari*$jmlharilokal;
+				   $jmlkali=$jmlharilokal;
+				}elseif($bUangMuka->jenis==8){
+					$nilaipjd=$bUangMuka->perhari*($jlhHari-1);
+					$jmlkali=$jlhHari-1;
+				}else{
+					$nilaipjd=$bUangMuka->perhari*$jlhHari;
+					$jmlkali=$jlhHari;
+				}
+			}
+			if($bUangMuka->hariketiga!=0){
+				if($bUangMuka->jenis==10){
+					$nilaipjd=$bUangMuka->hariketiga*($jmlharilokal - 2);
+					$jmlkali=$jmlharilokal-2;
+				}else{
+					$nilaipjd=$bUangMuka->hariketiga*($jlhHari - 2);
+					$jmlkali=$jlhHari-2;
+				}
+			}
+			$jlhUangMuka+=$nilaipjd;
+			if($xhrd==0 or $xper==0){
+			if($jmlkali!=0){
+				echo "
+				<tr class=rowcontent>
+					<td>".$bUangMuka->namajenis."</td>
+					<td align='Right'>".$jmlkali."</td>
+					<td align='Right'>".($bUangMuka->sekali+$bUangMuka->perhari+$bUangMuka->hariketiga)."</td>
+					<td align='Right'>".number_format($nilaipjd,2,',','.')."</td>
+					<td></td>
+				</tr>";
+			}
+			}
+		}
+	}
+
+    echo "
 	 <tr class=rowcontent>
 	   <td>
 	      ".$_SESSION['lang']['uangmuka']."
-	   </td>
-	   <td>
+	   </td><td></td><td></td>
+	   <td align='Right'>
 	    <input type=hidden id=nitransaksipjd value='".$notransaksi."'>";
-	     
-		
 	if($xhrd==0 or $xper==0)
 	  {	 
 		echo "<span id=oldval style='display:block;'>".number_format($uangmuka,2,'.',',')."</span>";
 		if($uangmuka==0){
-			echo "<input type=text class=myinputtextnumber id=newvalpjd onkeypress=\"return tanpa_kutip(event);\" size=15 maxlength=17 value='".$jlhUangMuka."'>";
+			echo "<input type=text class=myinputtextnumber id=newvalpjd onkeypress=\"return tanpa_kutip(event);\" size=15 maxlength=17 disabled value='".$jlhUangMuka."'>";
 		}else{
-			echo "<input type=text class=myinputtextnumber id=newvalpjd onkeypress=\"return tanpa_kutip(event);\" size=15 maxlength=17 value='".$uangmuka."'>";
+			//echo "<input type=text class=myinputtextnumber id=newvalpjd onkeypress=\"return tanpa_kutip(event);\" size=15 maxlength=17 value='".$uangmuka."'>";
+			echo "<input type=text class=myinputtextnumber id=newvalpjd onkeypress=\"return tanpa_kutip(event);\" size=15 maxlength=17 disabled value='".$jlhUangMuka."'>";
 		}
-		echo "<button class=mybutton onclick=saveUpdateValPJD()>".$_SESSION['lang']['ganti']."</button>";
+		echo "<td><button class=mybutton onclick=saveUpdateValPJD()>".$_SESSION['lang']['ganti']."</button></td>";
 	  }else{
 		echo "<span id=oldval style='display:block;'>".number_format($uangmuka,2,'.',',')."</span>";
 	  }

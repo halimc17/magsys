@@ -8,9 +8,8 @@ $karyawanid=$_POST['karyawanid'];
 $periode=$_POST['periode'];
 $sisa=$_POST['sisa'];
 
-
 $str="update ".$dbname.".sdm_cutiht 
-      set sisa=".$sisa."
+      set hakcuti=".$sisa."+diambil, sisa=".$sisa."
      where 
       kodeorg='".$kodeorg."'
 	  and karyawanid=".$karyawanid."

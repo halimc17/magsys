@@ -61,8 +61,28 @@ class PDF extends FPDF
 				 $alamatpt=$bar1->alamat.", ".$bar1->wilayahkota;
 				 $telp=$bar1->telepon;				 
 			   } 
-		}	
-		$path='images/logo.jpg';
+		}
+				if($kodept=='AMP'){
+					$path='images/logo_amp.jpg';
+				}else if($kodept=='CKS'){
+					$path='images/logo_cks.jpg';
+				}else if($kodept=='KAA'){
+					$path='images/logo_kaa.jpg';
+				}else if($kodept=='KAL'){
+					$path='images/logo_kal.jpg';
+				}else if($kodept=='LKA'){
+					$path='images/logo_lka.jpg';
+				}else if($kodept=='MPA'){
+					$path='images/logo_mpa.jpg';
+				}else if($kodept=='MHS'){
+					$path='images/logo_mhs.jpg';
+				}else if($kodept=='MEA'){
+					$path='images/logo_mea.jpg';
+				}else if($kodept=='SMA'){
+					$path='images/logo_sma.jpg';
+				}else{
+					$path='images/logo.jpg';
+				}
 	    $this->Image($path,10,5,0,20);
 		$this->SetFont('Arial','B',10);
 		$this->SetFillColor(255,255,255);	
@@ -153,14 +173,28 @@ class PDF extends FPDF
 		   {
 		   	$namabarang=$barv->namabarang;
 		   }
-			    $pdf->Cell(8,5,$no,1,0,'L',1);
-			    $pdf->Cell(30,5,$kodebarang,1,0,'L',1);
-			    $pdf->Cell(100,5,printSpecialChar($namabarang),1,0,'L',1);	
-			    $pdf->Cell(20,5,$satuan,1,0,'L',1);	
-				$pdf->Cell(20,5,number_format($jumlah,2,'.',','),1,1,'R',1);		
-			    	   
+				$awalY=$pdf->GetY();
+				$pdf->SetX(1000);
+				$pdf->MultiCell(100,5,printSpecialChar($namabarang),1,'L',1);
+				$akhirY=$pdf->GetY();				
+				$height2=$akhirY-$awalY;
+				$pdf->SetY($awalY);
+				
+				
+				$pdf->Cell(8,$height2,$no,1,0,'L',1);
+			    $pdf->Cell(30,$height2,$kodebarang,1,0,'L',1);
+			    $pdf->MultiCell(100,5,printSpecialChar($namabarang),1,'L',1);
+				$pdf->SetXY($pdf->GetX()+138, $awalY);
+			    $pdf->Cell(20,$height2,$satuan,1,0,'L',1);	
+				$pdf->Cell(20,$height2,number_format($jumlah,2,'.',','),1,0,'R',1);		
+			    $pdf->Ln();
+				if($awalY > 250){
+					$pdf->AddPage();
+					$pdf->SetY(50);
+				}
 		}
 //footer================================
+        $pdf->Ln();
         $pdf->Ln();
 
 
@@ -172,9 +206,11 @@ if($_SESSION['empl']['tipelokasitugas']=='HOLDING')
                 $pdf->Cell(30,4,"[ ........................ ]",0,0,'L'); 
 		$pdf->Cell(40,4,": ".$namakaryawan,0,1,'L'); 
                 $pdf->Ln();
-                $pdf->Cell(20,4,'Diperiksa',0,0,'L'); 
+                $pdf->Ln();
+                $pdf->Cell(20,4,$_SESSION['lang']['diperiksa'],0,0,'L'); 
                 $pdf->Cell(30,4,"[ ........................ ]",0,0,'L'); 
 		$pdf->Cell(40,4,": ",0,1,'L'); 
+                $pdf->Ln();
                 $pdf->Ln();
                 
 //get posted by
@@ -182,9 +218,10 @@ if($_SESSION['empl']['tipelokasitugas']=='HOLDING')
 	      $posted=namakaryawan($dbname,$conn,$posted);		
 	   else
 	      $posted='';
-	   	$pdf->Cell(20,4,'Diposting',0,0,'L'); 
+	   	$pdf->Cell(20,4,$_SESSION['lang']['posted'],0,0,'L'); 
                 $pdf->Cell(30,4,"[ ........................ ]",0,0,'L');                 
 		$pdf->Cell(40,4,": ".$posted,0,1,'L');
+                $pdf->Ln();
                 $pdf->Ln();
                 
 	   	$pdf->Cell(20,4,$_SESSION['lang']['mengetahui'],0,0,'L'); 
@@ -196,22 +233,30 @@ else
     //get user;
        $namakaryawan=namakaryawan($dbname,$conn,$userid);		
 		$pdf->Cell(20,4,$_SESSION['lang']['dbuat_oleh'],0,0,'L'); 
-                $pdf->Cell(30,4,"[ ...........ttd............. ]",0,0,'L'); 
+                $pdf->Cell(30,4,"[ ........................ ]",0,0,'L'); 
 		$pdf->Cell(40,4,": ".$namakaryawan,0,1,'L'); 
                 $pdf->Ln();
+                $pdf->Ln();
+                $pdf->Cell(20,4,$_SESSION['lang']['diperiksa'],0,0,'L'); 
+                $pdf->Cell(30,4,"[ ........................ ]",0,0,'L'); 
+		$pdf->Cell(40,4,": ",0,1,'L'); 
+                $pdf->Ln();
+                $pdf->Ln();
+                
 //get posted by
        if($posted!='')
 	      $posted=namakaryawan($dbname,$conn,$posted);		
 	   else
 	      $posted='';
 	   	$pdf->Cell(20,4,$_SESSION['lang']['posted'],0,0,'L'); 
-                $pdf->Cell(30,4,"[ ..........ttd.............. ]",0,0,'L');                 
+                $pdf->Cell(30,4,"[ ........................ ]",0,0,'L');                 
 		$pdf->Cell(40,4,": ".$posted,0,1,'L');
+                $pdf->Ln();
                 $pdf->Ln();
                 
 	   	$pdf->Cell(20,4,$_SESSION['lang']['mengetahui'],0,0,'L'); 
-                $pdf->Cell(30,4,"[ ..........ttd.............. ]",0,0,'L');      
-                $pdf->Cell(40,4,": Kasie/KTU",0,1,'L');
+                $pdf->Cell(30,4,"[ ........................ ]",0,0,'L');      
+                $pdf->Cell(40,4,": FAO",0,1,'L');
 }
 
 

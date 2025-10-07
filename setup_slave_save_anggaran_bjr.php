@@ -87,7 +87,8 @@ switch($method)
 case'loadData':
 
                 $no=0;
-                $str="select * from ".$dbname.".bgt_bjr where kodeorg='".$_SESSION['empl']['lokasitugas']."' order by tahunbudget desc";
+                $str="select * from ".$dbname.".bgt_bjr where kodeorg like '".$_SESSION['empl']['lokasitugas']."%' order by tahunbudget desc";
+				//exit('Warning: '.$str);
                 $str2=mysql_query($str) or die(mysql_error());
                 //$res1=mysql_query($str2);
                 while($bar1=mysql_fetch_assoc($str2))
@@ -113,13 +114,13 @@ case'loadData':
 
          //case close==========================================================================================================
          case'closebjr':
-                $sQl="select distinct close from ".$dbname.".bgt_bjr where tahunbudget='".$thnttp."' and kodeorg='".$lkstgs."' and close=1 ";
+                $sQl="select distinct close from ".$dbname.".bgt_bjr where tahunbudget='".$thnttp."' and kodeorg like '".$lkstgs."%' and close=1 ";
             //exit("error".$sQl);
                 $qQl=mysql_query($sQl) or die(mysql_error($conn));
                 $row=mysql_num_rows($qQl);
                 if($row!=1)
                 {
-                        $sUpdate="update ".$dbname.".bgt_bjr set close=1 where tahunbudget='".$thnttp."' and kodeorg='".$lkstgs."'  ";
+                        $sUpdate="update ".$dbname.".bgt_bjr set close=1 where tahunbudget='".$thnttp."' and kodeorg like '".$lkstgs."%'  ";
                     //exit("error".$sUpdate);
                         if(mysql_query($sUpdate))
                                 echo"";
@@ -163,10 +164,9 @@ case'loadData':
                         echo $optthnttp;
         break;
 
-
         case 'getOrg':
                 $optorgclose="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
-                $sql = "SELECT distinct kodeorg FROM ".$dbname.".bgt_bjr where close=0 and kodeorg='".$_SESSION['empl']['lokasitugas']."' ";
+                $sql = "SELECT distinct left(kodeorg,6) as kodeorg FROM ".$dbname.".bgt_bjr where close=0 and kodeorg like '".$_SESSION['empl']['lokasitugas']."%' ";
                 $qry = mysql_query($sql) or die ("SQL ERR : ".mysql_error());
                 while ($data=mysql_fetch_assoc($qry))
                                         {
@@ -175,6 +175,20 @@ case'loadData':
                 echo $optorgclose;
         break;
 
-default:
+        case 'getthntanam':
+			$optthntanam="";
+			if($kodeorg!=''){
+				$sBlok="select tahuntanam from ".$dbname.".setup_blok where kodeorg='".$kodeorg."'";     
+				$qBlok=mysql_query($sBlok) or die(mysql_error($conn));
+				while($rBlok=mysql_fetch_assoc($qBlok)){
+					$optthntanam=$rBlok['tahuntanam'];
+				}
+			}
+			//exit('Warning: '.$optthntanam);
+			echo $optthntanam;
+        break;
+
+	default:
+		break;
 }
 ?>

@@ -153,20 +153,24 @@ function Clear1()
 {
 	document.getElementById('tgl1').value='';
 	document.getElementById('tgl2').value='';
-	document.getElementById('tgl1').disabled=false;
-	document.getElementById('tgl2').disabled=false;
+	//document.getElementById('tgl1').disabled=false;
+	//document.getElementById('tgl2').disabled=false;
 	document.getElementById('kdOrg').value='';
 	document.getElementById('periode').value='';
+	document.getElementById('pilihan3').value='';
+	document.getElementById('beban1').value='';
 	document.getElementById('printContainer').innerHTML='';
 }
 function Clear2()
 {
 	document.getElementById('tgl_1').value='';
 	document.getElementById('tgl_2').value='';
-	document.getElementById('tgl_1').disabled=false;
-	document.getElementById('tgl_2').disabled=false;
+	//document.getElementById('tgl_1').disabled=false;
+	//document.getElementById('tgl_2').disabled=false;
 	document.getElementById('kdeOrg').value='';
 	document.getElementById('period').value='';
-	document.getElementById('idKry').innerHTML="<option value''></option>";
+	document.getElementById('pilihan_3').value='';
+	document.getElementById('beban2').value='';
+	//document.getElementById('idKry').innerHTML="<option value''></option>";
 	document.getElementById('printContainer').innerHTML='';
 }

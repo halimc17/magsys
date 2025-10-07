@@ -1,0 +1,271 @@
+// JavaScript Document
+
+function getKontrak(){
+    kdBrg=document.getElementById('kdBrg').options[document.getElementById('kdBrg').selectedIndex].value;
+	param='method=getKontrak'+'&kdBrg='+kdBrg;
+	tujuan='pmn_slave_trader';
+	post_response_text(tujuan+'.php', param, respon);
+	function respon() {
+		if (con.readyState == 4) {
+			if (con.status == 200) {
+				busy_off();
+				if (!isSaveResponse(con.responseText)) {
+					alert('ERROR TRANSACTION,\n' + con.responseText);
+				}else{
+					document.getElementById('nokontrakpembanding').innerHTML=con.responseText;
+				}
+			}else{
+				busy_off();
+				error_catch(con.status);
+			}
+		}
+	}
+}
+
+function getNilai(){
+    jmlExt=Number(document.getElementById('jmlExt').value);
+    hrgExt=Number(document.getElementById('hrgExt').value);
+	document.getElementById('nilaiExt').value=(jmlExt*hrgExt).toFixed(2);
+	//if(document.getElementById('ppnExt').value==0){
+		document.getElementById('ppnExt').value=(jmlExt*hrgExt*0.11).toFixed(2);
+	//}
+    ppnExt=Number(document.getElementById('ppnExt').value);
+	document.getElementById('totalExt').value=((jmlExt*hrgExt)+ppnExt).toFixed(2);
+}
+
+function cancelIsi(){
+	var tgl = new Date();
+	var tgl0 = '';
+	if(tgl.getDate()<10){
+		var tgl0 = '0';
+	}
+    document.getElementById('method').value='insert';
+    document.getElementById('kdUnit').disabled=false;
+    document.getElementById('nokontrakext').disabled=false;
+    document.getElementById('nokontrakext').value='';
+    document.getElementById('tanggalext').value=tgl0+tgl.getDate()+'-'+(tgl.getMonth()+1)+'-'+tgl.getFullYear();
+    document.getElementById('kdCust').value='';
+    document.getElementById('kdBrg').value='';
+    document.getElementById('jmlExt').value=0;
+    document.getElementById('hrgExt').value=0;
+    document.getElementById('nilaiExt').value=0;
+    document.getElementById('ppnExt').value=0;
+    document.getElementById('totalExt').value=0;
+    document.getElementById('catatan').value='';
+    document.getElementById('nokontrakpembanding').value='';
+    document.getElementById('uangmuka').value='0';
+    //document.getElementById('franco').value='';
+    document.getElementById('ffa').value='';
+    document.getElementById('dobi').value='';
+    document.getElementById('mdani').value='';
+    document.getElementById('moist').value='';
+    document.getElementById('dirt').value='';
+}
+
+function displatList(){
+	document.getElementById('kdUnitCr').value='';
+    document.getElementById('kdCustCr').value='';
+    document.getElementById('kdBrgCr').value='';
+    document.getElementById('noKontrakCr').value='';
+    loadData();
+}
+
+function loadData(){
+    //kdUnitCr=document.getElementById('kdUnitCr').options[document.getElementById('kdUnitCr').selectedIndex].value;
+    //kdCustCr=document.getElementById('kdCustCr').options[document.getElementById('kdCustCr').selectedIndex].value;
+    //kdBrgCr=document.getElementById('kdBrgCr').options[document.getElementById('kdBrgCr').selectedIndex].value;
+    //noKontrakCr=document.getElementById('noKontrakCr').options[document.getElementById('noKontrakCr').selectedIndex].value;
+
+    kdUnitCr=document.getElementById('kdUnitCr').value;
+    kdCustCr=document.getElementById('kdCustCr').value;
+    kdBrgCr=document.getElementById('kdBrgCr').value;
+    noKontrakCr=document.getElementById('noKontrakCr').value;
+
+	param='method=loadData';
+	if(kdUnitCr!=''){
+        param+='&kdUnitCr='+kdUnitCr;
+    }
+	if(kdCustCr!=''){
+        param+='&kdCustCr='+kdCustCr;
+    }
+	if(kdBrgCr!=''){
+        param+='&kdBrgCr='+kdBrgCr;
+    }
+	if(noKontrakCr!=''){
+        param+='&noKontrakCr='+noKontrakCr;
+    }
+	tujuan='pmn_slave_trader';
+	post_response_text(tujuan+'.php', param, respon);
+
+	function respon() {
+        if (con.readyState == 4) {
+            if (con.status == 200) {
+                busy_off();
+                if (!isSaveResponse(con.responseText)) {
+                    alert('ERROR TRANSACTION,\n' + con.responseText);
+                } else {
+                    document.getElementById('container').innerHTML=con.responseText;
+                }
+            } else {
+                busy_off();
+                error_catch(con.status);
+            }
+        }
+    }
+}
+
+function saveFranco(fileTarget,passParam){
+    var passP = passParam.split('##');
+    var param = "";
+    for(i=1;i<passP.length;i++){
+        var tmp = document.getElementById(passP[i]);
+        if(i==1) {
+            param += passP[i]+"="+getValue(passP[i]);
+        } else {
+            param += "&"+passP[i]+"="+getValue(passP[i]);
+        }
+    }
+    function respon() {
+        if (con.readyState == 4) {
+            if (con.status == 200) {
+                busy_off();
+                if (!isSaveResponse(con.responseText)) {
+                    alert('ERROR TRANSACTION,\n' + con.responseText);
+                } else {
+                    // Success Response
+                        loadData();
+                        //cancelIsi();
+                }
+            } else {
+                busy_off();
+                error_catch(con.status);
+            }
+        }
+    }
+	//alert(fileTarget+'.php?proses=preview', param, respon);
+    post_response_text(fileTarget+'.php', param, respon);
+}
+
+function fillField(kdUnit,kdCust,nokontrakext,tanggalext,kdBrg,jmlExt,hrgExt,nilaiExt,ppnExt,catatan,nokontrakpembanding){
+    document.getElementById('kdUnit').disabled=true;
+    document.getElementById('nokontrakext').disabled=true;
+    document.getElementById('kdUnit').value=kdUnit;
+    document.getElementById('kdCust').value=kdCust;
+    document.getElementById('nokontrakext').value=nokontrakext;
+    document.getElementById('tanggalext').value=tanggalext;
+    document.getElementById('kdBrg').value=kdBrg;
+    document.getElementById('jmlExt').value=jmlExt;
+    document.getElementById('hrgExt').value=hrgExt;
+    document.getElementById('nilaiExt').value=nilaiExt;
+    document.getElementById('ppnExt').value=ppnExt;
+    document.getElementById('totalExt').value=Number(nilaiExt)+Number(ppnExt);
+    document.getElementById('catatan').value=catatan;
+    document.getElementById('nokontrakpembanding').value=nokontrakpembanding;
+    document.getElementById('method').value='updateData';
+}
+
+function delData(nokontrakext){
+    param='method=delData'+'&nokontrakext='+nokontrakext;
+    tujuan='pmn_slave_trader.php';
+    if(confirm("Delete, are you sure ?")){
+        post_response_text(tujuan, param, respog);			
+    }
+    function respog(){
+		if (con.readyState == 4) {
+			if (con.status == 200) {
+				busy_off();
+				if (!isSaveResponse(con.responseText)) {
+					alert('ERROR TRANSACTION,\n' + con.responseText);
+				}else{
+					alert("Done");
+					loadData();
+				}
+			}else{
+				busy_off();
+				error_catch(con.status);
+			}
+		}
+    }
+}
+
+function cariBast(num){
+    //kdUnitCr=document.getElementById('kdUnitCr').options[document.getElementById('kdUnitCr').selectedIndex].value;
+    //kdCustCr=document.getElementById('kdCustCr').options[document.getElementById('kdCustCr').selectedIndex].value;
+    //kdBrgCr=document.getElementById('kdBrgCr').options[document.getElementById('kdBrgCr').selectedIndex].value;
+    //noKontrakCr=document.getElementById('noKontrakCr').options[document.getElementById('noKontrakCr').selectedIndex].value;
+
+    kdUnitCr=document.getElementById('kdUnitCr').value;
+    kdCustCr=document.getElementById('kdCustCr').value;
+    kdBrgCr=document.getElementById('kdBrgCr').value;
+    noKontrakCr=document.getElementById('noKontrakCr').value;
+
+	param='method=loadData';
+	if(kdUnitCr!=''){
+        param+='&kdUnitCr='+kdUnitCr;
+    }
+	if(kdCustCr!=''){
+        param+='&kdCustCr='+kdCustCr;
+    }
+	if(kdBrgCr!=''){
+        param+='&kdBrgCr='+kdBrgCr;
+    }
+	if(noKontrakCr!=''){
+        param+='&noKontrakCr='+noKontrakCr;
+    }
+	param+='&page='+num;
+	//alert(param);
+	tujuan='pmn_slave_trader.php';
+	post_response_text(tujuan, param, respog);			
+	function respog(){
+		if (con.readyState == 4) {
+			if (con.status == 200) {
+				busy_off();
+				if (!isSaveResponse(con.responseText)) {
+					alert('ERROR TRANSACTION,\n' + con.responseText);
+				}else{
+					document.getElementById('container').innerHTML=con.responseText;
+				}
+	        }else{
+				busy_off();
+				error_catch(con.status);
+			}
+		}
+	}
+}
+
+function printFile(param,tujuan,title,ev){
+   tujuan=tujuan+"?"+param;
+   width='700';
+   height='400';
+   content="<iframe frameborder=0 width=100% height=100% src='"+tujuan+"'></iframe>"
+   showDialog2(title,content,width,height,ev); 	
+}
+
+function dataKeExcel(ev){
+    //kdUnitCr=document.getElementById('kdUnitCr').options[document.getElementById('kdUnitCr').selectedIndex].value;
+    //kdCustCr=document.getElementById('kdCustCr').options[document.getElementById('kdCustCr').selectedIndex].value;
+    //kdBrgCr=document.getElementById('kdBrgCr').options[document.getElementById('kdBrgCr').selectedIndex].value;
+    //noKontrakCr=document.getElementById('noKontrakCr').options[document.getElementById('noKontrakCr').selectedIndex].value;
+
+    kdUnitCr=document.getElementById('kdUnitCr').value;
+    kdCustCr=document.getElementById('kdCustCr').value;
+    kdBrgCr=document.getElementById('kdBrgCr').value;
+    noKontrakCr=document.getElementById('noKontrakCr').value;
+
+	param='method=dataDetail';
+	if(kdUnitCr!=''){
+        param+='&kdUnitCr='+kdUnitCr;
+    }
+	if(kdCustCr!=''){
+        param+='&kdCustCr='+kdCustCr;
+    }
+	if(kdBrgCr!=''){
+        param+='&kdBrgCr='+kdBrgCr;
+    }
+	if(noKontrakCr!=''){
+        param+='&noKontrakCr='+noKontrakCr;
+    }
+    tujuan='pmn_slave_trader_excel.php';
+    judul='List Data';	
+    printFile(param,tujuan,judul,ev)	
+}

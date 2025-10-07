@@ -59,7 +59,7 @@ $frm[0].="<table cellspacing=1 border=0>
 <tr><td>".$_SESSION['lang']['tanggal']."</td><td>:</td><td><input type='text' class='myinputtext' id='tglRestan' onmousemove='setCalendar(this.id)' onkeypress='return false;'  size='10' maxlength='10' style=\"width:150px;\" /></td></tr>
 <tr><td>".$_SESSION['lang']['blok']."</td><td>:</td><td><select id=kdBlokRestan style=width:150px>".$optKdorg2."</select></td></tr>
 <tr><td>JJG Panen</td><td>:</td><td><input type='text' class='myinputtextnumber' style='width:150px;' id='jjgPanen' onkeypress='return angka_doang(event)' value='0'   /></td></tr>
-<tr><td>JJG Kirim</td><td>:</td><td><input type='text' class='myinputtextnumber'  style='width:150px;' id='jjgKrm' onkeypress='return angka_doang(event)' value='0' /></td></tr>
+<tr><td>JJG Afkir</td><td>:</td><td><input type='text' class='myinputtextnumber'  style='width:150px;' id='jjgKrm' onkeypress='return angka_doang(event)' value='0' /></td></tr>
 <tr><td>Umur Restan</td><td>:</td><td><input type='text' class='myinputtextnumber'  style='width:150px;' id='umrRestan' onkeypress='return angka_doang(event)' maxlength=45 value='0'  />&nbsp;Jam</td></tr>";
 $frm[0].="<tr><td>Catatan</td><td>:</td><td><input type='text' class='myinputtext'  style='width:150px;' id='cttn' onkeypress='return tanpa_kutip(event)' maxlength=45 /></td></tr></table>";
 $frm[0].="<tr><td colspan=3 align=center><button class=mybutton id=btlTmbl name=btlTmbl onclick=saveData(1)  >".$_SESSION['lang']['save']."</button><button class=mybutton id=canbtlTmbl name=canbtlTmbl onclick=cancelData1()  >".$_SESSION['lang']['cancel']."</button></td></tr>";
@@ -83,7 +83,7 @@ $frm[0].="<table cellpadding=1 cellspacing=1 border=0 class=sortable>
             <td  rowspan=2>".$_SESSION['lang']['tanggal']."</td>
             <td  rowspan=2>".$_SESSION['lang']['blok']."</td>
             <td  colspan=2 align=center>Panen</td>
-            <td  colspan=2  align=center>Kirim</td>
+            <td  colspan=2  align=center>Afkir</td>
             <td  rowspan=2 colspan=2>Action</td>
             </tr>
             <tr><td align=center>Janjang</td><td align=center>KG</td><td align=center>Janjang</td><td align=center>KG</td></tr>

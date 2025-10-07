@@ -22,7 +22,7 @@ $periode=explode('-',$_POST['periode']);
 
 $idKry=$_POST['idKry'];
 
-function dates_inbetween($date1, $date2){
+function dates_inbetwee($date1, $date2){
 
     $day = 60*60*24;
 
@@ -52,7 +52,8 @@ switch($proses)
 		$tgl2=$tgl_2;
 	}
 	
-	$test = dates_inbetween($tgl1, $tgl2);
+	//$test = dates_inbetwee($tgl1, $tgl2);
+	$test = rangeTanggal($tgl1, $tgl2);
 	if(($tgl2=="")&&($tgl1==""))
 	{
 		echo"warning: Tanggal Mulai dan Tanggal Sampai tidak boleh kosong";
@@ -172,7 +173,8 @@ switch($proses)
 		$tgl2=$tgl_2;
 	}
 	
-	$test = dates_inbetween($tgl1, $tgl2);
+	//$test = dates_inbetwee($tgl1, $tgl2);
+	$test = rangeTanggal($tgl1, $tgl2);
 	if(($tgl2=="")&&($tgl1==""))
 	{
 		echo"warning: Tanggal Mulai dan Tanggal Sampai tidak boleh kosong";
@@ -370,7 +372,8 @@ class PDF extends FPDF
 		$tgl2=$tgl_2;
 	}
 	
-	$test = dates_inbetween($tgl1, $tgl2);
+	//$test = dates_inbetwee($tgl1, $tgl2);
+	$test = rangeTanggal($tgl1, $tgl2);
 	if(($tgl2=="")&&($tgl1==""))
 	{
 		echo"warning: Tanggal Mulai dan Tanggal Sampai tidak boleh kosong";

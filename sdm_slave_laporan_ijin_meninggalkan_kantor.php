@@ -17,22 +17,84 @@ $stat=$_POST['stat'];
 $ket=$_POST['ket'];
 $arrNmkary=makeOption($dbname, 'datakaryawan', 'karyawanid,namakaryawan');
 $arrKeputusan=array("0"=>$_SESSION['lang']['diajukan'],"1"=>$_SESSION['lang']['disetujui'],"2"=>$_SESSION['lang']['ditolak']);
-$where=" tanggal='".$tglijin."' and karyawanid='".$krywnId."'";
+$jnsIjin=checkPostGet('jnsIjin','');
+$darijam=checkPostGet('darijam','');
+//$where=" tanggal='".$tglijin."' and karyawanid='".$krywnId."'";
+$where=" tanggal='".$tglijin."' and karyawanid='".$krywnId."' and jenisijin='".$jnsIjin."' and darijam like '".$darijam."%'";
 $optNm=makeOption($dbname, 'organisasi', 'kodeorganisasi,namaorganisasi');
 $arragama=getEnum($dbname,'sdm_ijin','jenisijin');
 $jnsCuti=$_POST['jnsCuti'];
 $karyidCari=$_POST['karyidCari'];
 $atasan=$_POST['atasan'];
+$unit=$_POST['unit'];
 
+$periodeakhir=checkPostGet('periodeakhir','');
 $pAwal = tanggalsystem($periodeawal);
 $pAkhir = tanggalsystem($periodeakhir);
+$tahunakhir=substr($pAkhir,0,4);
 
-//exit("Error".$jmAwal);
+//exit("Warning: ".$tahunakhir);
         switch($proses)
         {
+			case'getKary':
+				if($_SESSION['empl']['tipelokasitugas'] == 'HOLDING' and ($_SESSION['empl']['bagian'] == 'HHRD' || $_SESSION['empl']['bagian'] == 'HHRS' || $_SESSION['empl']['bagian'] == 'HHSE' || $_SESSION['empl']['bagian'] == 'HRA'|| substr($_SESSION['empl']['bagian'],0,3) == 'URD')){
+					$optKary="<option value=''>".$_SESSION['lang']['all']."</option>";
+					//$sKary="select distinct karyawanid,namakaryawan from ".$dbname.".datakaryawan where tipekaryawan in(0,1,2,3,6,7,8,9) and lokasitugas='".$unit."'
+					//		order by namakaryawan asc";
+					$sKary="select distinct(a.karyawanid) as karyawanid, b.namakaryawan from ".$dbname.".sdm_ijin a
+							LEFT JOIN ".$dbname.".datakaryawan b on a.karyawanid = b.karyawanid
+							where if(b.subbagian='',b.lokasitugas,left(b.subbagian,4)) like '%".$unit."%' 
+							order by namakaryawan asc";
+					$qKary=mysql_query($sKary) or die(mysql_error($sKary));
+					while($rKary=mysql_fetch_assoc($qKary))
+					{
+						$optKary.="<option value='".$rKary['karyawanid']."'>".$rKary['namakaryawan']."</option>";
+					}
+				}else if($_SESSION['empl']['tipelokasitugas'] == 'KANWIL' and ($_SESSION['empl']['bagian'] == 'HHRD' || $_SESSION['empl']['bagian'] == 'HHRS' || $_SESSION['empl']['bagian'] == 'HRA'|| substr($_SESSION['empl']['bagian'],0,3) == 'URD')){
+					$optKary="<option value=''>".$_SESSION['lang']['all']."</option>";
+					//$sKary="select distinct karyawanid,namakaryawan from ".$dbname.".datakaryawan where substr(lokasitugas,3,2)!='HO' and tipekaryawan in(0,1,2,3,7,8) and kodeorganisasi = '".$_SESSION['empl']['kodeorganisasi']."' and lokasitugas='".$unit."' order by namakaryawan asc";
+					$sKary="select distinct(a.karyawanid) as karyawanid, b.namakaryawan from ".$dbname.".sdm_ijin a
+							LEFT JOIN ".$dbname.".datakaryawan b on a.karyawanid = b.karyawanid
+							where substr(b.lokasitugas,3,2)!='HO' and b.kodeorganisasi = '".$_SESSION['empl']['kodeorganisasi']."' 
+							and if(b.subbagian='',b.lokasitugas,left(b.subbagian,4)) like '%".$unit."%' 
+							order by namakaryawan asc";
+					$qKary=mysql_query($sKary) or die(mysql_error($sKary));
+					while($rKary=mysql_fetch_assoc($qKary))
+					{
+						$optKary.="<option value='".$rKary['karyawanid']."'>".$rKary['namakaryawan']."</option>";
+					}
+				}else{
+					if(($_SESSION['empl']['bagian'] == 'HHRD' || $_SESSION['empl']['bagian'] == 'HHRS' || $_SESSION['empl']['bagian'] == 'HRA'|| substr($_SESSION['empl']['bagian'],0,3) == 'URD')){
+						$optKary="<option value=''>".$_SESSION['lang']['all']."</option>";
+						$sKary="select distinct(a.karyawanid) as karyawanid, b.namakaryawan from ".$dbname.".sdm_ijin a
+								LEFT JOIN ".$dbname.".datakaryawan b on a.karyawanid = b.karyawanid
+								where substr(b.lokasitugas,3,2)!='HO' and if(b.subbagian='',b.lokasitugas,left(b.subbagian,4)) like '%".$_SESSION['empl']['lokasitugas']."%'
+								order by namakaryawan asc";
+						$qKary=mysql_query($sKary) or die(mysql_error($sKary));
+						while($rKary=mysql_fetch_assoc($qKary)){
+							$optKary.="<option value='".$rKary['karyawanid']."'>".$rKary['namakaryawan']."</option>";
+						}
+					}else{
+						$optKary="";
+						$sKary="select distinct(a.karyawanid) as karyawanid, b.namakaryawan from ".$dbname.".sdm_ijin a, ".$dbname.".datakaryawan b 
+								where a.karyawanid=b.karyawanid and if(b.subbagian='',b.lokasitugas,left(b.subbagian,4)) like '%".$unit."%' and (a.persetujuan1='".$_SESSION['standard']['userid']."' or hrd='".$_SESSION['standard']['userid']."')";
+						$qKary=mysql_query($sKary) or die(mysql_error($sKary));
+						while($rKary=mysql_fetch_assoc($qKary))
+						{
+							$optKary.="<option value='".$rKary['karyawanid']."'>".$rKary['namakaryawan']."</option>";
+						}
+						$optKary.="<option value='".$_SESSION['standard']['userid']."'>".$_SESSION['empl']['name']."</option>";
+					}
+				}
+				$strApp = "select distinct(a.karyawanid) as karyawanid, b.namakaryawan from ".$dbname.".sdm_ijin a, ".$dbname.".datakaryawan b where a.karyawanid = b.karyawanid and b.lokasitugas='".$unit."' and (a.persetujuan1='".$_SESSION['standard']['userid']."' or hrd='".$_SESSION['standard']['userid']."')";
+				$qryApp = mysql_query($strApp);
+				while($resApp=mysql_fetch_assoc($qryApp)){
+					$optKary.="<option value='".$resApp['karyawanid']."'>".$resApp['namakaryawan']."</option>";
+				}
+				echo $optKary;
+				break;
 
-
-                case'loadData':
+			case'loadData':
 				$limit=10;
                 $page=0;
                 if(isset($_POST['page']))
@@ -44,57 +106,117 @@ $pAkhir = tanggalsystem($periodeakhir);
                 $offset=$page*$limit;
 				
 				$tmbWhere = '';
-				if($_SESSION['empl']['tipelokasitugas'] == 'HOLDING' and ($_SESSION['empl']['bagian'] == 'HHRD' || $_SESSION['empl']['bagian'] == 'HHRS')){
-					$tmbWhere = '';
-				}else if($_SESSION['empl']['tipelokasitugas'] == 'KANWIL' and $_SESSION['empl']['bagian'] == 'HRA'){
+				if($_SESSION['empl']['tipelokasitugas'] == 'HOLDING' and ($_SESSION['empl']['bagian'] == 'HHRD' || $_SESSION['empl']['bagian'] == 'HHRS' || $_SESSION['empl']['bagian'] == 'HHSE' || $_SESSION['empl']['bagian'] == 'HRA'|| substr($_SESSION['empl']['bagian'],0,3) == 'URD')){
+					//$tmbWhere = '';
 					$tmbWhere = " and a.karyawanid like '%".$karyidCari."%'";
+					$tmbWhere .= " and if(b.subbagian='',b.lokasitugas,left(b.subbagian,4)) like '".$unit."%'";
+					$ql2="select count(a.karyawanid) as jmlhrow from ".$dbname.".sdm_ijin a, ".$dbname.".datakaryawan b where a.karyawanid = b.karyawanid and a.tanggal between '".$pAwal."' and '".$pAkhir."' and a.jenisijin like '%".$jnsCuti."%' ".$tmbWhere." order by a.tanggal desc";
+				}else if($_SESSION['empl']['tipelokasitugas'] == 'KANWIL' and ($_SESSION['empl']['bagian'] == 'HHRD' || $_SESSION['empl']['bagian'] == 'HHRS' || $_SESSION['empl']['bagian'] == 'HRA'|| substr($_SESSION['empl']['bagian'],0,3) == 'URD')){
+					$tmbWhere = " and a.karyawanid like '%".$karyidCari."%'";
+					$tmbWhere .= " and if(b.subbagian='',b.lokasitugas,left(b.subbagian,4)) like '".$unit."%'";
+					$ql2="select count(a.karyawanid) as jmlhrow from ".$dbname.".sdm_ijin a, ".$dbname.".datakaryawan b where a.karyawanid = b.karyawanid and a.tanggal between '".$pAwal."' and '".$pAkhir."' and a.jenisijin like '%".$jnsCuti."%' and substr(b.lokasitugas,3,2)!='HO' and b.kodeorganisasi='".$_SESSION['empl']['kodeorganisasi']."' ".$tmbWhere." order by a.tanggal desc";
 				}else{
-					$tmbWhere = " and a.karyawanid like '%".$karyidCari."%'";
+					if($_SESSION['empl']['bagian'] == 'HHRD' || $_SESSION['empl']['bagian'] == 'HHRS' || $_SESSION['empl']['bagian'] == 'HRA'|| substr($_SESSION['empl']['bagian'],0,3) == 'URD'){
+						$tmbWhere = " and a.karyawanid like '%".$karyidCari."%'";
+						$tmbWhere .= " and if(b.subbagian='',b.lokasitugas,left(b.subbagian,4)) like '".$unit."%'";
+						$ql2="select count(a.karyawanid) as jmlhrow from ".$dbname.".sdm_ijin a, ".$dbname.".datakaryawan b where a.karyawanid = b.karyawanid and a.tanggal between '".$pAwal."' and '".$pAkhir."' and a.jenisijin like '%".$jnsCuti."%' ".$tmbWhere." order by a.tanggal desc";
+					}else{
+						$tmbWhere = " and a.karyawanid like '%".$karyidCari."%'";
+						$tmbWhere .= " and if(b.subbagian='',b.lokasitugas,left(b.subbagian,4)) like '".$unit."%'";
+						$ql2="select count(a.karyawanid) as jmlhrow from ".$dbname.".sdm_ijin a, ".$dbname.".datakaryawan b where a.karyawanid = b.karyawanid and a.tanggal between '".$pAwal."' and '".$pAkhir."' and a.jenisijin like '%".$jnsCuti."%' ".$tmbWhere." order by a.tanggal desc";
+					}
 				}
-				
-				$ql2="select count(a.karyawanid) as jmlhrow from ".$dbname.".sdm_ijin a, ".$dbname.".datakaryawan b where a.karyawanid = b.karyawanid and a.tanggal between '".$pAwal."' and '".$pAkhir."' and a.jenisijin like '%".$jnsCuti."%' ".$tmbWhere." order by a.tanggal desc";
-                $query2=mysql_query($ql2) or die(mysql_error());
+				//$ql2="select count(a.karyawanid) as jmlhrow from ".$dbname.".sdm_ijin a, ".$dbname.".datakaryawan b where a.karyawanid = b.karyawanid and a.tanggal between '".$pAwal."' and '".$pAkhir."' and a.jenisijin like '%".$jnsCuti."%' ".$tmbWhere." order by a.tanggal desc";
+				//exit('Warning: '.$ql2);
+				$query2=mysql_query($ql2) or die(mysql_error());
                 while($jsl=mysql_fetch_object($query2)){
 					$jlhbrs= $jsl->jmlhrow;
                 }
 				if($jlhbrs <= 0){
 					echo"<tr class=rowcontent>
-							<td colspan=14 style='text-align:center'>".$_SESSION['lang']['datanotfound']."</td>
+							<td colspan=15 style='text-align:center'>".$_SESSION['lang']['datanotfound']."</td>
 						</tr>";
 					exit();
 				}
-
-                $slvhc="select a.* from ".$dbname.".sdm_ijin a, ".$dbname.".datakaryawan b where a.karyawanid = b.karyawanid and a.tanggal between '".$pAwal."' and '".$pAkhir."' and a.jenisijin like '%".$jnsCuti."%' ".$tmbWhere." order by a.tanggal desc limit ".$offset.",".$limit." ";
+				if($_SESSION['empl']['tipelokasitugas'] == 'HOLDING' and ($_SESSION['empl']['bagian'] == 'HHRD' || $_SESSION['empl']['bagian'] == 'HHRS' || $_SESSION['empl']['bagian'] == 'HHSE' || $_SESSION['empl']['bagian'] == 'HRA'|| substr($_SESSION['empl']['bagian'],0,3) == 'URD')){
+					$tmbWhere = " and a.karyawanid like '%".$karyidCari."%'";
+					$tmbWhere .= " and if(b.subbagian='',b.lokasitugas,left(b.subbagian,4)) like '".$unit."%'";
+					$slvhc="select a.*,b.nik,b.namakaryawan from ".$dbname.".sdm_ijin a, ".$dbname.".datakaryawan b where a.karyawanid = b.karyawanid and a.tanggal between '".$pAwal."' and '".$pAkhir."' and a.jenisijin like '%".$jnsCuti."%' ".$tmbWhere." order by a.tanggal desc limit ".$offset.",".$limit." ";
+				}else if($_SESSION['empl']['tipelokasitugas'] == 'KANWIL' and ($_SESSION['empl']['bagian'] == 'HHRD' || $_SESSION['empl']['bagian'] == 'HHRS' || $_SESSION['empl']['bagian'] == 'HRA'|| substr($_SESSION['empl']['bagian'],0,3) == 'URD')){
+					$tmbWhere = " and a.karyawanid like '%".$karyidCari."%'";
+					$tmbWhere .= " and if(b.subbagian='',b.lokasitugas,left(b.subbagian,4)) like '".$unit."%'";
+					$slvhc="select a.*,b.nik,b.namakaryawan from ".$dbname.".sdm_ijin a, ".$dbname.".datakaryawan b where a.karyawanid = b.karyawanid and a.tanggal between '".$pAwal."' and '".$pAkhir."' and a.jenisijin like '%".$jnsCuti."%' and substr(b.lokasitugas,3,2)!='HO' and b.kodeorganisasi='".$_SESSION['empl']['kodeorganisasi']."' ".$tmbWhere." order by a.tanggal desc limit ".$offset.",".$limit." ";
+				}else{
+					if($_SESSION['empl']['bagian'] == 'HHRD' || $_SESSION['empl']['bagian'] == 'HHRS' || $_SESSION['empl']['bagian'] == 'HRA'|| substr($_SESSION['empl']['bagian'],0,3) == 'URD'){
+						$tmbWhere = " and a.karyawanid like '%".$karyidCari."%'";
+						$tmbWhere .= " and if(b.subbagian='',b.lokasitugas,left(b.subbagian,4)) like '".$unit."%'";
+						$slvhc="select a.*,b.nik,b.namakaryawan from ".$dbname.".sdm_ijin a, ".$dbname.".datakaryawan b where a.karyawanid = b.karyawanid and a.tanggal between '".$pAwal."' and '".$pAkhir."' and a.jenisijin like '%".$jnsCuti."%' ".$tmbWhere." order by a.tanggal desc limit ".$offset.",".$limit." ";
+					}else{
+						$tmbWhere = " and a.karyawanid like '%".$karyidCari."%'";
+						$tmbWhere .= " and if(b.subbagian='',b.lokasitugas,left(b.subbagian,4)) like '".$unit."%'";
+						$slvhc="select a.*,b.nik,b.namakaryawan from ".$dbname.".sdm_ijin a, ".$dbname.".datakaryawan b where a.karyawanid = b.karyawanid and a.tanggal between '".$pAwal."' and '".$pAkhir."' and a.jenisijin like '%".$jnsCuti."%' ".$tmbWhere." order by a.tanggal desc limit ".$offset.",".$limit." ";
+					}
+				}
+				//$slvhc="select a.*,b.nik,b.namakaryawan from ".$dbname.".sdm_ijin a, ".$dbname.".datakaryawan b where a.karyawanid = b.karyawanid and a.tanggal between '".$pAwal."' and '".$pAkhir."' and a.jenisijin like '%".$jnsCuti."%' ".$tmbWhere." order by a.tanggal desc limit ".$offset.",".$limit." ";
+				//exit('Warning: '.$slvhc);
                 $qlvhc=mysql_query($slvhc) or die(mysql_error());
                 $user_online=$_SESSION['standard']['userid'];
                 while($rlvhc=mysql_fetch_assoc($qlvhc))
                 {
-                if($_SESSION['language']=='ID'){
-                        $dd=$rlvhc['jenisijin'];
-                    }else{
+					   $ada=0;
                         switch($rlvhc['jenisijin']){
-                            case 'TERLAMBAT':
-                                $dd='Late for work';
-                                break;
-                            case 'KELUAR':
-                                $dd='Out of Office';
-                                break;         
-                            case 'PULANGAWAL':
-                                $dd='Home early';
-                                break;     
-                            case 'IJINLAIN':
-                                $dd='Other purposes';
-                                break;   
-                            case 'CUTI':
-                                $dd='Leave';
-                                break;       
-                            case 'MELAHIRKAN':
-                                $dd='Maternity';
-                                break;           
-                            default:
-                                $dd='Wedding, Circumcision or Graduation';
+                          case 'CUTI':
+                               $dd=($_SESSION['language']=='ID' ? 'Cuti' : 'Leave');
+							   $ada=1;
+                               break;
+                          case 'TERLAMBAT':
+                               $dd=($_SESSION['language']=='ID' ? 'Terlambat Datang' : 'Late for work');
+							   $ada=1;
+                               break;
+                          case 'KELUAR':
+                               $dd=($_SESSION['language']=='ID' ? 'Keluar Kantor' : 'Out of Office');
+ 							   $ada=1;
+                               break;         
+                          case 'PULANGAWAL':
+                               $dd=($_SESSION['language']=='ID' ? 'Pulang lebih awal' : 'Home early');
+ 							   $ada=1;
+                               break;
+                          case 'MELAHIRKAN':
+                               $dd=($_SESSION['language']=='ID' ? 'Melahirkan (90 hari)' : 'Maternity (90 days)');
+ 							   $ada=1;
+                               break;
+                          case 'MENIKAH':
+                               $dd=($_SESSION['language']=='ID' ? 'Pegawai Menikah (3 hari)' : 'Married (3 days)');
+ 							   $ada=1;
+                               break;
+                          case 'ANAKNIKAH':
+                               $dd=($_SESSION['language']=='ID' ? 'Menikahkan anak (2 hari)' : 'Child Married (2 days)');
+ 							   $ada=1;
+                               break;
+                          case 'ANAKHITAN':
+                               $dd=($_SESSION['language']=='ID' ? 'Mengkhitankan anak (2 hari)' : 'Child Circumcision (2 days)');
+ 							   $ada=1;
+                               break;
+                          case 'BAPTIS':
+                               $dd=($_SESSION['language']=='ID' ? 'Membaptis anak (2 hari)' : 'Child Baptism (2 days)');
+ 							   $ada=1;
+                               break;
+                          case 'ISTRILAHIR':
+                               $dd=($_SESSION['language']=='ID' ? 'Istri melahirkan (2 hari)' : 'Wife Maternity (2 days)');
+ 							   $ada=1;
+                               break;
+                          case 'KLGUTMMATI':
+                               $dd=($_SESSION['language']=='ID' ? 'Suami/Istri, Orang Tua/Mertua, Anak/Menantu meninggal dunia (2 hari)' : 'Family Death (2 days)');
+ 							   $ada=1;
+                               break;
+                          case '1RMH_MATI':
+                               $dd=($_SESSION['language']=='ID' ? 'Keluarga serumah meninggal dunia (1 hari)' : 'Same House Death (1 days)');
+ 							   $ada=1;
+                               break;
+							default:
+								$dd=$rlvhc['jenisijin'];
+ 							   $ada=1;
                                 break;                              
-                        }      
                     }
                     
                 $no+=1;
@@ -107,6 +229,7 @@ $pAkhir = tanggalsystem($periodeakhir);
                 <tr class=rowcontent>
                 <td>".$no."</td>
                 <td>".tanggalnormal($rlvhc['tanggal'])."</td>
+                <td>".$rlvhc['nik']."</td>
                 <td>".$arrNmkary[$rlvhc['karyawanid']]."</td>
                 <td>".$rlvhc['keperluan']."</td>
                 <td>".$dd."</td>
@@ -122,16 +245,14 @@ $pAkhir = tanggalsystem($periodeakhir);
                     if($rlvhc['stpersetujuan1']==0)
                     {
                       echo"<td align=center>
-                         <button class=mybutton id=dtlForm onclick=appSetuju('".tanggalnormal($rlvhc['tanggal'])."','".$rlvhc['karyawanid']."')>".$_SESSION['lang']['disetujui']."</button>
-                         <button class=mybutton id=dtlForm onclick=showAppTolak('".tanggalnormal($rlvhc['tanggal'])."','".$rlvhc['karyawanid']."',event)>".$_SESSION['lang']['ditolak']."</button>
-                         <button class=mybutton id=dtlForm onclick=showAppForw('".tanggalnormal($rlvhc['tanggal'])."','".$rlvhc['karyawanid']."',event)>Forward</button></td>";
+                         <button class=mybutton id=dtlForm onclick=appSetuju('".tanggalnormal($rlvhc['tanggal'])."','".$rlvhc['karyawanid']."','".$rlvhc['jenisijin']."','".substr($rlvhc['darijam'],0,10)."')>".$_SESSION['lang']['disetujui']."</button>
+                         <button class=mybutton id=dtlForm onclick=showAppTolak('".tanggalnormal($rlvhc['tanggal'])."','".$rlvhc['karyawanid']."','".$rlvhc['jenisijin']."','".substr($rlvhc['darijam'],0,10)."',event)>".$_SESSION['lang']['ditolak']."</button>
+                         <button class=mybutton id=dtlForm onclick=showAppForw('".tanggalnormal($rlvhc['tanggal'])."','".$rlvhc['karyawanid']."','".$rlvhc['jenisijin']."','".substr($rlvhc['darijam'],0,10)."',event)>Forward</button></td>";
                     }
                     else if($rlvhc['stpersetujuan1']==2)
                        echo"<td align=center>".$_SESSION['lang']['ditolak']."</td>";
-                   else if($rlvhc['stpersetujuan1']==1)
-                        echo"<td align=center>".$_SESSION['lang']['disetujui']."</td>";
-                   else if($rlvhc['stpersetujuan1']==0)
-                        echo"<td align=center>".$_SESSION['lang']['wait_approval']."</td>";
+                    else if($rlvhc['stpersetujuan1']==1)
+                       echo"<td align=center>".$_SESSION['lang']['disetujui']."</td>";
 
                 }
                 else if($rlvhc['stpersetujuan1']==1)
@@ -145,30 +266,28 @@ $pAkhir = tanggalsystem($periodeakhir);
                 {
                     if($rlvhc['stpersetujuanhrd']==0 and $rlvhc['stpersetujuan1']==1)
                     {
-                      echo"<td align=center><button class=mybutton id=dtlForm onclick=appSetujuHRD('".tanggalnormal($rlvhc['tanggal'])."','".$rlvhc['karyawanid']."')>".$_SESSION['lang']['disetujui']."</button>
-                         <button class=mybutton id=dtlForm onclick=showAppTolakHRD('".tanggalnormal($rlvhc['tanggal'])."','".$rlvhc['karyawanid']."',event)>".$_SESSION['lang']['ditolak']."</button></td>";
+                      echo"<td align=center><button class=mybutton id=dtlForm onclick=appSetujuHRD('".tanggalnormal($rlvhc['tanggal'])."','".$rlvhc['karyawanid']."','".$rlvhc['jenisijin']."','".substr($rlvhc['darijam'],0,10)."')>".$_SESSION['lang']['disetujui']."</button>
+                         <button class=mybutton id=dtlForm onclick=showAppTolakHRD('".tanggalnormal($rlvhc['tanggal'])."','".$rlvhc['karyawanid']."','".$rlvhc['jenisijin']."','".substr($rlvhc['darijam'],0,10)."',event)>".$_SESSION['lang']['ditolak']."</button></td>";
                     }
-                    else if($rlvhc['stpersetujuan1']==2)
-                       echo"<td align=center>(Tunggu atasan)</td>"; 
-                     else if($rlvhc['stpersetujuanhrd']==2)
+                    else if($rlvhc['stpersetujuan1']==0)
+                       echo"<td align=center>".$_SESSION['lang']['wait_approval']."</td>";
+                    else if($rlvhc['stpersetujuan1']==2 or $rlvhc['stpersetujuanhrd']==2)
                        echo"<td align=center>(".$_SESSION['lang']['ditolak']."</td>"; 
                     else if($rlvhc['stpersetujuanhrd']==1)
-                        echo"<td align=center>".$_SESSION['lang']['disetujui']."</td>";
-                    else if($rlvhc['stpersetujuanhrd']==0)
-                         echo"<td align=center>".$_SESSION['lang']['wait_approval']."</td>";
+                       echo"<td align=center>".$_SESSION['lang']['disetujui']."</td>";
                 }
                 else
                 {
-               if($rlvhc['stpersetujuanhrd']=='0')
-               echo"<td align=center>".$_SESSION['lang']['wait_approval']."</td>"; 
-               else if($rlvhc['stpersetujuanhrd']=='1')
-                echo"<td align=center>".$_SESSION['lang']['disetujui']."</td>";
+                if($rlvhc['stpersetujuanhrd']=='0')
+                   echo"<td align=center>".$_SESSION['lang']['wait_approval']."</td>"; 
+                else if($rlvhc['stpersetujuanhrd']=='1')
+                   echo"<td align=center>".$_SESSION['lang']['disetujui']."</td>";
                 else 
-                echo"<td align=center>".$_SESSION['lang']['ditolak']."</td>";
+                   echo"<td align=center>".$_SESSION['lang']['ditolak']."</td>";
                 }
 //======================================                
 
-                   echo"<td align=center> <img src=images/pdf.jpg class=resicon  title='Print' onclick=\"previewPdf('".tanggalnormal($rlvhc['tanggal'])."','".$rlvhc['karyawanid']."',event)\"></td>";
+                   echo"<td align=center> <img src=images/pdf.jpg class=resicon  title='Print' onclick=\"previewPdf('".tanggalnormal($rlvhc['tanggal'])."','".$rlvhc['karyawanid']."','".$rlvhc['jenisijin']."','".$rlvhc['darijam']."',event)\"></td>";
 
 
               }//end while
@@ -180,7 +299,7 @@ $pAkhir = tanggalsystem($periodeakhir);
                 </td>
                 </tr>";
                 break;
-                case'cariData':
+           case'cariData':
                 $limit=10;
                 $page=0;
                 if(isset($_POST['page']))
@@ -192,15 +311,34 @@ $pAkhir = tanggalsystem($periodeakhir);
                 $offset=$page*$limit;
 				
 				$tmbWhere = '';
-				if($_SESSION['empl']['tipelokasitugas'] == 'HOLDING' and ($_SESSION['empl']['bagian'] == 'HHRD' || $_SESSION['empl']['bagian'] == 'HHRS')){
-					$tmbWhere = '';
-				}else if($_SESSION['empl']['tipelokasitugas'] == 'KANWIL' and $_SESSION['empl']['bagian'] == 'HRA'){
+				if($_SESSION['empl']['tipelokasitugas'] == 'HOLDING' and ($_SESSION['empl']['bagian'] == 'HHRD' || $_SESSION['empl']['bagian'] == 'HHRS' || $_SESSION['empl']['bagian'] == 'HHSE' || $_SESSION['empl']['bagian'] == 'HRA'|| substr($_SESSION['empl']['bagian'],0,3) == 'URD')){
+					//$tmbWhere = '';
 					$tmbWhere = " and a.karyawanid like '%".$karyidCari."%'";
+					$tmbWhere .= " and if(b.subbagian='',b.lokasitugas,left(b.subbagian,4)) like '".$unit."%'";
+					$ql2="select count(a.karyawanid) as jmlhrow from ".$dbname.".sdm_ijin a, ".$dbname.".datakaryawan b where a.karyawanid = b.karyawanid and a.tanggal between '".$pAwal."' and '".$pAkhir."' and a.jenisijin like '%".$jnsCuti."%' ".$tmbWhere." order by a.tanggal desc";
+				}else if($_SESSION['empl']['tipelokasitugas'] == 'KANWIL' and ($_SESSION['empl']['bagian'] == 'HHRD' || $_SESSION['empl']['bagian'] == 'HHRS' || $_SESSION['empl']['bagian'] == 'HRA'|| substr($_SESSION['empl']['bagian'],0,3) == 'URD')){
+					$tmbWhere = " and a.karyawanid like '%".$karyidCari."%'";
+					$tmbWhere .= " and if(b.subbagian='',b.lokasitugas,left(b.subbagian,4)) like '".$unit."%'";
+					$ql2="select count(a.karyawanid) as jmlhrow from ".$dbname.".sdm_ijin a, ".$dbname.".datakaryawan b where a.karyawanid = b.karyawanid and a.tanggal between '".$pAwal."' and '".$pAkhir."' and a.jenisijin like '%".$jnsCuti."%' and substr(b.lokasitugas,3,2)!='HO' and b.kodeorganisasi='".$_SESSION['empl']['kodeorganisasi']."' ".$tmbWhere." order by a.tanggal desc";
 				}else{
-					$tmbWhere = " and a.karyawanid like '%".$karyidCari."%'";
+					if($_SESSION['empl']['bagian'] == 'HHRD' || $_SESSION['empl']['bagian'] == 'HHRS' || $_SESSION['empl']['bagian'] == 'HRA'|| substr($_SESSION['empl']['bagian'],0,3) == 'URD'){
+						$tmbWhere = " and a.karyawanid like '%".$karyidCari."%'";
+						$tmbWhere .= " and if(b.subbagian='',b.lokasitugas,left(b.subbagian,4)) like '".$unit."%'";
+						$ql2="select count(a.karyawanid) as jmlhrow from ".$dbname.".sdm_ijin a, ".$dbname.".datakaryawan b where a.karyawanid = b.karyawanid and a.tanggal between '".$pAwal."' and '".$pAkhir."' and a.jenisijin like '%".$jnsCuti."%' ".$tmbWhere." order by a.tanggal desc";
+					}else{
+						if($_SESSION['empl']['tipelokasitugas'] == 'HOLDING'){
+							$tmbWhere = " and a.karyawanid like '%".$karyidCari."%'";
+							//$tmbWhere .= " and if(b.subbagian='',b.lokasitugas,left(b.subbagian,4)) like '".$unit."%'";
+							$ql2="select count(a.karyawanid) as jmlhrow from ".$dbname.".sdm_ijin a, ".$dbname.".datakaryawan b where a.karyawanid = b.karyawanid and a.tanggal between '".$pAwal."' and '".$pAkhir."' and a.jenisijin like '%".$jnsCuti."%' ".$tmbWhere." order by a.tanggal desc";
+						}else{
+							$tmbWhere = " and a.karyawanid like '%".$karyidCari."%'";
+							$tmbWhere .= " and if(b.subbagian='',b.lokasitugas,left(b.subbagian,4)) like '".$unit."%'";
+							$ql2="select count(a.karyawanid) as jmlhrow from ".$dbname.".sdm_ijin a, ".$dbname.".datakaryawan b where a.karyawanid = b.karyawanid and a.tanggal between '".$pAwal."' and '".$pAkhir."' and a.jenisijin like '%".$jnsCuti."%' ".$tmbWhere." order by a.tanggal desc";
+						}
+					}
 				}
-
-                $ql2="select count(a.karyawanid) as jmlhrow from ".$dbname.".sdm_ijin a, ".$dbname.".datakaryawan b where a.karyawanid = b.karyawanid and a.tanggal between '".$pAwal."' and '".$pAkhir."' and a.jenisijin like '%".$jnsCuti."%' ".$tmbWhere." order by a.tanggal desc";
+                //$ql2="select count(a.karyawanid) as jmlhrow from ".$dbname.".sdm_ijin a, ".$dbname.".datakaryawan b where a.karyawanid = b.karyawanid and a.tanggal between '".$pAwal."' and '".$pAkhir."' and a.jenisijin like '%".$jnsCuti."%' ".$tmbWhere." order by a.tanggal desc";
+				//exit('Warning: '.$ql2);
                 $query2=mysql_query($ql2) or die(mysql_error());
                 while($jsl=mysql_fetch_object($query2)){
                 $jlhbrs= $jsl->jmlhrow;
@@ -208,46 +346,100 @@ $pAkhir = tanggalsystem($periodeakhir);
 				
 				if($jlhbrs <= 0){
 					echo"<tr class=rowcontent>
-							<td colspan=14 style='text-align:center'>".$_SESSION['lang']['datanotfound']."</td>
+							<td colspan=15 style='text-align:center'>".$_SESSION['lang']['datanotfound']."</td>
 						</tr>";
 					exit();
 				}
 
-                $slvhc="select a.* from ".$dbname.".sdm_ijin a, ".$dbname.".datakaryawan b where a.karyawanid = b.karyawanid and a.tanggal between '".$pAwal."' and '".$pAkhir."' and a.jenisijin like '%".$jnsCuti."%' ".$tmbWhere." order by a.tanggal desc limit ".$offset.",".$limit." ";
+				if($_SESSION['empl']['tipelokasitugas'] == 'HOLDING' and ($_SESSION['empl']['bagian'] == 'HHRD' || $_SESSION['empl']['bagian'] == 'HHRS' || $_SESSION['empl']['bagian'] == 'HHSE' || $_SESSION['empl']['bagian'] == 'HRA'|| substr($_SESSION['empl']['bagian'],0,3) == 'URD')){
+					$tmbWhere = " and a.karyawanid like '%".$karyidCari."%'";
+					$tmbWhere .= " and if(b.subbagian='',b.lokasitugas,left(b.subbagian,4)) like '".$unit."%'";
+					$slvhc="select a.*,b.nik,b.namakaryawan from ".$dbname.".sdm_ijin a, ".$dbname.".datakaryawan b where a.karyawanid = b.karyawanid and a.tanggal between '".$pAwal."' and '".$pAkhir."' and a.jenisijin like '%".$jnsCuti."%' ".$tmbWhere." order by a.tanggal desc limit ".$offset.",".$limit." ";
+				}else if($_SESSION['empl']['tipelokasitugas'] == 'KANWIL' and ($_SESSION['empl']['bagian'] == 'HHRD' || $_SESSION['empl']['bagian'] == 'HHRS' || $_SESSION['empl']['bagian'] == 'HRA'|| substr($_SESSION['empl']['bagian'],0,3) == 'URD')){
+					$tmbWhere = " and a.karyawanid like '%".$karyidCari."%'";
+					$tmbWhere .= " and if(b.subbagian='',b.lokasitugas,left(b.subbagian,4)) like '".$unit."%'";
+					$slvhc="select a.*,b.nik,b.namakaryawan from ".$dbname.".sdm_ijin a, ".$dbname.".datakaryawan b where a.karyawanid = b.karyawanid and a.tanggal between '".$pAwal."' and '".$pAkhir."' and a.jenisijin like '%".$jnsCuti."%' and substr(b.lokasitugas,3,2)!='HO' and b.kodeorganisasi='".$_SESSION['empl']['kodeorganisasi']."' ".$tmbWhere." order by a.tanggal desc limit ".$offset.",".$limit." ";
+				}else{
+					if($_SESSION['empl']['bagian'] == 'HHRD' || $_SESSION['empl']['bagian'] == 'HHRS' || $_SESSION['empl']['bagian'] == 'HRA'|| substr($_SESSION['empl']['bagian'],0,3) == 'URD'){
+						$tmbWhere = " and a.karyawanid like '%".$karyidCari."%'";
+						$tmbWhere .= " and if(b.subbagian='',b.lokasitugas,left(b.subbagian,4)) like '".$unit."%'";
+						$slvhc="select a.*,b.nik,b.namakaryawan from ".$dbname.".sdm_ijin a, ".$dbname.".datakaryawan b where a.karyawanid = b.karyawanid and a.tanggal between '".$pAwal."' and '".$pAkhir."' and a.jenisijin like '%".$jnsCuti."%' ".$tmbWhere." order by a.tanggal desc limit ".$offset.",".$limit." ";
+					}else{
+						if($_SESSION['empl']['tipelokasitugas'] == 'HOLDING'){
+							$tmbWhere = " and a.karyawanid like '%".$karyidCari."%'";
+							//$tmbWhere .= " and if(b.subbagian='',b.lokasitugas,left(b.subbagian,4)) like '".$unit."%'";
+							$slvhc="select a.*,b.nik,b.namakaryawan from ".$dbname.".sdm_ijin a, ".$dbname.".datakaryawan b where a.karyawanid = b.karyawanid and a.tanggal between '".$pAwal."' and '".$pAkhir."' and a.jenisijin like '%".$jnsCuti."%' ".$tmbWhere." order by a.tanggal desc limit ".$offset.",".$limit." ";
+						}else{
+							$tmbWhere = " and a.karyawanid like '%".$karyidCari."%'";
+							$tmbWhere .= " and if(b.subbagian='',b.lokasitugas,left(b.subbagian,4)) like '".$unit."%'";
+							$slvhc="select a.*,b.nik,b.namakaryawan from ".$dbname.".sdm_ijin a, ".$dbname.".datakaryawan b where a.karyawanid = b.karyawanid and a.tanggal between '".$pAwal."' and '".$pAkhir."' and a.jenisijin like '%".$jnsCuti."%' ".$tmbWhere." order by a.tanggal desc limit ".$offset.",".$limit." ";
+						}
+					}
+				}
+                //$slvhc="select a.*,b.nik,b.namakaryawan from ".$dbname.".sdm_ijin a, ".$dbname.".datakaryawan b where a.karyawanid = b.karyawanid and a.tanggal between '".$pAwal."' and '".$pAkhir."' and a.jenisijin like '%".$jnsCuti."%' ".$tmbWhere." order by a.tanggal desc limit ".$offset.",".$limit." ";
+				//exit('Warning: '.$slvhc);
                 $qlvhc=mysql_query($slvhc) or die(mysql_error());
                 $user_online=$_SESSION['standard']['userid'];
                 while($rlvhc=mysql_fetch_assoc($qlvhc))
                 {
-                    if($_SESSION['language']=='ID'){
-                        $dd=$rlvhc['jenisijin'];
-                    }else{
+					   $ada=0;
                         switch($rlvhc['jenisijin']){
-                            case 'TERLAMBAT':
-                                $dd='Late for work';
-                                break;
-                            case 'KELUAR':
-                                $dd='Out of Office';
-                                break;         
-                            case 'PULANGAWAL':
-                                $dd='Home early';
-                                break;     
-                            case 'IJINLAIN':
-                                $dd='Other purposes';
-                                break;   
-                            case 'CUTI':
-                                $dd='Leave';
-                                break;       
-                            case 'MELAHIRKAN':
-                                $dd='Maternity';
-                                break;           
-                            default:
-                                $dd='Wedding, Circumcision or Graduation';
+                          case 'CUTI':
+                               $dd=($_SESSION['language']=='ID' ? 'Cuti' : 'Leave');
+							   $ada=1;
+                               break;
+                          case 'TERLAMBAT':
+                               $dd=($_SESSION['language']=='ID' ? 'Terlambat Datang' : 'Late for work');
+							   $ada=1;
+                               break;
+                          case 'KELUAR':
+                               $dd=($_SESSION['language']=='ID' ? 'Keluar Kantor' : 'Out of Office');
+ 							   $ada=1;
+                               break;         
+                          case 'PULANGAWAL':
+                               $dd=($_SESSION['language']=='ID' ? 'Pulang lebih awal' : 'Home early');
+ 							   $ada=1;
+                               break;
+                          case 'MELAHIRKAN':
+                               $dd=($_SESSION['language']=='ID' ? 'Melahirkan (90 hari)' : 'Maternity (90 days)');
+ 							   $ada=1;
+                               break;
+                          case 'MENIKAH':
+                               $dd=($_SESSION['language']=='ID' ? 'Pegawai Menikah (3 hari)' : 'Married (3 days)');
+ 							   $ada=1;
+                               break;
+                          case 'ANAKNIKAH':
+                               $dd=($_SESSION['language']=='ID' ? 'Menikahkan anak (2 hari)' : 'Child Married (2 days)');
+ 							   $ada=1;
+                               break;
+                          case 'ANAKHITAN':
+                               $dd=($_SESSION['language']=='ID' ? 'Mengkhitankan anak (2 hari)' : 'Child Circumcision (2 days)');
+ 							   $ada=1;
+                               break;
+                          case 'BAPTIS':
+                               $dd=($_SESSION['language']=='ID' ? 'Membaptis anak (2 hari)' : 'Child Baptism (2 days)');
+ 							   $ada=1;
+                               break;
+                          case 'ISTRILAHIR':
+                               $dd=($_SESSION['language']=='ID' ? 'Istri melahirkan (2 hari)' : 'Wife Maternity (2 days)');
+ 							   $ada=1;
+                               break;
+                          case 'KLGUTMMATI':
+                               $dd=($_SESSION['language']=='ID' ? 'Suami/Istri, Orang Tua/Mertua, Anak/Menantu meninggal dunia (2 hari)' : 'Family Death (2 days)');
+ 							   $ada=1;
+                               break;
+                          case '1RMH_MATI':
+                               $dd=($_SESSION['language']=='ID' ? 'Keluarga serumah meninggal dunia (1 hari)' : 'Same House Death (1 days)');
+ 							   $ada=1;
+                               break;
+							default:
+								$dd=$rlvhc['jenisijin'];
+ 							   $ada=1;
                                 break;                              
-                        }      
                     }                    
                 $no+=1;
                 //ambil sisa cuti
-                $sSisa="select sisa from ".$dbname.".sdm_cutiht where karyawanid='".$rlvhc['karyawanid']."' 
+                $sSisa="select sisa from ".$dbname.".sdm_cutiht where karyawanid='".$rlvhc['karyawanid']."' and periodecuti='".$rlvhc['periodecuti']."'
                         order by periodecuti desc limit 1";
                 $qSisa=mysql_query($sSisa) or die(mysql_error($conn));
                 $rSisa=mysql_fetch_assoc($qSisa);
@@ -255,6 +447,7 @@ $pAkhir = tanggalsystem($periodeakhir);
                 <tr class=rowcontent>
                 <td>".$no."</td>
                 <td>".tanggalnormal($rlvhc['tanggal'])."</td>
+                <td>".$rlvhc['nik']."</td>
                 <td>".$arrNmkary[$rlvhc['karyawanid']]."</td>
                 <td>".$rlvhc['keperluan']."</td>
                 <td>".$dd."</td>
@@ -270,9 +463,9 @@ $pAkhir = tanggalsystem($periodeakhir);
                     if($rlvhc['stpersetujuan1']==0)
                     {
                       echo"<td align=center>
-                          <button class=mybutton id=dtlForm onclick=appSetuju('".tanggalnormal($rlvhc['tanggal'])."','".$rlvhc['karyawanid']."')>".$_SESSION['lang']['disetujui']."</button>
-                          <button class=mybutton id=dtlForm onclick=showAppTolak('".tanggalnormal($rlvhc['tanggal'])."','".$rlvhc['karyawanid']."',event)>".$_SESSION['lang']['ditolak']."</button>
-                          <button class=mybutton id=dtlForm onclick=showAppForw('".tanggalnormal($rlvhc['tanggal'])."','".$rlvhc['karyawanid']."',event)>Forward</button></td>";
+                          <button class=mybutton id=dtlForm onclick=appSetuju('".tanggalnormal($rlvhc['tanggal'])."','".$rlvhc['karyawanid']."','".$rlvhc['jenisijin']."','".substr($rlvhc['darijam'],0,10)."')>".$_SESSION['lang']['disetujui']."</button>
+                          <button class=mybutton id=dtlForm onclick=showAppTolak('".tanggalnormal($rlvhc['tanggal'])."','".$rlvhc['karyawanid']."','".$rlvhc['jenisijin']."','".substr($rlvhc['darijam'],0,10)."',event)>".$_SESSION['lang']['ditolak']."</button>
+                          <button class=mybutton id=dtlForm onclick=showAppForw('".tanggalnormal($rlvhc['tanggal'])."','".$rlvhc['karyawanid']."','".$rlvhc['jenisijin']."','".substr($rlvhc['darijam'],0,10)."',event)>Forward</button></td>";
                     }
                     else if($rlvhc['stpersetujuan1']==2)
                        echo"<td align=center>".$_SESSION['lang']['ditolak']."</td>";
@@ -291,15 +484,15 @@ $pAkhir = tanggalsystem($periodeakhir);
                 {
                     if($rlvhc['stpersetujuanhrd']==0 and $rlvhc['stpersetujuan1']==1)
                     {
-                      echo"<td align=center><button class=mybutton id=dtlForm onclick=appSetujuHRD('".tanggalnormal($rlvhc['tanggal'])."','".$rlvhc['karyawanid']."')>".$_SESSION['lang']['disetujui']."</button>
-                         <button class=mybutton id=dtlForm onclick=showAppTolakHRD('".tanggalnormal($rlvhc['tanggal'])."','".$rlvhc['karyawanid']."',event)>".$_SESSION['lang']['ditolak']."</button></td>";
+                      echo"<td align=center><button class=mybutton id=dtlForm onclick=appSetujuHRD('".tanggalnormal($rlvhc['tanggal'])."','".$rlvhc['karyawanid']."','".$rlvhc['jenisijin']."','".substr($rlvhc['darijam'],0,10)."')>".$_SESSION['lang']['disetujui']."</button>
+                         <button class=mybutton id=dtlForm onclick=showAppTolakHRD('".tanggalnormal($rlvhc['tanggal'])."','".$rlvhc['karyawanid']."','".$rlvhc['jenisijin']."','".substr($rlvhc['darijam'],0,10)."',event)>".$_SESSION['lang']['ditolak']."</button></td>";
                     }
-                    else if($rlvhc['stpersetujuan1']==2)
-                       echo"<td align=center>(Tunggu atasan)</td>"; 
-                     else if($rlvhc['stpersetujuanhrd']==2)
+                    else if($rlvhc['stpersetujuan1']==0)
+                       echo"<td align=center>".$_SESSION['lang']['wait_approval']."</td>"; 
+                    else if($rlvhc['stpersetujuan1']==2 or $rlvhc['stpersetujuanhrd']==2)
                        echo"<td align=center>(".$_SESSION['lang']['ditolak']."</td>"; 
-                    else
-                        echo"<td align=center>".$_SESSION['lang']['disetujui']."</td>";
+                    else if($rlvhc['stpersetujuanhrd']==1)
+                       echo"<td align=center>".$_SESSION['lang']['disetujui']."</td>";
                 }
                 else if($rlvhc['stpersetujuanhrd']==1)
                     echo"<td align=center>".$_SESSION['lang']['disetujui']."</td>";
@@ -309,7 +502,7 @@ $pAkhir = tanggalsystem($periodeakhir);
                     echo"<td align=center>".$_SESSION['lang']['ditolak']."</td>";
 //======================================                
 
-                   echo"<td align=center> <img src=images/pdf.jpg class=resicon  title='Print' onclick=\"previewPdf('".tanggalnormal($rlvhc['tanggal'])."','".$rlvhc['karyawanid']."',event)\"></td>";
+                   echo"<td align=center> <img src=images/pdf.jpg class=resicon  title='Print' onclick=\"previewPdf('".tanggalnormal($rlvhc['tanggal'])."','".$rlvhc['karyawanid']."','".$rlvhc['jenisijin']."','".$rlvhc['darijam']."',event)\"></td>";
 
 
               }//end while
@@ -323,6 +516,7 @@ $pAkhir = tanggalsystem($periodeakhir);
                 break;
                 case'appSetuju':
                 $sket="select distinct jenisijin,stpersetujuan1,persetujuan1,hrd,tanggal from ".$dbname.".sdm_ijin where ".$where."";
+				//exit('Warning: '.$sket);
                 $qKet=mysql_query($sket) or die(mysql_error($conn));
                 $rKet=mysql_fetch_assoc($qKet);
 //                if(($rKet['stpersetujuan1']=='0')&&($rKet['persetujuan1']==$_SESSION['standard']['userid']))
@@ -333,6 +527,7 @@ $pAkhir = tanggalsystem($periodeakhir);
                     }
 
                     $sUpdate="update ".$dbname.".sdm_ijin  set stpersetujuan1='".$stat."',komenst1='".$ket."' where ".$where."";
+					//exit('Warning: '.$sUpdate);
                     if(mysql_query($sUpdate))
                     {
                           #send an email to incharge person
@@ -369,7 +564,7 @@ $pAkhir = tanggalsystem($periodeakhir);
                 break;
 
                 case 'appSetujuHRD':
-                $sket="select distinct darijam,sampaijam,jumlahhari,jenisijin,stpersetujuanhrd,hrd,tanggal,periodecuti from ".$dbname.".sdm_ijin where ".$where."";   
+                $sket="select distinct darijam,sampaijam,jumlahhari,jenisijin,stpersetujuanhrd,hrd,tanggal,periodecuti,keterangan from ".$dbname.".sdm_ijin where ".$where."";
                 $qKet=mysql_query($sket) or die(mysql_error($conn));
                 $rKet=mysql_fetch_assoc($qKet);
 //                if(($rKet['stpersetujuanhrd']=='0')&&($rKet['hrd']==$_SESSION['standard']['userid']))
@@ -379,17 +574,29 @@ $pAkhir = tanggalsystem($periodeakhir);
                         $ket="permintaaan ".$arrNmkary[$krywnId]." ".$arrKeputusan[$stat]."";
                         //===============insert to sdm_cuti
 
-                        $stru="select lokasitugas from ".$dbname.".datakaryawan where karyawanid=".$krywnId;
+                        $stru="select lokasitugas,subbagian from ".$dbname.".datakaryawan where karyawanid=".$krywnId;
                         $resu=mysql_query($stru);
                         $kodeorg='';
+                        $subbagian='';
                         while($baru=mysql_fetch_object($resu))
                         {
                             $kodeorg=$baru->lokasitugas;
+							$subbagian=$baru->subbagian;
                         }
                         if($kodeorg=='')
                             exit('Error: Karywan tidak memiliki loaksi tugas');
 
-                        if($rKet['jenisijin']=='CUTI' or $rKet['jenisijin']=='MELAHIRKAN' or $rKet['jenisijin']=='KAWIN/SUNATAN/WISUDA')
+                        if($subbagian=='') 
+							$subbagian=$kodeorg;
+
+						if($rKet['jenisijin']=='CUTI' or $rKet['jenisijin']=='MELAHIRKAN' or $rKet['jenisijin']=='PERJALANAN' or $rKet['jenisijin']=='SKRIPSI_TESIS' or $rKet['jenisijin']=='ALASANPENTING'
+						or $rKet['jenisijin']=='MENIKAH'
+						or $rKet['jenisijin']=='ANAKNIKAH'
+						or $rKet['jenisijin']=='ISTRILAHIR'
+						or $rKet['jenisijin']=='KLGUTMMATI'
+						or $rKet['jenisijin']=='1RMH_MATI'
+						or $rKet['jenisijin']=='ANAKHITAN'
+						or $rKet['jenisijin']=='BAPTIS')
                         {
                               //insert to cuti
                             $str="insert into ".$dbname.".sdm_cutidt 
@@ -397,14 +604,20 @@ $pAkhir = tanggalsystem($periodeakhir);
                                     sampaitanggal,jumlahcuti,keterangan
                                     )
                                 values('".$kodeorg."',".$krywnId.",
-                                    '".$rKet['periodecuti']."','".substr($rKet['darijam'],0,10)."','".substr($rKet['sampaijam'],0,10)."',".$rKet['jumlahhari'].",'".$rKet['jenisijin']."'
+                                    '".$rKet['periodecuti']."','".substr($rKet['darijam'],0,10)."','".substr($rKet['sampaijam'],0,10)."',".$rKet['jumlahhari'].",'".$rKet['jenisijin']." ".$rKet['keterangan']."'
                                     )";
 
                             if(mysql_query($str))
                              {
                                 //ambil sum jumlah diambil dan update table header
+								/*
                                 $strx="select sum(jumlahcuti) as diambil from ".$dbname.".sdm_cutidt
                                     where kodeorg='".$kodeorg."' and keterangan = 'CUTI'
+                                        and karyawanid=".$krywnId."
+                                        and periodecuti='".$rKet['periodecuti']."'";
+								*/
+                                $strx="select sum(jumlahcuti) as diambil from ".$dbname.".sdm_cutidt
+                                    where upper(keterangan) like '%CUTI%'
                                         and karyawanid=".$krywnId."
                                         and periodecuti='".$rKet['periodecuti']."'";
 
@@ -417,19 +630,78 @@ $pAkhir = tanggalsystem($periodeakhir);
                                 if($rKet['jenisijin']=='CUTI')
                                 if($diambil=='')
                                     $diambil=0;
+								/*
                                 $strup="update ".$dbname.".sdm_cutiht set diambil=".$diambil.",sisa=(hakcuti-".$diambil.")	
                                     where kodeorg='".$kodeorg."'
                                         and karyawanid=".$krywnId."
                                         and periodecuti='".$rKet['periodecuti']."'";
+								*/
+                                $strup="update ".$dbname.".sdm_cutiht set diambil=".$diambil.",sisa=(hakcuti-".$diambil.")	
+                                    where karyawanid=".$krywnId."
+                                        and periodecuti='".$rKet['periodecuti']."'";
 
                                 if($rKet['jenisijin']=='CUTI')mysql_query($strup);
-                            }  
+
+	//------------- Start Insert Data Absensi
+	if($rKet['jenisijin']=='CUTI' or $rKet['jenisijin']=='ALASANPENTING' or $rKet['jenisijin']=='MELAHIRKAN'
+		or $rKet['jenisijin']=='MENIKAH'
+		or $rKet['jenisijin']=='ANAKNIKAH'
+		or $rKet['jenisijin']=='ISTRILAHIR'
+		or $rKet['jenisijin']=='KLGUTMMATI'
+		or $rKet['jenisijin']=='1RMH_MATI'
+		or $rKet['jenisijin']=='ANAKHITAN'
+		or $rKet['jenisijin']=='BAPTIS'
+	){
+		if($rKet['jenisijin']=='CUTI'){
+			$jnsabsensi='C';
+			$keterangan='CUTI '.$rKet['keterangan'];
+		}else{
+			$jnsabsensi='CK';
+			$keterangan='CUTI KHUSUS '.$rKet['keterangan'];
+		}
+		$rangeTgl = rangeTanggal(substr($rKet['darijam'],0,10), substr($rKet['sampaijam'],0,10));
+		foreach($rangeTgl as $val){
+			if(substr($kodeorg,2,2)=='HO'){
+				$kebun='HOLDING';
+			}else if(substr($kodeorg,2,2)=='RO'){
+				$kebun='KANWIL';
+			}else if(substr($kodeorg,3,1)=='E'){
+				$kebun='ESTATE';
+			}else if(substr($kodeorg,3,1)=='M'){
+				$kebun='MILL';
+			}else{
+				$kebun=$kodeorg;
+			}
+			$strLibur="select kebun,tanggal from ".$dbname.".sdm_5harilibur where tanggal='".$val."' and (kebun='GLOBAL' or kebun='".$kebun."' or kebun='".$kodeorg."')";
+			$resLibur=mysql_query($strLibur);
+			$AdaLibur=mysql_num_rows($resLibur);
+			if($AdaLibur>0){
+				continue;
+			}
+			$strAbsen="select kodeorg,tanggal,karyawanid from ".$dbname.".sdm_absensidt where karyawanid = '".$krywnId."' and tanggal='".$val."'";
+			$resAbsen=mysql_query($strAbsen);
+			$Ada=0;
+			while($barAbsen=mysql_fetch_object($resAbsen)){
+				$Ada=1;
+			}
+			if($Ada==1){
+				$strAbs = "update ".$dbname.".sdm_absensidt set absensi='".$jnsabsensi."' where karyawanid='".$krywnId."' and tanggal='".$val."'";
+			}else{
+				$strAbs = "insert into ".$dbname.".sdm_absensidt (kodeorg,tanggal,karyawanid,shift,absensi,jam,jamPlg,penjelasan,catu,penaltykehadiran,premi,insentif,fingerprint) values ('".$subbagian."','".$val."','".$krywnId."','','".$jnsabsensi."','00:00:00','00:00:00','".$keterangan."','0','0','0','0','0')";
+			}
+			mysql_query($strAbs);
+		}
+	}
+	//------------- End Insert Data Absensi
+
+							}  
                             else
                             {
                                 echo mysql_error($conn);
                                 exit("Error: Update table cuti");
                             } 
-                    }
+						}
+					}
                     $sUpdate="update ".$dbname.".sdm_ijin  set stpersetujuanhrd='".$stat."',komenst2='".$ket."' where ".$where."";
                     if(mysql_query($sUpdate))
                     {
@@ -459,7 +731,7 @@ $pAkhir = tanggalsystem($periodeakhir);
                     {
                         echo "DB Error : ".mysql_error($conn);     
                     }
-                }
+                
 //                }
 //                else
 //                {
@@ -500,7 +772,7 @@ $pAkhir = tanggalsystem($periodeakhir);
         }
 
   $str="select * from ".$dbname.".sdm_ijin where ".$where."";	
-  //exit("Error".$str);
+  //exit("Warning: ".$str);
   $res=mysql_query($str);
   while($bar=mysql_fetch_object($res))
   {
@@ -509,9 +781,11 @@ $pAkhir = tanggalsystem($periodeakhir);
                 $namakaryawan='';
                 $bagian='';	
                 $karyawanid='';
-                 $strc="select a.namakaryawan,a.karyawanid,a.bagian,b.namajabatan 
+		  $nik='';
+		  $namabagian='';
+                 $strc="select a.namakaryawan,a.karyawanid,a.nik,a.bagian,b.namajabatan,c.nama as namabagian
                     from ".$dbname.".datakaryawan a left join  ".$dbname.".sdm_5jabatan b
-                        on a.kodejabatan=b.kodejabatan
+                        on a.kodejabatan=b.kodejabatan left join ".$dbname.".sdm_5departemen c on a.bagian=c.kode
                         where a.karyawanid=".$bar->karyawanid;
       $resc=mysql_query($strc);
           while($barc=mysql_fetch_object($resc))
@@ -520,6 +794,8 @@ $pAkhir = tanggalsystem($periodeakhir);
                 $namakaryawan=$barc->namakaryawan;
                 $bagian=$barc->bagian;
                 $karyawanid=$barc->karyawanid;
+                $nik=$barc->nik;
+		  $namabagian=$barc->namabagian;
           }
 
           //===============================	  
@@ -538,35 +814,70 @@ $pAkhir = tanggalsystem($periodeakhir);
                 $hk=$bar->jumlahhari;
                 $hrd=$bar->hrd;
                 $koments2=$bar->komenst2;
-                if($_SESSION['language']=='ID'){
-                        $dd=$jns;
-                    }else{
-                        switch($jns){
-                            case 'TERLAMBAT':
-                                $dd='Late for work';
-                                break;
-                            case 'KELUAR':
-                                $dd='Out of Office';
-                                break;         
-                            case 'PULANGAWAL':
-                                $dd='Home early';
-                                break;     
-                            case 'IJINLAIN':
-                                $dd='Other purposes';
-                                break;   
-                            case 'CUTI':
-                                $dd='Leave';
-                                break;       
-                            case 'MELAHIRKAN':
-                                $dd='Maternity';
-                                break;           
+					$ada=0;
+					switch($jns){
+                          case 'CUTI':
+                               $dd=($_SESSION['language']=='ID' ? 'Cuti' : 'Leave');
+							   $ada=1;
+                               break;
+                          case 'TERLAMBAT':
+                               $dd=($_SESSION['language']=='ID' ? 'Terlambat Datang' : 'Late for work');
+							   $ada=1;
+                               break;
+                          case 'KELUAR':
+                               $dd=($_SESSION['language']=='ID' ? 'Keluar Kantor' : 'Out of Office');
+ 							   $ada=1;
+                               break;         
+                          case 'PULANGAWAL':
+                               $dd=($_SESSION['language']=='ID' ? 'Pulang lebih awal' : 'Home early');
+ 							   $ada=1;
+                               break;
+                          case 'MELAHIRKAN':
+                               $dd=($_SESSION['language']=='ID' ? 'Melahirkan (90 hari)' : 'Maternity (90 days)');
+ 							   $ada=1;
+                               break;
+                          case 'MENIKAH':
+                               $dd=($_SESSION['language']=='ID' ? 'Pegawai Menikah (3 hari)' : 'Married (3 days)');
+ 							   $ada=1;
+                               break;
+                          case 'ANAKNIKAH':
+                               $dd=($_SESSION['language']=='ID' ? 'Menikahkan anak (2 hari)' : 'Child Married (2 days)');
+ 							   $ada=1;
+                               break;
+                          case 'ANAKHITAN':
+                               $dd=($_SESSION['language']=='ID' ? 'Mengkhitankan anak (2 hari)' : 'Child Circumcision (2 days)');
+ 							   $ada=1;
+                               break;
+                          case 'BAPTIS':
+                               $dd=($_SESSION['language']=='ID' ? 'Membaptis anak (2 hari)' : 'Child Baptism (2 days)');
+ 							   $ada=1;
+                               break;
+                          case 'ISTRILAHIR':
+                               $dd=($_SESSION['language']=='ID' ? 'Istri melahirkan (2 hari)' : 'Wife Maternity (2 days)');
+ 							   $ada=1;
+                               break;
+                          case 'KLGUTMMATI':
+                               $dd=($_SESSION['language']=='ID' ? 'Suami/Istri, Orang Tua/Mertua, Anak/Menantu meninggal dunia (2 hari)' : 'Family Death (2 days)');
+ 							   $ada=1;
+                               break;
+                          case '1RMH_MATI':
+                               $dd=($_SESSION['language']=='ID' ? 'Keluarga serumah meninggal dunia (1 hari)' : 'Same House Death (1 days)');
+ 							   $ada=1;
+                               break;
                             default:
-                                $dd='Wedding, Circumcision or Graduation';
+                                $dd=$jns;
+ 							   $ada=1;
                                 break;                              
-                        }  
                     }               
                 
-                
+        // ambil sisa
+		$strsisa="select sisa from ".$dbname.".sdm_cutiht where karyawanid=".$karyawanid." and periodecuti=".$periode;
+		$ressisa=mysql_query($strsisa);
+		$sisa=0;
+		while($barsisa=mysql_fetch_object($ressisa)){
+			$sisa=$barsisa->sisa;
+		}
+        
         //ambil bagian,jabatan persetujuan atasan
                 $perjabatan='';
                 $perbagian='';
@@ -616,22 +927,22 @@ $pAkhir = tanggalsystem($periodeakhir);
                 $pdf->Cell(50,5," : ".$tgl,0,1,'L');	
         $pdf->SetX(20);			
         $pdf->Cell(30,5,$_SESSION['lang']['nokaryawan'],0,0,'L');	
-                $pdf->Cell(50,5," : ".$karyawanid,0,1,'L');	
+                $pdf->Cell(50,5," : ".$nik,0,1,'L');	
         $pdf->SetX(20);	
         $pdf->Cell(30,5,$_SESSION['lang']['namakaryawan'],0,0,'L');	
                 $pdf->Cell(50,5," : ".$namakaryawan,0,1,'L');	
         $pdf->SetX(20);	
         $pdf->Cell(30,5,$_SESSION['lang']['bagian'],0,0,'L');	
-                $pdf->Cell(50,5," : ".$bagian,0,1,'L');	
+                $pdf->Cell(50,5," : ".$bagian." - ".$namabagian,0,1,'L');	
         $pdf->SetX(20);	
         $pdf->Cell(30,5,$_SESSION['lang']['functionname'],0,0,'L');	
                 $pdf->Cell(50,5," : ".$jabatan,0,1,'L');
         $pdf->SetX(20);	
-        $pdf->Cell(30,5,$_SESSION['lang']['keperluan'],0,0,'L');	
-                $pdf->Cell(50,5," : ".$kperluan,0,1,'L');	
-        $pdf->SetX(20);	
         $pdf->Cell(30,5,$_SESSION['lang']['jenisijin'],0,0,'L');	
                 $pdf->Cell(50,5," : ".$dd,0,1,'L');	
+        $pdf->SetX(20);	
+        $pdf->Cell(30,5,$_SESSION['lang']['keperluan'],0,0,'L');	
+                $pdf->Cell(50,5," : ".$kperluan,0,1,'L');	
         $pdf->SetX(20);	
         $pdf->Cell(30,5,$_SESSION['lang']['keterangan'],0,0,'L');	
                 $pdf->Cell(50,5," : ".$ket,0,1,'L');	
@@ -640,16 +951,26 @@ $pAkhir = tanggalsystem($periodeakhir);
                 $pdf->Cell(50,5," : ".$periode,0,1,'L');               
         $pdf->SetX(20);	
         $pdf->Cell(30,5,$_SESSION['lang']['dari'],0,0,'L');	
-                $pdf->Cell(50,5," : ".$jmDr,0,1,'L');	
+                $pdf->Cell(50,5," : ".tanggalnormald($jmDr),0,1,'L');	
         $pdf->SetX(20);	
         $pdf->Cell(30,5,$_SESSION['lang']['tglcutisampai'],0,0,'L');	
-                $pdf->Cell(50,5," : ".$jmSmp,0,1,'L');	
+                $pdf->Cell(50,5," : ".tanggalnormald($jmSmp),0,1,'L');	
+	if($jns=='CUTI' or $jns=='MELAHIRKAN' or $jns=='PERJALANAN' or $jns=='SKRIPSI_TESIS' or $jns=='ALASANPENTING' 
+						or $jns=='MENIKAH'
+						or $jns=='ANAKNIKAH'
+						or $jns=='ISTRILAHIR'
+						or $jns=='KLGUTMMATI'
+						or $jns=='1RMH_MATI'
+						or $jns=='ANAKHITAN'
+						or $jns=='BAPTIS'
+		){ 
+        $pdf->SetX(20);	
+        $pdf->Cell(30,5,$_SESSION['lang']['sisa']." ".$_SESSION['lang']['cuti'],0,0,'L');	
+                $pdf->Cell(50,5," : ".number_format($sisa,0)." ".$_SESSION['lang']['hari'],0,1,'L');	
         $pdf->SetX(20);	
         $pdf->Cell(30,5,$_SESSION['lang']['jumlah']." ".$_SESSION['lang']['hari'],0,0,'L');	
-                $pdf->Cell(50,5," : ".$hk." ".$_SESSION['lang']['hari'],0,1,'L');	
-
-
-
+                $pdf->Cell(50,5," : ".$hk." ".$_SESSION['lang']['hari'],0,1,'L');
+	}
 
         $pdf->Ln();	
         $pdf->SetX(20);	
@@ -680,10 +1001,20 @@ $pAkhir = tanggalsystem($periodeakhir);
         $pdf->Cell(30,5,$_SESSION['lang']['keputusan']." ".$_SESSION['lang']['atasan'],0,0,'L');	
                 $pdf->Cell(50,5," : ".$koments,0,1,'L');	
 
+        $pdf->SetX(20);
+        $pdf->Cell(40,25,'',1,1,'C');
+        $pdf->SetX(20);
+        $pdf->Cell(40,5,$pernama,1,1,'C');			
+		$pdf->Ln();               
+
         $pdf->SetX(20);	
         $pdf->Cell(30,5,$_SESSION['lang']['keputusan']." ".$_SESSION['lang']['hrd'],0,0,'L');	
                 $pdf->Cell(50,5," : ".$koments2,0,1,'L');
 
+        $pdf->SetX(20);
+        $pdf->Cell(40,25,'',1,1,'C');
+        $pdf->SetX(20);
+        $pdf->Cell(40,5,$pernamahrd,1,1,'C');			
 
    $pdf->Ln();	
    $pdf->Ln();	
@@ -698,14 +1029,14 @@ $pAkhir = tanggalsystem($periodeakhir);
 				
                 case'getExcel':
 				$tmbWhere = '';
-				if($_SESSION['empl']['tipelokasitugas'] == 'HOLDING' and ($_SESSION['empl']['bagian'] == 'HHRD' || $_SESSION['empl']['bagian'] == 'HHRS')){
+				if($_SESSION['empl']['tipelokasitugas'] == 'HOLDING' and ($_SESSION['empl']['bagian'] == 'HHRD' || $_SESSION['empl']['bagian'] == 'HHRS' || $_SESSION['empl']['bagian'] == 'HHSE')){
 					$tmbWhere = '';
 				}else if($_SESSION['empl']['tipelokasitugas'] == 'KANWIL' and $_SESSION['empl']['bagian'] == 'HRA'){
 					$tmbWhere = " and a.karyawanid like '%".$excelkaryawanid."%'";
 				}else{
 					$tmbWhere = " and a.karyawanid like '%".$excelkaryawanid."%'";
 				}
-				$slvhc="select a.* from ".$dbname.".sdm_ijin a, ".$dbname.".datakaryawan b where a.karyawanid = b.karyawanid and a.tanggal between '".$pAwal."' and '".$pAkhir."' and a.jenisijin like '%".$exelcuti."%' ".$tmbWhere." order by a.tanggal desc ";
+				$slvhc="select a.*,b.nik,b.namakaryawan from ".$dbname.".sdm_ijin a, ".$dbname.".datakaryawan b where a.karyawanid = b.karyawanid and a.tanggal between '".$pAwal."' and '".$pAkhir."' and a.jenisijin like '%".$exelcuti."%' ".$tmbWhere." order by a.tanggal desc ";
                 $qlvhc=mysql_query($slvhc) or die(mysql_error());
                 $user_online=$_SESSION['standard']['userid'];
 				
@@ -720,6 +1051,7 @@ $pAkhir = tanggalsystem($periodeakhir);
                 <tr  >
                 <td align=center bgcolor='#DFDFDF'>No.</td>
                 <td align=center bgcolor='#DFDFDF'>".$_SESSION['lang']['tanggal']."</td>
+                <td align=center bgcolor='#DFDFDF'>".$_SESSION['lang']['nik']."</td>
                 <td align=center bgcolor='#DFDFDF'>".$_SESSION['lang']['nama']."</td>
                 <td align=center bgcolor='#DFDFDF'>".$_SESSION['lang']['keperluan']."</td>
                 <td align=center bgcolor='#DFDFDF'>".$_SESSION['lang']['jenisijin']."</td>  
@@ -731,32 +1063,60 @@ $pAkhir = tanggalsystem($periodeakhir);
                 </thead><tbody>";
                 while($rlvhc=mysql_fetch_assoc($qlvhc))
                 {
-                    if($_SESSION['language']=='ID'){
-                        $dd=$rlvhc['jenisijin'];
-                    }else{
+						$ada=0;
                         switch($rlvhc['jenisijin']){
-                            case 'TERLAMBAT':
-                                $dd='Late for work';
-                                break;
-                            case 'KELUAR':
-                                $dd='Out of Office';
-                                break;         
-                            case 'PULANGAWAL':
-                                $dd='Home early';
-                                break;     
-                            case 'IJINLAIN':
-                                $dd='Other purposes';
-                                break;   
-                            case 'CUTI':
-                                $dd='Leave';
-                                break;       
-                            case 'MELAHIRKAN':
-                                $dd='Maternity';
-                                break;           
-                            default:
-                                $dd='Wedding, Circumcision or Graduation';
+                          case 'CUTI':
+                               $dd=($_SESSION['language']=='ID' ? 'Cuti' : 'Leave');
+							   $ada=1;
+                               break;
+                          case 'TERLAMBAT':
+                               $dd=($_SESSION['language']=='ID' ? 'Terlambat Datang' : 'Late for work');
+							   $ada=1;
+                               break;
+                          case 'KELUAR':
+                               $dd=($_SESSION['language']=='ID' ? 'Keluar Kantor' : 'Out of Office');
+ 							   $ada=1;
+                               break;         
+                          case 'PULANGAWAL':
+                               $dd=($_SESSION['language']=='ID' ? 'Pulang lebih awal' : 'Home early');
+ 							   $ada=1;
+                               break;
+                          case 'MELAHIRKAN':
+                               $dd=($_SESSION['language']=='ID' ? 'Melahirkan (90 hari)' : 'Maternity (90 days)');
+ 							   $ada=1;
+                               break;
+                          case 'MENIKAH':
+                               $dd=($_SESSION['language']=='ID' ? 'Pegawai Menikah (3 hari)' : 'Married (3 days)');
+ 							   $ada=1;
+                               break;
+                          case 'ANAKNIKAH':
+                               $dd=($_SESSION['language']=='ID' ? 'Menikahkan anak (2 hari)' : 'Child Married (2 days)');
+ 							   $ada=1;
+                               break;
+                          case 'ANAKHITAN':
+                               $dd=($_SESSION['language']=='ID' ? 'Mengkhitankan anak (2 hari)' : 'Child Circumcision (2 days)');
+ 							   $ada=1;
+                               break;
+                          case 'BAPTIS':
+                               $dd=($_SESSION['language']=='ID' ? 'Membaptis anak (2 hari)' : 'Child Baptism (2 days)');
+ 							   $ada=1;
+                               break;
+                          case 'ISTRILAHIR':
+                               $dd=($_SESSION['language']=='ID' ? 'Istri melahirkan (2 hari)' : 'Wife Maternity (2 days)');
+ 							   $ada=1;
+                               break;
+                          case 'KLGUTMMATI':
+                               $dd=($_SESSION['language']=='ID' ? 'Suami/Istri, Orang Tua/Mertua, Anak/Menantu meninggal dunia (2 hari)' : 'Family Death (2 days)');
+ 							   $ada=1;
+                               break;
+                          case '1RMH_MATI':
+                               $dd=($_SESSION['language']=='ID' ? 'Keluarga serumah meninggal dunia (1 hari)' : 'Same House Death (1 days)');
+ 							   $ada=1;
+                               break;
+							default:
+								$dd=$rlvhc['jenisijin'];
+ 							   $ada=1;
                                 break;                              
-                        }      
                     }                     
 					
 					$no+=1;
@@ -764,6 +1124,7 @@ $pAkhir = tanggalsystem($periodeakhir);
 						<tr class=rowcontent>
 						<td>".$no."</td>
 						<td>".$rlvhc['tanggal']."</td>
+						<td>".$rlvhc['nik']."</td>
 						<td>".$arrNmkary[$rlvhc['karyawanid']]."</td>
 						<td>".$rlvhc['keperluan']."</td>
 						<td>".$dd."</td>
@@ -871,6 +1232,4 @@ $pAkhir = tanggalsystem($periodeakhir);
                 default:
                 break;
         }
-
-
 ?>
