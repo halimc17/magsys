@@ -530,7 +530,7 @@ function makeElement($id,$type,$value="",$attr=array(),$options=array(),
 		# Tipe Button
 		case 'button' :
 		case 'btn' :
-			$el .= "<button id='".$id."' name='".$id."' class='mybutton'";
+			$el .= "<button id='".$id."' name='".$id."' class='btn btn-primary btn-sm'";
 			if(is_array($attr) and $attr!=array()) {
 				foreach($attr as $key=>$row) {
 					$el .= " ".$key."=\"".$row."\"";
@@ -568,7 +568,7 @@ function makeElement($id,$type,$value="",$attr=array(),$options=array(),
 			$el .= "type='text' style='width:50px' value='".$value."' disabled />&nbsp;";
 			$el .= "<input id='".$id."_name' name='".$id."_name' class='myinputtext' ";
 			$el .= "value='".$nameValue."' type='text' style='width:150px' disabled />";
-			$el .= "<button id='".$id."' name='".$id."' class='mybutton' ";
+			$el .= "<button id='".$id."' name='".$id."' class='btn btn-primary btn-sm' ";
 			if(isset($attr['disabled']) and $attr['disabled']=='disabled') {
 			   $el .= "disabled ";
 			}
@@ -581,7 +581,7 @@ function makeElement($id,$type,$value="",$attr=array(),$options=array(),
 			$el .= "type='text' style='width:50px' value='".$value."' disabled />&nbsp;";
 			$el .= "<input id='".$id."_name' name='".$id."_name' class='myinputtext' ";
 			$el .= "value='".$nameValue."' type='text' style='width:150px' disabled />";
-			$el .= "<button id='".$id."' name='".$id."' class='mybutton' ";
+			$el .= "<button id='".$id."' name='".$id."' class='btn btn-primary btn-sm' ";
 			if(isset($attr['disabled']) and $attr['disabled']=='disabled') {
 			   $el .= "disabled ";
 			}
@@ -595,7 +595,7 @@ function makeElement($id,$type,$value="",$attr=array(),$options=array(),
 			$el .= "type='text' style='width:50px' value='".$value."' disabled />&nbsp;";
 			$el .= "<input id='".$id."_name' name='".$id."_name' class='myinputtext' ";
 			$el .= "value='".$nameValue."' type='text' style='width:150px' disabled />";
-			$el .= "<button id='".$id."' name='".$id."' class='mybutton' ";
+			$el .= "<button id='".$id."' name='".$id."' class='btn btn-primary btn-sm' ";
 			if(isset($attr['disabled']) and $attr['disabled']=='disabled') {
 			   $el .= "disabled ";
 			}
@@ -608,7 +608,7 @@ function makeElement($id,$type,$value="",$attr=array(),$options=array(),
 			$el .= "type='text' style='width:50px' value='".$value."' disabled />&nbsp;";
 			$el .= "<input id='".$id."_name' name='".$id."_name' class='myinputtext' ";
 			$el .= "value='".$nameValue."' type='text' style='width:150px' disabled />";
-			$el .= "<button id='".$id."' name='".$id."' class='mybutton' ";
+			$el .= "<button id='".$id."' name='".$id."' class='btn btn-primary btn-sm' ";
 			if(isset($attr['disabled']) and $attr['disabled']=='disabled') {
 			   $el .= "disabled ";
 			}
@@ -622,7 +622,7 @@ function makeElement($id,$type,$value="",$attr=array(),$options=array(),
 			$el .= "type='text' style='width:50px' value='".$value."' disabled />&nbsp;";
 			$el .= "<input id='".$id."_name' name='".$id."_name' class='myinputtext' ";
 			$el .= "value='".$nameValue."' type='text' style='width:150px' disabled />";
-			$el .= "<button id='".$id."' name='".$id."' class='mybutton' ";
+			$el .= "<button id='".$id."' name='".$id."' class='btn btn-primary btn-sm' ";
 			if(isset($attr['disabled']) and $attr['disabled']=='disabled') {
 				$el .= "disabled ";
 			}
@@ -636,7 +636,7 @@ function makeElement($id,$type,$value="",$attr=array(),$options=array(),
 			$el .= "type='text' style='width:50px' value='".$value."' disabled />&nbsp;";
 			$el .= "<input id='".$id."_name' name='".$id."_name' class='myinputtext' ";
 			$el .= "value='".$nameValue."' type='text' style='width:150px' disabled />";
-			$el .= "<button id='".$id."' name='".$id."' class='mybutton' ";
+			$el .= "<button id='".$id."' name='".$id."' class='btn btn-primary btn-sm' ";
 			if(isset($attr['disabled']) and $attr['disabled']=='disabled') {
 			   $el .= "disabled ";
 			}
@@ -649,7 +649,7 @@ function makeElement($id,$type,$value="",$attr=array(),$options=array(),
 			$el .= "type='text' style='width:70px' value='".$value."' disabled />&nbsp;";
 			$el .= "<input id='".$id."_name' name='".$id."_name' class='myinputtext' ";
 			$el .= "value='".$nameValue."' type='text' style='width:150px' disabled />";
-			$el .= "<button id='".$id."' name='".$id."' class='mybutton' ";
+			$el .= "<button id='".$id."' name='".$id."' class='btn btn-primary btn-sm' ";
 			if(isset($attr['disabled']) and $attr['disabled']=='disabled') {
 			   $el .= "disabled ";
 			}

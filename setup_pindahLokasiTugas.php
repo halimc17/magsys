@@ -23,7 +23,7 @@ while($bar=mysql_fetch_object($res))
 {
 	$opt.="<option value='".$bar->alokasi."'>".$bar->kodeorganisasi."</option>";
 }
-OPEN_BOX('',$_SESSION['lang']['pindahtugas']);
+OPEN_BOX('width: 20%; margin: 0;',$_SESSION['lang']['pindahtugas']);
 echo "<br><br>You are ON:<b>".$_SESSION['empl']['lokasitugas']."</b><br> ".$_SESSION['lang']['tujuan']."
       <select id=tjbaru>".$opt."</select><br>
 	  <button class=mybutton onclick=gantiLokasitugas()>".$_SESSION['lang']['save']."</button>

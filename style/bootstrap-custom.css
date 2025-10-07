@@ -74,10 +74,14 @@ body {
 }
 
 .card-header {
-    background-color: var(--primary-color);
-    color: var(--text-light);
+    background-color: var(--primary-color) !important;
+    color: #FFFFFF !important;
     font-weight: bold;
     border-bottom: 2px solid var(--border-color);
+}
+
+.card-header * {
+    color: #FFFFFF !important;
 }
 
 /* Table styling - matching original theme */
@@ -567,4 +571,10 @@ body {
     bottom: 0;
     padding: 10px 0;
     font-size: 11px;
+}
+
+/* Ensure all card headers have white text */
+div.card-header,
+.card > .card-header {
+    color: #FFFFFF !important;
 }

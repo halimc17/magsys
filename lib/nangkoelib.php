@@ -115,7 +115,7 @@ function CLOSE_BODY()
 
 function OPEN_BOX($style='',$title='',$id='',$contentId='')
 {
-	$cardHeader = $title ? "<div class=\"card-header\">".$title."</div>" : "";
+	$cardHeader = $title ? "<div class=\"card-header\" style=\"color: #FFFFFF !important;\">".$title."</div>" : "";
 	echo"<div id='".$id."' class=\"card mb-3\" style='".$style."'>
 		".$cardHeader."
 		<div class=\"card-body\" id='contentBox".$contentId."'>
@@ -123,7 +123,7 @@ function OPEN_BOX($style='',$title='',$id='',$contentId='')
 }
 function OPEN_BOX2($style='',$title='',$id='',$contentId='')
 {
-	$cardHeader = $title ? "<div class=\"card-header\">".$title."</div>" : "";
+	$cardHeader = $title ? "<div class=\"card-header\" style=\"color: #FFFFFF !important;\">".$title."</div>" : "";
 	return "<div id='".$id."' class=\"card mb-3\" style='".$style."'>
 		".$cardHeader."
 		<div class=\"card-body\" id='contentBox".$contentId."'>
