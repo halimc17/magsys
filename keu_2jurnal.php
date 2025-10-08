@@ -137,112 +137,112 @@ while($dKel=  mysql_fetch_assoc($nKel))
     $optrev.="<option value='5'>5</option>";     
 //}	
 
-echo"<fieldset>
-     <legend>".$_SESSION['lang']['laporanjurnal']."</legend>
-         
-        <table>
-            <tr>
-                <td>".$_SESSION['lang']['pt']."</td>
-                <td>:</td>
-                <td><select id=pt style='width:200px;'  onchange=getReg()>".$optpt."</select></td>
-            </tr>
-            <tr>
-                <td>".$_SESSION['lang']['regional']."</td>
-                <td>:</td>
-                <td><select id=regional style='width:150px;' onchange=getUnit()>".$optReg."</select> </td>
-            </tr>
-            <tr>
-                <td>".$_SESSION['lang']['unit']."</td>
-                <td>:</td>
-                <td><select id=gudang style='width:150px;'>".$optgudang."</select></td>
-            </tr>
-            <tr>
-                <td>".$_SESSION['lang']['periode']."</td>
-                <td>:</td>
-                <td><select id=periode onchange=hideById('printPanel')>".$optper."</select> s/d <select id=periode1 onchange=hideById('printPanel')>".$optper."</select>     </td>
-            </tr>
-            <tr>
-                <td>".$_SESSION['lang']['revisi']."</td>
-                <td>:</td>
-                <td><select id=revisi onchange=hideById('printPanel')>".$optrev."</select></td>
-            </tr>
-            <tr>
-                <td>".$_SESSION['lang']['kodekelompok']."</td>
-                <td>:</td>
-                <td><select id=kdKel>".$optKel."</select></td>
-            </tr>
-            <tr>
-                <td>".$_SESSION['lang']['nojurnal']."</td>
-                <td>:</td>
-                <td><input type=text id=nojurnal size=30 onkeypress=\"return tanpa_kutip(event);\" class=myinputtext></td>
-            </tr>
-            <tr>
-                <td>".$_SESSION['lang']['noreferensi']."</td>
-                <td>:</td>
-                <td><input type=text id=ref size=30 onkeypress=\"return tanpa_kutip(event);\" class=myinputtext></td>
-            </tr>
-            <tr>
-                    <td>".$_SESSION['lang']['keterangan']."</td>
-                <td>:</td>
-                <td><input type=text id=ket size=30 onkeypress=\"return tanpa_kutip(event);\" class=myinputtext></td>
-            </tr>
-            
-        </table>
+echo"
+<div class='row g-3' style='max-width: 50%;'>
+    <div class='col-md-6'>
+        <label for='pt' class='form-label'>".$_SESSION['lang']['pt']."</label>
+        <select id='pt' class='form-select form-select-sm' onchange='getReg()'>".$optpt."</select>
+    </div>
 
-             
-       <br>
+    <div class='col-md-6'>
+        <label for='regional' class='form-label'>".$_SESSION['lang']['regional']."</label>
+        <select id='regional' class='form-select form-select-sm' onchange='getUnit()'>".$optReg."</select>
+    </div>
 
-             
+    <div class='col-md-6'>
+        <label for='gudang' class='form-label'>".$_SESSION['lang']['unit']."</label>
+        <select id='gudang' class='form-select form-select-sm'>".$optgudang."</select>
+    </div>
 
-	 <br><button class=mybutton onclick=getLaporanJurnal()>".$_SESSION['lang']['proses']."</button>
-	 <button class=mybutton onclick=fisikKeExcel(event,'keu_laporanJurnal_Excel.php')>".$_SESSION['lang']['excel']."</button>
-	 <button class=mybutton onclick=fisikKePDF(event,'keu_laporanJurnal_pdf.php')>".$_SESSION['lang']['pdf']."</button>
-	 </fieldset>";
+    <div class='col-md-6'>
+        <label class='form-label'>".$_SESSION['lang']['periode']."</label>
+        <div class='d-flex gap-2 align-items-center'>
+            <select id='periode' class='form-select form-select-sm' onchange=\"hideById('printPanel')\">".$optper."</select>
+            <span class='mx-1'>s/d</span>
+            <select id='periode1' class='form-select form-select-sm' onchange=\"hideById('printPanel')\">".$optper."</select>
+        </div>
+    </div>
+
+    <div class='col-md-6'>
+        <label for='revisi' class='form-label'>".$_SESSION['lang']['revisi']."</label>
+        <select id='revisi' class='form-select form-select-sm' onchange=\"hideById('printPanel')\">".$optrev."</select>
+    </div>
+
+    <div class='col-md-6'>
+        <label for='kdKel' class='form-label'>".$_SESSION['lang']['kodekelompok']."</label>
+        <select id='kdKel' class='form-select form-select-sm'>".$optKel."</select>
+    </div>
+
+    <div class='col-md-6'>
+        <label for='nojurnal' class='form-label'>".$_SESSION['lang']['nojurnal']."</label>
+        <input type='text' id='nojurnal' class='form-control form-control-sm' onkeypress=\"return tanpa_kutip(event);\">
+    </div>
+
+    <div class='col-md-6'>
+        <label for='ref' class='form-label'>".$_SESSION['lang']['noreferensi']."</label>
+        <input type='text' id='ref' class='form-control form-control-sm' onkeypress=\"return tanpa_kutip(event);\">
+    </div>
+
+    <div class='col-md-12'>
+        <label for='ket' class='form-label'>".$_SESSION['lang']['keterangan']."</label>
+        <input type='text' id='ket' class='form-control form-control-sm' onkeypress=\"return tanpa_kutip(event);\">
+    </div>
+
+    <div class='col-12'>
+        <hr class='my-3'>
+        <div class='d-flex gap-2'>
+            <button class='btn btn-primary btn-sm' onclick='getLaporanJurnal()'>
+                <i class='bi bi-gear-fill me-1'></i>".$_SESSION['lang']['proses']."
+            </button>
+            <button class='btn btn-success btn-sm' onclick=\"fisikKeExcel(event,'keu_laporanJurnal_Excel.php')\">
+                <i class='bi bi-file-excel-fill me-1'></i>".$_SESSION['lang']['excel']."
+            </button>
+            <button class='btn btn-danger btn-sm' onclick=\"fisikKePDF(event,'keu_laporanJurnal_pdf.php')\">
+                <i class='bi bi-file-pdf-fill me-1'></i>".$_SESSION['lang']['pdf']."
+            </button>
+        </div>
+    </div>
+</div>
+";
 CLOSE_BOX();
-OPEN_BOX('','Result:');
-echo"<span id=printPanel style='display:none;'>
-     <img onclick=fisikKeExcel(event,'keu_laporanJurnal_Excel.php') src=images/excel.jpg class=resicon title='MS.Excel'> 
-	 <img onclick=fisikKePDF(event,'keu_laporanJurnal_pdf.php') title='PDF' class=resicon src=images/pdf.jpg>
-	 </span>
-	 <div style='width:1480px;display:fixed;'>
-       <table class=sortable cellspacing=1 border=0 width=1480px>
-	     <thead>
-		    <tr>
-                        <td align=center style='width:50px;'>".$_SESSION['lang']['nourut']."</td>
-                        <td align=center style='width:250px;'>".$_SESSION['lang']['nojurnal']."</td>
-                        <td align=center style='width:80px;'>".$_SESSION['lang']['tanggal']."</td>
-                        <td align=center style='width:64px;'>".$_SESSION['lang']['organisasi']."</td>
-                        <td align=center style='width:60px;'>".$_SESSION['lang']['noakun']."</td>
-                        <td align=center style='width:200px;'>".$_SESSION['lang']['namaakun']."</td>
-                        <td align=center  style='width:240px;'>".$_SESSION['lang']['keterangan']."</td>
-                        <td align=center  style='width:70px;'>Arus Kas</td>
-                        <td align=center  style='width:100px;'>".$_SESSION['lang']['debet']."</td>
-                        <td align=center style='width:100px;'>".$_SESSION['lang']['kredit']."</td>
-                        <td align=center style='width:200px;'>".$_SESSION['lang']['noreferensi']."</td>    
-                        <td align=center style='width:80px;'>".$_SESSION['lang']['kodeblok']."</td>
-                        <td align=center style='width:60px;'>".$_SESSION['lang']['tahuntanam']."</td>
-                        <td align=center style='width:30px;'>".$_SESSION['lang']['revisi']."</td>
-		   </tr>  
-		 </thead>
-		 <tbody>
-		 </tbody>
-		 <tfoot>
-		 </tfoot>		 
-	   </table>
-     </div>         
+OPEN_BOX('','<b>HASIL LAPORAN</b>');
+echo"
+<div id='printPanel' style='display:none;' class='mb-3'>
+    <div class='btn-group btn-group-sm' role='group'>
+        <button type='button' class='btn btn-success' onclick=\"fisikKeExcel(event,'keu_laporanJurnal_Excel.php')\" title='Export ke Excel'>
+            <i class='bi bi-file-excel-fill me-1'></i>Excel
+        </button>
+        <button type='button' class='btn btn-danger' onclick=\"fisikKePDF(event,'keu_laporanJurnal_pdf.php')\" title='Export ke PDF'>
+            <i class='bi bi-file-pdf-fill me-1'></i>PDF
+        </button>
+    </div>
+</div>
 
-	 <div style='width:1500px;height:359px;overflow:scroll;'>
-       <table class=sortable cellspacing=1 border=0 width=100%>
-	     <thead>
-		  <tr>
-		 </tr>  
-		 </thead>
-		 <tbody id=container>
-		 </tbody>
-		 <tfoot>
-		 </tfoot>		 
-	   </table>
-     </div>";
+<div class='table-responsive'>
+    <table class='table table-striped table-hover table-sm table-bordered'>
+        <thead class='table-dark sticky-top'>
+            <tr>
+                <th class='text-center' style='width:50px;'>".$_SESSION['lang']['nourut']."</th>
+                <th class='text-center' style='width:250px;'>".$_SESSION['lang']['nojurnal']."</th>
+                <th class='text-center' style='width:80px;'>".$_SESSION['lang']['tanggal']."</th>
+                <th class='text-center' style='width:100px;'>".$_SESSION['lang']['organisasi']."</th>
+                <th class='text-center' style='width:80px;'>".$_SESSION['lang']['noakun']."</th>
+                <th class='text-center' style='width:200px;'>".$_SESSION['lang']['namaakun']."</th>
+                <th class='text-center' style='width:240px;'>".$_SESSION['lang']['keterangan']."</th>
+                <th class='text-center' style='width:70px;'>Arus Kas</th>
+                <th class='text-center' style='width:120px;'>".$_SESSION['lang']['debet']."</th>
+                <th class='text-center' style='width:120px;'>".$_SESSION['lang']['kredit']."</th>
+                <th class='text-center' style='width:200px;'>".$_SESSION['lang']['noreferensi']."</th>
+                <th class='text-center' style='width:100px;'>".$_SESSION['lang']['kodeblok']."</th>
+                <th class='text-center' style='width:80px;'>".$_SESSION['lang']['tahuntanam']."</th>
+                <th class='text-center' style='width:50px;'>".$_SESSION['lang']['revisi']."</th>
+            </tr>
+        </thead>
+        <tbody id='container'>
+        </tbody>
+    </table>
+</div>
+";
 CLOSE_BOX();
 close_body();
 ?>
