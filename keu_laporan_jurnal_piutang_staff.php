@@ -44,40 +44,70 @@ while($bar=mysql_fetch_object($res))
 
 
 
-echo"<fieldset>
-     <legend>".$_SESSION['lang']['laporanjurnal']."</legend>
-         ".$_SESSION['lang']['tanggalmulai']." : <input class=\"myinputtext\" id=\"tanggalmulai\" size=\"12\" onmousemove=\"setCalendar(this.id)\" maxlength=\"10\" onkeypress=\"return false;\" type=\"text\">
-         s/d <input class=\"myinputtext\" id=\"tanggalsampai\" size=\"12\" onmousemove=\"setCalendar(this.id)\" maxlength=\"10\" onkeypress=\"return false;\" type=\"text\">
-         ".$_SESSION['lang']['noakun']." <select id=noakun >".$optnoakun."</select>
-         ".$_SESSION['lang']['kodeorg']." <select id=kodeorg >".$optorg."</select>    
-         <button class=mybutton onclick=getLaporanJurnalPiutangKaryawan()>".$_SESSION['lang']['proses']."</button>
-         </fieldset>";
+echo"
+<div class='card border-0 shadow-sm mb-3' style='width:50%;'>
+    <div class='card-body'>
+        <div class='row g-3'>
+            <div class='col-md-6'>
+                <label class='form-label fw-semibold'>".$_SESSION['lang']['tanggalmulai']."</label>
+                <input class='form-control form-control-sm' id='tanggalmulai' onmousemove='setCalendar(this.id)' maxlength='10' onkeypress='return false;' type='text'>
+            </div>
+
+            <div class='col-md-6'>
+                <label class='form-label fw-semibold'>".$_SESSION['lang']['tanggalsampai']."</label>
+                <input class='form-control form-control-sm' id='tanggalsampai' onmousemove='setCalendar(this.id)' maxlength='10' onkeypress='return false;' type='text'>
+            </div>
+
+            <div class='col-md-6'>
+                <label class='form-label fw-semibold'>".$_SESSION['lang']['noakun']."</label>
+                <select id='noakun' class='form-select form-select-sm'>".$optnoakun."</select>
+            </div>
+
+            <div class='col-md-6'>
+                <label class='form-label fw-semibold'>".$_SESSION['lang']['kodeorg']."</label>
+                <select id='kodeorg' class='form-select form-select-sm'>".$optorg."</select>
+            </div>
+
+            <div class='col-md-12'>
+                <button class='btn btn-primary btn-sm' onclick='getLaporanJurnalPiutangKaryawan()'>
+                    <i class='bi bi-funnel-fill me-1'></i>".$_SESSION['lang']['proses']."
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+";
 CLOSE_BOX();
-OPEN_BOX('','Result:');
-echo"<span id=printPanel style='display:none;'>
-     <img onclick=piutangKaryawanKeExcel(event,'keu_laporanJurnalPiutangKaryawan_Excel.php') src=images/excel.jpg class=resicon title='MS.Excel'>
-         </span>    
-         <div style='width:100%;height:359px;overflow:scroll;'>
-       <table class=sortable cellspacing=1 border=0 width=100%>
-             <thead>
-                    <tr>
-                          <td align=center width=50>".$_SESSION['lang']['nourut']."</td>
-                          <td align=center>".$_SESSION['lang']['organisasi']."</td>
-                          <td align=center>".$_SESSION['lang']['noakun']."</td>
-                          <td align=center>".$_SESSION['lang']['namaakun']."</td>
-                          <td align=center>".$_SESSION['lang']['karyawan']."/".$_SESSION['lang']['supplier']."</td>
-                          <td align=center>".$_SESSION['lang']['saldoawal']."</td>                             
-                          <td align=center>".$_SESSION['lang']['debet']."</td>
-                          <td align=center>".$_SESSION['lang']['kredit']."</td>
-                          <td align=center>".$_SESSION['lang']['saldoakhir']."</td>                               
-                        </tr>  
-                 </thead>
-                 <tbody id=container>
-                 </tbody>
-                 <tfoot>
-                 </tfoot>		 
-           </table>
-     </div>";
+OPEN_BOX('','<i class=\"bi bi-file-text-fill me-2\"></i>Result');
+echo"
+<div class='mb-3' id='printPanel' style='display:none;'>
+    <button class='btn btn-success btn-sm' onclick='piutangKaryawanKeExcel(event,\"keu_laporanJurnalPiutangKaryawan_Excel.php\")'>
+        <i class='bi bi-file-earmark-excel-fill me-1'></i>Export Excel
+    </button>
+</div>
+
+<div class='table-responsive'>
+    <table class='table table-sm table-bordered table-hover'>
+        <thead class='table-primary text-white'>
+            <tr>
+                <th class='text-center' style='width:50px;'>".$_SESSION['lang']['nourut']."</th>
+                <th class='text-center'>".$_SESSION['lang']['organisasi']."</th>
+                <th class='text-center' style='width:100px;'>".$_SESSION['lang']['noakun']."</th>
+                <th class='text-center'>".$_SESSION['lang']['namaakun']."</th>
+                <th class='text-center'>".$_SESSION['lang']['karyawan']."/".$_SESSION['lang']['supplier']."</th>
+                <th class='text-center' style='width:130px;'>".$_SESSION['lang']['saldoawal']."</th>
+                <th class='text-center' style='width:130px;'>".$_SESSION['lang']['debet']."</th>
+                <th class='text-center' style='width:130px;'>".$_SESSION['lang']['kredit']."</th>
+                <th class='text-center' style='width:130px;'>".$_SESSION['lang']['saldoakhir']."</th>
+            </tr>
+        </thead>
+        <tbody id='container'>
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+</div>
+";
 CLOSE_BOX();
 close_body();
 ?>
