@@ -6,7 +6,7 @@ echo open_body();
 include('master_mainMenu.php');
 
 ?>
-<script language=javascript src='js/pmn_kontrakjual.js'></script>
+<script language=javascript src='js/pmn_kontrakjual.js?v=<?php echo time(); ?>'></script>
 <script language="javascript" src="js/zMaster.js"></script>
 <?php
 OPEN_BOX('',$_SESSION['lang']['kontrakjual']);

@@ -352,17 +352,30 @@ function fillField(nokntrk)
         param='method=getEditData'+'&noKntrk='+noKntrk;
         tujuan='pmn_kontrakjual_slave.php';
 
-        // Switch to form tab Bootstrap 5
-        try {
-            var formTabButton = document.getElementById('form-tab');
-            if(formTabButton) {
-                // Use Bootstrap 5 Tab
-                var bsTab = bootstrap.Tab.getOrCreateInstance(formTabButton);
-                bsTab.show();
+        // Switch to form tab Bootstrap 5 - multiple approaches for compatibility
+        setTimeout(function() {
+            try {
+                var formTabButton = document.getElementById('form-tab');
+                if(formTabButton) {
+                    // Try Bootstrap 5 Tab API first
+                    if(typeof bootstrap !== 'undefined' && bootstrap.Tab) {
+                        var bsTab = bootstrap.Tab.getOrCreateInstance(formTabButton);
+                        bsTab.show();
+                    } else {
+                        // Fallback: trigger click event
+                        formTabButton.click();
+                    }
+                }
+            } catch(err) {
+                console.log('Tab switch error:', err);
+                // Last resort: try direct click
+                try {
+                    document.getElementById('form-tab').click();
+                } catch(e) {
+                    console.log('Click fallback failed:', e);
+                }
             }
-        } catch(err) {
-            console.log('Tab switch error:', err);
-        }
+        }, 100); // Small delay to ensure DOM is ready
 
         function respog()
         {
