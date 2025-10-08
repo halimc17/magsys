@@ -1408,22 +1408,31 @@ activeTab='tab0';
 function tabAction(cur,numactive,tabID,max)
 {
 	try {
-		for (x = 0; x <= max; x++) {
-			document.getElementById('tab'+tabID + x).style.backgroundImage = 'url(images/tab1.png)';
-			document.getElementById('tab'+tabID  + x).style.color = '#333333';
-			document.getElementById('tab'+tabID  + x).style.fontWeight = 'normal';
-			document.getElementById('content'+tabID  + x).style.display = 'none'
+		// Check if legacy tab elements exist
+		var legacyTabExists = document.getElementById('tab'+tabID + '0');
+
+		if(legacyTabExists) {
+			// Legacy tab system
+			for (x = 0; x <= max; x++) {
+				document.getElementById('tab'+tabID + x).style.backgroundImage = 'url(images/tab1.png)';
+				document.getElementById('tab'+tabID  + x).style.color = '#333333';
+				document.getElementById('tab'+tabID  + x).style.fontWeight = 'normal';
+				document.getElementById('content'+tabID  + x).style.display = 'none'
+			}
+			cur.style.backgroundImage = 'url(images/tab2.png)';
+			cur.style.color = '#dedede';
+			cur.style.fontWeight = 'bolder';
+			activeTab = 'tab'+tabID  + numactive;
+			document.getElementById('content'+tabID  + numactive).style.display = '';
+		} else {
+			// Bootstrap 5 tabs - do nothing, Bootstrap handles it
+			console.log('Bootstrap tabs detected, using Bootstrap navigation');
 		}
-		cur.style.backgroundImage = 'url(images/tab2.png)';
-		cur.style.color = '#dedede';
-		cur.style.fontWeight = 'bolder';
-		activeTab = 'tab'+tabID  + numactive;
-		document.getElementById('content'+tabID  + numactive).style.display = '';
 	}
 	catch(e)
 	{
-		alert(e.toString()+"\nMaybe Tab's component not loaded correctly");
-		
+		// Silently fail for Bootstrap tabs
+		console.log('Tab navigation error (probably Bootstrap tabs):', e);
 	}
 }
 function chgBackgroundImg(obj,img,color)

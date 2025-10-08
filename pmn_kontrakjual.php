@@ -69,146 +69,253 @@ while($dTtd=mysql_fetch_assoc($nTtd)){
 
 //=========================
 $frm[0].="
-<input type=hidden id=method name=method value='insert' />     <fieldset>
-          <legend>".$_SESSION['lang']['form']."</legend>
-          <fieldset>
-                <legend>".$_SESSION['lang']['header']."</legend>
-                <table cellspacing=1 border=0>
-                <tr><td>".$_SESSION['lang']['NoKontrak']."</td><td>
-                 <input type=text class=myinputtext id=noKtrk name=noKtrk maxlength=20 onkeypress=\"return tanpa_kutip(event)\" style=\"width:150px;\" disabled /></td>
-            <td>".$_SESSION['lang']['pt']."</td>
-            <td><select id=kdPt name=kdPt onchange='getRek()'><option value=''></option>".$optPt."</select></td>
-                        
-                                        <td>&nbsp;</td> <td>".$_SESSION['lang']['tglKontrak']."</td><td align=right><input type=text id=tlgKntrk size=10 maxlength=10 class=myinputtext onkeypress=\"return false;\" onmouseover=setCalendar(this)  /></td>
-                        </tr>
+<input type=hidden id=method name=method value='insert' />
+
+          <div class='card mb-3'>
+            <div class='card-header bg-primary text-white'>
+              <h6 class='mb-0'>".$_SESSION['lang']['header']."</h6>
+            </div>
+            <div class='card-body'>
+              <div class='row g-3'>
+                <div class='col-md-4'>
+                  <label class='form-label'>".$_SESSION['lang']['NoKontrak']."</label>
+                  <input type=text class='form-control form-control-sm' id=noKtrk name=noKtrk maxlength=20 onkeypress=\"return tanpa_kutip(event)\" disabled />
+                </div>
+                <div class='col-md-4'>
+                  <label class='form-label'>".$_SESSION['lang']['pt']."</label>
+                  <select id=kdPt name=kdPt class='form-select form-select-sm' onchange='getRek()'><option value=''></option>".$optPt."</select>
+                </div>
+                <div class='col-md-4'>
+                  <label class='form-label'>".$_SESSION['lang']['tglKontrak']."</label>
+                  <input type=text id=tlgKntrk class='form-control form-control-sm' onkeypress=\"return false;\" onmouseover=setCalendar(this) />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class='card mb-3'>
+            <div class='card-header bg-primary text-white'>
+              <h6 class='mb-0'>".$_SESSION['lang']['custInformation']."</h6>
+            </div>
+            <div class='card-body'>
+              <div class='row g-3'>
+                <div class='col-md-6'>
+                  <label class='form-label'>".$_SESSION['lang']['nmcust']."</label>
+                  <select id=custId name=custId class='form-select form-select-sm' onchange=\"getDataCust(0)\"><option value=></option>".$optCust."</select>
+                  <select id=nmPerson class='form-select form-select-sm mt-2' style='display:none;'><option value=''>".$_SESSION['lang']['pilihdata']."</option></select>
+                </div>
+                <div class='col-md-6'>
+                  <label class='form-label'>".$_SESSION['lang']['nokontrakinduk']."</label>
+                  <select id='kntrkRef' class='form-select form-select-sm'>".$optNoref."</select>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class='card mb-3'>
+            <div class='card-header bg-primary text-white'>
+              <h6 class='mb-0'>".$_SESSION['lang']['orderInfor']."</h6>
+            </div>
+            <div class='card-body'>
+              <h6 class='mb-3'>".$_SESSION['lang']['goodsDesc']."</h6>
+              <div class='row g-3 mb-3'>
+                <div class='col-md-3'>
+                  <label class='form-label'>".$_SESSION['lang']['namabarang']."</label>
+                  <select id=kdBrg name=kdBrg class='form-select form-select-sm' onchange=\"getSatuan(0,0,0)\"><option value=''>".$_SESSION['lang']['pilihdata']."</option></select>
+                </div>
+                <div class='col-md-2'>
+                  <label class='form-label'>".$_SESSION['lang']['satuan']."</label>
+                  <select id=stn name=stn class='form-select form-select-sm'><option value=''></option></select>
+                </div>
+                <div class='col-md-2'>
+                  <label class='form-label'>".$_SESSION['lang']['hargasatuan']."</label>
+                  <input type=text class='form-control form-control-sm' name=HrgStn id=HrgStn onkeypress=\"return angka_doang(event);\" onkeyup=\"z.numberFormat('HrgStn',3);hitungHarga();rupiahkan(getById('tmpHarga'),'tBlg',true)\" onblur=\"rupiahkan(this,'tBlg',true)\" />
+                </div>
+                <div class='col-md-1'>
+                  <label class='form-label'>".$_SESSION['lang']['matauang']."</label>
+                  <select id=kurs name=kurs class='form-select form-select-sm'>".$optKurs."</select>
+                </div>
+                <div class='col-md-2'>
+                  <label class='form-label'>".$_SESSION['lang']['jmlhBrg']."</label>
+                  <input type=text class='form-control form-control-sm' name=jmlh id=jmlh onkeypress=\"return angka_doang(event);\" onkeyup=\"z.numberFormat('jmlh',2);hitungHarga();getBerat();\" />
+                  <input id=tmpHarga type=hidden value=0>
+                </div>
+                <div class='col-md-2'>
+                  <label class='form-label'>".$_SESSION['lang']['ppn']."</label>
+                  <select id=ppnId name=ppnId class='form-select form-select-sm'>".$optSat."</select>
+                </div>
+              </div>
+              <div class='row'>
+                <div class='col-12'>
+                  <label class='form-label'>".$_SESSION['lang']['terbilang']."</label>
+                  <div class='alert alert-info mb-0'><span id=tBlg></span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class='card mb-3'>
+            <div class='card-header bg-secondary text-white'>
+              <h6 class='mb-0'>".$_SESSION['lang']['penyerahan']."</h6>
+            </div>
+            <div class='card-body'>
+              <div class='table-responsive'>
+                <table class='table table-sm table-bordered'>
+                  <thead class='table-light'>
+                    <tr>
+                      <th>".$_SESSION['lang']['tgl_kirim']."</th>
+                      <th>".$_SESSION['lang']['jumlah']."</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>
+                        <div class='d-flex align-items-center gap-2'>
+                          <input type=text id=tglKrm0 class='form-control form-control-sm' onkeypress=\"return false;\" onmouseover=setCalendar(this)>
+                          <span>s.d.</span>
+                          <input type=text id=tglSd0 class='form-control form-control-sm' onkeypress=\"return false;\" onmouseover=setCalendar(this)>
+                        </div>
+                      </td>
+                      <td><input type=text class='form-control form-control-sm' name=jmlh0 id=jmlh0 onkeypress=\"return angka_doang(event);\" /></td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class='d-flex align-items-center gap-2'>
+                          <input type=text id=tglKrm1 class='form-control form-control-sm' onkeypress=\"return false;\" onmouseover=setCalendar(this)>
+                          <span>s.d.</span>
+                          <input type=text id=tglSd1 class='form-control form-control-sm' onkeypress=\"return false;\" onmouseover=setCalendar(this)>
+                        </div>
+                      </td>
+                      <td><input type=text class='form-control form-control-sm' name=jmlh1 id=jmlh1 onkeypress=\"return angka_doang(event);\" /></td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class='d-flex align-items-center gap-2'>
+                          <input type=text id=tglKrm2 class='form-control form-control-sm' onkeypress=\"return false;\" onmouseover=setCalendar(this)>
+                          <span>s.d.</span>
+                          <input type=text id=tglSd2 class='form-control form-control-sm' onkeypress=\"return false;\" onmouseover=setCalendar(this)>
+                        </div>
+                      </td>
+                      <td><input type=text class='form-control form-control-sm' name=jmlh2 id=jmlh2 onkeypress=\"return angka_doang(event);\" /></td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class='d-flex align-items-center gap-2'>
+                          <input type=text id=tglKrm3 class='form-control form-control-sm' onkeypress=\"return false;\" onmouseover=setCalendar(this)>
+                          <span>s.d.</span>
+                          <input type=text id=tglSd3 class='form-control form-control-sm' onkeypress=\"return false;\" onmouseover=setCalendar(this)>
+                        </div>
+                      </td>
+                      <td><input type=text class='form-control form-control-sm' name=jmlh3 id=jmlh3 onkeypress=\"return angka_doang(event);\" /></td>
+                    </tr>
+                  </tbody>
                 </table>
-          </fieldset>
-          <br />
-          <fieldset>
-                <legend>".$_SESSION['lang']['custInformation']."</legend>
-                <table>
-                        <tr> 	 
-                                <td>".$_SESSION['lang']['nmcust']."</td>
-                                <td>
-                                <select id=custId name=custId style=\"width:150px;\" onchange=\"getDataCust(0)\"><option value=></option>".$optCust."</select></td>
-                                <td style='display:none;'>Contact Person :</td>
-	            <td style='display:none'><select  id=nmPerson style=\"width:150px;\"><option value=''>".$_SESSION['lang']['pilihdata']."</option></select></td>
-				<td>".$_SESSION['lang']['nokontrakinduk']."</td><td><select style=\"width:150px;\" id='kntrkRef'>".$optNoref."</select></td>
-                        </tr>
-                </table>
-          </fieldset><br />
-          <fieldset>
-                        <legend>".$_SESSION['lang']['orderInfor']."</legend>
+              </div>
+            </div>
+          </div>
 
-                        <table cellspacing=1 border=0>
-                        <thead>
-                        <tr>
-                        <td colspan=7>".$_SESSION['lang']['goodsDesc']."</td>
-                        </tr>
-                        <tr class=rowheader>
-                                <td>".$_SESSION['lang']['namabarang']."</td>
-                                <td>".$_SESSION['lang']['satuan']."</td>
-                                <td>".$_SESSION['lang']['hargasatuan']."</td>
-                                <td>".$_SESSION['lang']['matauang']."</td>
-                                <td>".$_SESSION['lang']['jmlhBrg']."</td>
-								<td>".$_SESSION['lang']['ppn']."</td>
-                                <td>".$_SESSION['lang']['terbilang']."</td>
-                        </tr>
-                        </thead>
-                        <tbody>
-                                <td><select id=kdBrg name=kdBrg onchange=\"getSatuan(0,0,0)\" style=\"width:150px;\"><option value=''>".$_SESSION['lang']['pilihdata']."</option></select></td>
-                                <td><select id=stn name=stn style=\"width:50px;\"><option value=''></option></select></td>
-                                <td><input type=text class=myinputtextnumber  name=HrgStn id=HrgStn onkeypress=\"return angka_doang(event);\"  onkeyup=\"z.numberFormat('HrgStn',3);hitungHarga();rupiahkan(getById('tmpHarga'),'tBlg',true)\" onblur=\"rupiahkan(this,'tBlg',true)\" style=\"width:100px;\" /></td>
-                                <td><select id=kurs name=kurs style=\"width:50px;\">".$optKurs."</select></td>
-                                <td><input type=text class=myinputtextnumber name=jmlh id=jmlh onkeypress=\"return angka_doang(event);\" style=\"width:100px;\" onkeyup=\"z.numberFormat('jmlh',2);hitungHarga();getBerat();\" />
-								<input id=tmpHarga type=hidden value=0>
-								</td>
-								<td><select id=ppnId name=ppnId style=\"width:50px;\">".$optSat."</select></td>
-                                <td width:350><span id=tBlg></span></td>
-                        </tbody>
-                        </table><br />
-                        <table cellspacing=1 border=0>
-                        <thead>
-                        <tr>
-                        <td colspan=2>".$_SESSION['lang']['penyerahan']."</td>
-                        </tr>
-                        <tr class=rowheader>
-                                <td>".$_SESSION['lang']['tgl_kirim']."</td>
-                                <td>".$_SESSION['lang']['jumlah']."</td>
-                        </tr>
-                        </thead>
-                        <tbody>
-                                <tr><td> <input type=text id=tglKrm0 size=10 maxlength=10 class=myinputtext onkeypress=\"return false;\" onmouseover=setCalendar(this)> s.d.<input type=text id=tglSd0 size=10 maxlength=10 class=myinputtext onkeypress=\"return false;\" onmouseover=setCalendar(this)></td>
-                                <td><input type=text class=myinputtextnumber name=jmlh0 id=jmlh0 style=\"width:150px;\" onkeypress=\"return angka_doang(event);\"  /></td></tr>
-								<tr><td> <input type=text id=tglKrm1 size=10 maxlength=10 class=myinputtext onkeypress=\"return false;\" onmouseover=setCalendar(this)> s.d.<input type=text id=tglSd1 size=10 maxlength=10 class=myinputtext onkeypress=\"return false;\" onmouseover=setCalendar(this)></td>
-                                <td><input type=text class=myinputtextnumber name=jmlh1 id=jmlh1 style=\"width:150px;\" onkeypress=\"return angka_doang(event);\"   /></td></tr>
-								<tr><td> <input type=text id=tglKrm2 size=10 maxlength=10 class=myinputtext onkeypress=\"return false;\" onmouseover=setCalendar(this)> s.d.<input type=text id=tglSd2 size=10 maxlength=10 class=myinputtext onkeypress=\"return false;\" onmouseover=setCalendar(this)></td>
-                                <td><input type=text class=myinputtextnumber name=jmlh2 id=jmlh2 style=\"width:150px;\" onkeypress=\"return angka_doang(event);\"    /></td></tr>
-								<tr><td> <input type=text id=tglKrm3 size=10 maxlength=10 class=myinputtext onkeypress=\"return false;\" onmouseover=setCalendar(this)> s.d.<input type=text id=tglSd3 size=10 maxlength=10 class=myinputtext onkeypress=\"return false;\" onmouseover=setCalendar(this)></td>
-                                <td><input type=text class=myinputtextnumber name=jmlh3 id=jmlh3 style=\"width:150px;\" onkeypress=\"return angka_doang(event);\"  /></td></tr>
+          <div class='row g-3 mb-3'>
+            <div class='col-md-6'>
+              <div class='card h-100'>
+                <div class='card-header bg-secondary text-white'>
+                  <h6 class='mb-0'>".$_SESSION['lang']['kualitas']."</h6>
+                </div>
+                <div class='card-body'>
+                  <div class='mb-2'>
+                    <label class='form-label small mb-1'>".$_SESSION['lang']['tempatpenyerahan']."</label>
+                    <select name=tmbngn id=tmbngn class='form-select form-select-sm'>".$optFranco."</select>
+                  </div>
+                  <div class='mb-2'>
+                    <label class='form-label small mb-1'>FFA</label>
+                    <div class='input-group input-group-sm'>
+                      <input class='form-control' id=ffa onkeypress='return angka_doang(event)' />
+                      <span class='input-group-text'>%</span>
+                    </div>
+                  </div>
+                  <div class='mb-2'>
+                    <label class='form-label small mb-1'>DOBI</label>
+                    <input class='form-control form-control-sm' id=dobi onkeypress='return angka_doang(event)' />
+                  </div>
+                  <div class='mb-2'>
+                    <label class='form-label small mb-1'>M & I</label>
+                    <div class='input-group input-group-sm'>
+                      <input class='form-control' id=mdani onkeypress='return angka_doang(event)' />
+                      <span class='input-group-text'>%</span>
+                    </div>
+                  </div>
+                  <div class='mb-2'>
+                    <label class='form-label small mb-1'>Moisture</label>
+                    <div class='input-group input-group-sm'>
+                      <input class='form-control' id=moist onkeypress='return angka_doang(event)' />
+                      <span class='input-group-text'>%</span>
+                    </div>
+                  </div>
+                  <div class='mb-2'>
+                    <label class='form-label small mb-1'>Impurities</label>
+                    <div class='input-group input-group-sm'>
+                      <input class='form-control' id=dirt onkeypress='return angka_doang(event)' />
+                      <span class='input-group-text'>%</span>
+                    </div>
+                  </div>
+                  <div class='mb-2'>
+                    <label class='form-label small mb-1'>Grading</label>
+                    <div class='input-group input-group-sm'>
+                      <input class='form-control' id=grading onkeypress='return angka_doang(event)' />
+                      <span class='input-group-text'>%</span>
+                    </div>
+                  </div>
+                  <div class='mb-0'>
+                    <label class='form-label small mb-1'>".$_SESSION['lang']['toleransi']."</label>
+                    <textarea name=tlransi id=tlransi class='form-control form-control-sm' onkeypress=\"return tanpa_kutip(event);\" rows='2'></textarea>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class='col-md-6'>
+              <div class='card h-100'>
+                <div class='card-header bg-secondary text-white'>
+                  <h6 class='mb-0'>".$_SESSION['lang']['syaratPem']."</h6>
+                </div>
+                <div class='card-body'>
+                  <div class='mb-2'>
+                    <label class='form-label small mb-1'>".$_SESSION['lang']['payment']."</label>
+                    <select name=syrtByr id=syrtByr class='form-select form-select-sm'>".$optTermin."</select>
+                  </div>
+                  <div class='mb-2'>
+                    <label class='form-label small mb-1'>".$_SESSION['lang']['tanggalbayar']."</label>
+                    <input type=text id=tglByr class='form-control form-control-sm' onkeypress=\"return false;\" onmouseover=setCalendar(this)>
+                  </div>
+                  <div class='mb-2'>
+                    <label class='form-label small mb-1'>".$_SESSION['lang']['bayarke']."</label>
+                    <select name=byrKe id=byrKe class='form-select form-select-sm'>".$optByrke."</select>
+                  </div>
+                  <div class='mb-2'>
+                    <label class='form-label small mb-1'>".$_SESSION['lang']['tndaTangan']."</label>
+                    <select name=tndtng id=tndtng class='form-select form-select-sm'>".$optTtdjual."</select>
+                  </div>
+                  <div class='mb-2' hidden>
+                    <label class='form-label small mb-1'>".$_SESSION['lang']['jabatan']." ".$_SESSION['lang']['penjual']."</label>
+                    <input type=text name=tndtngJbtn id=tndtngJbtn class='form-control form-control-sm' />
+                  </div>
+                  <div class='mb-2' hidden>
+                    <label class='form-label small mb-1'>".$_SESSION['lang']['tandatangan']." ".$_SESSION['lang']['Pembeli']."</label>
+                    <input type=text name=tndtngPembli id=tndtngPembli class='form-control form-control-sm' />
+                  </div>
+                  <div class='mb-0' hidden>
+                    <label class='form-label small mb-1'>".$_SESSION['lang']['jabatan']." ".$_SESSION['lang']['Pembeli']."</label>
+                    <input type=text name=jtbnPembli id=jtbnPembli class='form-control form-control-sm' />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
-                        </tbody>
-                        </table><br />
-                        <table border=0 cellspacing=1>
-                        <tr>
-                        <td valign=top>
-                        <table cellspacing=1 border=0>
-                        <thead>
-                        <tr>
-                        <td colspan=3 style=\"width:200px;\">".$_SESSION['lang']['kualitas']."</td>
-                        </tr></thead>
-                        <tbody>
-                        <tr>
-                        <td>".$_SESSION['lang']['tempatpenyerahan']."</td><td>:</td><td><select name=tmbngn id=tmbngn style=\"width: 150px;\" >".$optFranco."</select></td></tr>
-                        <tr><td>FFA</td><td>:</td><td><input class=myinputtextnumber id=ffa style=\"width: 150px;\" onkeypress='return angka_doang(event)' />%</td></tr>
-                        <tr><td>DOBI</td><td>:</td><td><input class=myinputtextnumber id=dobi style=\"width: 150px;\" onkeypress='return angka_doang(event)' /></td></tr>
-                        <tr><td>M & I</td><td>:</td><td><input class=myinputtextnumber id=mdani style=\"width: 150px;\" onkeypress='return angka_doang(event)' />%</td></tr>
-                        <tr><td>Moisture</td><td>:</td><td><input class=myinputtextnumber id=moist style=\"width: 150px;\" onkeypress='return angka_doang(event)' />%</td></tr>
-                        <tr><td>Impurities</td><td>:</td><td><input class=myinputtextnumber id=dirt style=\"width: 150px;\" onkeypress='return angka_doang(event)' />%</td></tr>
-                        <tr><td>Grading</td><td>:</td><td><input class=myinputtextnumber id=grading style=\"width: 150px;\" onkeypress='return angka_doang(event)' />%</td></tr>
-                        <tr><td>".$_SESSION['lang']['toleransi']."</td><td>:</td><td><textarea name=tlransi id=tlransi style=\"width:150px;\" onkeypress=\"return tanpa_kutip(event);\" rows='2' cols='20'></textarea></td></tr>
-                        </tbody>
-                        </table>
-                        </td><td valign=top>
-                        <table cellspacing=1 border=0>
-                        <thead>
-                        <tr>
-                        <td colspan=3 style=\"width:200px;\">".$_SESSION['lang']['syaratPem']."</td>
-                        </tr></thead>
-                        <tbody>
-                        <tr>
-                        <td>".$_SESSION['lang']['payment']."</td><td>:</td><td>
-                        <select style=\"width: 170px;\" name=syrtByr id=syrtByr >".$optTermin."</select></td></tr>
-                        <tr>
-                        <td>".$_SESSION['lang']['tanggalbayar']."</td>
-                        <td>:</td>
-                        <td><input type=text id=tglByr style=\"width: 170px;\" size=10 maxlength=10 class=myinputtext onkeypress=\"return false;\" onmouseover=setCalendar(this)></td>
-                        </tr>
-                        <tr>
-                        <td>".$_SESSION['lang']['bayarke']."</td><td>:</td><td>
-                        <select style=\"width: 170px;\" name=byrKe id=byrKe >".$optByrke."</select></td></tr>
-                        <tr>
-                        <td>".$_SESSION['lang']['tndaTangan']."</td><td>:</td><td><select style=\"width: 170px;\" name=tndtng id=tndtng >".$optTtdjual."</select></td></tr>
-						<tr>
-                        <td hidden>".$_SESSION['lang']['jabatan']." ".$_SESSION['lang']['penjual']."</td><td hidden>:</td><td hidden><input type=text name=tndtngJbtn id=tndtngJbtn class=myinputtext style=\"width: 170px;\" /></td></tr>
-						<tr>
-                        <td hidden>".$_SESSION['lang']['tandatangan']." ".$_SESSION['lang']['Pembeli']."</td><td hidden>:</td><td hidden><input type=text name=tndtngPembli id=tndtngPembli class=myinputtext style=\"width: 170px;\" /></td></tr>
-						<tr>
-                        <td hidden>".$_SESSION['lang']['jabatan']." ".$_SESSION['lang']['Pembeli']."</td><td hidden>:</td><td hidden><input type=text name=jtbnPembli id=jtbnPembli class=myinputtext style=\"width: 170px;\" /></td></tr>
-
-                        </tbody>
-                        </table>
-                        </td>
-                        </tr>
-                        </table>
-          </fieldset>
-          <br />
-        <fieldset>
-        <legend>".$_SESSION['lang']['lainlain']."</legend>
-     <table>
-            <tr> 	 
-                 <td style='valign:top'>".$_SESSION['lang']['lainlain']."</td><td>
-				 <textarea onkeypress=\"return tanpa_kutip(event);\" id=cttnLain style=\"width:830px;height:150px\" rows='5' cols='50' >".
+          <div class='card mb-3'>
+            <div class='card-header bg-secondary text-white'>
+              <h6 class='mb-0'>".$_SESSION['lang']['lainlain']."</h6>
+            </div>
+            <div class='card-body'>
+              <textarea onkeypress=\"return tanpa_kutip(event);\" id=cttnLain class='form-control' rows='6'>".
 				 //"Kualitas mutu FFA berasarkan hasil analisa Sucofindo yang sudah ditentukan oleh kedua belah pihak, dimana hasilnya akan dipakai sebagai acuan penetapan mutu barang. Tenggang waktu penyerahan barang maksimal 4 (empat) hari. Penjual dapat melakukan pembatalan penyerahan sepihak bila pembeli tidak melakukan pengangkutan dari tempat yang disepakati dalam batas tenggang waktu. 
 				 //Bila kualitas  diluar standar, maka klaim akan ditentukan sbb:
 				 //- FFA 5.00%-5.50% harga akan dipotong sebesar Rp 100,-/kg.
@@ -217,18 +324,15 @@ $frm[0].="
 				 //- FFA 6.51%-7.00% harga akan dipotong sebesar Rp 400,-/kg.
 				 //- FFA > 7.00% maka pembeli berhak menolak barang.
 				 //- Klaim DOBI: (2-DOBI Pemuatan Hasil Analisa Sucofindo)/100 x harga x kuantitas".
-				 "</textarea></td>
-          </tr>
-         
-     </table>
-        </fieldset>
-         <center>
-           <button class=mybutton onclick=saveKP()>".$_SESSION['lang']['save']."</button>
-           <!--<button class=mybutton onclick=copyFromLast()>".$_SESSION['lang']['copy']."</button>-->
-           <button class=mybutton onclick=clearFrom()>".$_SESSION['lang']['new']."</button>
+				 "</textarea>
+            </div>
+          </div>
 
-         </center>
-         </fieldset>";
+          <div class='d-flex gap-2 justify-content-center mb-3'>
+            <button class='btn btn-primary btn-sm' onclick=saveKP()>".$_SESSION['lang']['save']."</button>
+            <button class='btn btn-secondary btn-sm' onclick=clearFrom()>".$_SESSION['lang']['new']."</button>
+          </div>
+";
 
 $optSch.="<option value=''>".$_SESSION['lang']['all']."</option>";
 $iPt="select * from ".$dbname.".organisasi where tipe='PT' ";
@@ -254,53 +358,86 @@ while($dCust=  mysql_fetch_assoc($qCust))
     $optCust.="<option value='".$dCust['koderekanan']."'>".$dCust['namacustomer']."</option>";
 }
 
-$frm[1]="<fieldset>
-           <legend>".$_SESSION['lang']['list']."</legend>
-          <fieldset><legend></legend>
-          ".$_SESSION['lang']['NoKontrak']."
-          <input type=text id=txtnokntrk size=25 class=myinputtext onkeypress=\"return tanpa_kutip(event);\" >
-          
-          ".$_SESSION['lang']['pt']."
-          <select style=\"width: 210px;\" name=ptSch id=ptSch >".$optSch."</select>    
+$frm[1]="
+          <div class='card mb-3'>
+            <div class='card-header bg-light'>
+              <h6 class='mb-0'>".$_SESSION['lang']['find']."</h6>
+            </div>
+            <div class='card-body'>
+              <div class='row g-3 mb-3'>
+                <div class='col-md-3'>
+                  <label class='form-label small'>".$_SESSION['lang']['NoKontrak']."</label>
+                  <input type=text id=txtnokntrk class='form-control form-control-sm' onkeypress=\"return tanpa_kutip(event);\" />
+                </div>
+                <div class='col-md-3'>
+                  <label class='form-label small'>".$_SESSION['lang']['pt']."</label>
+                  <select name=ptSch id=ptSch class='form-select form-select-sm'>".$optSch."</select>
+                </div>
+                <div class='col-md-3'>
+                  <label class='form-label small'>".$_SESSION['lang']['komoditi']."</label>
+                  <select name=ptKomoditi id=ptKomoditi class='form-select form-select-sm'>".$optKomoditi."</select>
+                </div>
+                <div class='col-md-3'>
+                  <label class='form-label small'>".$_SESSION['lang']['nmcust']."</label>
+                  <select name=ptCust id=ptCust class='form-select form-select-sm'>".$optCust."</select>
+                </div>
+              </div>
+              <div class='text-end'>
+                <button class='btn btn-primary btn-sm' onclick=cariNoKntrk()>".$_SESSION['lang']['find']."</button>
+              </div>
+            </div>
+          </div>
 
-          ".$_SESSION['lang']['komoditi']."
-          <select style=\"width: 155px;\" name=ptKomoditi id=ptKomoditi >".$optKomoditi."</select><BR>    
-
-          ".$_SESSION['lang']['nmcust']."
-          <select style=\"width: 270px;\" name=ptCust id=ptCust >".$optCust."</select>    
-
-          <button class=mybutton onclick=cariNoKntrk()>".$_SESSION['lang']['find']."</button>
-          </fieldset>
-          <table class=sortable cellspacing=1 border=0>
+          <div class='table-responsive'>
+          <table class='table table-sm table-striped table-hover table-bordered'>
       <thead>
-          <tr class=rowheader>
-          <td>No.</td>
-          <td>".$_SESSION['lang']['NoKontrak']."</td>
-          <td>".$_SESSION['lang']['nm_perusahaan']."</td>
-          <td>".$_SESSION['lang']['nmcust']."</td>
-          <td>".$_SESSION['lang']['tglKontrak']."</td>
-          <td>".$_SESSION['lang']['produk']."</td>
-          <td>".$_SESSION['lang']['hargasatuan']."</td>
-          <td>".$_SESSION['lang']['ppn'].' Incl/Excl'."</td>
-          <td>".$_SESSION['lang']['tgl_kirim']."</td>
-          <td width='8%'>Action</td>
+          <tr class='table-primary text-white'>
+          <th>No.</th>
+          <th>".$_SESSION['lang']['NoKontrak']."</th>
+          <th>".$_SESSION['lang']['nm_perusahaan']."</th>
+          <th>".$_SESSION['lang']['nmcust']."</th>
+          <th>".$_SESSION['lang']['tglKontrak']."</th>
+          <th>".$_SESSION['lang']['produk']."</th>
+          <th>".$_SESSION['lang']['hargasatuan']."</th>
+          <th>".$_SESSION['lang']['ppn']." Incl/Excl</th>
+          <th>".$_SESSION['lang']['tgl_kirim']."</th>
+          <th style='width:8%'>Action</th>
           </tr>
-          </head>
+          </thead>
            <tbody id=containerlist>
            <script>
            loadNewData();
            </script>
            </tbody>
-           <tfoot>
-           </tfoot>
            </table>
-         </fieldset>";
+          </div>
+";
 
-$hfrm[0]=$_SESSION['lang']['form'];
-$hfrm[1]=$_SESSION['lang']['list'];
-
-drawTab('FRM',$hfrm,$frm,100,1100);
 ?>
+
+<!-- Bootstrap Nav Tabs -->
+<ul class="nav nav-tabs" id="kontrakPenjualanTabs" role="tablist">
+  <li class="nav-item" role="presentation">
+    <button class="nav-link active" id="form-tab" data-bs-toggle="tab" data-bs-target="#form-content" type="button" role="tab" aria-controls="form-content" aria-selected="true">
+      <?php echo $_SESSION['lang']['form']; ?>
+    </button>
+  </li>
+  <li class="nav-item" role="presentation">
+    <button class="nav-link" id="list-tab" data-bs-toggle="tab" data-bs-target="#list-content" type="button" role="tab" aria-controls="list-content" aria-selected="false">
+      <?php echo $_SESSION['lang']['list']; ?>
+    </button>
+  </li>
+</ul>
+
+<!-- Bootstrap Tab Content -->
+<div class="tab-content border border-top-0 p-3 bg-white" id="kontrakPenjualanTabContent">
+  <div class="tab-pane fade show active" id="form-content" role="tabpanel" aria-labelledby="form-tab">
+    <?php echo $frm[0]; ?>
+  </div>
+  <div class="tab-pane fade" id="list-content" role="tabpanel" aria-labelledby="list-tab">
+    <?php echo $frm[1]; ?>
+  </div>
+</div>
 
 <?php
 CLOSE_BOX();

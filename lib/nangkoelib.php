@@ -38,7 +38,7 @@ echo"<!DOCTYPE html>
 		<script language=JavaScript1.2 src=js/menuscript.js></script>
 		<script language=JavaScript1.2 src=js/calendar.js></script>
 		<script language=JavaScript1.2 src=js/drag.js></script>
-		<script language=JavaScript1.2 src=js/generic.js></script>
+		<script language=JavaScript1.2 src=js/generic.js?v=<?php echo time(); ?>></script>
 		<script language=JavaScript1.2 src=js/nangkoelsort.js></script>
     </head>
 <body class=\"bg-light-custom\" onload=verify()>
@@ -80,7 +80,7 @@ echo"<!DOCTYPE html>
 		<script language=JavaScript1.2 src=js/menuscript.js></script>
 		<script language=JavaScript1.2 src=js/calendar.js></script>
 		<script language=JavaScript1.2 src=js/drag.js></script>
-		<script language=JavaScript1.2 src=js/generic.js></script>
+		<script language=JavaScript1.2 src=js/generic.js?v=<?php echo time(); ?>></script>
 		<script language=JavaScript1.2 src=js/nangkoelsort.js></script>
     </head>
 <body class=\"bg-light-custom p-2\" onload=verify()>

@@ -351,7 +351,19 @@ function fillField(nokntrk)
         noKntrk=nokntrk;
         param='method=getEditData'+'&noKntrk='+noKntrk;
         tujuan='pmn_kontrakjual_slave.php';
-        tabAction(document.getElementById('tabFRM0'),0,'FRM',1);
+
+        // Switch to form tab Bootstrap 5
+        try {
+            var formTabButton = document.getElementById('form-tab');
+            if(formTabButton) {
+                // Use Bootstrap 5 Tab
+                var bsTab = bootstrap.Tab.getOrCreateInstance(formTabButton);
+                bsTab.show();
+            }
+        } catch(err) {
+            console.log('Tab switch error:', err);
+        }
+
         function respog()
         {
                       if(con.readyState==4)
