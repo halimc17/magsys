@@ -62,34 +62,58 @@ class formReport {
 	
         ##=== Form
         $fReport = "";
-        #$fReport .= "<div align='center'><h3>".$this->_name."</h3></div>";
-        $fReport .= "<fieldset><legend><b>".$this->_name."</b></legend>";
-        $fReport .= "<div id='".$this->_id."'><table align='left'>";
-		//$fReport .= "<tr><td>".$_SESSION['lang']['kebun']."</td><td>:</td><td><select id=kebun name=kebun>".$optKbn."</select></td></tr>";
-        foreach($this->_primeEls as $els) {
-            $fReport .= "<tr><td>".makeElement($els->_id,'label',$els->_name)."</td>";
-            $fReport .= "<td>:</td><td>".$els->genEls()."</td></tr>";
+        $fReport .= "<div class='card border-0 shadow-sm mb-3' style='max-width:800px;'>";
+        $fReport .= "<div class='card-header bg-primary text-white'>";
+        $fReport .= "<h5 class='mb-0'><i class='bi bi-file-text-fill me-2'></i>".$this->_name."</h5>";
+        $fReport .= "</div>";
+        $fReport .= "<div class='card-body'>";
+        $fReport .= "<div class='row g-3'>";
+
+        // Generate form fields
+        $fieldCount = count($this->_primeEls);
+        $colClass = 'col-md-12'; // Default full width
+
+        foreach($this->_primeEls as $index => $els) {
+            // For period type, use two columns layout
+            if($els->_type === 'period' || $els->_type === 'periode') {
+                $colClass = 'col-md-12';
+            } else {
+                // For other fields, use single column
+                $colClass = 'col-md-12';
+            }
+
+            $fReport .= "<div class='".$colClass."'>";
+            $fReport .= "<label class='form-label fw-semibold'>".makeElement($els->_id,'label',$els->_name)."</label>";
+            $fReport .= $els->genEls();
+            $fReport .= "</div>";
         }
-	$fReport .= "<tr><td colspan='4' align='left'>".
-	    makeElement('btnPreview','btn','Preview',
-	    #array('onclick'=>"biPrint(0,'".$this->_page."','".$this->_workField."','".$primeStr.$advanceStr."')")).
-	    array('onclick'=>"formPrint('preview',0,'".$primeStr."','".$advanceStr."','".$this->_page."',event)"));
-	if(!$this->_noPdf) {
-		$fReport .= makeElement('btnPDF','btn','PDF',
-			array('onclick'=>"formPrint('pdf',0,'".$primeStr."','".$advanceStr."','".$this->_page."',event)"));
-	}
-	// $fReport .= makeElement('btnExcel','btn','Excel',
-	    // array('onclick'=>"formPrint('excel',0,'".$primeStr."','".$advanceStr."','".$this->_page."',event)"));
-	if(!$this->_noExcel) {
-		$fReport .= makeElement('btnExcel','btn','Excel',
-	    array('onclick'=>"formPrint('excel',0,'".$primeStr."','".$advanceStr."','".$this->_page."',event)"));
-	}
-	    $fReport .= "</td></tr>";
-        $fReport .= "</table></div></fieldset>";
-        
+
+        // Buttons
+        $fReport .= "<div class='col-md-12'>";
+        $fReport .= "<button class='btn btn-info btn-sm me-2' onclick=\"formPrint('preview',0,'".$primeStr."','".$advanceStr."','".$this->_page."',event)\">";
+        $fReport .= "<i class='bi bi-eye-fill me-1'></i>Preview</button>";
+
+        if(!$this->_noPdf) {
+            $fReport .= "<button class='btn btn-danger btn-sm me-2' onclick=\"formPrint('pdf',0,'".$primeStr."','".$advanceStr."','".$this->_page."',event)\">";
+            $fReport .= "<i class='bi bi-file-earmark-pdf-fill me-1'></i>PDF</button>";
+        }
+
+        if(!$this->_noExcel) {
+            $fReport .= "<button class='btn btn-success btn-sm' onclick=\"formPrint('excel',0,'".$primeStr."','".$advanceStr."','".$this->_page."',event)\">";
+            $fReport .= "<i class='bi bi-file-earmark-excel-fill me-1'></i>Excel</button>";
+        }
+
+        $fReport .= "</div>";
+        $fReport .= "</div></div></div>";
+
         ##=== Work Field
-        $fReport .= "<fieldset><legend><b>Preview</b></legend>";
-        $fReport .= "<div id='".$this->_workField."' style='overflow:auto;height:".$this->_detailHeight."%'></div></fieldset>";
+        $fReport .= "<div class='card border-0 shadow-sm'>";
+        $fReport .= "<div class='card-header bg-primary text-white'>";
+        $fReport .= "<i class='bi bi-eye-fill me-2'></i><b>Preview</b>";
+        $fReport .= "</div>";
+        $fReport .= "<div class='card-body'>";
+        $fReport .= "<div id='".$this->_workField."' style='overflow:auto;height:".$this->_detailHeight."%'></div>";
+        $fReport .= "</div></div>";
         
         return $fReport;
     }

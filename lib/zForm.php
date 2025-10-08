@@ -279,23 +279,15 @@ function makeElement($id,$type,$value="",$attr=array(),$options=array(),
 		case 'rangedate' :
 		case 'period' :
 		case 'periode' :
-			$el .= "<input id='".$id."_from' name='".$id."_from' class='myinputtext' type='text'";
+			$el .= "<div class='d-flex align-items-center gap-2'>";
+			$el .= "<input id='".$id."_from' name='".$id."_from' class='form-control form-control-sm' type='text'";
 			$el .= " onmousemove='setCalendar(this.id)' readonly='readonly' value='".$value."'";
-			if(is_array($attr) and $attr!=array()) {
-				foreach($attr as $key=>$row) {
-					$el .= " ".$key."=\"".$row."\"";
-				}
-			}
-			$el .= " style='cursor:pointer' />";
-			$el .= " s/d ";
-			$el .= "<input id='".$id."_until' name='".$id."_until' class='myinputtext' type='text'";
+			$el .= " style='cursor:pointer; max-width: 150px;' />";
+			$el .= "<span>s/d</span>";
+			$el .= "<input id='".$id."_until' name='".$id."_until' class='form-control form-control-sm' type='text'";
 			$el .= " onmousemove='setCalendar(this.id)' readonly='readonly' value='".$value."'";
-			if(is_array($attr) and $attr!=array()) {
-				foreach($attr as $key=>$row) {
-					$el .= " ".$key."=\"".$row."\"";
-				}
-			}
-			$el .= " style='cursor:pointer' />";
+			$el .= " style='cursor:pointer; max-width: 150px;' />";
+			$el .= "</div>";
 			break;
 		
 		// Tipe Textarea
@@ -426,10 +418,12 @@ function makeElement($id,$type,$value="",$attr=array(),$options=array(),
 		# Tipe Select
 		case 'select' :
 		case 'dropdown' :
-			$el .= "<select id='".$id."' name='".$id."'";
+			$el .= "<select id='".$id."' name='".$id."' class='form-select form-select-sm'";
 			if(is_array($attr) and $attr!=array()) {
 				foreach($attr as $key=>$row) {
-					$el .= " ".$key."=\"".$row."\"";
+					if($key !== 'class') {
+						$el .= " ".$key."=\"".$row."\"";
+					}
 				}
 			}
 			$el .=">";
