@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 include_once('lib/zLib.php');
@@ -6,7 +6,7 @@ echo open_body();
 include('master_mainMenu.php');
 ?>
 <script language=javascript1.2 src='js/sdm_lemburverifikasi.js'></script>
-<?
+<?php
 OPEN_BOX('',"<b>".$_SESSION['lang']['verifikasi'].' '.$_SESSION['lang']['lembur']."</b>");
 //get org
 if($_SESSION['empl']['tipelokasitugas']=='HOLDING'){

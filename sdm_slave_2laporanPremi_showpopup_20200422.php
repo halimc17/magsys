@@ -6,7 +6,7 @@
 ?>
 <script language=javascript1.2 src="js/generic.js"></script>
 <link rel=stylesheet type='text/css' href='style/generic.css'>
-<?
+<?php
 	$kdUnit=$_POST['kdUnit'];
 	$periode=$_POST['periode'];
 	$idkary=$_POST['idkary'];

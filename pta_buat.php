@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 include_once('lib/zLib.php');
@@ -12,9 +12,9 @@ OPEN_BOX();
 <script languange=javascript1.2 src='js/zGrid.js'></script>
 <script languange=javascript1.2 src='js/pta.js'></script>
 <script>
-    tolak="<? echo $_SESSION['lang']['ditolak'];?>";
-    ajukan="<? echo $_SESSION['lang']['diajukan'];?>";
-    setujuak="<? echo $_SESSION['lang']['setujuakhir'];?>";
+    tolak="<?php echo $_SESSION['lang']['ditolak'];?>";
+    ajukan="<?php echo $_SESSION['lang']['diajukan'];?>";
+    setujuak="<?php echo $_SESSION['lang']['setujuakhir'];?>";
     </script>
 <link rel=stylesheet type=text/css href='style/zTable.css'>
 <?php

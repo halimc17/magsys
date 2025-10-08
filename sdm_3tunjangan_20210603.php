@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 //-----------------ind
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -16,7 +16,7 @@ echo open_body();
 
 
 
-<?
+<?php
 $optper="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
 $sql="SELECT distinct periode FROM ".$dbname.".sdm_5periodegaji order by periode desc limit 10";
 $qry = mysql_query($sql) or die ("SQL ERR : ".mysql_error());
@@ -79,7 +79,7 @@ foreach($arrsstk as $kei=>$fal)
 
 
 
-<?
+<?php
 include('master_mainMenu.php');
 OPEN_BOX();
 $arr="##unit##per##jenis##tipe##tahun##tgl##pengali##makan##kawin";	

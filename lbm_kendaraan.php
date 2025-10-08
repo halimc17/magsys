@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');

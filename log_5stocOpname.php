@@ -1,11 +1,11 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 echo open_body();
 ?>
 <script type=text/javascript src='js/zTools.js'></script>
 <script type=text/javascript src='js/stockOpneme.js'></script>
-<?
+<?php
 include('master_mainMenu.php');
 OPEN_BOX();
 

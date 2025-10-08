@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -231,33 +231,33 @@ CLOSE_BOX();
 
                                 <table cellspacing='1' border='0'>
         <tr style="display:none;">
-            <td><? echo $_SESSION['lang']['tgl_kirim'] ?></td>
+            <td><?php echo $_SESSION['lang']['tgl_kirim'] ?></td>
                         <td>:</td>
                         <td><input type="text" class="myinputtext" id="tgl_krm" name="tgl_krm" onmousemove="setCalendar(this.id)" onkeypress="return false";   maxlength="10"  style="width:200px;" value="0000-00-00" /></td>
         </tr>
                   <tr>
-            <td><? echo $_SESSION['lang']['almt_kirim'] ?></td>
+            <td><?php echo $_SESSION['lang']['almt_kirim'] ?></td>
                         <td>:</td>
-                        <td><select id='tmpt_krm' name='tmpt_krm1'><? echo $optKrm ?></select>
+                        <td><select id='tmpt_krm' name='tmpt_krm1'><?php echo $optKrm ?></select>
                         <!--<input type='text'  id='tmpt_krm' name='tmpt_krm' maxlength='45' class='myinputtext' onkeypress='return tanpa_kutip(event);' style=width:200px />--></td>
         </tr>
          <tr>
-            <td><? echo $_SESSION['lang']['syaratPem'] ?></td>
+            <td><?php echo $_SESSION['lang']['syaratPem'] ?></td>
                         <td>:</td>
                         <td>
-						<select id='term_pay' name='term_pay'><? echo $optSyp ?></select>
+						<select id='term_pay' name='term_pay'><?php echo $optSyp ?></select>
 						<!-- <input type='text' id='term_pay' name='term_pay' class='myinputtext' onkeypress='return tanpa_kutip(event);' style="width:200px"   /> -->
 						</td>
         </tr>
                  <tr>
-            <td><? echo $_SESSION['lang']['keterangan'] ?></td>
+            <td><?php echo $_SESSION['lang']['keterangan'] ?></td>
                         <td>:</td>
                         <td><textarea id='ketUraian' name='ketUraian' onkeypress='return tanpa_kutip(event);' maxlength=30></textarea></td>
         </tr>
                 <tr>
-            <td><? echo $_SESSION['lang']['purchaser'] ?></td>
+            <td><?php echo $_SESSION['lang']['purchaser'] ?></td>
                         <td>:</td>
-                        <td><input type='text' id='purchaser_id' name='purchaser_id' class='myinputtext' disabled='disabled' value='<? echo $_SESSION['empl']['name'] ?>'  style='width:200px;' /></td>
+                        <td><input type='text' id='purchaser_id' name='purchaser_id' class='myinputtext' disabled='disabled' value='<?php echo $_SESSION['empl']['name'] ?>'  style='width:200px;' /></td>
         </tr></table>
 
                         </td></tr>
@@ -282,6 +282,6 @@ CLOSE_BOX();
     <?php CLOSE_BOX(); ?>
 </div>
 
-<?
+<?php
 echo close_body();
 ?>

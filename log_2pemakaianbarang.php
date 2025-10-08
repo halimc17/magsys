@@ -1,4 +1,4 @@
-	<?//@Copy nangkoelframework
+	<?php //@Copy nangkoelframework
 //ind
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -16,7 +16,7 @@ echo open_body();
 <script language=javascript1.2 src='js/log_2pemakaianbarang.js'></script>
 
 
-<?
+<?php
 
 
 
@@ -32,7 +32,7 @@ while($dUnit=mysql_fetch_assoc($nUnit))
 ?>
 
 
-<?
+<?php
 include('master_mainMenu.php');
 OPEN_BOX();
 $arr="##unit##tgl1##tgl2##barang";	

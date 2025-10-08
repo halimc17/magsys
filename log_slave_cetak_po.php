@@ -161,11 +161,11 @@
 					echo"<td align=center>".$yrs['namakaryawan']."</td>";
 					  ?>
 					 <td>			
-					 <button class=mybutton onclick="masterPDF('log_poht','<?php  echo $bar['nopo']?>','','log_slave_print_log_po',event);" ><? echo $_SESSION['lang']['print'] ?>
+					 <button class=mybutton onclick="masterPDF('log_poht','<?php  echo $bar['nopo']?>','','log_slave_print_log_po',event);" ><?php echo $_SESSION['lang']['print'] ?>
 					 </button>
 					 </td>
 	
-				 <?
+				 <?php
 				
 				 echo"</tr>";
 		}	 	 	echo"

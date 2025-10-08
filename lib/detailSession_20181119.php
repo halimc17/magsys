@@ -1,4 +1,4 @@
-<?
+<?php
 function setEmplSession($conn,$userid,$dbname)//load all data from user_empl to session
 {
 	$strses1="select * from ".$dbname.".datakaryawan where karyawanid=".$userid;

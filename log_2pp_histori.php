@@ -101,12 +101,12 @@ $arr="##klmpkBrg##kdUnit##periode##lokasi##statId##purId";
 <fieldset style="float: left;">
 <legend><b><?php echo $_SESSION['lang']['ppLap']?></b></legend>
 <table cellspacing="1" border="0" >
-<tr><td><label><?php echo $_SESSION['lang']['periode']?></label></td><td><select id="periode" name="periode" style="width:150px"><? echo $optPeriodeCari?></select></td></tr>
-        <tr><td><label><?php echo $_SESSION['lang']['status']?></label></td><td><select id="statId" name="statId" style="width:150px"><? echo $optStatusPP?></select></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['kelompokbarang']?></label></td><td><select id="klmpkBrg" name="klmpkBrg" style="width:150px"><? echo $opKlmpkBrg?></select></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['pt']?></label></td><td><select id="kdUnit" name="kdUnit" style="width:150px"><? echo $optListUnit;?></select></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['lokasiBeli']?></label></td><td><select id="lokasi" name="lokasi" style="width:150px"><? echo $optLokal?></select></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['purchaser']?></label></td><td><select id="purId" name="purId" style="width:150px"><? echo $optPur?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['periode']?></label></td><td><select id="periode" name="periode" style="width:150px"><?php echo $optPeriodeCari?></select></td></tr>
+        <tr><td><label><?php echo $_SESSION['lang']['status']?></label></td><td><select id="statId" name="statId" style="width:150px"><?php echo $optStatusPP?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['kelompokbarang']?></label></td><td><select id="klmpkBrg" name="klmpkBrg" style="width:150px"><?php echo $opKlmpkBrg?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['pt']?></label></td><td><select id="kdUnit" name="kdUnit" style="width:150px"><?php echo $optListUnit;?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['lokasiBeli']?></label></td><td><select id="lokasi" name="lokasi" style="width:150px"><?php echo $optLokal?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['purchaser']?></label></td><td><select id="purId" name="purId" style="width:150px"><?php echo $optPur?></select></td></tr>
 
 
 <tr height="20"><td colspan="2">&nbsp;</td></tr>

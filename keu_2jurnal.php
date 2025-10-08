@@ -1,11 +1,11 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 require_once('lib/zLib.php');
 echo open_body();
 ?>
 <script language=javascript1.2 src='js/keu_laporan.js'></script>
-<?
+<?php
 include('master_mainMenu.php');
 OPEN_BOX('','<b>'.strtoupper($_SESSION['lang']['laporanjurnal']).'</b>');
 

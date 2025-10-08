@@ -6,7 +6,7 @@
 ?>
 <script language=javascript1.2 src="js/generic.js"></script>
 <link rel=stylesheet type='text/css' href='style/generic.css'>
-<?
+<?php
 	$carikodeorg=checkPostGet('carikodeorg','');
 	$caritanggal1=tanggalsystem(checkPostGet('caritanggal1',''));
 	$caritanggal2=tanggalsystem(checkPostGet('caritanggal2',''));
@@ -60,7 +60,7 @@
 				<td width='6%' align=center>".$_SESSION['lang']['jenis']."</td>
 				<td width='6%' align=center>".$_SESSION['lang']['kg']."</td>
 				<td align=center>".$_SESSION['lang']['keterangan']."</td>
-	$stream2.="</tr>
+	</tr>
 		</thead>
 		<tbody>";
 	if($rowz==0){

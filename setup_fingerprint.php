@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('config/connection.php');
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -6,7 +6,7 @@ echo open_body();
 ?>
 
 <script language=javascript1.2 src='js/setup_fingerprint.js'></script>
-<?
+<?php
 $optKar="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
 $sKar="select  karyawanid, namakaryawan from ".$dbname.".datakaryawan where lokasitugas like '%HO' and ((tanggalkeluar = '0000-00-00') or (tanggalkeluar is NULL))
     order by namakaryawan";

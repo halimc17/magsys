@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -54,7 +54,7 @@ OPEN_BOX();
 		</tfoot>
 	</table>
 </fieldset>
-<?
+<?php
 CLOSE_BOX();
 echo close_body();
 ?>

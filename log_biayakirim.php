@@ -9,7 +9,7 @@ echo open_body();
 <script language="javascript" src="js/zMaster.js"></script>
 <script language="javascript" src="js/zTools.js"></script>
 <script language=javascript1.2 src='js/log_biayakirim.js'></script>
-<?
+<?php
 include('master_mainMenu.php');
 OPEN_BOX();
 

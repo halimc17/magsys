@@ -7,7 +7,7 @@ echo open_body();
 include('master_mainMenu.php');
 ?>
 <script>
-pilh=" <? echo $_SESSION['lang']['pilihdata'] ?>";
+pilh=" <?php echo $_SESSION['lang']['pilihdata'] ?>";
 </script>
 <script language="javascript" src="js/zTools.js"></script>
 <script type="text/javascript" src="js/bgt_budget_sebaran.js"></script>

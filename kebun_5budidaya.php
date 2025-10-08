@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -147,7 +147,7 @@ OPEN_BOX();
 </tr></table>
 <p><font face="Fixedsys">&nbsp;&nbsp;&nbsp; &nbsp;</font></p>-->
 
-<?
+<?php
 CLOSE_BOX();
 echo close_body();
 ?>

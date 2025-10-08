@@ -1,4 +1,4 @@
-<?//Ind
+<?php //Ind
 require_once('master_validation.php');
 require_once('lib/nangkoelib.php');
 require_once ('config/connection.php');
@@ -17,7 +17,7 @@ require_once('master_mainMenu.php');
 
 
 
-<?
+<?php
 $arrPil=array("1"=>$_SESSION['lang']['proses'].' '.$_SESSION['lang']['persetujuan'].' '.$_SESSION['lang']['prmntaanPembelian'],
               "2"=>$_SESSION['lang']['proses'].' '.$_SESSION['lang']['purchasing'],
               "3"=>$_SESSION['lang']['jmlh_brg_sdh_po'],

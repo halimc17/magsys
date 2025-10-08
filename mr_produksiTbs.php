@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 include_once('lib/zLib.php');
@@ -75,8 +75,8 @@ function getUnit()
 <table cellspacing="1" border="0" >
     <tr><td><label><?php echo $_SESSION['lang']['periode']?></label></td><td><select id="periodeDt" style="width:150px"><?php echo $optPeriode;?></select></td></tr>
 <tr><td><label><?php echo $_SESSION['lang']['pt']?></label></td><td><select id="kdPt" name="kdPt" style="width:150px" onchange="getUnit()"><?php echo $optKlmpk?></select></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['unit']?></label></td><td><select id="kdUnit" name="kdUnit" style="width:150px"><? echo $optKlmpk2?></select></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['intiplasma']?></label></td><td><select id="intiplasma" name="intiplasma" style="width:150px"><? echo $optDtTp?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['unit']?></label></td><td><select id="kdUnit" name="kdUnit" style="width:150px"><?php echo $optKlmpk2?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['intiplasma']?></label></td><td><select id="intiplasma" name="intiplasma" style="width:150px"><?php echo $optDtTp?></select></td></tr>
 
 
 
@@ -94,9 +94,9 @@ OPEN_BOX('','Result:');?>
 <div style='width:1180px;display:fixed;'>
 <table cellpadding=1 cellspacing=1 border=0 class=sortable width=1160px>
 <thead><tr class=rowheader>
-<td rowspan=4 align=center   style='width:40px;'><? echo $_SESSION['lang']['tahuntanam'] ?></td>
-<td rowspan=4 align=center  style='width:40px;'><? echo $_SESSION['lang']['pt'] ?></td>
-<td rowspan=4 align=center  style='width:40px;'><? echo $_SESSION['lang']['afdeling'] ?></td>
+<td rowspan=4 align=center   style='width:40px;'><?php echo $_SESSION['lang']['tahuntanam'] ?></td>
+<td rowspan=4 align=center  style='width:40px;'><?php echo $_SESSION['lang']['pt'] ?></td>
+<td rowspan=4 align=center  style='width:40px;'><?php echo $_SESSION['lang']['afdeling'] ?></td>
 <td colspan=2  rowspan=2  align=center  style='width:100px;'>LUAS TM (Ha)</td>
 <td colspan=5   align=center   style='width:270px;'>TOTAL PRODUKSI (KG)</td>
 <td colspan=3   align=center   style='width:150px;'>KG/HA</td></tr>

@@ -1,10 +1,10 @@
-<?
+<?php
 require_once('master_validation.php');
 require_once('config/connection.php');
 require_once('lib/nangkoelib.php');
 ?>
 <link rel=stylesheet type=text/css href=style/generic.css>
-<?      
+<?php      
 $param=$_GET;
   $str="select b.tanggal,a.notransaksi,a.alokasibiaya,a.keterangan,a.jumlah 
         from ".$dbname.".vhc_rundt a 

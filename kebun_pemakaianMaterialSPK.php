@@ -28,11 +28,11 @@
         </tr>
         <tr>
             <td><?php echo $_SESSION['lang']['kegiatan']?></td><td>:</td>
-            <td><select id='kegiatan' style="width:200px"><? echo $optKeg; ?></select></td>
+            <td><select id='kegiatan' style="width:200px"><?php echo $optKeg; ?></select></td>
         </tr>
         <tr>
             <td><?php echo $_SESSION['lang']['blok']?></td><td>:</td>
-            <td><select id='blok' onchange="caritanggal();" style="width:200px"><? echo $optBlok; ?></select></td>
+            <td><select id='blok' onchange="caritanggal();" style="width:200px"><?php echo $optBlok; ?></select></td>
         </tr>
         <tr>
             <td><?php echo $_SESSION['lang']['tanggal']?></td><td>:</td>
@@ -43,7 +43,7 @@
             <td>
                 <input type='text' class='myinputtext' id='namabarang' onkeyup ='resetkobar();' onkeypress="return tanpa_kutip();"  size='10' maxlength='30' style="width:150px;" />
                 <input type='hidden' id='kodebarang' name='kodebarang' />
-                <? echo"<input type='image' id=search1 src=images/search.png class=dellicon title=".$_SESSION['lang']['find']." onclick=\"searchBrg(1,'".$_SESSION['lang']['findBrg']."','<fieldset><legend>".$_SESSION['lang']['findnoBrg']."</legend>Find<input type=text class=myinputtext id=no_brg value=".$namabarang."><button class=mybutton onclick=findBrg(1)>Find</button></fieldset><div id=container></div><input type=hidden id=nomor name=nomor value=".$key.">',event)\";>";?>
+                <?php echo"<input type='image' id=search1 src=images/search.png class=dellicon title=".$_SESSION['lang']['find']." onclick=\"searchBrg(1,'".$_SESSION['lang']['findBrg']."','<fieldset><legend>".$_SESSION['lang']['findnoBrg']."</legend>Find<input type=text class=myinputtext id=no_brg value=".$namabarang."><button class=mybutton onclick=findBrg(1)>Find</button></fieldset><div id=container></div><input type=hidden id=nomor name=nomor value=".$key.">',event)\";>";?>
             </td>
         </tr>
         <tr>

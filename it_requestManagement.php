@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 include_once('lib/zLib.php');
@@ -6,9 +6,9 @@ echo open_body();
 ?>
 <script language=javascript1.2 src='js/it_requestManagement.js'></script>
 <script>
-    tolak="<? echo $_SESSION['lang']['ditolak'];?>";
+    tolak="<?php echo $_SESSION['lang']['ditolak'];?>";
     </script>
-<?
+<?php
 include('master_mainMenu.php');
 OPEN_BOX('','<b>'.strtoupper("Request management:").'</b>');
 $optKary="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";

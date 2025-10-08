@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 require_once('config/connection.php');
@@ -6,7 +6,7 @@ echo open_body();
 ?>
 <script language=javascript src=js/zTools.js></script>
 <script language=javascript1.2 src='js/sdm_ruangrapat.js'></script>
-<?
+<?php
 
 for($i=0;$i<24;)
 {

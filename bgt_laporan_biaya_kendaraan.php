@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -45,7 +45,7 @@ function Clear2()
 
 <link rel=stylesheet type=text/css href=style/zTable.css>
 
-<?
+<?php
 
 $frm[0].="
 <fieldset style=\"float: left;\">

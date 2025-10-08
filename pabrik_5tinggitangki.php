@@ -1,10 +1,10 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 echo open_body();
 ?>
 <script language=javascript1.2 src=js/pabrik_5tinggitangki.js></script>
-<?
+<?php
 include('master_mainMenu.php');
 OPEN_BOX();
 
@@ -31,35 +31,35 @@ if(mysql_num_rows($qKdTangki)==0){
 
 ?>
 <fieldset style="width:300px;">
-	<legend><?echo $_SESSION['lang']['tinggitangki'];?></legend>
+	<legend><?php echo $_SESSION['lang']['tinggitangki'];?></legend>
 <table border="0" cellspacing="0">
   <tr>
-    <td><?echo $_SESSION['lang']['kodeorg'];?>
+    <td><?php echo $_SESSION['lang']['kodeorg'];?>
     </td>
-    <td><select id="kodeorg"><?echo $optOrg;?></select></td>
+    <td><select id="kodeorg"><?php echo $optOrg;?></select></td>
   </tr>
   <tr>
-    <td><?echo $_SESSION['lang']['kodetangki'];?></td>
-    <td><select id="kodetangki"><? echo $optKdTangki; ?></select></td>
+    <td><?php echo $_SESSION['lang']['kodetangki'];?></td>
+    <td><select id="kodetangki"><?php echo $optKdTangki; ?></select></td>
   </tr>
   <tr>
-    <td><?echo $_SESSION['lang']['Tinggi']." (cm)";?></td>
+    <td><?php echo $_SESSION['lang']['Tinggi']." (cm)";?></td>
 	<td><input type="text"  class=myinputtextnumber id="tinggi" value=0 size=10 maxlength=10 onkeypress="return angka_doang(event)"></td>
   </tr>
   <tr>
-    <td><?echo $_SESSION['lang']['volume']." (liter)";?></td>
+    <td><?php echo $_SESSION['lang']['volume']." (liter)";?></td>
     <td><input type="text"  class=myinputtextnumber id="volume" value=0 size=10 maxlength=10 onkeypress="return angka_doang(event)"></td>
   </tr>
   <tr>
-    <td><?echo $_SESSION['lang']['beda']." (liter)";?></td>
+    <td><?php echo $_SESSION['lang']['beda']." (liter)";?></td>
 	<td><input type="text"  class=myinputtextnumber id="beda" value=0 size=10 maxlength=10 onkeypress="return angka_doang(event)"></td>
   </tr>
   <input type=hidden value='insert' id=method>
 </table>
-<button class=mybutton onclick=simpanTinggiTangki()><?echo $_SESSION['lang']['save'];?></button>
-<button class=mybutton onclick=cancelTinggiTangki()><?echo $_SESSION['lang']['cancel'];?></button>
+<button class=mybutton onclick=simpanTinggiTangki()><?php echo $_SESSION['lang']['save'];?></button>
+<button class=mybutton onclick=cancelTinggiTangki()><?php echo $_SESSION['lang']['cancel'];?></button>
 </fieldset>
-<?
+<?php
 CLOSE_BOX();
 OPEN_BOX();
 

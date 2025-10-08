@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 echo open_body();
@@ -63,7 +63,7 @@ function getUnit2(){
 }
 
 </script>
-<?
+<?php
 include('master_mainMenu.php');
 OPEN_BOX('','<b>'.strtoupper($_SESSION['lang']['laporangudang']).'</b>');
 $optPt="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";

@@ -1,4 +1,4 @@
-<?
+<?php
 require_once('master_validation.php');
 include_once('lib/nangkoelib.php');
 include_once('lib/zLib.php');
@@ -7,7 +7,7 @@ include_once('lib/zLib.php');
 <script language=javascript1.2 src="js/help_bantuan.js"></script>
 <link rel=stylesheet type=text/css href=style/generic.css>
 
-<?      
+<?php      
 $proses = isset($_GET['proses'])? $_GET['proses']: '';
 $param = $_GET;
 

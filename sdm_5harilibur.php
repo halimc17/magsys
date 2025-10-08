@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 include('lib/zMysql.php');
@@ -7,7 +7,7 @@ echo open_body();
 <script language=javascript src=js/zTools.js></script>
 <script language=javascript1.2 src='js/sdm_5harilibur.js'></script>
 
-<?
+<?php
 $arr="##kebun##tanggal##keterangan##catatan";
 
 $optKebun="";

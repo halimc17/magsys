@@ -1,4 +1,4 @@
-<? 
+<?php 
 require_once('master_validation.php');
 include_once('lib/nangkoelib.php');
 include_once('lib/zLib.php');
@@ -9,7 +9,7 @@ $_POST['judul']==''?$judul=$_GET['judul']:$judul=$_POST['judul'];
 ?>
 
     
-<?
+<?php
 $optRegional.="<option value=''>".$_SESSION['lang']['all']."</option>";
 $sRegion="select distinct regional from ".$dbname.".bgt_regional where regional not in ('DKI','LAMPUNG') order by regional asc";
 $qRegion=mysql_query($sRegion) or die(mysql_error($conn));

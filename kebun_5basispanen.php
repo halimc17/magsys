@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 include_once('lib/zLib.php');
@@ -201,7 +201,7 @@ Satuan</td></tr><tr><td width="7%">&nbsp;</td><td width="19%">&nbsp;</td>
 </tr></table>
 <p><font face="Fixedsys">&nbsp;&nbsp;&nbsp; &nbsp;</font></p-->
 
-<?
+<?php
 CLOSE_BOX();
 echo close_body();
 ?>

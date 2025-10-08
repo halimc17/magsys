@@ -6,7 +6,7 @@ echo open_body();
 ?>
 <script language="JavaScript1.2" src="js/zTools.js"></script>
 <script language=javascript1.2 src=js/subtipeasset.js></script>
-<?
+<?php
 include('master_mainMenu.php');
 
 ### BEGIN GET TYPE ASSET ###

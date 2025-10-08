@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -88,7 +88,7 @@ function getBrg()
   //  alert(fileTarget+'.php?proses=preview', param, respon);
   post_response_text(tujuan, param, respon);
 }
-semua="<? echo $_SESSION['lang']['all'] ?>";
+semua="<?php echo $_SESSION['lang']['all'] ?>";
 function batal()
 {
     document.getElementById('klmpkBrg').value='';
@@ -156,16 +156,16 @@ function setData(kdbrg)
 <legend><b><?php echo $_SESSION['lang']['detPembTakhir']?></b></legend>
 <table cellspacing="1" border="0" >
 <tr><td><label><?php echo $_SESSION['lang']['kelompokbarang']?></label></td><td><select id="klmpkBrg" name="klmpkBrg" style="width:150px" onchange="getBrg()"><?php echo $optKlmpk?></select></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['namabarang']?></label></td><td><select id="kdBrg" name="kdBrg" style="width:150px"><option value=''><? echo $_SESSION['lang']['all']?></option></select>&nbsp;<img src="images/search.png" class="resicon" title='<? echo $_SESSION['lang']['find']." ".$_SESSION['lang']['namabarang'] ?>' onclick="searchBrg('<? echo $_SESSION['lang']['find']." ".$_SESSION['lang']['namabarang'] ?>','<fieldset><legend><? echo $_SESSION['lang']['find']." ".$_SESSION['lang']['namabarang'] ?></legend><? echo $_SESSION['lang']['find'];?>&nbsp;<input type=text class=myinputtext id=nmBrg><button class=mybutton onclick=findBrg()><? echo $_SESSION['lang']['find'] ?></button></fieldset><div id=containerBarang style=overflow=auto;height=380;width=485></div>',event);"></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['lokasiBeli']?></label></td><td><select id="lokBeli" name="lokBeli" style="width:150px"><? echo $optLokal?></select></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['dari']." ".$_SESSION['lang']['periode']?></label></td><td><select id="tglDr" style="width:150px;"><? echo $optPeriodePo ?></select><!--<input type="text" class="myinputtext" id="tglDr" name="tglDr" onmousemove="setCalendar(this.id)" onkeypress="return false;"  maxlength="10"  />--></td></tr>
-<tr><td><?php echo $_SESSION['lang']['tglcutisampai']." ".$_SESSION['lang']['periode']?></td><td><select id="tanggalSampai" style="width:150px;"><? echo $optPeriodePo ?></select><!--<input type="text" class="myinputtext" id="tanggalSampai" name="tanggalSampai" onmousemove="setCalendar(this.id)" onkeypress="return false;"  maxlength="10" style="width:150px;" />--></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['namabarang']?></label></td><td><select id="kdBrg" name="kdBrg" style="width:150px"><option value=''><?php echo $_SESSION['lang']['all']?></option></select>&nbsp;<img src="images/search.png" class="resicon" title='<?php echo $_SESSION['lang']['find']." ".$_SESSION['lang']['namabarang'] ?>' onclick="searchBrg('<?php echo $_SESSION['lang']['find']." ".$_SESSION['lang']['namabarang'] ?>','<fieldset><legend><?php echo $_SESSION['lang']['find']." ".$_SESSION['lang']['namabarang'] ?></legend><?php echo $_SESSION['lang']['find'];?>&nbsp;<input type=text class=myinputtext id=nmBrg><button class=mybutton onclick=findBrg()><?php echo $_SESSION['lang']['find'] ?></button></fieldset><div id=containerBarang style=overflow=auto;height=380;width=485></div>',event);"></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['lokasiBeli']?></label></td><td><select id="lokBeli" name="lokBeli" style="width:150px"><?php echo $optLokal?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['dari']." ".$_SESSION['lang']['periode']?></label></td><td><select id="tglDr" style="width:150px;"><?php echo $optPeriodePo ?></select><!--<input type="text" class="myinputtext" id="tglDr" name="tglDr" onmousemove="setCalendar(this.id)" onkeypress="return false;"  maxlength="10"  />--></td></tr>
+<tr><td><?php echo $_SESSION['lang']['tglcutisampai']." ".$_SESSION['lang']['periode']?></td><td><select id="tanggalSampai" style="width:150px;"><?php echo $optPeriodePo ?></select><!--<input type="text" class="myinputtext" id="tanggalSampai" name="tanggalSampai" onmousemove="setCalendar(this.id)" onkeypress="return false;"  maxlength="10" style="width:150px;" />--></td></tr>
 
 <tr height="20"><td colspan="2">&nbsp;</td></tr>
 <tr><td colspan="2"><button onclick="zPreview('log_slave_2pembelian_terakhir','<?php echo $arr?>','printContainer')" class="mybutton" name="preview" id="preview">Preview</button>
         <!--<button onclick="zPdf('log_slave_2detail_pembelian_brg','<?php echo $arr?>','printContainer')" class="mybutton" name="preview" id="preview">PDF</button>-->
         <button onclick="zExcel(event,'log_slave_2pembelian_terakhir.php','<?php echo $arr?>')" class="mybutton" name="preview" id="preview">Excel</button>
-        <button onclick="batal()" class="mybutton" name="btl" id="btl"><? echo $_SESSION['lang']['cancel']?></button>
+        <button onclick="batal()" class="mybutton" name="btl" id="btl"><?php echo $_SESSION['lang']['cancel']?></button>
 </td></tr>
 
 </table>

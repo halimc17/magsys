@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -25,8 +25,8 @@ foreach($arrOptIntex as $isi =>$tks)
 $arr="##tglAwal##tglAkhir##statBuah##kdPbrk##suppId##kdOrg";
 ?>
 <script>
-optInt="<option value=''><? echo $_SESSION['lang']['all']?></option>";
-optExt="<option value=''><? echo $_SESSION['lang']['all']?></option>";
+optInt="<option value=''><?php echo $_SESSION['lang']['all']?></option>";
+optExt="<option value=''><?php echo $_SESSION['lang']['all']?></option>";
 </script>
 
 <script language=javascript src=js/zTools.js></script>

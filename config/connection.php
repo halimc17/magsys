@@ -1,4 +1,4 @@
-<?
+<?php
 $dbserver='localhost';
 $dbport  ='3306';
 $dbname  ='erpmill';

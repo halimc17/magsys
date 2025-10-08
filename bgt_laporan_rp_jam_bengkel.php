@@ -197,7 +197,7 @@ OPEN_BOX();
 <div id='printContainer' style='overflow:auto;height:350px;max-width:1220px'>
 </div></fieldset>
 
-<?
+<?php
 CLOSE_BOX();
 echo close_body();
 ?>

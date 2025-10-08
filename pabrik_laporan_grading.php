@@ -43,7 +43,7 @@
 		}  	
 	}
 </script>
-<?
+<?php
 	include('master_mainMenu.php');
 	$frm[0]='';
 	$frm[1]='';

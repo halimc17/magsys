@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -101,7 +101,7 @@ function  getPeriode()
     <?php if($_SESSION['empl']['tipelokasitugas']!='HOLDING' or $_SESSION['empl']['tipelokasitugas']=='KANWIL')
            {?>
 <fieldset style="float: left;">
-<legend><b><?echo $_SESSION['lang']['slipgajibulananper']."/".$_SESSION['lang']['periode'];?></b><?php //echo $_SESSION['lang']['']?></legend>
+<legend><b><?php echo $_SESSION['lang']['slipgajibulananper']."/".$_SESSION['lang']['periode'];?></b><?php //echo $_SESSION['lang']['']?></legend>
 <table cellspacing="1" border="0" >
 <tr><td><label><?php echo $_SESSION['lang']['periode']?></label></td><td><select id="periode" name="periode" style="width:150px"><?php echo $optPeriode?></select></td></tr>
 <tr><td><label><?php echo $_SESSION['lang']['bagian']?></label></td><td><select id="kdBag" name="kdBag" style="width:150px"><?php echo $optDept?></select></td></tr>
@@ -114,7 +114,7 @@ function  getPeriode()
 </div>
 <div >
 <fieldset style="float: left;">
-<legend><b><?echo $_SESSION['lang']['slipgajibulananper']."/".$_SESSION['lang']['karyawan'];?></b><?php //echo $_SESSION['lang']['']?></legend>
+<legend><b><?php echo $_SESSION['lang']['slipgajibulananper']."/".$_SESSION['lang']['karyawan'];?></b><?php //echo $_SESSION['lang']['']?></legend>
 <table cellspacing="1" border="0" >
 <tr><td><label><?php echo $_SESSION['lang']['periode']?></label></td><td><select id="period" name="period" style="width:150px"><?php echo $optPeriode?></select></td></tr>
 
@@ -126,7 +126,7 @@ function  getPeriode()
 </div>
 <div style="margin-bottom: 30px;">
 <fieldset style="float: left;">
-<legend><b><?echo $_SESSION['lang']['slipgajibulananper']."/";?> Afdeling</b><?php //echo $_SESSION['lang']['']?></legend>
+<legend><b><?php echo $_SESSION['lang']['slipgajibulananper']."/";?> Afdeling</b><?php //echo $_SESSION['lang']['']?></legend>
 <table cellspacing="1" border="0" >
 <tr><td><label><?php echo $_SESSION['lang']['unit']?></label></td><td>
 <select id="idAfd" name="idAfd" style="width:150px"><?php echo $optOrg?></select></td></tr>
@@ -139,7 +139,7 @@ function  getPeriode()
 </div>
 <?php } else {?>
 <fieldset style="float: left;">
-<legend><b><?echo $_SESSION['lang']['slipgajibulananper']."/";?>Afdeling</b><?php //echo $_SESSION['lang']['']?></legend>
+<legend><b><?php echo $_SESSION['lang']['slipgajibulananper']."/";?>Afdeling</b><?php //echo $_SESSION['lang']['']?></legend>
 <table cellspacing="1" border="0" >
 <tr><td><label><?php echo $_SESSION['lang']['unit']?></label></td><td>
 <select id="idAfd" name="idAfd" style="width:150px"><?php echo $optOrg?></select></td></tr>

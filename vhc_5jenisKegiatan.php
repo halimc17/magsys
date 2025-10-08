@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include_once('lib/nangkoelib.php');
@@ -7,7 +7,7 @@ echo open_body();
 ?>
 
 <script language=javascript1.2 src='js/vhc_kegiatan.js'></script>
-<?
+<?php
 include('master_mainMenu.php');
 OPEN_BOX('',$_SESSION['lang']['vhc_kegiatan']);
 

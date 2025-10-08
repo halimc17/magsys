@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -66,7 +66,7 @@ function printFile(param,tujuan,title,ev)
 }
 
 </script>    
-<?
+<?php
 
 OPEN_BOX(''); 
 //ambil tanggal traksi
@@ -101,7 +101,7 @@ while($bar=mysql_fetch_object($res))
 <tr height="20"><td colspan="2"><?php echo "<button class=mybutton onclick=qwe()>".$_SESSION['lang']['proses']."</button>"; ?></td></tr>
 </table>
 </fieldset>
-<?
+<?php
 
 echo"<fieldset style=\"clear: both;\"><legend><b>Print Area</b></legend>
 <span id=printPanel style='display:none;'>

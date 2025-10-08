@@ -1,11 +1,11 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 echo open_body();
 // dz, sep 26 2011
 ?>
 <script language=javascript1.2 src="js/bgt_laporan_budget_departemen.js"></script>
-<?
+<?php
 include('master_mainMenu.php');
 //OPEN_BOX('','<b>'.strtoupper($_SESSION['lang']['laporanbukubesar']).'</b>');
 OPEN_BOX();
@@ -37,7 +37,7 @@ OPEN_BOX();
 
 </table>
 </fieldset>
-<?
+<?php
 CLOSE_BOX();
 OPEN_BOX('','Result:');
 //	 <img onclick=arealKePDF(event,'bgt_laporan_arealstatement_pdf.php') title='PDF' class=resicon src=images/pdf.jpg>

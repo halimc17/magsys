@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -65,7 +65,7 @@ for($x=0;$x<=24;$x++){
 <link rel='stylesheet' type='text/css' href='style/zTable.css'>
 
 <fieldset style="float: left;">
-<legend><b><?
+<legend><b><?php
 
     echo $_SESSION['lang']['suratPengantarBuah']." Vs Weighbridge";
 

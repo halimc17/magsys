@@ -5,7 +5,7 @@ require_once('lib/nangkoelib.php');
 require_once('lib/zLib.php');
 ?>
 <link rel=stylesheet type='text/css' href='style/generic.css'>
-<?
+<?php
    
 $noakun=$_GET['noakun'];
 $periode=$_GET['periode'];

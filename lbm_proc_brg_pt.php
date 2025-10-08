@@ -1,4 +1,4 @@
-<? 
+<?php 
 require_once('master_validation.php');
 include_once('lib/nangkoelib.php');
 include_once('lib/zLib.php');
@@ -9,7 +9,7 @@ $_POST['judul']==''?$judul=$_GET['judul']:$judul=$_POST['judul'];
 ?>
 
     
-<?
+<?php
 //echo'<script type="text/javascript" src="js/lbm_karyawan_perumahan.js"></script>'; // taken from bgt_laporan_kapital
 
 $optTipe="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";

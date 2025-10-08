@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('config/connection.php');
 require_once('lib/nangkoelib.php');
 

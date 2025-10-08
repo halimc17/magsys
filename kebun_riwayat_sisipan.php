@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 echo open_body();
@@ -6,7 +6,7 @@ echo open_body();
 <script language=javascript src=js/zTools.js></script>
 <script language=javascript src=js/zReport.js></script>
 <script language=javascript src='js/kebun_riwayat_sisipan.js'></script>
-<?
+<?php
 include('master_mainMenu.php');
 OPEN_BOX('','<b>'.strtoupper($_SESSION['lang']['riwayatsisipan']).'</b>');
 

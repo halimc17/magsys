@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 echo open_body();
@@ -39,7 +39,7 @@ function hapusGaji()
         }
 }
 </script>
-<?
+<?php
 include('master_mainMenu.php');
 OPEN_BOX('');
 $str="select distinct periode from ".$dbname.".sdm_5periodegaji 

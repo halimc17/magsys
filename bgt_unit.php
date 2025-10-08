@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 include_once('lib/zLib.php');
@@ -6,7 +6,7 @@ echo open_body();
 include('master_mainMenu.php');
 ?>
 <script language=javascript1.2 src='js/bgt_unit.js'></script>
-<?
+<?php
 OPEN_BOX('',"<b>".'Budget Unit'."</b>");
 //get org
 $optDivisi="<option value=''>".$_SESSION['lang']['all']."</option>";

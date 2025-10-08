@@ -1,10 +1,10 @@
-<?
+<?php
 	require_once('master_validation.php');
 	include('lib/nangkoelib.php');
 	echo open_body();
 ?>
 <script   language=javascript1.2 src='js/umum_2daftarfile.js'></script>
-<?
+<?php
 	include('master_mainMenu.php');
 	OPEN_BOX(''," ");
 	#ambil kode

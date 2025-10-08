@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -70,6 +70,6 @@ CLOSE_BOX();
 <input type="hidden" id="no_po" name="no_po" />
 <input type="hidden" name="user_login" id="user_login" value="<?php echo $_SESSION['standard']['userid']?>" />
 
-<?
+<?php
 echo close_body();
 ?>

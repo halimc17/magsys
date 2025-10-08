@@ -123,12 +123,12 @@
 //						  {
 							  ?>
 							 <td>
-							 <button class=mybutton onclick="masterPDF('log_poht','<?php  echo $bar['nopo']?>','','log_slave_print_po',event);" ><? echo $_SESSION['lang']['print'] ?>
+							 <button class=mybutton onclick="masterPDF('log_poht','<?php  echo $bar['nopo']?>','','log_slave_print_po',event);" ><?php echo $_SESSION['lang']['print'] ?>
 							 </button>
 							 </td>
 						 <?php //} else {?>
 						<!-- <td>&nbsp;</td>-->
-						 <?
+						 <?php
 						// }
 						 echo"</tr>";
 				}
@@ -233,11 +233,11 @@
 				 
 					  ?>
 					 <td>			
-					 <button class=mybutton onclick="masterPDF('log_poht','<?php  echo $bar['nopo']?>','','log_slave_print_detail_po',event);" ><? echo $_SESSION['lang']['print'] ?>
+					 <button class=mybutton onclick="masterPDF('log_poht','<?php  echo $bar['nopo']?>','','log_slave_print_detail_po',event);" ><?php echo $_SESSION['lang']['print'] ?>
 					 </button>
 					 </td>
 	
-				 <?
+				 <?php
 				
 				 echo"</tr>";
 		}	 	 	echo"

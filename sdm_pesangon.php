@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 include('lib/zMysql.php');
@@ -11,7 +11,7 @@ echo open_body();
 <script>
 
 </script>
-<?
+<?php
 $sKary="select * from ".$dbname.".datakaryawan
         where tipekaryawan not in(0,7,8) and (tanggalkeluar = '0000-00-00' or tanggalkeluar > '".date("Y-m-d")."')";
 $qKary=mysql_query($sKary) or die(mysql_error($conn));

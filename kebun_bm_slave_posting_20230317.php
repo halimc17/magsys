@@ -1,4 +1,4 @@
-<?
+<?php
 //Posting Bongkar Muat
 require_once('master_validation.php');
 include_once('lib/nangkoelib.php');

@@ -1,4 +1,4 @@
-<?
+<?php
 session_cache_expire(25);//25 minutes cache keep by browser
 if(!isset($_SESSION)) session_start();
 $bb='';

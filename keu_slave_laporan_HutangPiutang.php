@@ -6,7 +6,7 @@ require_once('lib/zLib.php');
 
 ?>
 	<link rel=stylesheet type=text/css href=style/generic.css>	
-<?
+<?php
 $tanggalmulai=$_GET['mulai'];
 $tanggalsampai=$_GET['sampai'];
 $noakun=$_GET['noakun'];

@@ -1,5 +1,5 @@
 <link rel=stylesheet type='text/css' href='style/generic.css'>
-<?
+<?php
 require_once('config/connection.php');
 
 $tanggal = date('d-m-Y', time());

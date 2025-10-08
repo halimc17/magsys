@@ -1,11 +1,11 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 echo open_body();
 ?>
 
 <script language=javascript1.2 src='js/alokasiIDC.js'></script>
-<?
+<?php
 include('master_mainMenu.php');
 OPEN_BOX('',$_SESSION['lang']['input'].' '.$_SESSION['lang']['alokasiidc']);
 echo"<fieldset><legend>".$_SESSION['lang']['form']."</legend>

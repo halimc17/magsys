@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include_once('lib/nangkoelib.php');
 include_once('lib/zLib.php');
@@ -7,7 +7,7 @@ echo open_body();
 ?>
 <script language=javascript1.2 src='js/zTools.js'></script>
 <script language=javascript1.2 src='js/log_mutasi.js'></script>
-<?
+<?php
 include('master_mainMenu.php');
 
 if(isTransactionPeriod())//check if transaction period is normal

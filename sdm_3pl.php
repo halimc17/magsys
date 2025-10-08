@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 echo open_body();
@@ -16,7 +16,7 @@ include_once('lib/zLib.php');
 
 
 
-<?
+<?php
 $nmOrg=makeOption($dbname,'organisasi','kodeorganisasi,namaorganisasi');
 
 

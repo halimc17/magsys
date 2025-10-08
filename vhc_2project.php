@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -160,8 +160,8 @@ $arr="##kdOrg##thnId";
 <fieldset style="float: left;">
 <legend><b><?php echo $_SESSION['lang']['lapproject']?></b></legend>
 <table cellspacing="1" border="0" >
-<tr><td><label><?php echo $_SESSION['lang']['kodeorg']?></label></td><td><select id="kdOrg" name="kdOrg" style="width:150px"><? echo $optOrg?></select></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['tahun']?></label></td><td><select id="thnId" name="thnId" style="width:150px" ><? echo $optPeriode?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['kodeorg']?></label></td><td><select id="kdOrg" name="kdOrg" style="width:150px"><?php echo $optOrg?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['tahun']?></label></td><td><select id="thnId" name="thnId" style="width:150px" ><?php echo $optPeriode?></select></td></tr>
 <tr height="20"><td colspan="2">&nbsp;</td></tr>
 <tr><td colspan="2"><button onclick="zPreview('vhc_slave_2project','<?php echo $arr?>','printContainer')" class="mybutton" name="preview" id="preview">Preview</button><button onclick="zExcel(event,'vhc_slave_2project.php','<?php echo $arr?>')" class="mybutton" name="preview" id="preview">Excel</button></td></tr>
 </table>

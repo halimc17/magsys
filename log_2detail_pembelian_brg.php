@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -127,9 +127,9 @@ function setData(kdbrg)
 <legend><b><?php echo $_SESSION['lang']['detPembBrg']?></b></legend>
 <table cellspacing="1" border="0" >
 <tr><td><label><?php echo $_SESSION['lang']['kelompokbarang']?></label></td><td><select id="klmpkBrg" name="klmpkBrg" style="width:150px" onchange="getBrg()"><?php echo $optKlmpk?></select></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['namabarang']?></label></td><td><select id="kdBrg" name="kdBrg" style="width:150px"><option value=''><? echo $_SESSION['lang']['all']?></option></select>&nbsp;<img src="images/search.png" class="resicon" title='<? echo $_SESSION['lang']['find']." ".$_SESSION['lang']['namabarang'] ?>' onclick="searchBrg('<? echo $_SESSION['lang']['find']." ".$_SESSION['lang']['namabarang'] ?>','<fieldset><legend><? echo $_SESSION['lang']['find']." ".$_SESSION['lang']['namabarang'] ?></legend><? echo $_SESSION['lang']['find'];?>&nbsp;<input type=text class=myinputtext id=nmBrg><button class=mybutton onclick=findBrg()><? echo $_SESSION['lang']['find'] ?></button></fieldset><div id=containerBarang style=overflow=auto;height=380;width=485></div>',event);"></td>
+<tr><td><label><?php echo $_SESSION['lang']['namabarang']?></label></td><td><select id="kdBrg" name="kdBrg" style="width:150px"><option value=''><?php echo $_SESSION['lang']['all']?></option></select>&nbsp;<img src="images/search.png" class="resicon" title='<?php echo $_SESSION['lang']['find']." ".$_SESSION['lang']['namabarang'] ?>' onclick="searchBrg('<?php echo $_SESSION['lang']['find']." ".$_SESSION['lang']['namabarang'] ?>','<fieldset><legend><?php echo $_SESSION['lang']['find']." ".$_SESSION['lang']['namabarang'] ?></legend><?php echo $_SESSION['lang']['find'];?>&nbsp;<input type=text class=myinputtext id=nmBrg><button class=mybutton onclick=findBrg()><?php echo $_SESSION['lang']['find'] ?></button></fieldset><div id=containerBarang style=overflow=auto;height=380;width=485></div>',event);"></td>
 </tr>
-<tr><td><label><?php echo $_SESSION['lang']['lokasiBeli']?></label></td><td><select id="lokBeli" name="lokBeli" style="width:150px"><? echo $optLokal?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['lokasiBeli']?></label></td><td><select id="lokBeli" name="lokBeli" style="width:150px"><?php echo $optLokal?></select></td></tr>
 <tr><td><label><?php echo $_SESSION['lang']['tanggal']?></label></td><td><input type="text" class="myinputtext" id="tglDr" name="tglDr" onmousemove="setCalendar(this.id)" onkeypress="return false;"  maxlength="10" style="width:150px;" /></td></tr>
 <tr><td><?php echo $_SESSION['lang']['tanggalsampai']?></td><td><input type="text" class="myinputtext" id="tanggalSampai" name="tanggalSampai" onmousemove="setCalendar(this.id)" onkeypress="return false;"  maxlength="10" style="width:150px;" /></td></tr>
 

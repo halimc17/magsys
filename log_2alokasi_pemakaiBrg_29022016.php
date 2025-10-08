@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -58,7 +58,7 @@ function getPeriode()
 <legend><b><?php echo $_SESSION['lang']['lapAlokasiBrg']?></b></legend>
 <table cellspacing="1" border="0" >
 <tr><td><label><?php echo $_SESSION['lang']['pilihgudang']?></label></td><td><select id="kdGudang" name="kdGudang" style="width:150px" onchange="getPeriode()"><?php echo $optOrg?></select></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['periode']?></label></td><td><select id="periode" name="periode" style="width:150px"><option value=''><? echo $_SESSION['lang']['all']?></option></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['periode']?></label></td><td><select id="periode" name="periode" style="width:150px"><option value=''><?php echo $_SESSION['lang']['all']?></option></select></td></tr>
 <tr height="20"><td colspan="2">&nbsp;</td></tr>
 <tr><td colspan="2"><button onclick="zPreview('log_slave_2alokasi_pemakaiBrg','<?php echo $arr?>','printContainer')" class="mybutton" name="preview" id="preview">Preview</button><button onclick="zPdf('log_slave_2alokasi_pemakaiBrg','<?php echo $arr?>','printContainer')" class="mybutton" name="preview" id="preview">PDF</button><button onclick="zExcel(event,'log_slave_2alokasi_pemakaiBrg.php','<?php echo $arr?>')" class="mybutton" name="preview" id="preview">Excel</button></td></tr>
 

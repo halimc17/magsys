@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -106,7 +106,7 @@ function getKaryawan2()
                       }	
          }  
 }
-var opt="<option value=''><? echo $_SESSION['lang']['all']; ?></option>";
+var opt="<option value=''><?php echo $_SESSION['lang']['all']; ?></option>";
 function Clear1()
 {
     document.getElementById('kdOrg').value='';

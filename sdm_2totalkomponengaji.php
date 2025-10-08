@@ -1,4 +1,4 @@
-<?//Ind
+<?php //Ind
 require_once('master_validation.php');
 require_once('lib/nangkoelib.php');
 require_once ('config/connection.php');
@@ -11,7 +11,7 @@ require_once('master_mainMenu.php');
 <script language=javascript src=js/zTools.js></script>
 <script language=javascript src='js/zReport.js'></script>
 <link rel=stylesheet type=text/css href=style/zTable.css>
-<?
+<?php
 
 
 

@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -32,7 +32,7 @@ $arr0="##pabrik0##supplier0##tgl01##tgl02";
 <script language=javascript src=js/zReport.js></script>
 <script language=javascript src='js/pmn_2pembeliantbs.js'></script>
 <link rel=stylesheet type=text/css href=style/zTable.css>
-<?      
+<?php      
 
 $frm[0].="<div style=\"margin-bottom: 30px;\">
 <fieldset style=\"float: left;\">

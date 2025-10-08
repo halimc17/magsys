@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 include_once('lib/zLib.php');
@@ -7,7 +7,7 @@ include('master_mainMenu.php');
 ?>
 <link rel=stylesheet type=text/css href="style/zTable.css">
 <script language=javascript1.2 src='js/kebun_5tph.js'></script>
-<?
+<?php
 
 OPEN_BOX();
 $str="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi where tipe='BLOK'

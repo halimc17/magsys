@@ -1,4 +1,4 @@
-<?
+<?php
 require_once('master_validation.php');
 require_once('lib/nangkoelib.php');
 require_once ('config/connection.php');
@@ -13,7 +13,7 @@ OPEN_BOX();
 <link rel=stylesheet type=text/css href=style/zTable.css>
 
 
-<?
+<?php
 
 
 echo "<tr><td colspan=2></td>

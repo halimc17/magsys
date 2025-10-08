@@ -67,8 +67,8 @@ $arr="##kdUnit##periode";
 <fieldset style="float: left;">
 <legend><b><?php echo $_SESSION['lang']['lapproduktivitaspur']?></b></legend>
 <table cellspacing="1" border="0" >
-<tr><td><label><?php echo $_SESSION['lang']['periode']?></label></td><td><select id="periode" name="periode" style="width:150px"><? echo $optPeriodeCari?></select></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['pt']?></label></td><td><select id="kdUnit" name="kdUnit" style="width:150px"><? echo $optListUnit;?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['periode']?></label></td><td><select id="periode" name="periode" style="width:150px"><?php echo $optPeriodeCari?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['pt']?></label></td><td><select id="kdUnit" name="kdUnit" style="width:150px"><?php echo $optListUnit;?></select></td></tr>
 <tr height="20"><td colspan="2">&nbsp;</td></tr>
 <tr><td colspan="2"><button onclick="zPreview('log_2slave_produktivitas','<?php echo $arr?>','printContainer')" class="mybutton" name="preview" id="preview">Preview</button><button onclick="zExcel(event,'log_2slave_produktivitas.php','<?php echo $arr?>')" class="mybutton" name="preview" id="preview">Excel</button></td></tr>
 

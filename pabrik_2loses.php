@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -69,7 +69,7 @@ while($rData=mysql_fetch_assoc($qOrg))
 <fieldset style="float: left;">
 <legend><b>CPO & Kernel Loses</b></legend>
 <table cellspacing="1" border="0" >
-<tr><td><label><?php echo $_SESSION['lang']['pabrik']?></label></td><td><select id="kdPabrik" name="kdPabrik"  style="width:170px"><? echo $optPabrik?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['pabrik']?></label></td><td><select id="kdPabrik" name="kdPabrik"  style="width:170px"><?php echo $optPabrik?></select></td></tr>
 <tr><td><label><?php echo $_SESSION['lang']['tanggal']?></label></td><td><input type="text" class="myinputtext" id="tgl1" onmousemove="setCalendar(this.id)" onkeypress="return false;"  size="10" maxlength="10" />
         s.d. <input type="text" class="myinputtext" id="tgl2" onmousemove="setCalendar(this.id)" onkeypress="return false;"  size="10" maxlength="10" />
 </td></tr>

@@ -1,11 +1,11 @@
-<?
+<?php
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 echo open_body();
 ?>
 <script language=javascript1.2 src=js/menusetting.js></script>
 <link rel=stylesheet type=text/css HREF=style/parentChild.css>
-<?
+<?php
 include('master_mainMenu.php');
 OPEN_BOX();
 echo OPEN_THEME($_SESSION['lang']['parentchildmenu'].':');

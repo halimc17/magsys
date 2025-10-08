@@ -1,10 +1,10 @@
-<?
+<?php
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 echo open_body();
 ?>
 <script language=javascript1.2 src='js/sdm_recalculatecuti.js'></script>
-<?
+<?php
 include('master_mainMenu.php');
 
 OPEN_BOX('',"<b>".'Re Calculate Cuti Untuk Karyawan Resign/PHK'."</b>");

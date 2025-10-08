@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -51,7 +51,7 @@ $arr1="##kodeorg1##kodebarang1##tgl1_1##tgl2_1";
 <script language=javascript src=js/zReport.js></script>
 <script language=javascript src='js/pmn_2penjualan.js'></script>
 <link rel=stylesheet type=text/css href=style/zTable.css>
-<?      
+<?php      
 $frm[0].="<div style=\"margin-bottom: 30px;\">
 <fieldset style=\"float: left;\">
 <legend><b>".$_SESSION['lang']['laporanPenjualan']."</b></legend>

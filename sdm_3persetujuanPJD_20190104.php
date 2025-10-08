@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -7,7 +7,7 @@ echo open_body();
 include('master_mainMenu.php');
 ?>
 <script language=javascript src='js/sdm_persetujuanPJD.js'></script>
-<?
+<?php
 OPEN_BOX('',$_SESSION['lang']['persetujuanpjdinas']);
 echo"<fieldset>
 	   <legend>".$_SESSION['lang']['list']."</legend>

@@ -1,4 +1,4 @@
-<?
+<?php
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 echo open_body();
@@ -6,7 +6,7 @@ echo open_body();
 <link rel=stylesheet type='text/css' href=style/orgchart.css>
 <script   language=javascript1.2 src=js/menusetting.js></script>
 <script   language=javascript1.2 src=js/orgChart.js></script>
-<?
+<?php
 include('master_mainMenu.php');
 OPEN_BOX();
 echo OPEN_THEME($_SESSION['lang']['orgchartcap'].':');

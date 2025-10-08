@@ -1,4 +1,4 @@
-<?//BJR
+<?php //BJR
 //-----
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -12,7 +12,7 @@ echo open_body();
 <link rel=stylesheet type=text/css href=style/zTable.css>
 <script language=javascript src='js/kebun_bjrlalu.js'></script>
 
-<?
+<?php
 $lksi=substr($_SESSION['empl']['lokasitugas'],0,4);
 if(trim($_SESSION['empl']['tipelokasitugas'])=='HOLDING'){
 	$sKbn="select namaorganisasi,kodeorganisasi from ".$dbname.".organisasi where kodeorganisasi like '%E' and detail='1'";

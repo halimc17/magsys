@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 require_once('lib/zLib.php');
@@ -10,7 +10,7 @@ echo open_body();
                 .' '.$_SESSION['lang']['per'].' '.$_SESSION['lang']['gudang']?>";
 </script>
 <script language=javascript1.2 src='js/log_laporan.js'></script>
-<?
+<?php
 include('master_mainMenu.php');
 OPEN_BOX('','<b>'.strtoupper($_SESSION['lang']['laporanstok']).'</b>');
 

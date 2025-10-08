@@ -142,31 +142,31 @@ if($sisa=='')
 <tr>
 <td><?php echo $_SESSION['lang']['jenisijin']?></td>
 <td>:</td>
-<td><select id="jnsIjin" name="jnsIjin" style="width:150px"><? echo $optJenis;?></select></td>
+<td><select id="jnsIjin" name="jnsIjin" style="width:150px"><?php echo $optJenis;?></select></td>
 </tr>
 
 <tr>
 <td><?php echo $_SESSION['lang']['pengabdian']." ".$_SESSION['lang']['tahun'];?></td>
 <td>:</td>
-<td><select id="periodec"  style="width:150px" onchange="loadSisaCuti(this.options[this.selectedIndex].value,<?echo $_SESSION['standard']['userid']?>)"><? echo $optPeriodec;?></select></td>
+<td><select id="periodec"  style="width:150px" onchange="loadSisaCuti(this.options[this.selectedIndex].value,<?php echo $_SESSION['standard']['userid']?>)"><?php echo $optPeriodec;?></select></td>
 </tr>
 
 <tr>
 <td><?php echo $_SESSION['lang']['dari']."  ".$_SESSION['lang']['tanggal']."&".$_SESSION['lang']['jam']?></td>
 <td>:</td>
-<td><input type='text' class='myinputtext' id='tglAwal' onmousemove='setCalendar(this.id)' onkeypress='return false;'  size='10' maxlength='10' style="width:150px;" /><select id="jam1"><? echo $jm;?></select>:<select id="mnt1"><? echo $mnt;?></select></td>
+<td><input type='text' class='myinputtext' id='tglAwal' onmousemove='setCalendar(this.id)' onkeypress='return false;'  size='10' maxlength='10' style="width:150px;" /><select id="jam1"><?php echo $jm;?></select>:<select id="mnt1"><?php echo $mnt;?></select></td>
 </tr>
 <tr>
 <td><?php echo $_SESSION['lang']['tglcutisampai']."  ".$_SESSION['lang']['tanggal']."&".$_SESSION['lang']['jam']?></td>
 <td>:</td>
-<td><input type='text' class='myinputtext' id='tglEnd' onmousemove='setCalendar(this.id)' onkeypress='return false;'  size='10' maxlength='10' style="width:150px;" /><select id="jam2"><? echo $jm;?></select>:<select id="mnt2"><? echo $mnt;?></select></td>
+<td><input type='text' class='myinputtext' id='tglEnd' onmousemove='setCalendar(this.id)' onkeypress='return false;'  size='10' maxlength='10' style="width:150px;" /><select id="jam2"><?php echo $jm;?></select>:<select id="mnt2"><?php echo $mnt;?></select></td>
 </tr>
 <tr>
 <td><?php echo $_SESSION['lang']['jumlahhk']." ".$_SESSION['lang']['diambil'];?></td>
 <td>:</td>
 <td>
-<input type="text" class="myinputtext" id="jumlahhk" name="keperluan" onkeypress="return angka_doang(event);" maxlength="5" value="0"/><? echo $_SESSION['lang']['hari']; ?> -
-(<?echo $_SESSION['lang']['sisa']; ?>:<span id="sis"><?echo $sisa." ".$_SESSION['lang']['hari']; ?></span>)</td>
+<input type="text" class="myinputtext" id="jumlahhk" name="keperluan" onkeypress="return angka_doang(event);" maxlength="5" value="0"/><?php echo $_SESSION['lang']['hari']; ?> -
+(<?php echo $_SESSION['lang']['sisa']; ?>:<span id="sis"><?php echo $sisa." ".$_SESSION['lang']['hari']; ?></span>)</td>
 </tr>
 <tr>
 <td><?php echo $_SESSION['lang']['keperluan']?></td>
@@ -186,7 +186,7 @@ if($sisa=='')
 <td><?php echo $_SESSION['lang']['atasan']?></td>
 <td>:</td>
 <td>
-    <select id="atasan" style="width:150px"><? echo $optKary; ?></select>
+    <select id="atasan" style="width:150px"><?php echo $optKary; ?></select>
 </td>
 </tr>
 
@@ -194,7 +194,7 @@ if($sisa=='')
 <td><?php echo $_SESSION['lang']['hrd']?></td>
 <td>:</td>
 <td>
-    <select id="hrd" style="width:150px"><? echo $optHRD; ?></select>
+    <select id="hrd" style="width:150px"><?php echo $optHRD; ?></select>
 </td>
 </tr>
 

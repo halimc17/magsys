@@ -7,7 +7,7 @@ require_once('lib/zLib.php');
 
 ?>
 	<link rel=stylesheet type=text/css href=style/generic.css>	
-<?
+<?php
 
 $kodeorg=$_GET['kodeorg'];
 $per=$_GET['per'];

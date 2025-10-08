@@ -1,5 +1,5 @@
 <link rel=stylesheet type=text/css href='style/generic.css'>
-<?
+<?php
 require_once('config/connection.php');
 
 if(isset($_GET['what'])){
@@ -41,6 +41,6 @@ echo "<center>lewat <b style='font-size:16px;'>".abs($numberDays)."</b> hari</ce
 
 <img src="images/logoispo.jpg" width="220" style="position:fixed;right:0;bottom:0;z-index:-999;">
 
-<?
+<?php
 
 ?>

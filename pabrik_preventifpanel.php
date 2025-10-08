@@ -1,4 +1,4 @@
-<?
+<?php
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 include_once('lib/zLib.php');
@@ -9,7 +9,7 @@ echo open_body();
 <script language=javascript src='js/pabrik_preventifpanel.js'></script>
 <link rel=stylesheet type=text/css href=style/zTable.css>
 <script language="javascript" src="js/zMaster.js"></script>
-<?
+<?php
 include('master_mainMenu.php');
 //get org
 if($_SESSION['empl']['tipelokasitugas']=='HOLDING'){

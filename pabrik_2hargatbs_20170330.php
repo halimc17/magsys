@@ -1,4 +1,4 @@
-	<?//@Copy nangkoelframework
+	<?php //@Copy nangkoelframework
 //ind
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -27,7 +27,7 @@ echo open_body();
 
 </script>
 
-<?
+<?php
 
 
 
@@ -52,7 +52,7 @@ while ($data=mysql_fetch_assoc($qry))
 ?>
 
 
-<?
+<?php
 include('master_mainMenu.php');
 OPEN_BOX();
 $arr="##kdorg##kdsup##tgl1##tgl2";	

@@ -402,7 +402,7 @@
 					<?php echo $disbled; echo $disbled2; ?>
 				 <?php } else {?>
 				  <td colspan="2" align="center"><?php echo $_SESSION['lang']['wait_approval']?></td>
-				 <?
+				 <?php
 				 }
 				 echo"</tr><input type=hidden id=nopo_".$no." name=nopo_".$no." value='".$bar['nopo']."' />";
 		}	 	   	

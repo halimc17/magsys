@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 echo open_body();
@@ -12,7 +12,7 @@ if($_SESSION['language']=='ID'){
 <script language=javascript src=js/zTools.js></script>
 <script language=javascript1.2 src='js/bgt_tool_query.js'></script>
 <script>isi="<?php echo $oprrt?>";</script>
-<?
+<?php
 $opt="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
 
 $arr="##thnBudget##unitId##klmpKeg##kegId##kdBgt##pilUn_1##method##persenData##sbUnit##blokId##kdBrgRev##thnTnm";

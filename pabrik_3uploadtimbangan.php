@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -68,7 +68,7 @@ $arr="##dbnm##prt##pswrd##ipAdd##period##usrName##lksiServer";
 <div id='printContainer'>
 
 </div></fieldset>
-<?
+<?php
 CLOSE_BOX();
 echo close_body();
 ?>

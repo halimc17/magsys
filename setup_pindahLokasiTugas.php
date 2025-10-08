@@ -1,11 +1,11 @@
-<?
+<?php
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 echo open_body();
 ?>
 
 <script language=javascript1.2 src=js/setup_gantiLokasiTugas.js></script>
-<?
+<?php
 include('master_mainMenu.php');
 $jabatan = array('IT','OMIS');
 if(in_array($_SESSION['empl']['bagian'],$jabatan)){

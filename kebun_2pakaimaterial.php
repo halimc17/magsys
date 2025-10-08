@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include_once('lib/nangkoelib.php');
 include_once('lib/zLib.php');
@@ -57,7 +57,7 @@ echo open_body();
 <script language="JavaScript1.2" src="js/formReport.js"></script>
 <script language="JavaScript1.2" src="js/biReport.js"></script>
 <link rel="stylesheet" type="text/css" href="style/zTable.css">
-<?
+<?php
 include('master_mainMenu.php');
 
 OPEN_BOX();

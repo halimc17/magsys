@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -25,7 +25,7 @@ OPEN_BOX();
 <script language=javascript src=js/zReport.js></script>
 
 <link rel=stylesheet type=text/css href=style/zTable.css>
-<?
+<?php
 //inisialisasi periode
 //$optPeriode="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
 $sTgl="select distinct substr(periode,1,7) as periode from ".$dbname.".keu_jurnaldt_vw order by periode desc";
@@ -60,15 +60,15 @@ $arr="##periode##unit";
 		<legend><b>Laporan Biaya Per Blok</b></legend>
 		<table cellspacing="1" border="0">
 			<tr>
-				<td><?echo $_SESSION['lang']['periode']?></td>
+				<td><?php echo $_SESSION['lang']['periode']?></td>
 				<td>
-					<select id="periode" name="periode" style="width:150px;"><? echo $optPeriode ?></select>
+					<select id="periode" name="periode" style="width:150px;"><?php echo $optPeriode ?></select>
 				</td>
 			</tr>
 			<tr>
-				<td><?echo $_SESSION['lang']['unit']?></td>
+				<td><?php echo $_SESSION['lang']['unit']?></td>
 				<td>
-					<select id="unit" name="unit" style="width:150px"><? echo $optUnit ?></select>
+					<select id="unit" name="unit" style="width:150px"><?php echo $optUnit ?></select>
 				</td>
 			</tr>
 			<tr>
@@ -76,9 +76,9 @@ $arr="##periode##unit";
 			</tr>
 			<tr>
 				<td colspan="2">
-					<button onclick="zPreview('kebun_slave_3LaporanBiayaPerBlok','<?php echo $arr?>','printContainer')" class="mybutton" name="preview" id="preview"><? echo $_SESSION['lang']['preview']; ?></button>
-					<button onclick="zPdf('kebun_slave_3LaporanBiayaPerBlok','<?php echo $arr?>','printContainer')" class="mybutton" name="preview" id="preview"><? echo $_SESSION['lang']['pdf']; ?></button>
-					<button onclick="zExcel(event,'kebun_slave_3LaporanBiayaPerBlok.php','<?php echo $arr?>')" class="mybutton" name="preview" id="preview"><? echo $_SESSION['lang']['excel']; ?></button>
+					<button onclick="zPreview('kebun_slave_3LaporanBiayaPerBlok','<?php echo $arr?>','printContainer')" class="mybutton" name="preview" id="preview"><?php echo $_SESSION['lang']['preview']; ?></button>
+					<button onclick="zPdf('kebun_slave_3LaporanBiayaPerBlok','<?php echo $arr?>','printContainer')" class="mybutton" name="preview" id="preview"><?php echo $_SESSION['lang']['pdf']; ?></button>
+					<button onclick="zExcel(event,'kebun_slave_3LaporanBiayaPerBlok.php','<?php echo $arr?>')" class="mybutton" name="preview" id="preview"><?php echo $_SESSION['lang']['excel']; ?></button>
 				</td>
 			</tr>
 		</table>

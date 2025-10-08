@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -8,7 +8,7 @@ include('master_mainMenu.php');
 <script language=javascript src=js/datakaryawan.js></script>
 <script language=javascript src='js/sdm_rotasiSecurity.js'></script>
 <link rel=stylesheet type=text/css href=style/payroll.css>
-<?
+<?php
 OPEN_BOX('',$_SESSION['lang']['rotasisecurity']);
 echo "<fieldset><legend>".$_SESSION['lang']['rotasisecurity']."</legend>
         <fieldset>Apply only at the beginning of month</fieldset>

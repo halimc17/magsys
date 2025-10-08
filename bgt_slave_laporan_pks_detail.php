@@ -4,7 +4,7 @@ require_once('config/connection.php');
 require_once('lib/nangkoelib.php');
 ?>
 <link rel=stylesheet type='text/css' href='style/generic.css'>
-<?
+<?php
 $station =$_GET['station'];
 $kdbudget=$_GET['kdbudget'];
 $tahun   =$_GET['tahun'];

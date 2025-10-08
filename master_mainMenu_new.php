@@ -1,4 +1,4 @@
-<?
+<?php
 require_once('config/connection.php');
 echo"<div class='position-fixed top-0 end-0 p-2 bg-light' style='z-index:1030;margin-top:45px;margin-right:15px;'>
 		<span class='badge bg-primary'>
@@ -126,4 +126,4 @@ echo"
 	<img src='images/progress.gif'>
 </div>
 
-<?/*license here */if(MD5($_SESSION['org']['holding'])!='70f1d810d4bbb35fc7c9f84beaef04eb'){session_destroy();exit();} ?>
+<?php /*license here */if(MD5($_SESSION['org']['holding'])!='70f1d810d4bbb35fc7c9f84beaef04eb'){session_destroy();exit();} ?>

@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -35,7 +35,7 @@ while($rTraksi=mysql_fetch_assoc($qTraksi))
     $optKdtraksi.="<option value=".$rTraksi['kodeorganisasi'].">".$rTraksi['namaorganisasi']."</option>";
 }
 ?>
-<script>save="<? echo $_SESSION['lang']['save']; ?>";btl="<? echo $_SESSION['lang']['cancel']; ?>";pilih="<? echo $_SESSION['lang']['pilihdata']; ?>";</script>
+<script>save="<?php echo $_SESSION['lang']['save']; ?>";btl="<?php echo $_SESSION['lang']['cancel']; ?>";pilih="<?php echo $_SESSION['lang']['pilihdata']; ?>";</script>
 <script language=javascript src=js/zTools.js></script>
 <script language=javascript src=js/zReport.js></script>
 <script language=javascript src='js/budget_total_jam_vhc.js'></script>
@@ -46,13 +46,13 @@ while($rTraksi=mysql_fetch_assoc($qTraksi))
 <table cellspacing="1" border="0" >
 <tr><td><label><?php echo $_SESSION['lang']['budgetyear']?></label></td><td><input type="text" id="thnBudget" class="myinputtextnumber" onkeypress="return angka_doang(event);" style="width:150px" maxlength="4" /></td></tr>
 <tr><td><label><?php echo $_SESSION['lang']['kodetraksi']?></label></td><td><select id="kdTraksi" name="kdTraksi" style="width:150px" onchange="getKdvhc(0,0)"><?php echo $optKdtraksi;?></select></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['kodevhc']?></label></td><td><select id="kdVhc" name="kdVhc" style="width:150px"><? echo $optLokal; ?></select></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['unit']?></label></td><td><select id="kdUnit" style="width:150px;"><? echo $optUnit ?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['kodevhc']?></label></td><td><select id="kdVhc" name="kdVhc" style="width:150px"><?php echo $optLokal; ?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['unit']?></label></td><td><select id="kdUnit" style="width:150px;"><?php echo $optUnit ?></select></td></tr>
 <tr><td><?php echo $_SESSION['lang']['totJamThn']?></td><td><input type="text" id="totJamThn" class="myinputtextnumber" onkeypress="return angka_doang(event);" style="width:150px"  /></td></tr>
 
 <tr height="20"><td colspan="2">&nbsp;</td></tr>
-<tr><td colspan="2"><div id="tmblSave"><button onclick="saveHead()" class="mybutton" name="saveDt" id="saveDt"><? echo $_SESSION['lang']['save'] ?></button>
-        <button onclick="batal()" class="mybutton" name="btl" id="btl"><? echo $_SESSION['lang']['cancel']?></button></div>
+<tr><td colspan="2"><div id="tmblSave"><button onclick="saveHead()" class="mybutton" name="saveDt" id="saveDt"><?php echo $_SESSION['lang']['save'] ?></button>
+        <button onclick="batal()" class="mybutton" name="btl" id="btl"><?php echo $_SESSION['lang']['cancel']?></button></div>
 </td></tr>
 
 </table><input type="hidden" id="proses" value="saveData"/>

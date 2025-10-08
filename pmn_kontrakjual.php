@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -302,7 +302,7 @@ $hfrm[1]=$_SESSION['lang']['list'];
 drawTab('FRM',$hfrm,$frm,100,1100);
 ?>
 
-<?
+<?php
 CLOSE_BOX();
 echo close_body();
 ?>

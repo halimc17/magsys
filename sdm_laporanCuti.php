@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 include('lib/zLib.php');
@@ -6,7 +6,7 @@ echo open_body();
 include('master_mainMenu.php');
 ?>
 <script language=javascript src=js/sdm_5cuti.js></script>
-<?
+<?php
 OPEN_BOX('',$_SESSION['lang']['laporan'].' '.$_SESSION['lang']['cuti']);
 
 $optlokasitugas="";
@@ -55,7 +55,7 @@ echo"<fieldset><legend>".$_SESSION['lang']['navigasi']."</legend>
 		      <td>".$_SESSION['lang']['namakaryawan']."</td>
 			  <td>:</td>
 			  <td><select id=karyawan>";
-			  ?> <script>loadkaryawan();</script> <? echo "</select></td>
+			  ?> <script>loadkaryawan();</script> <?php echo "</select></td>
 		  </tr>
 		  <tr>
 		      <td colspan=2></td>

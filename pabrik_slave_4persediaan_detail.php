@@ -7,7 +7,7 @@ include_once('lib/zLib.php');
 <script language=javascript1.2 src="js/generic.js"></script>
 <script language=javascript1.2 src="js/pabrik_2pengolahan.js"></script>
 <link rel=stylesheet type='text/css' href='style/generic.css'>
-<?
+<?php
    
 $kodeorg=$_GET['kodeorg'];
 $tanggal=$_GET['tanggal'];

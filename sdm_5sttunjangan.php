@@ -1,11 +1,11 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 echo open_body();
 include('master_mainMenu.php');
 ?>
 <script language=javascript1.2 src='js/sdm_stdTunjangan.js'></script>
-<?
+<?php
 $str="select * from ".$dbname.".sdm_5jabatan order by namajabatan";
 $res=mysql_query($str);
 $optjab='';

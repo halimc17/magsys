@@ -1,4 +1,4 @@
-<?
+<?php
 require_once('config/connection.php');
 
 echo "
@@ -127,4 +127,4 @@ echo"
 	<img src='images/progress.gif'>
 </div>
 
-<?/*license here */if(MD5($_SESSION['org']['holding'])!='70f1d810d4bbb35fc7c9f84beaef04eb'){session_destroy();exit();} ?>
+<?php /*license here */ if(MD5($_SESSION['org']['holding'])!='70f1d810d4bbb35fc7c9f84beaef04eb'){session_destroy();exit();} ?>

@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 //-----------------ind
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -14,7 +14,7 @@ echo open_body();
 <link rel=stylesheet type=text/css href=style/zTable.css>
 <script language=javascript src='js/kebun_3updkg.js'></script>
 
-<?
+<?php
 
 $frm[0]='';
 

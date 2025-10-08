@@ -42,7 +42,7 @@
                 oFCKeditor.SkinPath = oFCKeditor.BasePath + 'skins/office2003/';
                 oFCKeditor.width = 1000;
                 oFCKeditor.height= 500;
-                oFCKeditor.Value   = "<? echo rtrim(str_replace('"',"'", isset($row["isi"])? $row["isi"]: '')); ?>";
+                oFCKeditor.Value   = "<?php echo rtrim(str_replace('"',"'", isset($row["isi"])? $row["isi"]: '')); ?>";
                 oFCKeditor.Create();
             </script>
         </td>

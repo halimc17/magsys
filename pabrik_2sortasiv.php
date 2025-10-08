@@ -1,4 +1,4 @@
-	<?//@Copy nangkoelframework
+	<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 require_once('config/connection.php');
 require_once('lib/nangkoelib.php');
@@ -28,7 +28,7 @@ echo open_body();
 
 </script>
 
-<?
+<?php
 
 
 // $optOrg="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
@@ -65,7 +65,7 @@ while ($data=mysql_fetch_assoc($qry))
 ?>
 
 
-<?
+<?php
 include('master_mainMenu.php');
 OPEN_BOX();
 

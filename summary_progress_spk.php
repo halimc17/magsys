@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework 
+<?php //@Copy nangkoelframework 
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 echo open_body();
@@ -62,7 +62,7 @@ function getUnit2()
 
 }
     </script>
-<?
+<?php
 include('master_mainMenu.php');
 $arr = "##periode##regional##unit";
 OPEN_BOX();
@@ -136,7 +136,7 @@ $arr2 = "##tahun##kontaktor";
 </tr>
 </table>
 </fieldset>
-<?
+<?php
 
 CLOSE_BOX();
 OPEN_BOX('','Result:');

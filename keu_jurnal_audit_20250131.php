@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 include_once('lib/zLib.php');
@@ -20,7 +20,7 @@ OPEN_BOX();
     theGrid[1].target = "keu_slave_jurnal_manage_detail";
 </script>
 <link rel=stylesheet type=text/css href='style/zTable.css'>
-<?
+<?php
 #== Prep Periode Akuntansi
 $org = $_SESSION['org'];
 $period = $_SESSION['org']['period'];

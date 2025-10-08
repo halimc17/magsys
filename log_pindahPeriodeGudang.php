@@ -1,11 +1,11 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 echo open_body();
 ?>
 <script language=javascript1.2 src='js/log_pindahPeriodeGudang.js'></script>
 <script language=javascript src='js/log_rekalgudang.js'></script>
-<?
+<?php
 include('master_mainMenu.php');
 
 if(isTransactionPeriod())//check if transaction period is normal

@@ -498,6 +498,7 @@ if(($proses=='update' or $proses=='insert') and $jnsIjin=='CUTI'){
 			{
 				$to=getUserEmail($atsSblm);
 				if($to!='')
+				{
 					$namakaryawan=getNamaKaryawan($_SESSION['standard']['userid']);
 					$subject="[Notifikasi]Pembatalan Persetujuan Ijin ".$jnsIjin." a/n ".$namakaryawan;
 					$body="<html>

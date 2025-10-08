@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 include_once('lib/zLib.php');
@@ -104,7 +104,7 @@ echo "</div>";
 <table border="1" cellpadding="0" cellspacing="0" style="border-collapse: collapse" bordercolor="#111111" width="100%" id="AutoNumber2"><tr><td width="16%" align="center">Kode</td><td width="16%" align="center">Keterangan</td></tr><tr><td width="16%">&nbsp;</td><td width="16%">&nbsp;</td>
 </tr></table>
 <p><font face="Fixedsys">&nbsp;&nbsp;&nbsp; &nbsp;</font></p-->
-<?
+<?php
 CLOSE_BOX();
 echo close_body();
 ?>

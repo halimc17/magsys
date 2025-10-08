@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 echo open_body();
@@ -11,7 +11,7 @@ include_once('lib/zLib.php');
 <link rel=stylesheet type=text/css href=style/zTable.css>
 <script language="javascript" src="js/zMaster.js"></script>
 
-<?
+<?php
 #PT
 $optPt="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
 $aPt="select kodeorganisasi,namaorganisasi from ".$dbname.".organisasi  where tipe='PT' ";

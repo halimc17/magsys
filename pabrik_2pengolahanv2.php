@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -58,8 +58,8 @@ function getPeriode()
     
 <legend><b>Mill Processing v2</b></legend>
 <table cellspacing="1" border="0" >
-<tr><td><label><?php echo $_SESSION['lang']['unit'];?></label></td><td><select id="kdPabrik" name="kdPabrik"  style="width:169px" onchange="getPeriode()"><? echo $optPabrik;?></select></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['periode'];?></label></td><td><select id="periode" name="periode" style="width:169px;"><? echo $optPeriode;?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['unit'];?></label></td><td><select id="kdPabrik" name="kdPabrik"  style="width:169px" onchange="getPeriode()"><?php echo $optPabrik;?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['periode'];?></label></td><td><select id="periode" name="periode" style="width:169px;"><?php echo $optPeriode;?></select></td></tr>
 <tr height="20"><td colspan="2">&nbsp;</td></tr>
 <tr><td colspan="2">
         <button onclick="zPreview('pabrik_slave_2pengolahanv2','<?php echo $arr;?>','printContainer')" class="mybutton" name="preview" id="preview">Preview</button>

@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -122,8 +122,8 @@ $optAfd="<option value=''>".$_SESSION['lang']['all']."</option>";
 </table>
 </fieldset>
 </div>
-      <? } ?>
-<? if($_SESSION['empl']['tipelokasitugas']!='HOLDING')
+      <?php } ?>
+<?php if($_SESSION['empl']['tipelokasitugas']!='HOLDING')
 {
 ?>
 <div >
@@ -136,7 +136,7 @@ $optAfd="<option value=''>".$_SESSION['lang']['all']."</option>";
 <tr><td><label><?php echo $_SESSION['lang']['sistemgaji']?></label></td><td><select id="sistemGaji2" name="sistemGaji2" style="width:150px" onchange="getPeriodeGaji2()"><?php echo $optGaji?></select></td></tr>
 <tr><td><label><?php echo $_SESSION['lang']['tanggalmulai']?></label></td><td><input type="text" class="myinputtext" id="tgl_1" name="tgl_1" onmousemove="setCalendar(this.id)" onkeypress="return false;"  maxlength="10" style="width:150px;" /></td></tr>
 <tr><td><label><?php echo $_SESSION['lang']['tanggalsampai']?></label></td><td><input type="text" class="myinputtext" id="tgl_2" name="tgl_2" onmousemove="setCalendar(this.id)" onkeypress="return false;"  maxlength="10" style="width:150px;" /></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['namakaryawan']?></label></td><td><select id="idKry" name="idKry" style="width:150px"><option value=""><? echo $_SESSION['lang']['pilihdata']?></option></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['namakaryawan']?></label></td><td><select id="idKry" name="idKry" style="width:150px"><option value=""><?php echo $_SESSION['lang']['pilihdata']?></option></select></td></tr>
 <tr height="20"><td colspan="2">&nbsp;</td></tr>
 
 <tr><td colspan="2"><button onclick="zPreview('sdm_slave_2rekapabsen_kary','<?php echo $arrKry?>','printContainer')" class="mybutton" name="preview" id="preview">Preview</button><button onclick="zPdf('sdm_slave_2rekapabsen_kary','<?php echo $arrKry?>','printContainer')" class="mybutton" name="preview" id="preview">PDF</button><button onclick="zExcel(event,'sdm_slave_2rekapabsen_kary.php','<?php echo $arrKry?>')" class="mybutton" name="preview" id="preview">Excel</button><button onclick="Clear2()" class="mybutton" name="btnBatal" id="btnBatal"><?php echo $_SESSION['lang']['cancel']?></button></td></tr>
@@ -158,7 +158,7 @@ $optAfd="<option value=''>".$_SESSION['lang']['all']."</option>";
 </table>
 </fieldset>
 </div>
-<? }
+<?php }
 
 echo"
     <fieldset style=float:left>

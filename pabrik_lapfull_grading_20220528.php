@@ -44,7 +44,7 @@
 	}
 
 </script>
-<?
+<?php
 	include('master_mainMenu.php');
 
 	##untuk pilihan Pabrik

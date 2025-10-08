@@ -1,15 +1,15 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 echo open_body();
 ?>
 <script language=javascript1.2 src='js/pta_persetujuan.js'></script>
 <script>
-    tolak="<? echo $_SESSION['lang']['ditolak'];?>";
-    ajukan="<? echo $_SESSION['lang']['diajukan'];?>";
-    setujuak="<? echo $_SESSION['lang']['setujuakhir'];?>";
+    tolak="<?php echo $_SESSION['lang']['ditolak'];?>";
+    ajukan="<?php echo $_SESSION['lang']['diajukan'];?>";
+    setujuak="<?php echo $_SESSION['lang']['setujuakhir'];?>";
     </script>
-<?
+<?php
 include('master_mainMenu.php');
 OPEN_BOX('','<b>'.strtoupper($_SESSION['lang']['persetujuan']." PTA").'</b>');
 echo"<table cellpadding=1 cellspacing=1 border=0>";

@@ -1,10 +1,10 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 echo open_body();
 ?>
 <script language='JavaScript1.2' src='js/supplier.js'></script>
-<?
+<?php
 include('master_mainMenu.php');
 OPEN_BOX('','<b>'.$_SESSION['lang']['find'].' '.$_SESSION['lang']['supplier'].'/'.$_SESSION['lang']['kontraktor'].'</b>');
 	echo "<br>".$_SESSION['lang']['nama'].":<input type=text class=myinputtext id=cari size=30 maxlength=30 onkeypress=\"return tanpa_kutip(event)\">
@@ -96,7 +96,7 @@ while($bar1=mysql_fetch_object($res1))
 	<button class=mybutton onclick=cancelAkunSupplier()>".$_SESSION['lang']['cancel']."</button>	  
 	  </fieldset>";
 ?>
-<?
+<?php
 CLOSE_BOX();
 echo close_body();
 ?>

@@ -1,11 +1,11 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 include_once('lib/zMysql.php');
 echo open_body();
 ?>
 <script language=javascript1.2 src=js/klsupplier.js></script>
-<?
+<?php
 include('master_mainMenu.php');
 OPEN_BOX();
 
@@ -43,20 +43,20 @@ $newkode=$kode+1;
 $newkode='K'.$newkode;
 
 ?>
-<u><b><font face="Verdana" size="4" color="#000080"><?echo $_SESSION['lang']['suppliergroup'];?></font></b></u>
+<u><b><font face="Verdana" size="4" color="#000080"><?php echo $_SESSION['lang']['suppliergroup'];?></font></b></u>
 <fieldset>
         <legend>
-                <?echo $_SESSION['lang']['input'].' '.$_SESSION['lang']['suppliergroup'];?>
+                <?php echo $_SESSION['lang']['input'].' '.$_SESSION['lang']['suppliergroup'];?>
         </legend>
 <table>
-    <tr><td><?echo $_SESSION['lang']['Type'];?></td><td><select id=tipe onchange="getCodeNumber(this.options[this.selectedIndex].value)">
-		<?
+    <tr><td><?php echo $_SESSION['lang']['Type'];?></td><td><select id=tipe onchange="getCodeNumber(this.options[this.selectedIndex].value)">
+		<?php
 			echo $optTipeSup;
 		?>
 		</select></td></tr>	
-        <tr><td><?echo $_SESSION['lang']['kode'];?></td><td><input type=text disabled value='<?echo $newkode;?>' class=myinputtext id=kodespl onkeypress="return tanpa_kutip(event);" maxlength=10 size=10></td></tr>
-        <tr><td><?echo $_SESSION['lang']['namakelompok'];?></td><td><input type=text class=myinputtext id=kelompok onkeypress="return tanpa_kutip(event);" maxlength=40 size=40></td></tr>
-<?
+        <tr><td><?php echo $_SESSION['lang']['kode'];?></td><td><input type=text disabled value='<?php echo $newkode;?>' class=myinputtext id=kodespl onkeypress="return tanpa_kutip(event);" maxlength=10 size=10></td></tr>
+        <tr><td><?php echo $_SESSION['lang']['namakelompok'];?></td><td><input type=text class=myinputtext id=kelompok onkeypress="return tanpa_kutip(event);" maxlength=40 size=40></td></tr>
+<?php
 if($_SESSION['language']=='EN'){
     $zz='namaakun1 as namaakun';
 }
@@ -74,29 +74,29 @@ echo" <tr><td>".$_SESSION['lang']['noakun']."</td><td><select id=akun>".$opt."</
 ?>
 <input type=hidden value='insert' id=method>
 </table>
-<button class=mybutton onclick=saveKelSup()><?echo $_SESSION['lang']['save'];?></button>
-<button class=mybutton onclick=cancelKelSup()><?echo $_SESSION['lang']['cancel'];?></button>
+<button class=mybutton onclick=saveKelSup()><?php echo $_SESSION['lang']['save'];?></button>
+<button class=mybutton onclick=cancelKelSup()><?php echo $_SESSION['lang']['cancel'];?></button>
 </fieldset>
-<?
+<?php
 CLOSE_BOX();
 OPEN_BOX();
 ?>
 <fieldset>
-        <legend><?echo $_SESSION['lang']['list'].' '.$_SESSION['lang']['suppliergroup'];?></legend>
+        <legend><?php echo $_SESSION['lang']['list'].' '.$_SESSION['lang']['suppliergroup'];?></legend>
         <div style='width:100%;overflow:scroll;height:300px;'>
         <table class=sortable cellspacing=1 border=0>
                 <thead>
                         <tr>
-                                <td><?echo $_SESSION['lang']['no'];?>.</td>
-                                <td><?echo $_SESSION['lang']['kode'];?></td>
-                                <td><?echo $_SESSION['lang']['namakelompok'];?></td>
-                                <td><?echo $_SESSION['lang']['Type'];?></td>
-                                <td><?echo $_SESSION['lang']['noakun'];?></td>
+                                <td><?php echo $_SESSION['lang']['no'];?>.</td>
+                                <td><?php echo $_SESSION['lang']['kode'];?></td>
+                                <td><?php echo $_SESSION['lang']['namakelompok'];?></td>
+                                <td><?php echo $_SESSION['lang']['Type'];?></td>
+                                <td><?php echo $_SESSION['lang']['noakun'];?></td>
                                 <td colspan=2></td>
                         </tr>
                 </thead>
                 <tbody id=container>
-<?
+<?php
 $str=" select * from ".$dbname.".log_5klsupplier where tipe='".$tipe."' order by kelompok";
 $res=mysql_query($str);
 
@@ -120,7 +120,7 @@ while($bar=mysql_fetch_object($res))
         </table>
         </div>
 </fieldset>	
-<?
+<?php
 CLOSE_BOX();
 echo close_body();
 ?>

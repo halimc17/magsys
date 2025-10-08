@@ -7,7 +7,7 @@ require_once('lib/zLib.php');
 
 ?>
     <link rel=stylesheet type=text/css href=style/generic.css>	
-<?
+<?php
 
 $kdorg=checkPostGet('kdorg','');
 $thn=checkPostGet('thn','');

@@ -206,12 +206,12 @@ OPEN_BOX();
 
 <fieldset>
 <legend><?php echo $_SESSION['lang']['detail']?></legend>
-<b><? echo $_SESSION['lang']['nospb']?></b> : <input type="text" id="detail_kode" name="detail_kode" disabled="disabled" class="myinputtext" style="width:150px;" /><!--".makeElement("detail_kode",'text',$noSpb,array('disabled'=>'disabled','style'=>'width:150px'));-->
+<b><?php echo $_SESSION['lang']['nospb']?></b> : <input type="text" id="detail_kode" name="detail_kode" disabled="disabled" class="myinputtext" style="width:150px;" /><!--".makeElement("detail_kode",'text',$noSpb,array('disabled'=>'disabled','style'=>'width:150px'));-->
 
 <table cellspacing="1" border="0">
 <tbody id="detailIsi">
 <tr><td>
-<input type="checkbox" id="mnculSma" onclick="getBlokSma()" /><? echo $_SESSION['lang']['blok']." ".$_SESSION['lang']['all']; ?> 
+<input type="checkbox" id="mnculSma" onclick="getBlokSma()" /><?php echo $_SESSION['lang']['blok']." ".$_SESSION['lang']['all']; ?> 
 <table id='ppDetailTable'>
 </table>
 </tbody>

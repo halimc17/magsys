@@ -1,11 +1,11 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include_once('lib/nangkoelib.php');
 include_once('lib/zLib.php');
 include_once('lib/rTable.php');
 ?>
 
-<?
+<?php
 $proses = $_GET['proses'];
 $param = $_POST;
 unset($param['par']);

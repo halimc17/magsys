@@ -1,4 +1,4 @@
-<?
+<?php
 require_once('master_validation.php');
 require_once('config/connection.php');
 #ambil kode
@@ -23,8 +23,8 @@ while($bar=mysql_fetch_object($res))
 ?>
 <script   language=javascript1.2 src=js/generic.js></script>
 	 <form id=frmUpload enctype=multipart/form-data method=post action=rencana_slave_simpan_gisfile.php target=frame>	
-	 <table><tr><td>Unit</td><td>:<select style="width:175px;"name="kodeorg"><?echo $optOrg;?></select></td></tr>
-                     <tr><td>Jenis Data</td><td>:<select name="kode"><?echo $optjenis;?></select></td></tr>
+	 <table><tr><td>Unit</td><td>:<select style="width:175px;"name="kodeorg"><?php echo $optOrg;?></select></td></tr>
+                     <tr><td>Jenis Data</td><td>:<select name="kode"><?php echo $optjenis;?></select></td></tr>
                      <tr><td>Keterangan</td><td>:<input type="text" name="keterangan" id="keterangan" size="35" onkeypress="return tanpa_kutip(event)"></td></tr>
                      <tr><td><input type=hidden name=MAX_FILE_SIZE value=513000>                     
 	 File:</td><td>:<input name=photo type=file id=gambar size=35></td></tr></table>

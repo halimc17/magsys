@@ -89,11 +89,11 @@
 	
 					  ?>
 					 <td>			
-					 <button class=mybutton onclick="previewBapb('<?php  echo $bar['notransaksi']?>',event);" ><? echo $_SESSION['lang']['print'] ?>
+					 <button class=mybutton onclick="previewBapb('<?php  echo $bar['notransaksi']?>',event);" ><?php echo $_SESSION['lang']['print'] ?>
 					 </button>
 					 </td>
 	
-				 <?
+				 <?php
 				
 				 echo"</tr>";
 		}	 	 	echo"
@@ -153,11 +153,11 @@
 	
 					  ?>
 					 <td>			
-					 <button class=mybutton onclick="previewBapb('<?php  echo $bar['notransaksi']?>',event);" ><? echo $_SESSION['lang']['print'] ?>
+					 <button class=mybutton onclick="previewBapb('<?php  echo $bar['notransaksi']?>',event);" ><?php echo $_SESSION['lang']['print'] ?>
 					 </button>
 					 </td>
 	
-				 <?
+				 <?php
 				
 				 echo"</tr>";
 		}	 	 	echo"

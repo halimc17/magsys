@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -59,9 +59,9 @@ while($bar=mysql_fetch_object($res))
 <fieldset style="float: left;">
 <legend><b><?php echo $_SESSION['lang']['bgtVarian']?></b></legend>
 <table cellspacing="1" border="0" >
-<tr><td><label><?php echo $_SESSION['lang']['budgetyear']?></label></td><td><select id="thnBudget" name="thnBudget" style="width:150px"><? echo $optThn?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['budgetyear']?></label></td><td><select id="thnBudget" name="thnBudget" style="width:150px"><?php echo $optThn?></select></td></tr>
 <tr><td><label><?php echo $_SESSION['lang']['regional']?></label></td><td><select id="regional" name="regional" style="width:150px" onchange="getKdorg()"><?php echo $optreg?></select></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['kodebudget']?></label></td><td><select id="kdBudget" name="kdBudget" style="width:150px"><? echo $optSup?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['kodebudget']?></label></td><td><select id="kdBudget" name="kdBudget" style="width:150px"><?php echo $optSup?></select></td></tr>
 <tr height="20"><td colspan="2">&nbsp;</td></tr>
 <tr><td colspan="2"><button onclick="zPreview('bgt_slave_varianharga','<?php echo $arr?>','printContainer')" class="mybutton" name="preview" id="preview">Preview</button><button onclick="zExcel(event,'bgt_slave_varianharga.php','<?php echo $arr?>')" class="mybutton" name="preview" id="preview">Excel</button></td></tr>
 

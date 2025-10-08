@@ -7,7 +7,7 @@
 <script language=javascript1.2 src="js/generic.js"></script>
 <script language=javascript1.2 src="js/sdm_2rekapabsen.js"></script>
 <link rel=stylesheet type='text/css' href='style/generic.css'>
-<?
+<?php
 	$kdUnit=$_POST['kdUnit'];
 	$periode=$_POST['periode'];
 	$tipe=$_POST['tipe'];

@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 echo open_body();
@@ -90,7 +90,7 @@ Kegiatan</font></b></u></p>
 </FORM>
 <p>&nbsp;</p>
 <p>&nbsp;</p>
-<?
+<?php
 CLOSE_BOX();
 echo close_body();
 ?>

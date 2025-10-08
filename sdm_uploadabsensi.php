@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 echo open_body();
@@ -10,7 +10,7 @@ echo open_body();
     }
 }
 </script>
-<?
+<?php
 $arr="##listTransaksi##pilUn_1##unitId##method";
 include('master_mainMenu.php');
 OPEN_BOX();

@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 echo open_body();
@@ -6,7 +6,7 @@ include('master_mainMenu.php');
 ?>
 <script language=javascript1.2 src=js/sdm_payrollHO.js></script>
 <link rel=stylesheet type=text/css href=style/payrollHO.css>
-<?
+<?php
 //+++++++++++++++++++++++++++++++++++++++++++++
 //list employee
 	OPEN_BOX('',"<b>".$_SESSION['lang']['pengaturanuserpayroll']."</b>");

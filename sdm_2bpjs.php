@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 include_once('lib/zLib.php');
@@ -25,7 +25,7 @@ echo open_body();
 
 </script>
 
-<?
+<?php
 
 
                         
@@ -57,7 +57,7 @@ while ($dTahun=  mysql_fetch_assoc($nTahun))
 ?>
 
 
-<?
+<?php
 include('master_mainMenu.php');
 OPEN_BOX();
 //$arr="##tgl1##tgl2";	

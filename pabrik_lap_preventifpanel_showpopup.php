@@ -6,7 +6,7 @@
 ?>
 <script language=javascript1.2 src="js/generic.js"></script>
 <link rel=stylesheet type='text/css' href='style/generic.css'>
-<?
+<?php
 	$kdOrg=$_POST['kdorg'];
 	$kodestasiun=$_POST['kodestasiun'];
 	$namastasiun=$_POST['namastasiun'];

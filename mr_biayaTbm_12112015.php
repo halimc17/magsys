@@ -1,4 +1,4 @@
-<?
+<?php
 
 //@Copy nangkoelframework
 require_once('master_validation.php');
@@ -9,7 +9,7 @@ echo open_body();
 ?>
 <script language=javascript1.2 src='js/mr_biayaTbm.js'></script>
 <script language=javascript src='js/zReport.js'></script>
-<? 
+<?php 
 
 include('master_mainMenu.php');
 OPEN_BOX('', '<b>' . strtoupper($_SESSION['lang']['managerialreport']) . ': ' . strtoupper($_SESSION['lang']['biayatbm']) . '</b>');

@@ -1,6 +1,6 @@
 <link rel=stylesheet type=text/css href='style/generic.css'>
 <script language=JavaScript1.2 src=js/menuscript.js></script>
-<?
+<?php
 //exit;
 require_once('config/connection.php');
 @require_once('master_validation.php');

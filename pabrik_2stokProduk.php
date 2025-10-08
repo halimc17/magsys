@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -41,7 +41,7 @@ $arr="##kdOrgRep##kdBrgRep##tgl1Rep##tgl2Rep";
 <script language=javascript src='js/zTools.js'></script>
 <script language=javascript src='js/zReport.js'></script>
 <link rel='stylesheet' type='text/css' href='style/zTable.css'>
-<?
+<?php
 echo "<fieldset style='float:left;'><legend><b>Laporan Sisa Stok</b></legend>
 	<table>
         <tr>

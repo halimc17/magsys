@@ -1,11 +1,11 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 echo open_body();
 ?>
 <script language=javascript src=js/zTools.js></script>
 <script language=javascript1.2 src='js/sdm_5fasilitasMpp.js'></script>
-<?
+<?php
 $arr="##thnBudget##kdJabatan##kdBarang##hrgSat##sat##jmlhBrng##method##totBrg##oldKdBrg";
 include('master_mainMenu.php');
 OPEN_BOX();

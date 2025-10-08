@@ -120,12 +120,12 @@ switch($method)
 //						  {
 							  ?>
 							 <td>
-							 <button class=mybutton onclick="masterPDF('log_poht_del','<?php  echo $bar['nopo']?>','','log_slave_print_po_batal',event);" ><? echo $_SESSION['lang']['print'] ?>
+							 <button class=mybutton onclick="masterPDF('log_poht_del','<?php  echo $bar['nopo']?>','','log_slave_print_po_batal',event);" ><?php echo $_SESSION['lang']['print'] ?>
 							 </button>
 							 </td>
 						 <?php //} else {?>
 						<!-- <td>&nbsp;</td>-->
-						 <?
+						 <?php
 						// }
 						 echo"</tr>";
 				}
@@ -230,11 +230,11 @@ switch($method)
 				 
 					  ?>
 					 <td>			
-					 <button class=mybutton onclick="masterPDF('log_poht_del','<?php  echo $bar['nopo']?>','','log_slave_print_po_batal',event);" ><? echo $_SESSION['lang']['print'] ?>
+					 <button class=mybutton onclick="masterPDF('log_poht_del','<?php  echo $bar['nopo']?>','','log_slave_print_po_batal',event);" ><?php echo $_SESSION['lang']['print'] ?>
 					 </button>
 					 </td>
 	
-				 <?
+				 <?php
 				
 				 echo"</tr>";
 		}	 	 	echo"

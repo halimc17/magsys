@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 include('lib/zMysql.php');
@@ -6,7 +6,7 @@ include('lib/zForm.php');
 echo open_body();
 ?>
 <script language=javascript1.2 src='js/asset.js'></script>
-<?
+<?php
 include('master_mainMenu.php');
 
 $arrstatus=array('0'=>$_SESSION['lang']['pensiun'],'1'=>$_SESSION['lang']['aktif'],'2'=>$_SESSION['lang']['rusak'],'3'=>$_SESSION['lang']['hilang']);

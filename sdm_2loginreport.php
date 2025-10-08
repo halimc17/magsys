@@ -1,10 +1,10 @@
-<?//@Copy nangkoelframework 
+<?php //@Copy nangkoelframework 
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 echo open_body();
 ?>
 <script language=javascript1.2 src="js/sdm_2loginreport.js"></script>
-<?
+<?php
 include('master_mainMenu.php'); 
 OPEN_BOX();
 
@@ -31,7 +31,7 @@ while($bar=mysql_fetch_object($res))
 <tr height="20"><td colspan="2"><button class=mybutton onclick=getUser()><?php echo $_SESSION['lang']['preview'] ?></button></td></tr>
 </table>
 </fieldset>
-<?
+<?php
 
 CLOSE_BOX();
 OPEN_BOX('','Result:');

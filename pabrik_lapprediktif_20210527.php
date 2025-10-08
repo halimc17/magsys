@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 //ind
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -16,7 +16,7 @@ echo open_body();
 <script language="javascript" src="js/zMaster.js"></script>
 
 
-<?
+<?php
 
 
 $frm[0]='';
@@ -44,7 +44,7 @@ $optMesin.="<option value=''>".$_SESSION['lang']['all']."</option>";
 ?>
 
 
-<?
+<?php
 include('master_mainMenu.php');
 $frm[0]='';
 $frm[1]='';

@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -101,10 +101,10 @@ function getCust(){
 <table cellspacing="1" border="0" >
 <tr><td><label><?php echo $_SESSION['lang']['tanggal'];?></label></td><td><input type="text" class="myinputtext" id="tgl_1" onmousemove="setCalendar(this.id);" onkeypress="return false;"  size="10" maxlength="10" onblur="cleart()" /> s.d. <input type="text" class="myinputtext" id="tgl_2" onmousemove="setCalendar(this.id);" onkeypress="return false;"  size="10" maxlength="10"  onblur="cleart()" />
 </td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['unit'];?></label></td><td><select id="kdPabrik" name="kdPabrik"  style="width:169px" ><? echo $optPabrik;?></select></td></tr>
-<tr><td><?php echo $_SESSION['lang']['materialname'];?></td><td><select id="kdBrg" style="width:169px" onchange="getCust()"><? echo $optBrg; ?></select></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['transporter'];?></label></td><td><select id="kdCust" name="kdCust" style="width:169px;" onchange="getKontrak()"><? echo $optCust;?></select></td></tr>
-<tr><td><?php echo $_SESSION['lang']['NoKontrak'];?></td><td><select id="nkntrak" style="width:169px"><option value=''><? echo $_SESSION['lang']['all'] ;?></option></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['unit'];?></label></td><td><select id="kdPabrik" name="kdPabrik"  style="width:169px" ><?php echo $optPabrik;?></select></td></tr>
+<tr><td><?php echo $_SESSION['lang']['materialname'];?></td><td><select id="kdBrg" style="width:169px" onchange="getCust()"><?php echo $optBrg; ?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['transporter'];?></label></td><td><select id="kdCust" name="kdCust" style="width:169px;" onchange="getKontrak()"><?php echo $optCust;?></select></td></tr>
+<tr><td><?php echo $_SESSION['lang']['NoKontrak'];?></td><td><select id="nkntrak" style="width:169px"><option value=''><?php echo $_SESSION['lang']['all'] ;?></option></select></td></tr>
 
 <tr height="20"><td colspan="2">&nbsp;</td></tr>
 <tr><td colspan="2"><button onclick="zPreview('pabrik_slave_2pengiriman','<?php echo $arr;?>','printContainer')" class="mybutton" name="preview" id="preview">Preview</button><button onclick="zPdf('pabrik_slave_2pengiriman','<?php echo $arr;?>','printContainer')" class="mybutton" name="preview" id="preview">PDF</button><button onclick="zExcel(event,'pabrik_slave_2pengiriman.php','<?php echo $arr;?>')" class="mybutton" name="preview" id="preview">Excel</button></td></tr>

@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -87,8 +87,8 @@ function getUnit()
 <table cellspacing="1" border="0" >
     <tr><td><label><?php echo $_SESSION['lang']['periode']?></label></td><td><select id="periodeDt" style="width:150px"><?php echo $optPeriode;?></select></td></tr>
 <tr><td><label><?php echo $_SESSION['lang']['pt']?></label></td><td><select id="kdPt" name="kdPt" style="width:150px" onchange="getUnit()"><?php echo $optKlmpk?></select></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['unit']?></label></td><td><select id="kdUnit" name="kdUnit" style="width:150px"><? echo $optKlmpk2?></select></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['intiplasma']?></label></td><td><select id="intiplasma" name="intiplasma" style="width:150px"><? echo $optDtTp?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['unit']?></label></td><td><select id="kdUnit" name="kdUnit" style="width:150px"><?php echo $optKlmpk2?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['intiplasma']?></label></td><td><select id="intiplasma" name="intiplasma" style="width:150px"><?php echo $optDtTp?></select></td></tr>
 
 
 <tr height="20"><td colspan="2">&nbsp;</td></tr>
@@ -104,8 +104,8 @@ OPEN_BOX('','Result:');?>
 <div style='width:1180px;display:fixed;'>
 <table cellpadding=1 cellspacing=1 border=0 class=sortable width=1160px>
 <thead><tr class=rowheader>
-<td rowspan=2  align=center style="width:60px"><? echo $_SESSION['lang']['tahuntanam']; ?></td>
-<td rowspan=2  align=center style="width:60px"><? echo $_SESSION['lang']['afdeling']; ?></td>
+<td rowspan=2  align=center style="width:60px"><?php echo $_SESSION['lang']['tahuntanam']; ?></td>
+<td rowspan=2  align=center style="width:60px"><?php echo $_SESSION['lang']['afdeling']; ?></td>
 <td colspan=2  align=center style="width:120px">LUAS TM (Ha)</td>
 <?php
 for($der=1;$der<=12;$der++){
@@ -118,7 +118,7 @@ for($der=1;$der<=12;$der++){
     echo "<td colspan=2  align=center style=width:120px>".$optBulan[$red]."</td>";
 }
 ?>
-<td colspan=2  align=center style=width:120px><? echo $_SESSION['lang']['total'] ?></td></tr>
+<td colspan=2  align=center style=width:120px><?php echo $_SESSION['lang']['total'] ?></td></tr>
 <tr>
 <?php
 for($der2=1;$der2<=14;$der2++){

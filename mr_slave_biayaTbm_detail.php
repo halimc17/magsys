@@ -4,7 +4,7 @@ require_once('config/connection.php');
 require_once('lib/nangkoelib.php');
 ?>
 <link rel=stylesheet type='text/css' href='style/generic.css'>
-<?
+<?php
    
 $noakun=$_GET['noakun'];
 $pt=$_GET['pt'];

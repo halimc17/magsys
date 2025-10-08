@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 include_once('lib/zLib.php');
@@ -57,8 +57,8 @@ function getKode()
 <fieldset style="float: left;">
 <legend><b><?php echo $_SESSION['lang']['keeksternal']?></b></legend>
 <table cellspacing="1" border="0" >
-<tr><td><label><?php echo $_SESSION['lang']['kebun']?></label></td><td><select id="kbnId" name="kbnId" onchange="getKode()" style="width:169px"><? echo $optOrg?></select></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['afdeling']?></label></td><td><select id="afdId" name="afdId"  style="width:169px"><? echo $optAfd?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['kebun']?></label></td><td><select id="kbnId" name="kbnId" onchange="getKode()" style="width:169px"><?php echo $optOrg?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['afdeling']?></label></td><td><select id="afdId" name="afdId"  style="width:169px"><?php echo $optAfd?></select></td></tr>
 <tr><td><label><?php echo $_SESSION['lang']['tanggal']?></label></td><td><input type="text" class="myinputtext" id="tgl1" onmousemove="setCalendar(this.id)" onkeypress="return false;"  size="10" maxlength="10" /> s.d <input type="text" class="myinputtext" id="tgl2" onmousemove="setCalendar(this.id)" onkeypress="return false;"  size="10" maxlength="10" />
 </td></tr>
 <tr height="20"><td colspan="2">&nbsp;</td></tr>

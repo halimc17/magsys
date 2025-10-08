@@ -116,7 +116,7 @@ switch($proses)
 	case 'detail':
 		?>
 		    <link rel=stylesheet type='text/css' href='style/generic.css'>
-		<?
+		<?php
 		echo $stream2;
 	break;
 	case 'excel':

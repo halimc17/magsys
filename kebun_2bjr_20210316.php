@@ -1,4 +1,4 @@
-<?//Ind
+<?php //Ind
 require_once('master_validation.php');
 require_once('lib/nangkoelib.php');
 require_once ('config/connection.php');
@@ -11,7 +11,7 @@ OPEN_BOX('',"<b>BJR Harian</b><br /><br />");
 <script language=javascript src=js/zTools.js></script>
 <script language=javascript src='js/zReport.js'></script>
 <link rel=stylesheet type=text/css href=style/zTable.css>
-<?
+<?php
 $optOrg=$optPer="";
 $iOrg="select namaorganisasi,kodeorganisasi from ".$dbname.".organisasi where tipe='kebun' order by namaorganisasi asc ";	
 $nOrg=mysql_query($iOrg) or die(mysql_error($conn));

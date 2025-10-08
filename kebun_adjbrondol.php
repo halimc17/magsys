@@ -1,10 +1,10 @@
-<?
+<?php
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 echo open_body();
 ?>
 <script language=javascript1.2 src='js/kebun_adjbrondol.js'></script>
-<?
+<?php
 include('master_mainMenu.php');
 
 OPEN_BOX('',"<b>".'Adjustment Brondolan Afkir/Hilang/Temuan'."</b>");

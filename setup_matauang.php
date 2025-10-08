@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 include_once('lib/zLib.php');
@@ -102,7 +102,7 @@ echo "</div></fieldset>";
 <p><font face="Fixedsys"><input type="button" value="Simpan" name="ModifDtl">&nbsp;
 <input type="button" value="   Batal   " name="DeleteDtl"></font></p>
 <p><font face="Fixedsys">&nbsp;&nbsp; &nbsp;</font></p-->
-<?
+<?php
 CLOSE_BOX();
 echo close_body();
 ?>

@@ -103,7 +103,7 @@ OPEN_BOX();
 </tr>
 <tr><td><?php echo $_SESSION['lang']['periode']?></td>
 <td>:</td>
-<td><select id="tglAbsen" style="width:150px"><? echo $optPeriode?></select></td>
+<td><select id="tglAbsen" style="width:150px"><?php echo $optPeriode?></select></td>
 </tr>
 <tr><td><?php echo $_SESSION['lang']['potongan']?></td>
 <td>:</td>

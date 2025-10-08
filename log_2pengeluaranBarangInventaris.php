@@ -9,7 +9,7 @@ OPEN_BOX();
 <script language="JavaScript1.2" src="js/zTools.js"></script>
 <script language=javascript1.2 src="js/log_2pengeluaranBarangInventaris.js"></script>
 <script language="javascript1.2" src="js/zReport.js"></script>
-<?
+<?php
 
 ### begin get nama unit ###
 $optUnit="<option value=''>".$_SESSION['lang']['all']."</option>";

@@ -1,4 +1,4 @@
-<?
+<?php
 require_once('master_validation.php');
 require_once('config/connection.php');
 //$arr="##kode##nilKode##ket##method";

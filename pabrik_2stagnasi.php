@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -42,11 +42,11 @@ while($rOrg2=mysql_fetch_assoc($qOrg2))
 <fieldset style="float: left;">
 <legend><b><?php echo $_SESSION['lang']['stagnasi']; ?></b></legend>
 <table cellspacing="1" border="0" >
-<tr><td><label><?php echo $_SESSION['lang']['pabrik']?></label></td><td><select id="kdPabrik" name="kdPabrik"  style="width:170px"><? echo $optPabrik?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['pabrik']?></label></td><td><select id="kdPabrik" name="kdPabrik"  style="width:170px"><?php echo $optPabrik?></select></td></tr>
 <tr><td><label><?php echo $_SESSION['lang']['tanggal']?></label></td><td><input type="text" class="myinputtext" id="tgl1" onmousemove="setCalendar(this.id)" onkeypress="return false;"  size="10" maxlength="10" />
         s.d. <input type="text" class="myinputtext" id="tgl2" onmousemove="setCalendar(this.id)" onkeypress="return false;"  size="10" maxlength="10" />
 </td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['downstatus']?></label></td><td><select id="dwnStatus" name="dwnStatus"  style="width:170px"><? echo $optagama?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['downstatus']?></label></td><td><select id="dwnStatus" name="dwnStatus"  style="width:170px"><?php echo $optagama?></select></td></tr>
 
 <tr height="20"><td colspan="2">&nbsp;</td></tr>
 <tr><td colspan="2"><button onclick="zPreview('pabrik_slave_2stagnasi','<?php echo $arrRe?>','printContainer')" class="mybutton" name="preview" id="preview">Preview</button>

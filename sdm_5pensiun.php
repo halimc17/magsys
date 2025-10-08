@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 include('lib/zMysql.php');
@@ -11,7 +11,7 @@ echo open_body();
 <script>
 
 </script>
-<?
+<?php
 $arr="##kodept##masakerja##jenis##banyaknya##old_kodept##old_masakerja##old_jenis##old_banyaknya##method";
 
 $sPT="select * from ".$dbname.".organisasi where tipe='PT'";

@@ -1,4 +1,4 @@
-<? 
+<?php 
 require_once('master_validation.php');
 include_once('lib/nangkoelib.php');
 include_once('lib/zLib.php');

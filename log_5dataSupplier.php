@@ -1,11 +1,11 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 include_once('lib/zMysql.php');
 echo open_body();
 ?>
 <script language='JavaScript1.2' src='js/supplier.js'></script>
-<?
+<?php
 include('master_mainMenu.php');
 OPEN_BOX('','<u><b><font face=Verdana size=4 color=#000080>'.$_SESSION['lang']['data'].' '.$_SESSION['lang']['supplier'].' </font></b></u>');
 
@@ -58,7 +58,7 @@ foreach($arrStatusIntExt as $kei=>$fal)
 	<button class=mybutton onclick=cancelSupplier()>".$_SESSION['lang']['cancel']."</button>	  
 	  </fieldset>";
 ?>
-<?
+<?php
 CLOSE_BOX();
 OPEN_BOX('',$_SESSION['lang']['plafon'].': <span id=captiontipe></span> '.$_SESSION['lang']['namakelompok'].':<span id=captionkelompok></span>');
 	     

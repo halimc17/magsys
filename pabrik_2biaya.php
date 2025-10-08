@@ -1,4 +1,4 @@
-<?//Ind
+<?php //Ind
 require_once('master_validation.php');
 require_once('lib/nangkoelib.php');
 require_once ('config/connection.php');
@@ -27,7 +27,7 @@ function lihatDetail(noakun,kodeorg,per,unit,tipe,ev){
     
 </script>
 
-<?
+<?php
 $sOrg="select namaorganisasi,kodeorganisasi from ".$dbname.".organisasi where tipe='PABRIK' order by namaorganisasi asc ";	
 $qOrg=mysql_query($sOrg) or die(mysql_error($conn));
 while($rOrg=mysql_fetch_assoc($qOrg))

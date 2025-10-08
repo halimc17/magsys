@@ -5,7 +5,7 @@ require_once('lib/nangkoelib.php');
 require_once('lib/zLib.php');
 ?>
 <link rel=stylesheet type='text/css' href='style/generic.css'>
-<?
+<?php
 
 $sPt = "select b.namaorganisasi as namaorganisasi from ".$dbname.".organisasi a 
 		left join ".$dbname.".organisasi b 

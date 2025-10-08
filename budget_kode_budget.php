@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 include_once('lib/zLib.php');
@@ -6,7 +6,7 @@ echo open_body();
 ?>
 
 <script language=javascript1.2 src='js/budget_kode_budget.js'></script>
-<?
+<?php
 include('master_mainMenu.php');
 OPEN_BOX('',$_SESSION['lang']['input'].' '.$_SESSION['lang']['kodeanggaran']);
 $optAkun="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";

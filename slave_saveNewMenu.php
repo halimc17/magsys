@@ -1,4 +1,4 @@
-<?
+<?php
 require_once('master_validation.php');
 require_once('config/connection.php');
 require_once('lib/admin_validation.php');
@@ -107,7 +107,7 @@ if(!isset($urut))
 				    //do nothing
 				} else {
 				    //write file
-					$defaulContent="<?//@Copy nangkoelframework
+					$defaulContent="<?php //@Copy nangkoelframework
 ?>";
 					$handle=fopen($filename,'w');
 					 if(!fwrite($handle,$defaulContent))

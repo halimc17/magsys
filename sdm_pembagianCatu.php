@@ -1,10 +1,10 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 echo open_body();
 ?>
 <script language=javascript1.2 src='js/sdm_pembagianCatu.js'></script>
-<?
+<?php
 include('master_mainMenu.php');
 //ambil periode penggajian
 $str="select distinct periode from ".$dbname.".sdm_5periodegaji where kodeorg='".$_SESSION['empl']['lokasitugas']."' order by periode desc";

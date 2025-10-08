@@ -9,7 +9,7 @@ include_once('lib/zLib.php');
 <link rel=stylesheet type='text/css' href='style/generic.css'>
 <script language=javascript src='js/sdm_2pajak.js'></script>
 <script language="JavaScript1.2" src="js/formReport.js"></script>
-<?
+<?php
    
 $proses=checkPostGet('proses','');
 $kodeorg=checkPostGet('kodeorg','');

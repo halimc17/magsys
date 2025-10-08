@@ -1,4 +1,4 @@
-<?
+<?php
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 include_once('lib/zLib.php');
@@ -7,7 +7,7 @@ echo open_body();
 <link rel=stylesheet type='text/css' href='style/orgchart.css'>
 <script   language=javascript1.2 src='js/menusetting.js'></script>
 <script   language=javascript1.2 src='js/sdm_orgchart.js'></script>
-<?
+<?php
 include('master_mainMenu.php');
 OPEN_BOX();
 $optNmKar=makeOption($dbname, 'datakaryawan', 'karyawanid,namakaryawan');

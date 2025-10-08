@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -55,7 +55,7 @@ foreach($tbl as $lsttbl)
 <div id='printContainer'>
 
 </div></fieldset>
-<?
+<?php
 CLOSE_BOX();
 echo close_body();
 ?>

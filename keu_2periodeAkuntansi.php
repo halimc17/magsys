@@ -1,10 +1,10 @@
-<?//@Copy nangkoelframework 
+<?php //@Copy nangkoelframework 
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 echo open_body();
 ?>
 <script language=javascript1.2 src="js/keu_laporan.js"></script>
-<?
+<?php
 include('master_mainMenu.php'); 
 OPEN_BOX();
 
@@ -74,7 +74,7 @@ $optunit="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
 <tr height="20"><td colspan="2"><button class=mybutton onclick=getPeriodeAkuntansi()><?php echo $_SESSION['lang']['preview'] ?></button></td></tr>
 </table>
 </fieldset>
-<?
+<?php
 
 CLOSE_BOX();
 OPEN_BOX('','Result:');

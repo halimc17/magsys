@@ -9,7 +9,7 @@ OPEN_BOX();
 <script language="JavaScript1.2" src="js/zTools.js"></script>
 <script language=javascript1.2 src="js/log_2pengeluaranBarangInventaris.js"></script>
 <script language="javascript1.2" src="js/zReport.js"></script>
-<?
+<?php
 ### BEGIN GET EXITING PERIODE ###
 $str="select DISTINCT(DATE_FORMAT(tanggal,'%Y-%m')) AS periode from ".$dbname.".log_transaksi_vw
       order by tanggal desc";

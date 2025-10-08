@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -120,14 +120,14 @@ function cekcek(apa){
 
 <tr> 
     <td colspan="2">
-        <input type="checkbox" id="premi" value="1" onclick="cekcek(this);" checked><? echo $_SESSION['lang']['premi']; ?>
-        <input type="checkbox" id="premibasis" value="1" onclick="cekcek(this);" checked><? echo $_SESSION['lang']['premibasis']; ?>
-        <input type="checkbox" id="premitetap" value="1" onclick="cekcek(this);" checked><? echo $_SESSION['lang']['premitetap']; ?>
-        <input type="checkbox" id="upah" value="1" onclick="cekcek(this);" checked><? echo $_SESSION['lang']['upah']; ?>
-        <input type="checkbox" id="upahpenalty" value="1" onclick="cekcek(this);" checked><? echo $_SESSION['lang']['upahpenalty2']; ?>
-        <input type="checkbox" id="hk" value="1" onclick="cekcek(this);" checked><? echo $_SESSION['lang']['hk']; ?>
-        <input type="checkbox" id="dendahk" value="1" onclick="cekcek(this);" checked><? echo $_SESSION['lang']['penaltykehadiran']; ?>
-        <input type="checkbox" id="dendarp" value="1" onclick="cekcek(this);" checked><? echo $_SESSION['lang']['rupiahpenalty']; ?>
+        <input type="checkbox" id="premi" value="1" onclick="cekcek(this);" checked><?php echo $_SESSION['lang']['premi']; ?>
+        <input type="checkbox" id="premibasis" value="1" onclick="cekcek(this);" checked><?php echo $_SESSION['lang']['premibasis']; ?>
+        <input type="checkbox" id="premitetap" value="1" onclick="cekcek(this);" checked><?php echo $_SESSION['lang']['premitetap']; ?>
+        <input type="checkbox" id="upah" value="1" onclick="cekcek(this);" checked><?php echo $_SESSION['lang']['upah']; ?>
+        <input type="checkbox" id="upahpenalty" value="1" onclick="cekcek(this);" checked><?php echo $_SESSION['lang']['upahpenalty2']; ?>
+        <input type="checkbox" id="hk" value="1" onclick="cekcek(this);" checked><?php echo $_SESSION['lang']['hk']; ?>
+        <input type="checkbox" id="dendahk" value="1" onclick="cekcek(this);" checked><?php echo $_SESSION['lang']['penaltykehadiran']; ?>
+        <input type="checkbox" id="dendarp" value="1" onclick="cekcek(this);" checked><?php echo $_SESSION['lang']['rupiahpenalty']; ?>
         
     </td>
 </tr>

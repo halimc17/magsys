@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -43,7 +43,7 @@ function Clear1()
 <legend><b><?php echo $_SESSION['lang']['lapRestan']?></b></legend>
 
 <fieldset><legend>Info</legend>
-<?
+<?php
 
 
 if($_SESSION['language']=='EN')

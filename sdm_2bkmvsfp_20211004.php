@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 //ind
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -12,7 +12,7 @@ echo open_body();
 <link rel=stylesheet type=text/css href=style/zTable.css>
 <script language="javascript" src="js/zMaster.js"></script>
 
-<?
+<?php
 ##untuk pilihan Unit
 if(trim($_SESSION['empl']['tipelokasitugas'])=='HOLDING'){
 	$optUnit="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
@@ -38,7 +38,7 @@ while($dDivisi=mysql_fetch_assoc($nDivisi))
 }
 ?>
 
-<?
+<?php
 include('master_mainMenu.php');
 OPEN_BOX();
 $arr="##unit##divisi##tgl1##tgl2";	

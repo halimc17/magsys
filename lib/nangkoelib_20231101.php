@@ -1,4 +1,4 @@
-<?
+<?php
 if (isset($_SESSION['theme']))
    $theme=$_SESSION['theme'];
 else

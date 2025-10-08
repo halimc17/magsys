@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -104,7 +104,7 @@ function  getPeriode()
 
 <div>
 <fieldset style="float: left;">
-<legend><b><? echo $_SESSION['lang']['slipgajiharianper'];?></b></legend>
+<legend><b><?php echo $_SESSION['lang']['slipgajiharianper'];?></b></legend>
 <table cellspacing="1" border="0" >
 <tr><td><label><?php echo $_SESSION['lang']['periode']?></label></td><td><select id="periode" name="periode" style="width:150px"><?php echo $optPeriode?></select></td></tr>
 <tr><td><label><?php echo $_SESSION['lang']['bagian']?></label></td><td><select id="kdBag" name="kdBag" style="width:150px"><?php echo $optDept?></select></td></tr>
@@ -119,7 +119,7 @@ function  getPeriode()
       
 <div>
 <fieldset style="float: left;">
-<legend><b><? echo $_SESSION['lang']['slipgajiharianper']."/".$_SESSION['lang']['karyawan'];?></b><?php //echo $_SESSION['lang']['']?></legend>
+<legend><b><?php echo $_SESSION['lang']['slipgajiharianper']."/".$_SESSION['lang']['karyawan'];?></b><?php //echo $_SESSION['lang']['']?></legend>
 <table cellspacing="1" border="0" >
 <tr><td><label><?php echo $_SESSION['lang']['periode']?></label></td><td><select id="period" name="period" style="width:150px"><?php echo $optPeriode?></select></td></tr>
 
@@ -131,7 +131,7 @@ function  getPeriode()
 </div>
 <div style="margin-bottom: 30px;">
 <fieldset style="float: left;">
-<legend><b><? echo $_SESSION['lang']['slipgajiharianper']."/";?>Afdeling</b><?php //echo $_SESSION['lang']['']?></legend>
+<legend><b><?php echo $_SESSION['lang']['slipgajiharianper']."/";?>Afdeling</b><?php //echo $_SESSION['lang']['']?></legend>
 <table cellspacing="1" border="0" >
 <tr><td><label><?php echo $_SESSION['lang']['periode']?></label></td><td><select id="perod" name="perod" style="width:150px"><?php echo $optPeriode?></select></td></tr>
 
@@ -143,10 +143,10 @@ function  getPeriode()
 </table>
 </fieldset>
 </div>
-<? } else { ?>
+<?php } else { ?>
       <div>
 <fieldset style="float: left;">
-<legend><b><? echo $_SESSION['lang']['slipgajiharianper']."/";?>Afdeling</b><?php //echo $_SESSION['lang']['']?></legend>
+<legend><b><?php echo $_SESSION['lang']['slipgajiharianper']."/";?>Afdeling</b><?php //echo $_SESSION['lang']['']?></legend>
 <table cellspacing="1" border="0" >
 <tr><td><label><?php echo $_SESSION['lang']['unit']?></label></td><td>
 <select id="idAfd" name="idAfd" style="width:150px"><?php echo $optOrg?></select></td></tr>

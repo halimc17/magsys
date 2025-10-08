@@ -358,9 +358,9 @@ include_once('lib/zMysql.php');
 						else
 						{	$disbled2="";}
 						?>
-						<td><button class=mybutton onclick="release_po('<?php echo $bar['nopo'] ?>')" <?php echo $disbled?>><? echo $_SESSION['lang']['release_po'] ?></button></td>
-						<td><button class=mybutton onclick="un_release_po('<?php echo $bar['nopo'] ?>')" <?php echo $disbled2?>><? echo $_SESSION['lang']['un_release_po'] ?></button></td>
-						<?
+						<td><button class=mybutton onclick="release_po('<?php echo $bar['nopo'] ?>')" <?php echo $disbled?>><?php echo $_SESSION['lang']['release_po'] ?></button></td>
+						<td><button class=mybutton onclick="un_release_po('<?php echo $bar['nopo'] ?>')" <?php echo $disbled2?>><?php echo $_SESSION['lang']['un_release_po'] ?></button></td>
+						<?php
 						echo"</tr><input type=hidden id=nopo_".$no." name=nopo_".$no." value='".$bar['nopo']."' />";
 					}//while
 				 }//else

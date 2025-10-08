@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -13,7 +13,7 @@ $frm[4]='';
 
 ?>
 <script>
-pilh=" <? echo $_SESSION['lang']['pilihdata'] ?>";
+pilh=" <?php echo $_SESSION['lang']['pilihdata'] ?>";
 </script>
 <script language="javascript" src="js/zMaster.js"></script>
 <script language=javascript src='js/zTools.js'></script>

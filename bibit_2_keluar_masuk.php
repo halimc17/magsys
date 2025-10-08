@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -42,7 +42,7 @@ $arr="##kdUnit##kdBatch";
 
 <link rel=stylesheet type=text/css href=style/zTable.css>
 <div style="margin-bottom: 30px;">
-<?    
+<?php    
 $frm[0].="<fieldset style=\"float: left;\">
 <legend><b>".$_SESSION['lang']['laporanStockBIbit']."</b></legend>
 <table cellspacing=\"1\" border=\"0\" >

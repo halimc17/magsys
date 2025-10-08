@@ -1,2 +1,2 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 ?>

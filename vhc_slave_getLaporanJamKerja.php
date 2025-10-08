@@ -1,4 +1,4 @@
-<?
+<?php
 require_once('master_validation.php');
 require_once('config/connection.php');
 require_once('lib/fpdf.php');

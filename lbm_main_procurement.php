@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include_once('lib/nangkoelib.php');
 include_once('lib/zLib.php');
@@ -62,7 +62,7 @@ function ubah(obj)
 
 </script>
 <link rel=stylesheet type=text/css href='style/zTable.css'>
-<?
+<?php
 //echo "qwe";
 //exit;
 

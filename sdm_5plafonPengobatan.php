@@ -60,7 +60,7 @@ OPEN_BOX('','MEDICAL PLAFOND');
 	 	<?php echo $optGolongan;?>
 	 </select>
 	 </td></tr>
-	 <?
+	 <?php
 	   echo"<tr><td>".$_SESSION['lang']['jenisbiayapengobatan']."</td>
 	        <td><select id=jenisbiaya>".$optjenis."</select></td></tr>
 			<tr><td>".$_SESSION['lang']['satuan']."</td>
@@ -120,7 +120,7 @@ OPEN_BOX('','MEDICAL PLAFOND');
 		 </table>
 </div>
 
-	<?
+	<?php
 echo close_theme();
 CLOSE_BOX();
 echo close_body();

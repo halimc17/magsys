@@ -1,10 +1,10 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 echo open_body();
 ?>
 <script language=javascript1.2 src=js/pabrik_5suhu.js></script>
-<?
+<?php
 include('master_mainMenu.php');
 OPEN_BOX();
 
@@ -31,35 +31,35 @@ if(mysql_num_rows($qKdTangki)==0){
 
 ?>
 <fieldset style="width:300px;">
-	<legend><?echo $_SESSION['lang']['suhu'];?></legend>
+	<legend><?php echo $_SESSION['lang']['suhu'];?></legend>
 <table border="0" cellspacing="0">
   <tr>
-    <td><?echo $_SESSION['lang']['kodeorg'];?>
+    <td><?php echo $_SESSION['lang']['kodeorg'];?>
     </td>
-    <td><select id="kodeorg"><?echo $optOrg;?></select></td>
+    <td><select id="kodeorg"><?php echo $optOrg;?></select></td>
   </tr>
   <tr>
-    <td><?echo $_SESSION['lang']['kodetangki'];?></td>
-    <td><select id="kodetangki"><? echo $optKdTangki; ?></select></td>
+    <td><?php echo $_SESSION['lang']['kodetangki'];?></td>
+    <td><select id="kodetangki"><?php echo $optKdTangki; ?></select></td>
   </tr>
   <tr>
-    <td><?echo $_SESSION['lang']['suhu'];?></td>
+    <td><?php echo $_SESSION['lang']['suhu'];?></td>
 	<td><input type="text"  class=myinputtextnumber id="suhu" value=0 size=10 maxlength=10 onkeypress="return angka_doang(event)"></td>
   </tr>
   <tr>
-    <td><?echo $_SESSION['lang']['beratjenis'];?></td>
+    <td><?php echo $_SESSION['lang']['beratjenis'];?></td>
     <td><input type="text"  class=myinputtextnumber id="beratjenis" value=0 size=10 maxlength=10 onkeypress="return angka_doang(event)"></td>
   </tr>
   <tr>
-    <td><?echo $_SESSION['lang']['varian'];?></td>
+    <td><?php echo $_SESSION['lang']['varian'];?></td>
 	<td><input type="text"  class=myinputtextnumber id="varian" value=0 size=10 maxlength=10 onkeypress="return angka_doang(event)"></td>
   </tr>
   <input type=hidden value='insert' id=method>
 </table>
-<button class=mybutton onclick=simpan()><?echo $_SESSION['lang']['save'];?></button>
-<button class=mybutton onclick=cancel()><?echo $_SESSION['lang']['cancel'];?></button>
+<button class=mybutton onclick=simpan()><?php echo $_SESSION['lang']['save'];?></button>
+<button class=mybutton onclick=cancel()><?php echo $_SESSION['lang']['cancel'];?></button>
 </fieldset>
-<?
+<?php
 CLOSE_BOX();
 OPEN_BOX();
 

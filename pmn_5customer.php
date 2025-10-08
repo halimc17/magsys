@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 include_once('lib/zLib.php');
@@ -28,7 +28,7 @@ foreach($arrStatusIntEks as $kei=>$fal)
                 <td style='vertical-align:top;'>:</td>
                 <td>
 				<table width="40%"><tr><td>
-				<?
+				<?php
 					$str="select kodebarang,namabarang from ".$dbname.".log_5masterbarang where kelompokbarang=400";
 					$qry=mysql_query($str) or die(mysql_error());
 					while($res=mysql_fetch_assoc($qry)){
@@ -120,7 +120,7 @@ foreach($arrStatusIntEks as $kei=>$fal)
                 <td style='vertical-align:top'>Status <?php echo $_SESSION['lang']['eksternal']."/".$_SESSION['lang']['internal']?></td>
                 <td style='vertical-align:top'>:</td>
                 <td>
-                <select id=statusinteks><? echo $optStatusIntEks ?></select>
+                <select id=statusinteks><?php echo $optStatusIntEks ?></select>
                 </td>
         </tr>
         <tr>
@@ -282,7 +282,7 @@ OPEN_BOX();
          </tfoot>
          </table>
 </fieldset>
-<?
+<?php
 CLOSE_BOX();
 echo close_body();
 ?>

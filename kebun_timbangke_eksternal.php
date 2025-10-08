@@ -89,14 +89,14 @@ for($i=0;$i<60;)
 <td><input type=text class=myinputtext id=tgl onmousemove='setCalendar(this.id)' onkeypress='return false;' onchange='getNosbp()'  size=10 maxlength=10 /></td>
 </tr>
 <tr> 	 
-	<td style='valign:top'><? echo $_SESSION['lang']['jammasuk']; ?></td>
+	<td style='valign:top'><?php echo $_SESSION['lang']['jammasuk']; ?></td>
 	<td>:</td>
-	<td><select id=jmMasuk><? echo $jmMsk; ?></select> : <select id=mntMasuk><? echo $mntMsk; ?></select>
+	<td><select id=jmMasuk><?php echo $jmMsk; ?></select> : <select id=mntMasuk><?php echo $mntMsk; ?></select>
 </td></tr>
 <tr> 	 
-	<td style='valign:top'><? echo $_SESSION['lang']['jamkeluar']; ?></td>
+	<td style='valign:top'><?php echo $_SESSION['lang']['jamkeluar']; ?></td>
 	<td>:</td>
-	<td><select id=jmKeluar><? echo $jmKlr; ?></select> : <select id=mntKeluar><? echo $mntKlr; ?></select></td></tr>
+	<td><select id=jmKeluar><?php echo $jmKlr; ?></select> : <select id=mntKeluar><?php echo $mntKlr; ?></select></td></tr>
 <tr><td><?php echo $_SESSION['lang']['nospb']?></td>
 <td>:</td><td>
 <select id="spbId" name="spbId" style="width:150px;"  ><?php echo $optOrg;?></select></td>

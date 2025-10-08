@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -277,9 +277,9 @@ $arr="##kdOrg##thnId##tipe##tanggal1##tanggal2";
 <fieldset style="float: left;">
 <legend><b>Posting Pekerjaan</b></legend>
 <table cellspacing="1" border="0" >
-<tr><td><label><?php echo $_SESSION['lang']['kodeorg']?></label></td><td><select id="kdOrg" name="kdOrg" style="width:150px" onchange="getPeriode()"><? echo $optOrg?></select></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['periode']?></label></td><td><select id="thnId" name="thnId" style="width:150px" ><? echo $optPeriode?></select></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['tipe']?></label></td><td><select id="tipe" name="tipe" style="width:150px" ><? echo $optTipe?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['kodeorg']?></label></td><td><select id="kdOrg" name="kdOrg" style="width:150px" onchange="getPeriode()"><?php echo $optOrg?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['periode']?></label></td><td><select id="thnId" name="thnId" style="width:150px" ><?php echo $optPeriode?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['tipe']?></label></td><td><select id="tipe" name="tipe" style="width:150px" ><?php echo $optTipe?></select></td></tr>
     <tr>
         <td><label><?php echo $_SESSION['lang']['tanggalmulai']?></label></td>
         <td><input type="text" class="myinputtext" id="tanggal1" name="tanggal1" onmousemove="setCalendar(this.id)" onkeypress="return false;"  maxlength="10" style="width:150px;" /></td>
@@ -289,7 +289,7 @@ $arr="##kdOrg##thnId##tipe##tanggal1##tanggal2";
         <td><input type="text" class="myinputtext" id="tanggal2" name="tanggal2" onmousemove="setCalendar(this.id)" onkeypress="return false;"  maxlength="10" style="width:150px;" /></td>
     </tr>
 
-<!--<tr><td><label><?php echo $_SESSION['lang']['tipe']?></label></td><td><select id="tipeTrk" name="tipeTrk" style="width:150px" ><? echo $optTrak?></select></td></tr>-->
+<!--<tr><td><label><?php echo $_SESSION['lang']['tipe']?></label></td><td><select id="tipeTrk" name="tipeTrk" style="width:150px" ><?php echo $optTrak?></select></td></tr>-->
 <tr height="20"><td colspan="2">&nbsp;</td></tr>
 <tr><td colspan="2"><button onclick="zPreview('kebun_slave_3postingtransaksi','<?php echo $arr?>','printContainer')" class="mybutton" name="preview" id="preview">Preview</button></td></tr>
 </table>

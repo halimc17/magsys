@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 // dhyaz aug 10, 2011
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -7,7 +7,7 @@ include('lib/zFunction.php');
 echo open_body();
 ?>
 <script language=javascript1.2 src='js/budget_5hargabarang.js'></script>
-<?
+<?php
 include('master_mainMenu.php');
 //pilihan new / list
 OPEN_BOX('',$_SESSION['lang']['budget']." ".$_SESSION['lang']['material']);

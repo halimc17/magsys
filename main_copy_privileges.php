@@ -1,11 +1,11 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 echo open_body();
 ?>
 
 <script language=javascript1.2 src='js/menusetting.js'></script>
-<?
+<?php
 include('master_mainMenu.php');
 /*ambil pengguna */
 $str="select a.namauser,b.namakaryawan,b.lokasitugas,c.namajabatan,d.nama from ".$dbname.".user a

@@ -1,10 +1,10 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 echo open_body();
 ?>
 <script language=javascript1.2 src=js/master_barang.js></script>
-<?
+<?php
 include('master_mainMenu.php');
 OPEN_BOX();
 if($_SESSION['language']=='EN'){
@@ -44,50 +44,50 @@ while($bar=mysql_fetch_object($res))
 }
 ?>
 <fieldset>
-	<legend><?echo $_SESSION['lang']['materialmaster'];?></legend>
+	<legend><?php echo $_SESSION['lang']['materialmaster'];?></legend>
 <table border="0" cellspacing="0">
   <tr>
-    <td><?echo $_SESSION['lang']['materialgroupcode'];?>
+    <td><?php echo $_SESSION['lang']['materialgroupcode'];?>
     </td>
-    <td><select id="kelompokbarang" onchange=getSubKlBarang()><?echo $optkelompok;?></select></td>
+    <td><select id="kelompokbarang" onchange=getSubKlBarang()><?php echo $optkelompok;?></select></td>
   </tr>
   <tr>
-    <td><?echo $_SESSION['lang']['kodesubkelompokbarang'];?></td>
+    <td><?php echo $_SESSION['lang']['kodesubkelompokbarang'];?></td>
     <td>
 		<select id="subkelompokbarang" onchange=getMaterialNumber() disabled='true'>
-			<? echo $optsubkelompok ?>
+			<?php echo $optsubkelompok ?>
 		</select></td>
   </tr>
   <tr>
-    <td><?echo $_SESSION['lang']['materialcode'];?></td>
+    <td><?php echo $_SESSION['lang']['materialcode'];?></td>
     <td><input type=text  class=myinputtext  id="kodebarang" disabled size=10></td>
   </tr>
   <tr>
-    <td><?echo $_SESSION['lang']['materialname'];?></td>
+    <td><?php echo $_SESSION['lang']['materialname'];?></td>
 	<td><input type="text"  class=myinputtext id="namabarang" size=45 maxlength=120 onkeypress="return tanpa_kutip(event)"></td>
   </tr>
   <tr>
-    <td><?echo $_SESSION['lang']['satuan'];?></td>
-    <td><select id="satuan"><?echo $optsatuan;?></select></td>
+    <td><?php echo $_SESSION['lang']['satuan'];?></td>
+    <td><select id="satuan"><?php echo $optsatuan;?></select></td>
   </tr>
   <tr>
-    <td><?echo $_SESSION['lang']['minstok'];?></td>
+    <td><?php echo $_SESSION['lang']['minstok'];?></td>
 	<td><input type="text"  class=myinputtextnumber id="minstok" value=0 size=4 maxlength=4 onkeypress="return angka_doang(event)"></td>
   </tr>
   <tr>
-    <td><?echo $_SESSION['lang']['nokartubin'];?></td>
+    <td><?php echo $_SESSION['lang']['nokartubin'];?></td>
 	<td><input type="text"  class=myinputtext id="nokartu" size=10 maxlength=10 onkeypress="return tanpa_kutip(event)"></td>
   </tr>  
   <tr>
-    <td><?echo $_SESSION['lang']['konversi'];?></td>
+    <td><?php echo $_SESSION['lang']['konversi'];?></td>
     <td><select id="konversi"><option value=1>Yes</option><option value=0>No</option></select></td>
   </tr>  
   <input type=hidden value='insert' id=method>
 </table>
-<button class=mybutton onclick=simpanBarangBaru()><?echo $_SESSION['lang']['save'];?></button>
-<button class=mybutton onclick=cancelBarang()><?echo $_SESSION['lang']['cancel'];?></button>
+<button class=mybutton onclick=simpanBarangBaru()><?php echo $_SESSION['lang']['save'];?></button>
+<button class=mybutton onclick=cancelBarang()><?php echo $_SESSION['lang']['cancel'];?></button>
 </fieldset>
-<?
+<?php
 CLOSE_BOX();
 OPEN_BOX();
 

@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 echo open_body();
@@ -51,7 +51,7 @@ function fillField(x,y)
          document.getElementById('kode').disabled=true;
 }
 </script>
-<?
+<?php
 include('master_mainMenu.php');
 OPEN_BOX('',$_SESSION['lang']['kodefraksi']);
 

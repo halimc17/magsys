@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 //ini tidak memerlukan master validation untuk menghindari
 //replace session timeout
 session_start();

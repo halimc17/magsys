@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 require_once('lib/zMysql.php');
 include('lib/nangkoelib.php');
@@ -6,7 +6,7 @@ echo open_body();
 ?>
 
 <script language=javascript1.2 src=js/tipeasset.js></script>
-<?
+<?php
 include('master_mainMenu.php');
 //ambil akun penyusutan
 $str="select noakundebet as noakun,

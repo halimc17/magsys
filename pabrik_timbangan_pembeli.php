@@ -67,17 +67,17 @@ $optJenis="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
 <tr>
 <td><?php echo $_SESSION['lang']['namabarang']?></td>
 <td>:</td>
-<td><select id="kdBrg" name="kdBrg" style="width:150px" onchange="getCustomer(0,0,0)"><? echo $optBrg;?></select></td>
+<td><select id="kdBrg" name="kdBrg" style="width:150px" onchange="getCustomer(0,0,0)"><?php echo $optBrg;?></select></td>
 </tr>
 <tr>
 <td><?php echo $_SESSION['lang']['nmcust']?></td>
 <td>:</td>
-<td><select id="custId" name="custId" style="width:150px" onchange="getKontrak(0,0)"><? echo $optJenis;?></select></td>
+<td><select id="custId" name="custId" style="width:150px" onchange="getKontrak(0,0)"><?php echo $optJenis;?></select></td>
 </tr>
 <tr>
 <td><?php echo $_SESSION['lang']['NoKontrak']?></td>
 <td>:</td>
-<td><select id="noKontrak" style="width:150px"><? echo $optJenis;?></select></td>
+<td><select id="noKontrak" style="width:150px"><?php echo $optJenis;?></select></td>
 </tr>
 
 
@@ -91,7 +91,7 @@ $optJenis="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
 </fieldset>
     <div id="formInputan" style="display: none;">
         <fieldset>
-            <legend><? echo $_SESSION['lang']['list'] ?></legend>
+            <legend><?php echo $_SESSION['lang']['list'] ?></legend>
             <div id="formTampil">
                 
             </div>

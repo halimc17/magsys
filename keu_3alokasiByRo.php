@@ -1,11 +1,11 @@
-<?
+<?php
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 echo open_body();
 ?>
 
 <script language=javascript1.2 src='js/alokasiByRo.js'></script>
-<?
+<?php
 include('master_mainMenu.php');
 if(substr($_SESSION['empl']['lokasitugas'],3,1)!='O'){
     exit("Error: Hanya RO dan HO yang dapat mengalokasi");

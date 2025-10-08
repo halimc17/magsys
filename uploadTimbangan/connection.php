@@ -1,4 +1,4 @@
-<?
+<?php
 //server jakarta
 $dbserver='192.168.0.201';
 $dbport  ='3306';

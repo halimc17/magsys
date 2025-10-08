@@ -1,4 +1,4 @@
-<?
+<?php
 	require_once('master_validation.php');
 	include('lib/nangkoelib.php');
 	include_once('lib/zLib.php');
@@ -68,7 +68,7 @@
 <link rel=stylesheet type=text/css href=style/zTable.css>
 <div>
 	<fieldset style="float: left;">
-		<legend><b><? echo $_SESSION['lang']['gaji']." ".$_SESSION['lang']['realisasi'];?></b><?php //echo $_SESSION['lang']['']?></legend>
+		<legend><b><?php echo $_SESSION['lang']['gaji']." ".$_SESSION['lang']['realisasi'];?></b><?php //echo $_SESSION['lang']['']?></legend>
 		<table cellspacing="1" border="0" >
 			<tr><td><label><?php echo $_SESSION['lang']['unit']?></label></td><td><select id="kdUnit" name="kdUnit" style="width:150px" onchange="getPeriode()"><?php echo $optDept?></select></td></tr>
 			<tr><td><label><?php echo $_SESSION['lang']['periode']?></label></td><td><select id="periode" name="periode" style="width:150px"><?php echo $optPeriode?></select></td></tr>

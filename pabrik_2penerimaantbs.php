@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -262,7 +262,7 @@ function closeAfd(id)
 <fieldset style="float: left;">
 <legend><b><?php echo $_SESSION['lang']['rePenerimaanTbs']?></b></legend>
 <table cellspacing="1" border="0" >
-    <tr><td><label><?php echo $_SESSION['lang']['pabrik']?></label></td><td><select  id="kdPabrikRe" name="kdPabrikRe"  style="width:169px"><? echo $optPabrik?></select></td></tr>
+    <tr><td><label><?php echo $_SESSION['lang']['pabrik']?></label></td><td><select  id="kdPabrikRe" name="kdPabrikRe"  style="width:169px"><?php echo $optPabrik?></select></td></tr>
 <tr><td><label><?php echo $_SESSION['lang']['tanggal']?></label></td><td><input type="text" class="myinputtext" id="tglRe" onmousemove="setCalendar(this.id)" onkeypress="return false;"  size="10" maxlength="10" />
 </td></tr>
 <tr height="20"><td colspan="2">&nbsp;</td></tr>
@@ -285,12 +285,12 @@ foreach($arrTampilan as $lstTampilan=>$disTamp)
 <fieldset style="float: left;">
 <legend><b><?php echo $_SESSION['lang']['rPenerimaanTbs']?></b></legend>
 <table cellspacing="1" border="0" >
-<tr><td><label><?php echo $_SESSION['lang']['pabrik']?></label></td><td><select onchange="getKode()" id="kdPabrik" name="kdPabrik"  style="width:169px"><? echo $optPabrik?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['pabrik']?></label></td><td><select onchange="getKode()" id="kdPabrik" name="kdPabrik"  style="width:169px"><?php echo $optPabrik?></select></td></tr>
 <tr><td><label><?php echo $_SESSION['lang']['tanggal']?></label></td><td><input type="text" class="myinputtext" id="tgl_1" onmousemove="setCalendar(this.id)" onkeypress="return false;"  size="10" maxlength="10" /> s.d. <input type="text" class="myinputtext" id="tgl_2" onmousemove="setCalendar(this.id)" onkeypress="return false;"  size="10" maxlength="10" />
 </td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['tbs']?></label></td><td><select id="tipeIntex" name="tipeIntex" onchange="getKode()" style="width:169px"><? echo $optTbsRe?></select></td></tr>
-<tr><td><?php echo $_SESSION['lang']['unit']."/".$_SESSION['lang']['supplier']?></td><td><select id="unit" style="width:169px"><option value=""><? echo $_SESSION['lang']['all'] ?></option></select></td></tr>
-<tr><td><?php echo $_SESSION['lang']['tampilkan']?></td><td><select id="pilTamp" style="width:169px"><? echo $optTampilan ?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['tbs']?></label></td><td><select id="tipeIntex" name="tipeIntex" onchange="getKode()" style="width:169px"><?php echo $optTbsRe?></select></td></tr>
+<tr><td><?php echo $_SESSION['lang']['unit']."/".$_SESSION['lang']['supplier']?></td><td><select id="unit" style="width:169px"><option value=""><?php echo $_SESSION['lang']['all'] ?></option></select></td></tr>
+<tr><td><?php echo $_SESSION['lang']['tampilkan']?></td><td><select id="pilTamp" style="width:169px"><?php echo $optTampilan ?></select></td></tr>
 <tr height="20"><td colspan="2">&nbsp;</td></tr>
 <tr><td colspan="2"><button onclick="zPreview('pabrik_slave_2penerimaantbs','<?php echo $arr?>','printContainer')" class="mybutton" name="preview" id="preview">Preview</button><button onclick="zPdf('pabrik_slave_2penerimaantbs','<?php echo $arr?>','printContainer')" class="mybutton" name="preview" id="preview">PDF</button><button onclick="zExcel(event,'pabrik_slave_2penerimaantbs.php','<?php echo $arr?>')" class="mybutton" name="preview" id="preview">Excel</button></td></tr>
 
@@ -302,10 +302,10 @@ foreach($arrTampilan as $lstTampilan=>$disTamp)
 <fieldset style="float: left;">
 <legend><b><?php echo $_SESSION['lang']['rPenerimaanTbs']."/".$_SESSION['lang']['afdeling']."/".$_SESSION['lang']['tanggal']?></b></legend>
 <table cellspacing="1" border="0" >
-<tr><td><label><?php echo $_SESSION['lang']['pabrik']?></label></td><td><select id="kdPabrik__2" name="kdPabrik__2" onchange="getUnit(2)" style="width:169px"><? echo $optPabrik?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['pabrik']?></label></td><td><select id="kdPabrik__2" name="kdPabrik__2" onchange="getUnit(2)" style="width:169px"><?php echo $optPabrik?></select></td></tr>
 <tr><td><label><?php echo $_SESSION['lang']['tanggal']?></label></td><td><input type="text" class="myinputtext" id="tgl__2" onmousemove="setCalendar(this.id)" onkeypress="return false;"  size="10" maxlength="10" /></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['unit']?></label></td><td><select id="kdUnit__2" name="kdUnit__2" onchange="getAfdeling2()" style="width:169px"><? echo $optUnit?></select></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['afdeling']?></label></td><td><select id="kdAfdeling__2" name="kdAfdeling__2" style="width:169px"><? echo $optAfdeling2?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['unit']?></label></td><td><select id="kdUnit__2" name="kdUnit__2" onchange="getAfdeling2()" style="width:169px"><?php echo $optUnit?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['afdeling']?></label></td><td><select id="kdAfdeling__2" name="kdAfdeling__2" style="width:169px"><?php echo $optAfdeling2?></select></td></tr>
 <tr><td></td><td></td></tr>
 <tr height="20"><td colspan="2">&nbsp;</td></tr>
 <tr><td colspan="2"><button onclick="zPreview('pabrik_slave_2penerimaantbs2','<?php echo $arr2?>','printContainer')" class="mybutton" name="preview" id="preview">Preview</button><button onclick="zPdf('pabrik_slave_2penerimaantbs2','<?php echo $arr2?>','printContainer')" class="mybutton" name="preview" id="preview">PDF</button><button onclick="zExcel(event,'pabrik_slave_2penerimaantbs2.php','<?php echo $arr2?>')" class="mybutton" name="preview" id="preview">Excel</button></td></tr>
@@ -318,9 +318,9 @@ foreach($arrTampilan as $lstTampilan=>$disTamp)
 <fieldset style="float: left;">
 <legend><b><?php echo $_SESSION['lang']['rPenerimaanTbs']."/".$_SESSION['lang']['afdeling']."/".$_SESSION['lang']['bulan']?></b></legend>
 <table cellspacing="1" border="0" >
-<tr><td><label><?php echo $_SESSION['lang']['pabrik']?></label></td><td><select id="kdPabrik__3" name="kdPabrik__3" onchange="getUnit(3)" style="width:169px"><? echo $optPabrik?></select></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['unit']?></label></td><td><select id="kdUnit__3" name="kdUnit__3" style="width:169px"><? echo $optUnit?></select></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['periode']?></label></td><td><select id="periode__3" name="periode__3" style="width:169px"><? echo $optPeriode?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['pabrik']?></label></td><td><select id="kdPabrik__3" name="kdPabrik__3" onchange="getUnit(3)" style="width:169px"><?php echo $optPabrik?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['unit']?></label></td><td><select id="kdUnit__3" name="kdUnit__3" style="width:169px"><?php echo $optUnit?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['periode']?></label></td><td><select id="periode__3" name="periode__3" style="width:169px"><?php echo $optPeriode?></select></td></tr>
 <tr><td></td><td></td></tr>
 <tr height="20"><td colspan="2">&nbsp;</td></tr>
 <tr><td colspan="2"><button onclick="zPreview('pabrik_slave_2penerimaantbs3','<?php echo $arr3?>','printContainer')" class="mybutton" name="preview" id="preview">Preview</button><button onclick="zPdf('pabrik_slave_2penerimaantbs3','<?php echo $arr3?>','printContainer')" class="mybutton" name="preview" id="preview">PDF</button><button onclick="zExcel(event,'pabrik_slave_2penerimaantbs3.php','<?php echo $arr3?>')" class="mybutton" name="preview" id="preview">Excel</button></td></tr>

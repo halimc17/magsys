@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -8,7 +8,7 @@ include('master_mainMenu.php');
 ?>
 <script language=javascript src='js/sdm_pengobatan.js'></script>
 <link rel=stylesheet type=text/css href=style/payrollHO.css>
-<?
+<?php
 OPEN_BOX('',$_SESSION['lang']['adm_peng']);
 $optthn="<option value=''></option>";
 for($x=-1;$x<4;$x++)

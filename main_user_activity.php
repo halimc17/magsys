@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 echo open_body();
@@ -7,7 +7,7 @@ $TABLENAME='user_activity';
 ?>
 
 <script language=javascript1.2 src=js/tablebrowser.js></script>
-<?
+<?php
 include('master_mainMenu.php');
 require_once('lib/admin_validation.php');
 

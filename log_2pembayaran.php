@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -58,12 +58,12 @@ $arr2="##tgl_cari##tgl_cari2##jenisId2##kdUnit2##cariNopo##suppId2";
 <!--<fieldset style="float: left;">
 <legend><b>Payment History</b></legend>
 <table cellspacing="1" border="0" >
-<tr><td><label><?php echo $_SESSION['lang']['dari']?> <?php echo $_SESSION['lang']['periode']?></label></td><td><select id="periode" name="periode" style="width:150px" onchange=getPt()><? echo $optPeriode?></select></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['sampai']?> <?php echo $_SESSION['lang']['periode']?></label></td><td><select id="periode2" name="periode2" style="width:150px" ><? echo $optPeriode?></select></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['jenis']?></label></td><td><select id="jenisId" name="jenisId" style="width:150px" onchange=getNopo()><? echo $optjenis?></select></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['pt']?></label></td><td><select id="kdUnit" name="kdUnit" style="width:150px" onchange=getAll()><? echo $optNopo;?></select></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['nopo']?>/ No Kontrak</label></td><td><select id="lstPo" name="lstPo" style="width:150px"><? echo $optNopo?></select></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['supplier']?></label></td><td><select id="suppId" name="suppId" style="width:150px"><? echo $optSupp?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['dari']?> <?php echo $_SESSION['lang']['periode']?></label></td><td><select id="periode" name="periode" style="width:150px" onchange=getPt()><?php echo $optPeriode?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['sampai']?> <?php echo $_SESSION['lang']['periode']?></label></td><td><select id="periode2" name="periode2" style="width:150px" ><?php echo $optPeriode?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['jenis']?></label></td><td><select id="jenisId" name="jenisId" style="width:150px" onchange=getNopo()><?php echo $optjenis?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['pt']?></label></td><td><select id="kdUnit" name="kdUnit" style="width:150px" onchange=getAll()><?php echo $optNopo;?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['nopo']?>/ No Kontrak</label></td><td><select id="lstPo" name="lstPo" style="width:150px"><?php echo $optNopo?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['supplier']?></label></td><td><select id="suppId" name="suppId" style="width:150px"><?php echo $optSupp?></select></td></tr>
 <tr height="20"><td colspan="2">&nbsp;</td></tr>
 <tr><td colspan="2"><button onclick="zPreview('log_slave_2pembayaran','<?php echo $arr?>','printContainer')" class="mybutton" name="preview" id="preview">Preview</button><button onclick="zExcel(event,'log_slave_2pembayaran.php','<?php echo $arr?>')" class="mybutton" name="preview" id="preview">Excel</button></td></tr>
 </table>
@@ -74,10 +74,10 @@ $arr2="##tgl_cari##tgl_cari2##jenisId2##kdUnit2##cariNopo##suppId2";
 <table cellspacing="1" border="0" >
 <tr><td><label><?php echo $_SESSION['lang']['dari']?> <?php echo $_SESSION['lang']['tanggal']?></label></td><td><input type=text class=myinputtext id=tgl_cari onmousemove=setCalendar(this.id) onkeypress=return false;   maxlength=10 style=width:150px /></td></tr>
 <tr><td><label><?php echo $_SESSION['lang']['sampai']?> <?php echo $_SESSION['lang']['tanggal']?></label></td><td><input type=text class=myinputtext id=tgl_cari2 onmousemove=setCalendar(this.id) onkeypress=return false;   maxlength=10 style=width:150px /></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['jenis']?></label></td><td><select id="jenisId2" name="jenisId2" style="width:150px"><? echo $optjenis?></select></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['pt']?></label></td><td><select id="kdUnit2" name="kdUnit2" style="width:150px" ><? echo $optOrg;?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['jenis']?></label></td><td><select id="jenisId2" name="jenisId2" style="width:150px"><?php echo $optjenis?></select></td></tr>
+<tr><td><label><?php echo $_SESSION['lang']['pt']?></label></td><td><select id="kdUnit2" name="kdUnit2" style="width:150px" ><?php echo $optOrg;?></select></td></tr>
 <tr><td><label><?php echo $_SESSION['lang']['nopo']?>/ No Kontrak</label></td><td><input type=text id="cariNopo" class="myinputtext" style="width:150px;" /></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['supplier']?></label></td><td><select id="suppId2" name="suppId2" style="width:150px"><? echo $optSupplr?></select>
+<tr><td><label><?php echo $_SESSION['lang']['supplier']?></label></td><td><select id="suppId2" name="suppId2" style="width:150px"><?php echo $optSupplr?></select>
 <?php echo"<img src=images/search.png class=resicon title='".$_SESSION['lang']['findRkn']."' onclick=\"searchSupplier('".$_SESSION['lang']['findRkn']."','<fieldset><legend>".$_SESSION['lang']['find']."</legend>".$_SESSION['lang']['find']."&nbsp;<input type=text class=myinputtext id=nmSupplier><button class=mybutton onclick=findSupplier()>".$_SESSION['lang']['find']."</button></fieldset><div id=containerSupplier style=overflow=auto;height=380;width=485></div>',event);\">"; ?></td></tr>
 <tr height="20"><td colspan="2">&nbsp;</td></tr>
 <tr><td colspan="2"><button onclick="zPreviewd('log_slave_2pembayaran2','<?php echo $arr2?>','printContainer')" class="mybutton" name="preview" id="preview">Preview</button><button onclick="zExcel(event,'log_slave_2pembayaran2.php','<?php echo $arr2?>')" class="mybutton" name="preview" id="preview">Excel</button></td></tr>

@@ -1,4 +1,4 @@
-<?//@Copy nangkoelframework
+<?php //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
 include('lib/zMysql.php');
@@ -11,7 +11,7 @@ echo open_body();
 <script>
 
 </script>
-<?
+<?php
  $optTipe="<option value=''>".$_SESSION['lang']['pilihdata']."</option>";
  $optTipe2="";
  $optTipe5=$optTipe;

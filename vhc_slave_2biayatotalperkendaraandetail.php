@@ -7,7 +7,7 @@ include_once('lib/zLib.php');
 <script language=javascript1.2 src="js/generic.js"></script>
 <script language=javascript1.2 src="js/vhc_2biayatotalperkendaraan.js"></script>
 <link rel=stylesheet type='text/css' href='style/generic.css'>
-<?
+<?php
    
 $kodevhc=$_GET['kodevhc'];
 $tanggalmulai=$_GET['tanggalmulai'];

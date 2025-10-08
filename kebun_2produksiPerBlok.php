@@ -1,4 +1,4 @@
-<?
+<?php
 //@Copy nangkoelframework
 require_once('master_validation.php');
 include('lib/nangkoelib.php');
@@ -90,7 +90,7 @@ echo"<tr>
 <div id='printContainer' style='overflow:auto;height:350px;max-width:1220px'>
 
 </div></fieldset>
-<?
+<?php
 CLOSE_BOX();
 echo close_body();
 ?>

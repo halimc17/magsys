@@ -1,4 +1,4 @@
-<?
+<?php
 session_start();//to make sure all session is destroyed
 	        //turn on Addtype application/x-php	.html on your apache config
 session_destroy();
@@ -181,7 +181,7 @@ require_once('config/connection.php');
 								<i class="bi bi-globe"></i> Language
 							</label>
 							<select id="language" class="form-select">
-<?
+<?php
 $str="select * from ".$dbname.".namabahasa order by code";
 $res=mysql_query($str);
 

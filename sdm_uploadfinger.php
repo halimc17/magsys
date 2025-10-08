@@ -1,4 +1,4 @@
-<?
+<?php
 	require_once('master_validation.php');
 	include('lib/nangkoelib.php');
 	echo open_body();
@@ -15,7 +15,7 @@
 		//alert(txt);
 	}
 </script>
-<?
+<?php
 	include('master_mainMenu.php');
 	OPEN_BOX();
 	echo"<fieldset><legend>Form</legend>

@@ -1,4 +1,4 @@
-<?
+<?php
 require_once('master_validation.php');
 require_once('config/connection.php');
 include_once('lib/nangkoelib.php');
@@ -9,7 +9,7 @@ include_once('lib/zLib.php');
 <script language=javascript src="js/zTools.js"></script>
 <script language="javascript" src="js/sdm_training.js"></script>
 <script language=javascript1.2 src=js/generic.js></script>
-<?
+<?php
 $nomor =$_GET['nomor'];
 $str="select * from ".$dbname.".sdm_karyawantraining where nomor=".$nomor."";
 $berlakudari='';

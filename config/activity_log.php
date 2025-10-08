@@ -1,4 +1,4 @@
-<?
+<?php
 $pos='';
 foreach($_POST as $key=> $val){
  $pos.="&".$key."=>".$val;
