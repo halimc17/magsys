@@ -50,30 +50,68 @@ $arr="##tanggalmulai##tanggalakhir##idPabrik##kdBrg";
 <script language=javascript src=js/zReport.js></script>
 <script language=javascript src='js/pmn_2penjualan.js'></script>
 <link rel=stylesheet type=text/css href=style/zTable.css>
-<?php      
-$frm[0].="<div style=\"margin-bottom: 30px;\">
-<fieldset style=\"float: left;\">
-<legend><b>".$_SESSION['lang']['find']."</b></legend>
-<table cellspacing=\"1\" border=\"0\" >
-<tr><td style='display:none'><label>".$_SESSION['lang']['periode']."</label></td><td style='display:none;'><select id=\"periode\" name=\"periode\" style=\"width:150px\">".$optPeriode."</select></td></tr>
-<tr><td><label>".$_SESSION['lang']['tgldari']."</label></td><td><input type=text class=myinputtext id=tanggalmulai onmousemove=setCalendar(this.id) onkeypress=return false;  size=10 maxlength=10 /></td></tr>
-<tr><td><label>".$_SESSION['lang']['tglsmp']."</label></td><td><input type=text class=myinputtext id=tanggalakhir onmousemove=setCalendar(this.id) onkeypress=return false;  size=10 maxlength=10 /></td></tr>
-<tr><td><label>".$_SESSION['lang']['nm_perusahaan']."</label></td><td><select id=\"idPabrik\" name=\"idPabrik\" style=\"width:150px\">".$optPabrik."</select></td></tr>
-<tr><td><label>".$_SESSION['lang']['komoditi']."</label></td><td><select id=\"kdBrg\" name=\"kdBrg\" style=\"width:150px\">".$optBrg."</select></td></tr>
-<tr><td colspan=\"2\"><button onclick=\"zPreview('pmn_slave_2rekapkontrak','".$arr."','printContainer')\" class=\"mybutton\" name=\"preview\" id=\"preview\">Preview</button>
-    <button onclick=\"zExcel(event,'pmn_slave_2rekapkontrak.php','".$arr."')\" class=\"mybutton\" name=\"preview\" id=\"preview\">Excel</button></td></tr>
-</table>
-</fieldset>
+
+<!-- Bootstrap Tabs Navigation -->
+<ul class="nav nav-tabs" id="rekapkontrakTab" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="rekapkontrak-tab" data-bs-toggle="tab" data-bs-target="#rekapkontrak" type="button" role="tab" aria-controls="rekapkontrak" aria-selected="true">
+            Rekap Kontrak, Invoice dan Faktur Penjualan
+        </button>
+    </li>
+</ul>
+
+<!-- Bootstrap Tabs Content -->
+<div class="tab-content" id="rekapkontrakTabContent">
+    <div class="tab-pane fade show active" id="rekapkontrak" role="tabpanel" aria-labelledby="rekapkontrak-tab">
+        <div class="p-3">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0"><?php echo $_SESSION['lang']['find'];?></h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3" style="display:none;">
+                                <label class="form-label"><?php echo $_SESSION['lang']['periode'];?></label>
+                                <select id="periode" name="periode" class="form-select form-select-sm"><?php echo $optPeriode;?></select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label"><?php echo $_SESSION['lang']['tgldari'];?></label>
+                                <input type="text" class="form-control form-control-sm" id="tanggalmulai" onmousemove="setCalendar(this.id)" onkeypress="return false;" maxlength="10" />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label"><?php echo $_SESSION['lang']['tglsmp'];?></label>
+                                <input type="text" class="form-control form-control-sm" id="tanggalakhir" onmousemove="setCalendar(this.id)" onkeypress="return false;" maxlength="10" />
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label"><?php echo $_SESSION['lang']['nm_perusahaan'];?></label>
+                                <select id="idPabrik" name="idPabrik" class="form-select form-select-sm"><?php echo $optPabrik;?></select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label"><?php echo $_SESSION['lang']['komoditi'];?></label>
+                                <select id="kdBrg" name="kdBrg" class="form-select form-select-sm"><?php echo $optBrg;?></select>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button onclick="zPreview('pmn_slave_2rekapkontrak','<?php echo $arr;?>','printContainer')" class="btn btn-primary btn-sm">Preview</button>
+                                <button onclick="zExcel(event,'pmn_slave_2rekapkontrak.php','<?php echo $arr;?>')" class="btn btn-success btn-sm">Excel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Print Area</h5>
+                </div>
+                <div class="card-body">
+                    <div id="printContainer" style="overflow:auto;height:350px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<fieldset style='clear:both'><legend><b>Print Area</b></legend>
-<div id='printContainer' style='overflow:auto;height:350px;max-width:1220px'>
-</div></fieldset>";
 
-//========================
-$hfrm[0]="Rekap Kontrak, Invoice dan Faktur Penjualan";
-drawTab('FRM',$hfrm,$frm,200,900);
-//===============================================
-
+<?php
 CLOSE_BOX();
 echo close_body();
 ?>

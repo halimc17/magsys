@@ -134,51 +134,55 @@ function Clear1()
     document.getElementById('nokontrak').value='';
  }
 </script>
-<div>
-<fieldset style="float: left;">
-<legend><b><?php echo $_SESSION['lang']['laporan']." ".$_SESSION['lang']['hutang']." ".$_SESSION['lang']['transporter'];?></b></legend>
-<table cellspacing="1" border="0" >
-<tr>
-	<td><label><?php echo $_SESSION['lang']['tanggal'];?></label></td>
-	<td><input type="text" class="myinputtext" id="tgl_1" onmousemove="setCalendar(this.id);" onkeypress="return false;"  size="10" maxlength="10" onblur="cleart()" /> s.d. <input type="text" class="myinputtext" id="tgl_2" onmousemove="setCalendar(this.id);" onkeypress="return false;"  size="10" maxlength="10"  onblur="cleart()" />
-	</td>
-</tr>
-<tr>
-	<td><label><?php echo $_SESSION['lang']['unit'];?></label></td>
-	<td><select id=kdUnit><?php echo $optUnit;?>
-	</select></td>
-</tr>
-<tr>
-	<td><label><?php echo $_SESSION['lang']['transporter'];?></label></td>
-	<td><select id="kdCust" name="kdCust" style="width:150px"><?php echo $optCust;?>
-	</select></td>
-</tr>
-<tr>
-	<td><label><?php echo $_SESSION['lang']['komoditi'];?></label></td>
-	<td><select id="kdBrg" name="kdBrg" style="width:150px"><?php echo $optBrg;?>
-	</select></td>
-</tr>
-<tr>
-	<td><label><?php echo $_SESSION['lang']['NoKontrak'];?></label></td>
-	<td><input type=text class=myinputtext  id=nokontrak name=nokontrak style="width:200px" /></td>
-</tr>
-
-<tr height="20"><td colspan="2">&nbsp;</td></tr>
-<tr><td colspan="2">
-	<button onclick="zPreview('pmn_slave_laphutangtransportir','<?php echo $arr;?>','printContainer')" class="mybutton" name="preview" id="preview">Preview</button>
-	<button onclick="zExcel(event,'pmn_slave_laphutangtransportir.php','<?php echo $arr;?>')" class="mybutton" name="preview" id="preview">Excel</button>
-	<button onclick="Clear1()" class="mybutton" name="btnBatal" id="btnBatal"><?php echo $_SESSION['lang']['cancel'];?></button>
-</td></tr>
-</table>
-</fieldset>
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0"><?php echo $_SESSION['lang']['laporan']." ".$_SESSION['lang']['hutang']." ".$_SESSION['lang']['transporter'];?></h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label"><?php echo $_SESSION['lang']['tanggal'];?></label>
+                    <div class="input-group input-group-sm">
+                        <input type="text" class="form-control form-control-sm" id="tgl_1" onmousemove="setCalendar(this.id);" onkeypress="return false;" maxlength="10" onblur="cleart()" />
+                        <span class="input-group-text">s.d.</span>
+                        <input type="text" class="form-control form-control-sm" id="tgl_2" onmousemove="setCalendar(this.id);" onkeypress="return false;" maxlength="10" onblur="cleart()" />
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label"><?php echo $_SESSION['lang']['unit'];?></label>
+                    <select id="kdUnit" class="form-select form-select-sm"><?php echo $optUnit;?></select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label"><?php echo $_SESSION['lang']['transporter'];?></label>
+                    <select id="kdCust" name="kdCust" class="form-select form-select-sm"><?php echo $optCust;?></select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label"><?php echo $_SESSION['lang']['komoditi'];?></label>
+                    <select id="kdBrg" name="kdBrg" class="form-select form-select-sm"><?php echo $optBrg;?></select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label"><?php echo $_SESSION['lang']['NoKontrak'];?></label>
+                    <input type="text" class="form-control form-control-sm" id="nokontrak" name="nokontrak" />
+                </div>
+                <div class="d-grid gap-2">
+                    <button onclick="zPreview('pmn_slave_laphutangtransportir','<?php echo $arr;?>','printContainer')" class="btn btn-primary btn-sm">Preview</button>
+                    <button onclick="zExcel(event,'pmn_slave_laphutangtransportir.php','<?php echo $arr;?>')" class="btn btn-success btn-sm">Excel</button>
+                    <button onclick="Clear1()" class="btn btn-secondary btn-sm"><?php echo $_SESSION['lang']['cancel'];?></button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<div style="margin-bottom: 30px;">
+<div class="card mt-3">
+    <div class="card-header">
+        <h5 class="card-title mb-0">Print Area</h5>
+    </div>
+    <div class="card-body">
+        <div id="printContainer" style="overflow:auto;height:330px;"></div>
+    </div>
 </div>
-<fieldset style='clear:both'><legend><b>Print Area</b></legend>
-<div id='printContainer' style='overflow:auto;height:330px;max-width:1100px'>
-
-</div></fieldset>
 
 <?php
 CLOSE_BOX();

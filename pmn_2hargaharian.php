@@ -80,67 +80,108 @@ while($rBarang=mysql_fetch_assoc($qBrng))
 }
 
 OPEN_BOX('',"<b>Daily Price</b><br>");
-$frm[0].="<div>
-<fieldset style='float: left;'>
-<legend><b>".$_SESSION['lang']['hargapasar']."</b></legend>";
-$frm[0].="<table cellspacing=1 border=0 >
-<tr><td><label>".$_SESSION['lang']['pasar']."</label></td><td><select id=psrId name=periode style='width:150px'>".$optGoldar."</select></td></tr>
-<tr><td><label>".$_SESSION['lang']['komoditi']."</label></td><td><select id=komoditi name=komoditi style='width:150px'>".$optBrg."</select></td></tr>
-<tr><td><label>".$_SESSION['lang']['periode']."</label></td><td><select id=periodePsr name=periodePsr style='width:150px'>".$optPeriode."</select></td></tr>
-<tr height=20><td colspan=2>&nbsp;</td></tr>
-<tr><td colspan=2><button onclick=\"zPreview('pmn_slave_2hargapasar','".$arr."','printContainer')\" class=mybutton name=preview id=preview>Preview</button>
-    <button onclick=\"zExcel(event,'pmn_slave_2hargapasar.php','".$arr."')\" class=mybutton name=preview id=preview>Excel</button>
-        <button onclick=\"grafikProduksi(event)\" class=mybutton name=preview id=preview>Jpgraph</button></td></tr>
+?>
+<!-- Bootstrap Tabs Navigation -->
+<ul class="nav nav-tabs" id="hargaharianTab" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="hargapasar-tab" data-bs-toggle="tab" data-bs-target="#hargapasar" type="button" role="tab" aria-controls="hargapasar" aria-selected="true">
+            <?php echo $_SESSION['lang']['hargapasar'];?>
+        </button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="bandingharga-tab" data-bs-toggle="tab" data-bs-target="#bandingharga" type="button" role="tab" aria-controls="bandingharga" aria-selected="false">
+            <?php echo $_SESSION['lang']['bandingHarga'];?>
+        </button>
+    </li>
+</ul>
 
-</table>
-</fieldset>
-</div>";
+<!-- Bootstrap Tabs Content -->
+<div class="tab-content" id="hargaharianTabContent">
+    <!-- Tab 1: Harga Pasar -->
+    <div class="tab-pane fade show active" id="hargapasar" role="tabpanel" aria-labelledby="hargapasar-tab">
+        <div class="p-3">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0"><?php echo $_SESSION['lang']['hargapasar'];?></h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label"><?php echo $_SESSION['lang']['pasar'];?></label>
+                                <select id="psrId" name="periode" class="form-select form-select-sm"><?php echo $optGoldar;?></select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label"><?php echo $_SESSION['lang']['komoditi'];?></label>
+                                <select id="komoditi" name="komoditi" class="form-select form-select-sm"><?php echo $optBrg;?></select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label"><?php echo $_SESSION['lang']['periode'];?></label>
+                                <select id="periodePsr" name="periodePsr" class="form-select form-select-sm"><?php echo $optPeriode;?></select>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button onclick="zPreview('pmn_slave_2hargapasar','<?php echo $arr;?>','printContainer')" class="btn btn-primary btn-sm">Preview</button>
+                                <button onclick="zExcel(event,'pmn_slave_2hargapasar.php','<?php echo $arr;?>')" class="btn btn-success btn-sm">Excel</button>
+                                <button onclick="grafikProduksi(event)" class="btn btn-info btn-sm">Jpgraph</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Print Area</h5>
+                </div>
+                <div class="card-body">
+                    <div id="printContainer" style="overflow:auto;height:350px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-$frm[0].="<div style='margin-bottom: 30px;'>
-<fieldset style='clear:both'><legend><b>Print Area</b></legend>
-<div id='printContainer' style='overflow:auto;height:350px;max-width:1220px'>
-
-</div></fieldset>
-		";
-$frm[0].="</tbody></table></fieldset>";
-
-//assseettt
-$frm[1].="<div>
-<fieldset style='float: left;'>
-<legend><b>".$_SESSION['lang']['bandingHarga']."</b></legend>";
-$frm[1].="<table cellspacing=1 border=0 >
-<tr><td><label>".$_SESSION['lang']['pasar']."</label></td><td><select id=psrId2 name=psrId2 style='width:150px'>".$optpasar."</select></td></tr>
-<tr><td><label>".$_SESSION['lang']['komoditi']."</label></td><td><select id=komoditi2 name=komoditi2 style='width:150px'>".$optBrg."</select></td></tr>
-<tr><td><label>".$_SESSION['lang']['periode']."</label></td><td><select id=periodePsr2 name=periodePsr2 style='width:150px'>".$optPeriode."</select></td></tr>
-<tr height=20><td colspan=2>&nbsp;</td></tr>
-<tr><td colspan=2>
-<button onclick=\"zPreview('pmn_slave_2hargapasar_2','".$arr2."','printContainer2')\" class=mybutton name=preview id=preview>Preview</button>
-        <button onclick=\"zExcel(event,'pmn_slave_2hargapasar_2.php','".$arr2."')\" class=mybutton name=preview id=preview>Excel</button>
-		<button onclick=\"grafikProduksi2(event)\" class=mybutton name=preview id=preview>Jpgraph</button>
-</td>
-</tr>
-
-</table>
-</fieldset>
-</div>";
-
-$frm[1].="<div style='margin-bottom: 30px;'>
-<fieldset style='clear:both'><legend><b>Print Area</b></legend>
-<div id='printContainer2' style='overflow:auto;height:350px;max-width:1220px'>
-
-</div></fieldset>
-		";
-$frm[1].="</tbody></table></fieldset>";
-
-
-
-//========================
-$hfrm[0]=$_SESSION['lang']['hargapasar'];
-$hfrm[1]=$_SESSION['lang']['bandingHarga'];
-//$hfrm[1]=$_SESSION['lang']['list'];
-//draw tab, jangan ganti parameter pertama, krn dipakai di javascript
-drawTab('FRM',$hfrm,$frm,220,930);
-//===============================================	
+    <!-- Tab 2: Banding Harga -->
+    <div class="tab-pane fade" id="bandingharga" role="tabpanel" aria-labelledby="bandingharga-tab">
+        <div class="p-3">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0"><?php echo $_SESSION['lang']['bandingHarga'];?></h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <label class="form-label"><?php echo $_SESSION['lang']['pasar'];?></label>
+                                <select id="psrId2" name="psrId2" class="form-select form-select-sm"><?php echo $optpasar;?></select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label"><?php echo $_SESSION['lang']['komoditi'];?></label>
+                                <select id="komoditi2" name="komoditi2" class="form-select form-select-sm"><?php echo $optBrg;?></select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label"><?php echo $_SESSION['lang']['periode'];?></label>
+                                <select id="periodePsr2" name="periodePsr2" class="form-select form-select-sm"><?php echo $optPeriode;?></select>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button onclick="zPreview('pmn_slave_2hargapasar_2','<?php echo $arr2;?>','printContainer2')" class="btn btn-primary btn-sm">Preview</button>
+                                <button onclick="zExcel(event,'pmn_slave_2hargapasar_2.php','<?php echo $arr2;?>')" class="btn btn-success btn-sm">Excel</button>
+                                <button onclick="grafikProduksi2(event)" class="btn btn-info btn-sm">Jpgraph</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Print Area</h5>
+                </div>
+                <div class="card-body">
+                    <div id="printContainer2" style="overflow:auto;height:350px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<?php	
 ?>
 
 <?php

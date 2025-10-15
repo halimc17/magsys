@@ -102,36 +102,43 @@ function Clear1(){
 }
 </script>
 
-<div>
-	<fieldset style="float: left;">
-		<legend><b><?php echo "Outstanding ".$_SESSION['lang']['kontrak']." ".$_SESSION['lang']['penjualan'];?></b></legend>
-		<table cellspacing="1" border="0" >
-			<tr>
-				<td><label><?php echo $_SESSION['lang']['pt'];?></label></td>
-				<td><select id='kdPT' name='kdPT' style='width:220px' onchange='getSub()'><?php echo $optPT;?></select></td>
-			</tr>
-			<tr>
-				<td><label><?php echo $_SESSION['lang']['komoditi'];?></label></td>
-				<td><select id="kdKomoditi" name="kdKomoditi" style="width:220px"><?php echo $optKomoditi;?></select></td>
-			</tr>
-			<tr>
-				<td><label><?php echo $_SESSION['lang']['periode'];?></label></td>
-				<td><select id="periode" name="periode" style="width:220px"><?php echo $optPeriode;?></select></td>
-			</tr>
-			<tr height="20"><td colspan="2">&nbsp;</td></tr>
-			<tr><td colspan="2">
-					<button onclick="zPreview('pmn_lap_os_penjualan_slave','<?php echo $arr;?>','printContainer')" class="mybutton" name="preview" id="preview">Preview</button>
-					<button onclick="zExcel(event,'pmn_lap_os_penjualan_slave.php','<?php echo $arr;?>')" class="mybutton" name="preview" id="preview">Excel</button>
-					<button onclick="Clear1()" class="mybutton" name="btnBatal" id="btnBatal"><?php echo $_SESSION['lang']['cancel'];?></button>
-				</td>
-			</tr>
-		</table>
-	</fieldset>
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0"><?php echo "Outstanding ".$_SESSION['lang']['kontrak']." ".$_SESSION['lang']['penjualan'];?></h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label"><?php echo $_SESSION['lang']['pt'];?></label>
+                    <select id="kdPT" name="kdPT" class="form-select form-select-sm" onchange="getSub()"><?php echo $optPT;?></select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label"><?php echo $_SESSION['lang']['komoditi'];?></label>
+                    <select id="kdKomoditi" name="kdKomoditi" class="form-select form-select-sm"><?php echo $optKomoditi;?></select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label"><?php echo $_SESSION['lang']['periode'];?></label>
+                    <select id="periode" name="periode" class="form-select form-select-sm"><?php echo $optPeriode;?></select>
+                </div>
+                <div class="d-grid gap-2">
+                    <button onclick="zPreview('pmn_lap_os_penjualan_slave','<?php echo $arr;?>','printContainer')" class="btn btn-primary btn-sm">Preview</button>
+                    <button onclick="zExcel(event,'pmn_lap_os_penjualan_slave.php','<?php echo $arr;?>')" class="btn btn-success btn-sm">Excel</button>
+                    <button onclick="Clear1()" class="btn btn-secondary btn-sm"><?php echo $_SESSION['lang']['cancel'];?></button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<div style="margin-bottom: 30px;"></div>
-<fieldset style='clear:both'><legend><b>Print Area</b></legend>
-	<div id='printContainer' style='overflow:auto;height:340px;max-width:13100px'></div>
-</fieldset>
+
+<div class="card mt-3">
+    <div class="card-header">
+        <h5 class="card-title mb-0">Print Area</h5>
+    </div>
+    <div class="card-body">
+        <div id="printContainer" style="overflow:auto;height:340px;"></div>
+    </div>
+</div>
 <?php
 CLOSE_BOX();
 echo close_body();

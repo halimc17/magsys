@@ -60,48 +60,46 @@ while($dPel=  mysql_fetch_assoc($nPel))
 }
 
 $arr="##tanggaldari##tanggalsampai##komoditi##penjual";
-echo"<fieldset style=\"float: left;\">
-<legend><b>".$title[1]."</b></legend>
-<table cellspacing=\"1\" border=\"0\" >";
-echo"<tr><td>".$_SESSION['lang']['tgldari']."</td>";
-echo"<td><input type=text class=myinputtext id=tanggaldari readonly onmousemove=setCalendar(this.id) onkeypress=return false;  style=width:150px;  maxlength=10 /></td>";
-echo"</tr>";
-echo"<tr><td>".$_SESSION['lang']['tanggalsampai']."</td>
-          <td><input type=text class=myinputtext id=tanggalsampai readonly onmousemove=setCalendar(this.id) onkeypress=return false;  style=width:150px;  maxlength=10 /></td>
-          </tr>";
-
-echo"<tr><td>".$_SESSION['lang']['komoditi']."</td>
-          <td><select id=komoditi style=width:150px;>".$optBar."</select></td>
-          </tr>";
-
-echo"<tr><td>".$_SESSION['lang']['penjual']."</td>
-          <td><select id=penjual style=width:150px;>".$optPel."</select></td>
-          </tr>";
-
-
-
-echo"<tr height=\"20\">
-    <td colspan=\"2\">&nbsp;</td>
-</tr>
-<tr>
-    <td colspan=\"2\">
-
-<button onclick=zPreview('pmn_slave_2suratperintahpengiriman','".$arr."','printContainer') class=mybutton name=preview id=preview>".$_SESSION['lang']['preview']."</button>
-		
-
-      <button onclick=\"zExcel(event,'pmn_slave_2suratperintahpengiriman.php','".$arr."')\" class=\"mybutton\" name=\"preview\" id=\"preview\">Excel</button>
-    </td>    
-</tr>    
-</table>
-</fieldset>
-
-<div style=\"margin-bottom: 30px;\">
+echo"<div class='row'>
+    <div class='col-md-4'>
+        <div class='card'>
+            <div class='card-header'>
+                <h5 class='card-title mb-0'>".$title[1]."</h5>
+            </div>
+            <div class='card-body'>
+                <div class='mb-3'>
+                    <label class='form-label'>".$_SESSION['lang']['tgldari']."</label>
+                    <input type='text' class='form-control form-control-sm' id='tanggaldari' readonly onmousemove='setCalendar(this.id)' onkeypress='return false;' maxlength='10' />
+                </div>
+                <div class='mb-3'>
+                    <label class='form-label'>".$_SESSION['lang']['tanggalsampai']."</label>
+                    <input type='text' class='form-control form-control-sm' id='tanggalsampai' readonly onmousemove='setCalendar(this.id)' onkeypress='return false;' maxlength='10' />
+                </div>
+                <div class='mb-3'>
+                    <label class='form-label'>".$_SESSION['lang']['komoditi']."</label>
+                    <select id='komoditi' class='form-select form-select-sm'>".$optBar."</select>
+                </div>
+                <div class='mb-3'>
+                    <label class='form-label'>".$_SESSION['lang']['penjual']."</label>
+                    <select id='penjual' class='form-select form-select-sm'>".$optPel."</select>
+                </div>
+                <div class='d-grid gap-2'>
+                    <button onclick=\"zPreview('pmn_slave_2suratperintahpengiriman','".$arr."','printContainer')\" class='btn btn-primary btn-sm'>".$_SESSION['lang']['preview']."</button>
+                    <button onclick=\"zExcel(event,'pmn_slave_2suratperintahpengiriman.php','".$arr."')\" class='btn btn-success btn-sm'>Excel</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<fieldset style='clear:both'><legend><b>Print Area</b></legend>
 
-<div id='printContainer' style='overflow:auto;height:250px;max-width:1220px;'>
-</div>
-</fieldset>";
+<div class='card mt-3'>
+    <div class='card-header'>
+        <h5 class='card-title mb-0'>Print Area</h5>
+    </div>
+    <div class='card-body'>
+        <div id='printContainer' style='overflow:auto;height:250px;'></div>
+    </div>
+</div>";
 
 
 //   <button onclick=\"zPreviewd()\" class=\"mybutton\" name=\"preview\" id=\"preview\">Preview</button>

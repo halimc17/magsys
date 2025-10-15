@@ -64,54 +64,53 @@ while ($hu=mysql_fetch_assoc($hi))
 <?php
 include('master_mainMenu.php');
 OPEN_BOX();
-$arr="##kdsup##pt##nokontrak##tgl1##tgl2";	
+$arr="##kdsup##pt##nokontrak##tgl1##tgl2";
 
-echo "<fieldset style='float:left;'><legend><b>Laporan Pengiriman Per Transportir</b></legend>
-<table>
-        
-	<tr>
-            <td>Suplier</td>
-            <td>:</td>
-            <td><select id=kdsup style='width:155px;'>".$optsup."</select></td>
-	</tr>
-        <tr>
-            <td>PT</td>
-            <td>:</td>
-            <td><select id=pt style='width:155px;'>".$optPt."</select></td>
-	</tr>
-        <tr>
-            <td>".$_SESSION['lang']['nodo']." </td> 
-            <td>:</td>
-            <td><input type=text maxlength=50 id=nokontrak nkeypress=\"return_tanpa_kutip(event);\"   class=myinputtext style=\"width:155px;\"></td>
-        </tr>
-	<tr>
-		<td>".$_SESSION['lang']['tanggal']."</td>
-		<td>:</td>
-		<td><input type='text' class='myinputtext' id='tgl1' onmousemove='setCalendar(this.id)' onkeypress='return false;'  size='7' maxlength='10' >
-		s/d
-		<input type='text' class='myinputtext' id='tgl2' onmousemove='setCalendar(this.id)' onkeypress='return false;'  size='7' maxlength='10' ></td>
-	</tr>
-        
+echo "<div class='row'>
+    <div class='col-md-4'>
+        <div class='card'>
+            <div class='card-header'>
+                <h5 class='card-title mb-0'>Laporan Pengiriman Per Transportir</h5>
+            </div>
+            <div class='card-body'>
+                <div class='mb-3'>
+                    <label class='form-label'>Suplier</label>
+                    <select id='kdsup' class='form-select form-select-sm'>".$optsup."</select>
+                </div>
+                <div class='mb-3'>
+                    <label class='form-label'>PT</label>
+                    <select id='pt' class='form-select form-select-sm'>".$optPt."</select>
+                </div>
+                <div class='mb-3'>
+                    <label class='form-label'>".$_SESSION['lang']['nodo']."</label>
+                    <input type='text' maxlength='50' id='nokontrak' class='form-control form-control-sm' onkeypress='return_tanpa_kutip(event);'>
+                </div>
+                <div class='mb-3'>
+                    <label class='form-label'>".$_SESSION['lang']['tanggal']."</label>
+                    <div class='input-group input-group-sm'>
+                        <input type='text' class='form-control form-control-sm' id='tgl1' onmousemove='setCalendar(this.id)' onkeypress='return false;' maxlength='10'>
+                        <span class='input-group-text'>s/d</span>
+                        <input type='text' class='form-control form-control-sm' id='tgl2' onmousemove='setCalendar(this.id)' onkeypress='return false;' maxlength='10'>
+                    </div>
+                </div>
+                <div class='d-grid gap-2'>
+                    <button onclick=\"zPreview('pmn_slave_2transportir','".$arr."','printContainer')\" class='btn btn-primary btn-sm'>".$_SESSION['lang']['preview']."</button>
+                    <button onclick=\"zExcel(event,'pmn_slave_2transportir.php','".$arr."')\" class='btn btn-success btn-sm'>".$_SESSION['lang']['excel']."</button>
+                    <button onclick='batal()' class='btn btn-secondary btn-sm'>".$_SESSION['lang']['cancel']."</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>";
 
-	<tr>
-		<td colspan=100>&nbsp;</td>
-	</tr>
-	<tr>
-		<td colspan=100>
-		<button onclick=zPreview('pmn_slave_2transportir','".$arr."','printContainer') class=mybutton name=preview id=preview>".$_SESSION['lang']['preview']."</button>
-		<button onclick=zExcel(event,'pmn_slave_2transportir.php','".$arr."') class=mybutton name=preview id=preview>".$_SESSION['lang']['excel']."</button>
-		
-		
-		<button onclick=batal() class=mybutton name=btnBatal id=btnBatal>".$_SESSION['lang']['cancel']."</button>
-		</td>
-	</tr>
-</table>
-</fieldset>";//<button onclick=zPdf('pabrik_slave_2hargatbs','".$arr."','printContainer') class=mybutton name=preview id=preview>".$_SESSION['lang']['pdf']."</button>
-
-echo "
-<fieldset style='clear:both'><legend><b>".$_SESSION['lang']['printArea']."</b></legend>
-<div id='printContainer' style='overflow:auto;height:350px;max-width:1220px'; >
-</div></fieldset>";
+echo "<div class='card mt-3'>
+    <div class='card-header'>
+        <h5 class='card-title mb-0'>".$_SESSION['lang']['printArea']."</h5>
+    </div>
+    <div class='card-body'>
+        <div id='printContainer' style='overflow:auto;height:350px;'></div>
+    </div>
+</div>";
 
 CLOSE_BOX();
 echo close_body();

@@ -52,40 +52,96 @@ $arr3="##kdBrg3##tgl_dr##tgl_samp##pt3";
 <script language=javascript src='js/zReport.js'></script>
 <script language=javascript src='js/pmn_laporanPemenuhanKontrak.js'></script>
 <link rel=stylesheet type=text/css href=style/zTable.css>
-<div style="margin-bottom: 30px;">
-<fieldset style="float: left;">
-<legend><b><?php echo $_SESSION['lang']['laporanPemenuhanKontrak']?></b></legend>
-<table cellspacing="1" border="0" >
-<tr><td><label><?php echo $_SESSION['lang']['perusahaan']?></label></td><td><select id="pt" name="pt" style="width:150px"><?php echo $optPt?></select></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['periode']?></label></td><td><select id="periode" name="periode" style="width:150px"><?php echo $optPeriode?></select></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['komoditi']?></label></td><td><select id="kdBrg" name="kdBrg" style="width:150px"><?php echo $optBrg?></select></td></tr>
-<tr><td colspan="2"><button onclick="zPreview('pmn_slave_laporanPemenuhanKontrak','<?php echo $arr?>','printContainer')" class="mybutton" name="preview" id="preview">Preview</button><button onclick="zPdf('pmn_slave_laporanPemenuhanKontrak','<?php echo $arr?>','printContainer')" class="mybutton" name="preview" id="preview">PDF</button><button onclick="zExcel(event,'pmn_slave_laporanPemenuhanKontrak.php','<?php echo $arr?>')" class="mybutton" name="preview" id="preview">Excel</button></td></tr>
-</table>
-</fieldset>
-<fieldset style="float: left;">
-<legend><b>Uncomplete Contract</b></legend>
-<table cellspacing="1" border="0" >
-<tr><td><label><?php echo $_SESSION['lang']['perusahaan']?></label></td><td><select id="pt2" name="pt2" style="width:150px"><?php echo $optPt?></select></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['tahun']?></label></td><td><select id="thn" name="thn" style="width:150px"><?php echo $optPeriode2?></select></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['komoditi']?></label></td><td><select id="kdBrg2" name="kdBrg2" style="width:150px"><?php echo $optBrg2?></select></td></tr>
-<tr><td colspan="2"><button onclick="zPreview2('pmn_slave_laporanPemenuhanKontrak','<?php echo $arr2?>','printContainer')" class="mybutton" name="preview" id="preview">Preview</button><button onclick="zExcel2(event,'pmn_slave_laporanPemenuhanKontrak.php','<?php echo $arr2?>')" class="mybutton" name="preview" id="preview">Excel</button></td></tr>
-</table>
-</fieldset>
-<fieldset style="float: left;">
-<legend><b>Range Delivery</b></legend>
-<table cellspacing="1" border="0" >
-<tr><td><label><?php echo $_SESSION['lang']['perusahaan']?></label></td><td><select id="pt3" name="pt3" style="width:150px"><?php echo $optPt?></select></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['komoditi']?></label></td><td><select id="kdBrg3" name="kdBrg3" style="width:150px"><?php echo $optBrg2?></select></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['tgldari']?></label></td><td><input type=text  style="width:150px" class=myinputtext id=tgl_dr onmousemove=setCalendar(this.id) onkeypress=return false;  size=10 maxlength=10 /></td></tr>
-<tr><td><label><?php echo $_SESSION['lang']['tanggalsampai']?></label></td><td><input type=text  style="width:150px" class=myinputtext id=tgl_samp onmousemove=setCalendar(this.id) onkeypress=return false;  size=10 maxlength=10 /></td></tr>
-<tr><td colspan="2"><button onclick="zPreview3('pmn_slave_laporanPemenuhanKontrak','<?php echo $arr3?>','printContainer')" class="mybutton" name="preview" id="preview">Preview</button><button onclick="zExcel3(event,'pmn_slave_laporanPemenuhanKontrak.php','<?php echo $arr3?>')" class="mybutton" name="preview" id="preview">Excel</button></td></tr>
-</table>
-</fieldset>
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0"><?php echo $_SESSION['lang']['laporanPemenuhanKontrak']?></h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label"><?php echo $_SESSION['lang']['perusahaan']?></label>
+                    <select id="pt" name="pt" class="form-select form-select-sm"><?php echo $optPt?></select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label"><?php echo $_SESSION['lang']['periode']?></label>
+                    <select id="periode" name="periode" class="form-select form-select-sm"><?php echo $optPeriode?></select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label"><?php echo $_SESSION['lang']['komoditi']?></label>
+                    <select id="kdBrg" name="kdBrg" class="form-select form-select-sm"><?php echo $optBrg?></select>
+                </div>
+                <div class="d-grid gap-2">
+                    <button onclick="zPreview('pmn_slave_laporanPemenuhanKontrak','<?php echo $arr?>','printContainer')" class="btn btn-primary btn-sm">Preview</button>
+                    <button onclick="zPdf('pmn_slave_laporanPemenuhanKontrak','<?php echo $arr?>','printContainer')" class="btn btn-danger btn-sm">PDF</button>
+                    <button onclick="zExcel(event,'pmn_slave_laporanPemenuhanKontrak.php','<?php echo $arr?>')" class="btn btn-success btn-sm">Excel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Uncomplete Contract</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label"><?php echo $_SESSION['lang']['perusahaan']?></label>
+                    <select id="pt2" name="pt2" class="form-select form-select-sm"><?php echo $optPt?></select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label"><?php echo $_SESSION['lang']['tahun']?></label>
+                    <select id="thn" name="thn" class="form-select form-select-sm"><?php echo $optPeriode2?></select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label"><?php echo $_SESSION['lang']['komoditi']?></label>
+                    <select id="kdBrg2" name="kdBrg2" class="form-select form-select-sm"><?php echo $optBrg2?></select>
+                </div>
+                <div class="d-grid gap-2">
+                    <button onclick="zPreview2('pmn_slave_laporanPemenuhanKontrak','<?php echo $arr2?>','printContainer')" class="btn btn-primary btn-sm">Preview</button>
+                    <button onclick="zExcel2(event,'pmn_slave_laporanPemenuhanKontrak.php','<?php echo $arr2?>')" class="btn btn-success btn-sm">Excel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Range Delivery</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label"><?php echo $_SESSION['lang']['perusahaan']?></label>
+                    <select id="pt3" name="pt3" class="form-select form-select-sm"><?php echo $optPt?></select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label"><?php echo $_SESSION['lang']['komoditi']?></label>
+                    <select id="kdBrg3" name="kdBrg3" class="form-select form-select-sm"><?php echo $optBrg2?></select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label"><?php echo $_SESSION['lang']['tgldari']?></label>
+                    <input type="text" class="form-control form-control-sm" id="tgl_dr" onmousemove="setCalendar(this.id)" onkeypress="return false;" maxlength="10" />
+                </div>
+                <div class="mb-3">
+                    <label class="form-label"><?php echo $_SESSION['lang']['tanggalsampai']?></label>
+                    <input type="text" class="form-control form-control-sm" id="tgl_samp" onmousemove="setCalendar(this.id)" onkeypress="return false;" maxlength="10" />
+                </div>
+                <div class="d-grid gap-2">
+                    <button onclick="zPreview3('pmn_slave_laporanPemenuhanKontrak','<?php echo $arr3?>','printContainer')" class="btn btn-primary btn-sm">Preview</button>
+                    <button onclick="zExcel3(event,'pmn_slave_laporanPemenuhanKontrak.php','<?php echo $arr3?>')" class="btn btn-success btn-sm">Excel</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-<fieldset style='clear:both'><legend><b>Print Area</b></legend>
-<div id='printContainer' style='overflow:auto;height:350px;max-width:1220px'>
-
-</div></fieldset>
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title mb-0">Print Area</h5>
+    </div>
+    <div class="card-body">
+        <div id="printContainer" style="overflow:auto;height:350px;"></div>
+    </div>
+</div>
 
 
 
