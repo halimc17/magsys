@@ -51,138 +51,52 @@ $arr1="##kodeorg1##kodebarang1##tgl1_1##tgl2_1";
 <script language=javascript src=js/zReport.js></script>
 <script language=javascript src='js/pmn_2penjualan.js'></script>
 <link rel=stylesheet type=text/css href=style/zTable.css>
-<?php
-$frm[0].="<div class=\"container-fluid\">
-    <div class=\"card mb-4\">
-        <div class=\"card-header bg-primary text-white\">
-            <h5 class=\"mb-0\"><i class=\"bi bi-file-earmark-text me-2\"></i>".$_SESSION['lang']['laporanPenjualan']."</h5>
-        </div>
-        <div class=\"card-body\">
-            <div class=\"row g-3\">
-                <div class=\"col-md-6\" style='display:none'>
-                    <label class=\"form-label\">".$_SESSION['lang']['periode']."</label>
-                    <select id=\"periode\" name=\"periode\" class=\"form-select\">".$optPeriode."</select>
-                </div>
-                <div class=\"col-md-6\">
-                    <label class=\"form-label\">".$_SESSION['lang']['tanggalmulai']."</label>
-                    <input type=\"text\" class=\"form-control\" id=\"tanggalmulai\" onmousemove=\"setCalendar(this.id)\" onkeypress=\"return false;\" value='".date('d-m-Y')."'/>
-                </div>
-                <div class=\"col-md-6\">
-                    <label class=\"form-label\">".$_SESSION['lang']['tanggalsampai']."</label>
-                    <input type=\"text\" class=\"form-control\" id=\"tanggalakhir\" onmousemove=\"setCalendar(this.id)\" onkeypress=\"return false;\" value='".date('d-m-Y')."'/>
-                </div>
-                <div class=\"col-md-6\">
-                    <label class=\"form-label\">".$_SESSION['lang']['nm_perusahaan']."</label>
-                    <select id=\"idPabrik\" name=\"idPabrik\" class=\"form-select\">".$optPabrik."</select>
-                </div>
-                <div class=\"col-md-6\">
-                    <label class=\"form-label\">".$_SESSION['lang']['komoditi']."</label>
-                    <select id=\"kdBrg\" name=\"kdBrg\" class=\"form-select\">".$optBrg."</select>
-                </div>
-                <div class=\"col-12\">
-                    <button onclick=\"zPreview('pmn_slave_2penjualan','".$arr."','printContainer')\" class=\"btn btn-primary btn-sm me-2\">
-                        <i class=\"bi bi-eye me-1\"></i>Preview
-                    </button>
-                    <button onclick=\"zPdf('pmn_slave_2penjualan','".$arr."','printContainer')\" class=\"btn btn-danger btn-sm me-2\">
-                        <i class=\"bi bi-file-pdf me-1\"></i>PDF
-                    </button>
-                    <button onclick=\"zExcel(event,'pmn_slave_2penjualan.php','".$arr."')\" class=\"btn btn-success btn-sm\">
-                        <i class=\"bi bi-file-excel me-1\"></i>Excel
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+<?php      
+$frm[0].="<div style=\"margin-bottom: 30px;\">
+<fieldset style=\"float: left;\">
+<legend><b>".$_SESSION['lang']['laporanPenjualan']."</b></legend>
+<table cellspacing=\"1\" border=\"0\" >
+<tr><td style='display:none'><label>".$_SESSION['lang']['periode']."</label></td><td style='display:none;'><select id=\"periode\" name=\"periode\" style=\"width:150px\">".$optPeriode."</select></td></tr>
+<tr><td><label>".$_SESSION['lang']['tanggalmulai']."</label></td><td><input type=text class=myinputtext id=tanggalmulai onmousemove=setCalendar(this.id) onkeypress=return false;  size=10 maxlength=10 value='".date('d-m-Y')."'/></td></tr>
+<tr><td><label>".$_SESSION['lang']['tanggalsampai']."</label></td><td><input type=text class=myinputtext id=tanggalakhir onmousemove=setCalendar(this.id) onkeypress=return false;  size=10 maxlength=10 value='".date('d-m-Y')."'/></td></tr>
+<tr><td><label>".$_SESSION['lang']['nm_perusahaan']."</label></td><td><select id=\"idPabrik\" name=\"idPabrik\" style=\"width:150px\">".$optPabrik."</select></td></tr>
+<tr><td><label>".$_SESSION['lang']['komoditi']."</label></td><td><select id=\"kdBrg\" name=\"kdBrg\" style=\"width:150px\">".$optBrg."</select></td></tr>
+<tr><td colspan=\"2\"><button onclick=\"zPreview('pmn_slave_2penjualan','".$arr."','printContainer')\" class=\"mybutton\" name=\"preview\" id=\"preview\">Preview</button>
+    <button onclick=\"zPdf('pmn_slave_2penjualan','".$arr."','printContainer')\" class=\"mybutton\" name=\"preview\" id=\"preview\">PDF</button>
+    <button onclick=\"zExcel(event,'pmn_slave_2penjualan.php','".$arr."')\" class=\"mybutton\" name=\"preview\" id=\"preview\">Excel</button></td></tr>
+</table>
+</fieldset>
+</div>
+<fieldset style='clear:both'><legend><b>Print Area</b></legend>
+<div id='printContainer' style='overflow:auto;height:350px;max-width:1220px'>
+</div></fieldset>";
 
-    <div class=\"card\">
-        <div class=\"card-header bg-light\">
-            <h6 class=\"mb-0\">Print Area</h6>
-        </div>
-        <div class=\"card-body\" style=\"overflow:auto;height:350px;\">
-            <div id='printContainer'></div>
-        </div>
-    </div>
-</div>";
-
-$frm[1].="<div class=\"container-fluid\">
-    <div class=\"card mb-4\">
-        <div class=\"card-header bg-primary text-white\">
-            <h5 class=\"mb-0\"><i class=\"bi bi-truck me-2\"></i>".$_SESSION['lang']['rPengiriman']." ".$_SESSION['lang']['harian']."</h5>
-        </div>
-        <div class=\"card-body\">
-            <div class=\"row g-3\">
-                <div class=\"col-md-6\">
-                    <label class=\"form-label\">".$_SESSION['lang']['pabrik']."</label>
-                    <select id=\"kodeorg1\" name=\"kodeorg1\" class=\"form-select\">".$optPabrik1."</select>
-                </div>
-                <div class=\"col-md-6\">
-                    <label class=\"form-label\">".$_SESSION['lang']['komoditi']."</label>
-                    <select id=\"kodebarang1\" name=\"kodebarang1\" class=\"form-select\">".$optBrg."</select>
-                </div>
-                <div class=\"col-md-12\">
-                    <label class=\"form-label\">".$_SESSION['lang']['tanggal']."</label>
-                    <div class=\"input-group\">
-                        <input type=\"text\" class=\"form-control\" id=\"tgl1_1\" onchange=\"bersih_1()\" onmousemove=\"setCalendar(this.id);\" onkeypress=\"return false;\">
-                        <span class=\"input-group-text\">-</span>
-                        <input type=\"text\" class=\"form-control\" id=\"tgl2_1\" onchange=\"bersih_1()\" onmousemove=\"setCalendar(this.id);\" onkeypress=\"return false;\">
-                    </div>
-                </div>
-                <div class=\"col-12\">
-                    <button onclick=\"zPreview('pmn_slave_2penjualan_harian','".$arr1."','printContainer1')\" class=\"btn btn-primary btn-sm me-2\">
-                        <i class=\"bi bi-eye me-1\"></i>Preview
-                    </button>
-                    <button onclick=\"zExcel(event,'pmn_slave_2penjualan_harian.php','".$arr1."')\" class=\"btn btn-success btn-sm\">
-                        <i class=\"bi bi-file-excel me-1\"></i>Excel
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class=\"card\">
-        <div class=\"card-header bg-light\">
-            <h6 class=\"mb-0\">Print Area</h6>
-        </div>
-        <div class=\"card-body\" style=\"overflow:auto;height:350px;\">
-            <div id='printContainer1'></div>
-        </div>
-    </div>
-</div>";
+$frm[1].="<div style=\"margin-bottom: 30px;\">
+<fieldset style=\"float: left;\">
+<legend><b>".$_SESSION['lang']['rPengiriman']." ".$_SESSION['lang']['harian']."</b></legend>
+<table cellspacing=\"1\" border=\"0\" >
+<tr><td><label>".$_SESSION['lang']['pabrik']."</label></td><td><select id=\"kodeorg1\" name=\"kodeorg1\" style=\"width:150px\">".$optPabrik1."</select></td></tr>
+<tr><td><label>".$_SESSION['lang']['komoditi']."</label></td><td><select id=\"kodebarang1\" name=\"kodebarang1\" style=\"width:150px\">".$optBrg."</select></td></tr>
+<tr><td><label>".$_SESSION['lang']['tanggal']."</label></td><td>
+<input type=text class=myinputtext id=tgl1_1 onchange=bersih_1() onmousemove=setCalendar(this.id); onkeypress=\"return false;\" size=9 maxlength=10> - 
+<input type=text class=myinputtext id=tgl2_1 onchange=bersih_1() onmousemove=setCalendar(this.id); onkeypress=\"return false;\" size=9 maxlength=10>
+</td></tr>
+<tr><td colspan=\"2\"><button onclick=\"zPreview('pmn_slave_2penjualan_harian','".$arr1."','printContainer1')\" class=\"mybutton\" name=\"preview\" id=\"preview\">Preview</button>
+    <button onclick=\"zExcel(event,'pmn_slave_2penjualan_harian.php','".$arr1."')\" class=\"mybutton\" name=\"preview\" id=\"preview\">Excel</button></td></tr>
+</table>
+</fieldset>
+</div>
+<fieldset style='clear:both'><legend><b>Print Area</b></legend>
+<div id='printContainer1' style='overflow:auto;height:350px;max-width:1220px'>
+</div></fieldset>";
 //    <button onclick=\"zPdf('pmn_slave_2penjualan_harian','".$arr1."','printContainer1')\" class=\"mybutton\" name=\"preview\" id=\"preview\">PDF</button>
 
 //========================
 $hfrm[0]=$_SESSION['lang']['laporanPenjualan'];
 $hfrm[1]=$_SESSION['lang']['rPengiriman']." ".$_SESSION['lang']['harian'];
-?>
-
-<!-- Bootstrap 5 Nav Tabs -->
-<ul class="nav nav-tabs" id="frmTabs" role="tablist">
-    <li class="nav-item" role="presentation">
-        <button class="nav-link active" id="tab-0" data-bs-toggle="tab" data-bs-target="#content-0" type="button" role="tab" aria-controls="content-0" aria-selected="true">
-            <i class="bi bi-file-earmark-text me-1"></i><?php echo $hfrm[0]; ?>
-        </button>
-    </li>
-    <li class="nav-item" role="presentation">
-        <button class="nav-link" id="tab-1" data-bs-toggle="tab" data-bs-target="#content-1" type="button" role="tab" aria-controls="content-1" aria-selected="false">
-            <i class="bi bi-truck me-1"></i><?php echo $hfrm[1]; ?>
-        </button>
-    </li>
-</ul>
-
-<div class="tab-content" id="frmTabsContent">
-    <div class="tab-pane fade show active" id="content-0" role="tabpanel" aria-labelledby="tab-0">
-        <div class="p-3">
-            <?php echo $frm[0]; ?>
-        </div>
-    </div>
-    <div class="tab-pane fade" id="content-1" role="tabpanel" aria-labelledby="tab-1">
-        <div class="p-3">
-            <?php echo $frm[1]; ?>
-        </div>
-    </div>
-</div>
-
-<?php
+//$hfrm[1]=$_SESSION['lang']['list'];
+//draw tab, jangan ganti parameter pertama, krn dipakai di javascript
+drawTab('FRM',$hfrm,$frm,200,900);
 //===============================================
 
 CLOSE_BOX();
