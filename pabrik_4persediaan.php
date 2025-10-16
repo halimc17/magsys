@@ -54,88 +54,40 @@ $arr1="##kodeorg1##tanggal1";
 
 <link rel=stylesheet type=text/css href=style/zTable.css>
 <?php
-$frm[0]="<div class=\"container-fluid\">
-    <div class=\"card mb-4\">
-        <div class=\"card-header bg-primary text-white\">
-            <h5 class=\"mb-0\"><i class=\"bi bi-box-seam me-2\"></i>".$_SESSION['lang']['laporanstok']."</h5>
-        </div>
-        <div class=\"card-body\">
-            <div class=\"row g-3\">
-                <div class=\"col-md-6\">
-                    <label class=\"form-label\">".$_SESSION['lang']['unit']."</label>
-                    <select id=\"kdPbrik\" name=\"kdPbrik\" class=\"form-select\" onchange=\"getTangki()\">".$optPabrik."</select>
-                </div>
-                <div class=\"col-md-6\">
-                    <label class=\"form-label\">".$_SESSION['lang']['kodetangki']."</label>
-                    <select id=\"kdTangki\" name=\"kdTangki\" class=\"form-select\"><option value=\"\">".$_SESSION['lang']['all']."</option></select>
-                </div>
-                <div class=\"col-md-12\">
-                    <label class=\"form-label\">".$_SESSION['lang']['tanggal']."</label>
-                    <div class=\"input-group\">
-                        <input type=\"text\" class=\"form-control\" id=\"tgl_1\" onmousemove=\"setCalendar(this.id);\" onkeypress=\"return false;\" onblur=\"cleart()\" />
-                        <span class=\"input-group-text\">s.d.</span>
-                        <input type=\"text\" class=\"form-control\" id=\"tgl_2\" onmousemove=\"setCalendar(this.id);\" onkeypress=\"return false;\" onblur=\"cleart()\" />
-                    </div>
-                </div>
-                <div class=\"col-12\">
-                    <button onclick=\"zPreview('pabrik_slave_4persediaan','".$arr."','printContainer')\" class=\"btn btn-primary btn-sm me-2\">
-                        <i class=\"bi bi-eye me-1\"></i>Preview
-                    </button>
-                    <button onclick=\"zPdf('pabrik_slave_4persediaan','".$arr."','printContainer')\" class=\"btn btn-danger btn-sm me-2\">
-                        <i class=\"bi bi-file-pdf me-1\"></i>PDF
-                    </button>
-                    <button onclick=\"zExcel(event,'pabrik_slave_4persediaan.php','".$arr."')\" class=\"btn btn-success btn-sm\">
-                        <i class=\"bi bi-file-excel me-1\"></i>Excel
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+$frm[0]="<div style=margin-bottom: 30px;>";
+$frm[0].="<fieldset>
+<legend><b>".$_SESSION['lang']['laporanstok']."</b></legend>";
+$frm[0].="<table cellspacing=1 border=0>
+<tr><td><label>".$_SESSION['lang']['unit']."</label></td><td><select id=kdPbrik name=kdPbrik style=width:150px onchange=getTangki()>".$optPabrik."</select></td></tr>
+<tr><td><label>".$_SESSION['lang']['kodetangki']."</label></td><td><select id=kdTangki name=kdTangki style=width:150px><option value=\"\">".$_SESSION['lang']['all']."</option></select></td></tr>
+<tr><td><label>".$_SESSION['lang']['tanggal']."</label></td><td><input type=text class=myinputtext id=tgl_1 onmousemove=setCalendar(this.id); onkeypress=return false;  size=10 maxlength=10 onblur=cleart() /> 
+    s.d. <input type=text class=myinputtext id=tgl_2 onmousemove=setCalendar(this.id); onkeypress=return false;  size=10 maxlength=10  onblur=cleart() /></td></tr>
+<tr><td colspan=2><button onclick=zPreview('pabrik_slave_4persediaan','".$arr."','printContainer') class=mybutton name=preview id=preview>Preview</button>
+    <button onclick=zPdf('pabrik_slave_4persediaan','".$arr."','printContainer') class=mybutton name=preview id=preview>PDF</button>
+    <button onclick=zExcel(event,'pabrik_slave_4persediaan.php','".$arr."') class=mybutton name=preview id=preview>Excel</button></td></tr>
+</table>
+</fieldset>";
+$frm[0].="</div>
 
-    <div class=\"card\">
-        <div class=\"card-header bg-light\">
-            <h6 class=\"mb-0\">Print Area</h6>
-        </div>
-        <div class=\"card-body\" style=\"overflow:auto;height:350px;\">
-            <div id='printContainer'></div>
-        </div>
-    </div>
-</div>";
+<fieldset style='clear:both'><legend><b>Print Area</b></legend>
+<div id='printContainer' style='overflow:auto;height:350px;max-width:1220px'>
+</div></fieldset>";
 
 
-$frm[1]="<div class=\"container-fluid\">
-    <div class=\"card mb-4\">
-        <div class=\"card-header bg-primary text-white\">
-            <h5 class=\"mb-0\"><i class=\"bi bi-truck me-2\"></i>".$_SESSION['lang']['laporanstok']." vs ".$_SESSION['lang']['pengiriman']."</h5>
-        </div>
-        <div class=\"card-body\">
-            <div class=\"row g-3\">
-                <div class=\"col-md-6\">
-                    <label class=\"form-label\">".$_SESSION['lang']['unit']."</label>
-                    <select id=\"kodeorg1\" name=\"kodeorg1\" class=\"form-select\">".$optPabrik."</select>
-                </div>
-                <div class=\"col-md-6\">
-                    <label class=\"form-label\">".$_SESSION['lang']['tanggal']."</label>
-                    <input type=\"text\" class=\"form-control\" id=\"tanggal1\" name=\"tanggal1\" onmousemove=\"setCalendar(this.id)\" onkeypress=\"return false;\" />
-                </div>
-                <div class=\"col-12\">
-                    <button onclick=\"zPreview('pabrik_slave_4persediaan_kirim','".$arr1."','printContainer1')\" class=\"btn btn-primary btn-sm\">
-                        <i class=\"bi bi-eye me-1\"></i>Preview
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+$frm[1]="<div style=margin-bottom: 30px;>";
+$frm[1].="<fieldset>
+<legend><b>".$_SESSION['lang']['laporanstok']." vs ".$_SESSION['lang']['pengiriman']."</b></legend>";
+$frm[1].="<table cellspacing=1 border=0>
+<tr><td><label>".$_SESSION['lang']['unit']."</label></td><td><select id=kodeorg1 name=kodeorg1 style=width:150px>".$optPabrik."</select></td></tr>
+<tr><td><label>".$_SESSION['lang']['tanggal']."</label></td><td><input type=text class=myinputtext id=tanggal1 name=tanggal1 onmousemove=setCalendar(this.id) onkeypress=\"return false;\"  maxlength=10 style=\"width:150px;\" /></td></tr>
+<tr><td colspan=2><button onclick=zPreview('pabrik_slave_4persediaan_kirim','".$arr1."','printContainer1') class=mybutton name=preview id=preview>Preview</button>
+</table>
+</fieldset>";
+$frm[1].="</div>
 
-    <div class=\"card\">
-        <div class=\"card-header bg-light\">
-            <h6 class=\"mb-0\">Print Area</h6>
-        </div>
-        <div class=\"card-body\" style=\"overflow:auto;height:350px;\">
-            <div id='printContainer1'></div>
-        </div>
-    </div>
-</div>";
+<fieldset style='clear:both'><legend><b>Print Area</b></legend>
+<div id='printContainer1' style='overflow:auto;height:350px;max-width:1220px'>
+</div></fieldset>";
 //<tr><td><label>".$_SESSION['lang']['produk']."</label></td><td><select id=produk1 name=produk1 style=width:150px>".$optProduk."</select></td></tr>
 //    <button onclick=zPdf('pabrik_slave_4persediaan_kirim','".$arr1."','printContainer1') class=mybutton name=preview id=preview>PDF</button>
 //    <button onclick=zExcel(event,'pabrik_slave_4persediaan_kirim.php','".$arr1."') class=mybutton name=preview id=preview>Excel</button></td></tr>
@@ -143,36 +95,9 @@ $frm[1]="<div class=\"container-fluid\">
 //========================
 $hfrm[0]=$_SESSION['lang']['laporanstok'];
 $hfrm[1]=$_SESSION['lang']['laporanstok']." vs ".$_SESSION['lang']['pengiriman'];
-?>
-
-<!-- Bootstrap 5 Nav Tabs -->
-<ul class="nav nav-tabs" id="frmTabs" role="tablist">
-    <li class="nav-item" role="presentation">
-        <button class="nav-link active" id="tab-0" data-bs-toggle="tab" data-bs-target="#content-0" type="button" role="tab" aria-controls="content-0" aria-selected="true">
-            <i class="bi bi-box-seam me-1"></i><?php echo $hfrm[0]; ?>
-        </button>
-    </li>
-    <li class="nav-item" role="presentation">
-        <button class="nav-link" id="tab-1" data-bs-toggle="tab" data-bs-target="#content-1" type="button" role="tab" aria-controls="content-1" aria-selected="false">
-            <i class="bi bi-truck me-1"></i><?php echo $hfrm[1]; ?>
-        </button>
-    </li>
-</ul>
-
-<div class="tab-content" id="frmTabsContent">
-    <div class="tab-pane fade show active" id="content-0" role="tabpanel" aria-labelledby="tab-0">
-        <div class="p-3">
-            <?php echo $frm[0]; ?>
-        </div>
-    </div>
-    <div class="tab-pane fade" id="content-1" role="tabpanel" aria-labelledby="tab-1">
-        <div class="p-3">
-            <?php echo $frm[1]; ?>
-        </div>
-    </div>
-</div>
-
-<?php
+//$hfrm[1]=$_SESSION['lang']['list'];
+//draw tab, jangan ganti parameter pertama, krn dipakai di javascript
+drawTab('FRM',$hfrm,$frm,200,900);
 //===============================================
 
 /*#======Select Prep======
