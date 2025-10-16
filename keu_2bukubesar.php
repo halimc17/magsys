@@ -96,93 +96,57 @@ else
 }
 /*".$_SESSION['lang']['pt']." : "."<select id=pt style='width:200px;'  onchange=ambilAnakBB(this.options[this.selectedIndex].value)>".$optpt."</select>
     <select id=gudang style='width:150px;' onchange=hideById('printPanel')>".$optgudang."</select>*/
-echo"
-<div class='card border-0 shadow-sm mb-3' style='width:50%;'>
-    <div class='card-body'>
-        <div class='row g-3'>
-            <div class='col-md-12'>
-                <label class='form-label fw-semibold'>".$_SESSION['lang']['pt']."</label>
-                <div class='row g-2'>
-                    <div class='col-md-4'>
-                        <select id='pt' class='form-select form-select-sm' onchange='getReg()'>
-                            ".$optpt."
-                        </select>
-                    </div>
-                    <div class='col-md-4'>
-                        <select id='regional' class='form-select form-select-sm' onchange='getUnit()'>
-                            ".$optReg."
-                        </select>
-                    </div>
-                    <div class='col-md-4'>
-                        <select id='gudang' class='form-select form-select-sm'>
-                            ".$optgudang."
-                        </select>
-                    </div>
-                </div>
-            </div>
+echo"<fieldset>
+    <legend>".$_SESSION['lang']['neracasaldo']."</legend>
+    
+        
+    ".$_SESSION['lang']['pt']." : "."<select id=pt style='width:200px;'  onchange=getReg()>".$optpt."</select>
+    <select id=regional style='width:150px;' onchange=getUnit()>".$optReg."</select> 
+    <select id=gudang style='width:150px;'>".$optgudang."</select>
 
-            <div class='col-md-4'>
-                <label class='form-label fw-semibold'>".$_SESSION['lang']['periode']."</label>
-                <select id='periode' class='form-select form-select-sm' onchange='hideById(\"printPanel\")'>
-                    ".$optper."
-                </select>
-            </div>
 
-            <div class='col-md-4'>
-                <label class='form-label fw-semibold'>".$_SESSION['lang']['tglcutisampai']." ".$_SESSION['lang']['periode']."</label>
-                <select id='periode1' class='form-select form-select-sm' onchange='hideById(\"printPanel\")'>
-                    ".$optper."
-                </select>
-            </div>
 
-            <div class='col-md-4'>
-                <label class='form-label fw-semibold'>".$_SESSION['lang']['revisi']."</label>
-                <select id='revisi' class='form-select form-select-sm' onchange='hideById(\"printPanel\")'>
-                    ".$optrev."
-                </select>
-            </div>
-
-            <div class='col-md-12'>
-                <button class='btn btn-primary btn-sm' onclick='getLaporanBukuBesar()'>
-                    <i class='bi bi-funnel-fill me-1'></i>".$_SESSION['lang']['proses']."
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-";
+    ".$_SESSION['lang']['periode']." : "."<select id=periode onchange=hideById('printPanel')>".$optper."</select>
+    ".$_SESSION['lang']['tglcutisampai']."
+    ".$_SESSION['lang']['periode']." : "."<select id=periode1 onchange=hideById('printPanel')>".$optper."</select>
+    ".$_SESSION['lang']['revisi']." : "."<select id=revisi onchange=hideById('printPanel')>".$optrev."</select>
+    <button class=mybutton onclick=getLaporanBukuBesar()>".$_SESSION['lang']['proses']."</button>
+</fieldset>";
 CLOSE_BOX();
-OPEN_BOX('','<i class=\"bi bi-file-text-fill me-2\"></i>Result');
-echo"
-<div class='mb-3' id='printPanel' style='display:none;'>
-    <button class='btn btn-success btn-sm me-2' onclick='fisikKeExcel(event,\"keu_laporanBukuBesar_Excel.php\")'>
-        <i class='bi bi-file-earmark-excel-fill me-1'></i>Export Excel
-    </button>
-    <button class='btn btn-danger btn-sm' onclick='fisikKePDF(event,\"keu_laporanBukuBesar_pdf.php\")'>
-        <i class='bi bi-file-earmark-pdf-fill me-1'></i>Export PDF
-    </button>
-</div>
-
-<div class='table-responsive'>
-    <table class='table table-sm table-bordered table-hover'>
-        <thead class='table-primary text-white'>
-            <tr>
-                <th class='text-center' style='width:50px;'>".$_SESSION['lang']['nomor']."</th>
-                <th class='text-center' style='width:100px;'>".$_SESSION['lang']['noakun']."</th>
-                <th class='text-center'>".$_SESSION['lang']['namaakun']."</th>
-                <th class='text-center' style='width:130px;'>".$_SESSION['lang']['saldoawal']."</th>
-                <th class='text-center' style='width:130px;'>".$_SESSION['lang']['debet']."</th>
-                <th class='text-center' style='width:130px;'>".$_SESSION['lang']['kredit']."</th>
-                <th class='text-center' style='width:130px;'>".$_SESSION['lang']['saldoakhir']."</th>
-            </tr>
-        </thead>
-        <tbody id='container'>
-        </tbody>
-        <tfoot>
-        </tfoot>
+OPEN_BOX('','Result:');
+echo"<span id=printPanel style='display:none;'>
+        <img onclick=fisikKeExcel(event,'keu_laporanBukuBesar_Excel.php') src=images/excel.jpg class=resicon title='MS.Excel'> 
+        <img onclick=fisikKePDF(event,'keu_laporanBukuBesar_pdf.php') title='PDF' class=resicon src=images/pdf.jpg>
+    </span>  
+    <div style='width:1100px;display:fixed''>
+    <table class=sortable cellspacing=1 border=0 width=1080px>
+    <thead>
+    <tr>
+        <td align=center style='width:50px;'>".$_SESSION['lang']['nomor']."</td>
+        <td align=center style='width:80px;'>".$_SESSION['lang']['noakun']."</td>
+        <td align=center style='width:430px;'>".$_SESSION['lang']['namaakun']."</td>
+        <td align=center style='width:130px;'>".$_SESSION['lang']['saldoawal']."</td>
+        <td align=center style='width:130px;'>".$_SESSION['lang']['debet']."</td>
+        <td align=center style='width:130px;'>".$_SESSION['lang']['kredit']."</td>
+        <td align=center style='width:130px;'>".$_SESSION['lang']['saldoakhir']."</td>
+    </tr>  
+    </thead>
+    <tbody>
+    </tbody>
+    <tfoot>
+    </tfoot>		 
     </table>
-</div>
-";
+    </div>         
+    <div style='width:1100px;height:359px;overflow:scroll;'>
+    <table class=sortable cellspacing=1 border=0 width=1080px style='display:fixed'>
+    <thead>
+    </thead>
+    <tbody id=container>
+    </tbody>
+    <tfoot>
+    </tfoot>		 
+    </table>
+    </div>";
 CLOSE_BOX();
 close_body();
 ?>
