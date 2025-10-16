@@ -56,8 +56,7 @@ class uElement {
 	# Setting Basic Attribute
 	$this->_id = $cId;
 	$this->_name = $cName;
-	// Don't set fixed width for Bootstrap form controls
-	$this->_attr = array();
+	$this->_attr = array('style'=>'width:'.$this->_length*6.5.'px');
 	#is_null($cAdd) ?  $this->_attr=$this->_attr : $this->_attr = $cAdd;
 	//$this->_type ='text' ? $this->_attr=$this->_attr :$this->_attr=$cAdd;
 //	echo"warning";
