@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Nested Dropdown Debug</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="style/bootstrap-custom.css" rel="stylesheet">
+    <style>
+        .debug-info {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            border: 2px solid #1E3A8A;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 11px;
+            z-index: 10000;
+            max-width: 300px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary-custom mb-3" style="background-color:#1E3A8A !important;">
+        <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="mainNavbar">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="menuPemasaran" role="button" data-bs-toggle="dropdown">
+                            PEMASARAN
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li class="dropdown dropend">
+                                <a class="dropdown-item dropdown-toggle" href="#" id="menuTransaksi" data-bs-toggle="dropdown">
+                                    <i class="bi bi-star-fill" style="font-size:8px;color:#FFC107;"></i> Transaksi
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="javascript:void(0)">
+                                        <i class="bi bi-star-fill" style="font-size:8px;color:#FFC107;"></i> Sales Order
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="javascript:void(0)">
+                                        <i class="bi bi-star-fill" style="font-size:8px;color:#FFC107;"></i> Invoice
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="javascript:void(0)">
+                                        <i class="bi bi-star-fill" style="font-size:8px;color:#FFC107;"></i> Payment
+                                    </a></li>
+                                </ul>
+                            </li>
+                            <li class="dropdown dropend">
+                                <a class="dropdown-item dropdown-toggle" href="#" id="menuLaporan" data-bs-toggle="dropdown">
+                                    <i class="bi bi-star-fill" style="font-size:8px;color:#FFC107;"></i> Laporan
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="javascript:void(0)">
+                                        <i class="bi bi-star-fill" style="font-size:8px;color:#FFC107;"></i> Laporan Penjualan
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="javascript:void(0)">
+                                        <i class="bi bi-star-fill" style="font-size:8px;color:#FFC107;"></i> Laporan Customer
+                                    </a></li>
+                                </ul>
+                            </li>
+                            <li><a class="dropdown-item" href="javascript:void(0)">
+                                <i class="bi bi-star-fill" style="font-size:8px;color:#FFC107;"></i> Setup
+                            </a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <div class="card-header">Test Nested Dropdown - Debug Mode</div>
+            <div class="card-body">
+                <p>Hover pada menu <strong>PEMASARAN</strong>, kemudian hover pada <strong>Transaksi</strong>.</p>
+                <p>Lihat info debug di pojok kanan bawah untuk melihat koordinat positioning.</p>
+                <p><strong>Expected behavior:</strong> Submenu harus muncul di sebelah kanan parent menu (rect.right + 2)</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="debug-info" id="debugInfo">
+        <strong>Debug Info:</strong><br>
+        <span id="debugText">Hover on nested menu...</span>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Custom debug version of bootstrap-init.js
+        document.addEventListener('DOMContentLoaded', function() {
+            const debugText = document.getElementById('debugText');
+
+            function initDropdownHover() {
+                const dropdowns = document.querySelectorAll('.navbar .dropdown, .navbar .dropend');
+
+                dropdowns.forEach(function(dropdown) {
+                    let hideTimeout;
+
+                    dropdown.addEventListener('mouseenter', function(e) {
+                        clearTimeout(hideTimeout);
+
+                        const toggle = this.querySelector(':scope > [data-bs-toggle="dropdown"]');
+                        const menu = this.querySelector(':scope > .dropdown-menu');
+
+                        if (toggle && menu) {
+                            toggle.classList.add('show');
+                            menu.classList.add('show');
+                            toggle.setAttribute('aria-expanded', 'true');
+
+                            if (this.classList.contains('dropend')) {
+                                requestAnimationFrame(function() {
+                                    const rect = toggle.getBoundingClientRect();
+                                    const menuRect = menu.getBoundingClientRect();
+                                    const viewportWidth = window.innerWidth;
+                                    const viewportHeight = window.innerHeight;
+
+                                    menu.style.position = 'fixed';
+                                    menu.style.zIndex = '9999';
+
+                                    let leftPos = rect.right + 2;
+                                    if (leftPos + menuRect.width > viewportWidth) {
+                                        leftPos = rect.left - menuRect.width - 2;
+                                    }
+
+                                    let topPos = rect.top;
+                                    if (topPos + menuRect.height > viewportHeight) {
+                                        topPos = Math.max(0, viewportHeight - menuRect.height - 10);
+                                    }
+
+                                    menu.style.left = leftPos + 'px';
+                                    menu.style.top = topPos + 'px';
+
+                                    // Debug output
+                                    debugText.innerHTML = `
+                                        Toggle rect:<br>
+                                        - top: ${rect.top.toFixed(0)}px<br>
+                                        - right: ${rect.right.toFixed(0)}px<br>
+                                        - bottom: ${rect.bottom.toFixed(0)}px<br>
+                                        - left: ${rect.left.toFixed(0)}px<br>
+                                        <br>
+                                        Menu positioned at:<br>
+                                        - left: ${leftPos.toFixed(0)}px<br>
+                                        - top: ${topPos.toFixed(0)}px<br>
+                                        - width: ${menuRect.width.toFixed(0)}px<br>
+                                        - height: ${menuRect.height.toFixed(0)}px
+                                    `;
+                                });
+                            }
+                        }
+                        e.stopPropagation();
+                    });
+
+                    dropdown.addEventListener('mouseleave', function(e) {
+                        const toggle = this.querySelector(':scope > [data-bs-toggle="dropdown"]');
+                        const menu = this.querySelector(':scope > .dropdown-menu');
+
+                        hideTimeout = setTimeout(function() {
+                            if (toggle && menu && !menu.matches(':hover')) {
+                                toggle.classList.remove('show');
+                                menu.classList.remove('show');
+                                toggle.setAttribute('aria-expanded', 'false');
+
+                                if (menu.style.position === 'fixed') {
+                                    menu.style.position = '';
+                                    menu.style.left = '';
+                                    menu.style.top = '';
+                                }
+
+                                const childMenus = menu.querySelectorAll('.dropdown-menu.show');
+                                childMenus.forEach(function(childMenu) {
+                                    childMenu.classList.remove('show');
+                                    const childToggle = childMenu.previousElementSibling;
+                                    if (childToggle) {
+                                        childToggle.classList.remove('show');
+                                        childToggle.setAttribute('aria-expanded', 'false');
+                                    }
+                                    if (childMenu.style.position === 'fixed') {
+                                        childMenu.style.position = '';
+                                        childMenu.style.left = '';
+                                        childMenu.style.top = '';
+                                    }
+                                });
+                            }
+                        }, 200);
+                        e.stopPropagation();
+                    });
+                });
+
+                // Close dropdowns when clicking outside
+                document.addEventListener('click', function(e) {
+                    if (!e.target.closest('.navbar')) {
+                        const openDropdowns = document.querySelectorAll('.navbar .dropdown-menu.show');
+                        openDropdowns.forEach(function(menu) {
+                            const toggle = menu.previousElementSibling;
+                            if (toggle) {
+                                toggle.classList.remove('show');
+                                toggle.setAttribute('aria-expanded', 'false');
+                            }
+                            menu.classList.remove('show');
+                            if (menu.style.position === 'fixed') {
+                                menu.style.position = '';
+                                menu.style.left = '';
+                                menu.style.top = '';
+                            }
+                        });
+                    }
+                });
+            }
+
+            // Initialize hover dropdown
+            initDropdownHover();
+
+            // Also enable standard dropdown hover for top level
+            const topLevelDropdowns = document.querySelectorAll('.navbar > .container-fluid > .collapse > .navbar-nav > .dropdown');
+            topLevelDropdowns.forEach(function(dropdown) {
+                dropdown.addEventListener('mouseenter', function() {
+                    const toggle = this.querySelector(':scope > .nav-link');
+                    const menu = this.querySelector(':scope > .dropdown-menu');
+                    if (toggle && menu) {
+                        toggle.classList.add('show');
+                        menu.classList.add('show');
+                        toggle.setAttribute('aria-expanded', 'true');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

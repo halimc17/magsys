@@ -63,10 +63,11 @@ function buildMenu($parent_id, $level, $dbname, $cell, $ssq) {
             $has_children = (mysql_fetch_object($res_check)->cnt > 0);
 
             if($has_children) {
-                // Add 'dropend' class for all nested items (level >= 1)
-                $liClass = ($level >= 1) ? 'dropend' : '';
+                // Add 'dropdown' class for first level, 'dropend' for deeper levels
+                $liClass = ($level >= 1) ? 'dropdown dropend' : 'dropdown';
+                // DON'T use data-bs-toggle for nested dropdowns - use pure CSS hover
                 echo "<li class=\"".$liClass."\">
-                        <a class=\"dropdown-item dropdown-toggle\" href=\"#\" id=\"menu".$row->id."\" data-bs-toggle=\"dropdown\" aria-expanded=\"false\">
+                        <a class=\"dropdown-item dropdown-toggle\" href=\"#\" id=\"menu".$row->id."\">
                             <i class=\"bi bi-star-fill\" style=\"font-size:8px;color:#FFC107;\"></i> ".$row->caption."
                         </a>";
                 buildMenu($row->id, $level+1, $dbname, $cell, $ssq);
@@ -97,7 +98,46 @@ while($bar_m1=mysql_fetch_object($res_m1))
                 ".strtoupper($bar_m1->caption)."
             </a>";
 
-    buildMenu($master_id, 1, $dbname, $cell, $ssq);
+    // Start first level menu with inline overflow visible to force it
+    echo "<ul class=\"dropdown-menu\" style=\"overflow: visible !important; max-height: none !important;\">";
+
+    // Build menu items (but we already have <ul> tag, so modify buildMenu)
+    $str="select ".$cell." from ".$dbname.".menu
+          where parent=".$master_id."  ".$ssq."
+          and hide=0 order by urut";
+    $res=mysql_query($str);
+
+    while($row=mysql_fetch_object($res)) {
+        if($row->class=='devider') {
+            echo "<li><hr class=\"dropdown-divider\"></li>";
+        }
+        else if($row->class=='title') {
+            echo "<li><h6 class=\"dropdown-header\">".$row->caption."</h6></li>";
+        }
+        else {
+            // Check if has children
+            $str_check="select count(*) as cnt from ".$dbname.".menu where parent=".$row->id." ".$ssq." and hide=0";
+            $res_check=mysql_query($str_check);
+            $has_children = (mysql_fetch_object($res_check)->cnt > 0);
+
+            if($has_children) {
+                $liClass = 'dropdown dropend';
+                echo "<li class=\"".$liClass."\">
+                        <a class=\"dropdown-item dropdown-toggle\" href=\"#\" id=\"menu".$row->id."\">
+                            <i class=\"bi bi-star-fill\" style=\"font-size:8px;color:#FFC107;\"></i> ".$row->caption."
+                        </a>";
+                buildMenu($row->id, 2, $dbname, $cell, $ssq);
+                echo "</li>";
+            }
+            else {
+                echo "<li><a class=\"dropdown-item\" href=\"javascript:do_load('".$row->action."')\">
+                        <i class=\"bi bi-star-fill\" style=\"font-size:8px;color:#FFC107;\"></i> ".$row->caption."
+                      </a></li>";
+            }
+        }
+    }
+
+    echo "</ul>";
 
     echo "</li>";
 }

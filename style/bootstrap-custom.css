@@ -197,11 +197,80 @@ body {
     border-radius: 4px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     min-width: 200px;
-    max-height: 80vh;
-    overflow-y: auto;
-    z-index: 9999;
+    z-index: 1050;
     display: none;
     position: absolute;
+    /* Default overflow for non-parent menus */
+    max-height: 80vh;
+    overflow-y: auto;
+    overflow-x: visible;
+}
+
+/* First level dropdown - MUST allow overflow for nested menus to escape */
+/* Use multiple selectors with increasing specificity */
+.navbar .nav-item > .dropdown-menu,
+.navbar .nav-item > ul.dropdown-menu,
+ul.dropdown-menu.show {
+    overflow: visible !important;
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+    max-height: none !important;
+    height: auto !important;
+}
+
+/* When first level menu is shown - even more specific */
+.navbar .nav-item > .dropdown-menu.show,
+.navbar .nav-item > ul.dropdown-menu.show,
+.navbar-nav > .nav-item > .dropdown-menu.show {
+    overflow: visible !important;
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+    max-height: none !important;
+    height: auto !important;
+}
+
+/* Nuclear option - target any dropdown-menu that's direct child of nav-item */
+li.nav-item.dropdown > ul.dropdown-menu {
+    overflow: visible !important;
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+    max-height: none !important;
+    height: auto !important;
+}
+
+/* ALL nested dropdowns must have visible overflow to allow deeper levels */
+.dropdown-menu .dropdown-menu {
+    overflow: visible !important;
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+    max-height: none !important;
+}
+
+/* Specific rule for dropend parent menus (level 2, 3, etc) */
+.dropend > .dropdown-menu {
+    overflow: visible !important;
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+    max-height: none !important;
+}
+
+/* If a menu gets too long, we can add scroll later on specific classes */
+
+/* Increase z-index for nested menus progressively */
+.dropdown-menu .dropdown-menu {
+    z-index: 1051 !important;
+}
+
+.dropdown-menu .dropdown-menu .dropdown-menu {
+    z-index: 1052 !important;
+}
+
+.dropdown-menu .dropdown-menu .dropdown-menu .dropdown-menu {
+    z-index: 1053 !important;
+}
+
+.dropdown-menu .dropdown-menu .dropdown-menu .dropdown-menu .dropdown-menu {
+    z-index: 1054 !important;
 }
 
 /* Show dropdown when parent has 'show' class or on hover */
@@ -209,21 +278,29 @@ body {
     display: block !important;
 }
 
-/* Dropend (submenu to the right) - use fixed positioning to escape frame */
+/* Dropend (submenu to the right) - Pure CSS positioning */
 .dropend {
-    position: relative;
+    position: relative !important;
 }
 
 .dropend > .dropdown-menu {
-    position: fixed !important;
-    top: 0;
-    left: 0;
-    margin: 0;
-    z-index: 9999;
+    position: absolute !important;
+    top: 0 !important;
+    left: 100% !important;
+    margin-top: -6px !important;
+    margin-left: 0 !important;
+    z-index: 9999 !important;
+    display: none !important;
 }
 
-/* Position submenu next to parent */
+/* Position submenu next to parent on hover */
 .dropend:hover > .dropdown-menu {
+    display: block !important;
+}
+
+/* Show nested menu when parent is shown */
+.dropend > a.show + .dropdown-menu,
+.dropend > .dropdown-menu.show {
     display: block !important;
 }
 
@@ -276,14 +353,24 @@ body {
 }
 
 .dropdown-submenu .dropdown-menu {
-    top: 0;
-    left: 100%;
-    margin-top: -1px;
-    margin-left: 0;
+    position: absolute !important;
+    top: 0 !important;
+    left: 100% !important;
+    margin-top: -1px !important;
+    margin-left: 0 !important;
 }
 
 .dropdown-submenu:hover > .dropdown-menu {
     display: block;
+}
+
+/* Ensure all nested menus use absolute positioning relative to dropend parent */
+.dropdown-menu .dropdown-menu {
+    position: absolute !important;
+    left: 100% !important;
+    top: 0 !important;
+    margin-top: -6px !important;
+    margin-left: 0 !important;
 }
 
 /* Dropdown Divider */

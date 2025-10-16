@@ -142,7 +142,11 @@ function initDropdownHover() {
             clearTimeout(hideTimeout);
 
             // Get the direct toggle and menu of this dropdown
-            const toggle = this.querySelector(':scope > [data-bs-toggle="dropdown"]');
+            // For nested menus without data-bs-toggle, look for any direct child link
+            let toggle = this.querySelector(':scope > [data-bs-toggle="dropdown"]');
+            if (!toggle) {
+                toggle = this.querySelector(':scope > a.dropdown-toggle');
+            }
             const menu = this.querySelector(':scope > .dropdown-menu');
 
             if (toggle && menu) {
@@ -151,23 +155,18 @@ function initDropdownHover() {
                 menu.classList.add('show');
                 toggle.setAttribute('aria-expanded', 'true');
 
-                // Position submenu to the right of parent for dropend
-                if (this.classList.contains('dropend')) {
-                    // Use fixed positioning to escape iframe constraints
-                    const rect = toggle.getBoundingClientRect();
-                    menu.style.position = 'fixed';
-                    menu.style.left = (rect.right + 2) + 'px';
-                    menu.style.top = rect.top + 'px';
-                    menu.style.zIndex = '9999';
-
-                    // Check if menu goes off-screen to the right
-                    const menuWidth = 220; // approximate menu width
-                    const viewportWidth = window.innerWidth;
-                    if (rect.right + menuWidth > viewportWidth) {
-                        // Position to the left instead
-                        menu.style.left = (rect.left - menuWidth - 2) + 'px';
-                    }
+                // CRITICAL: Force overflow visible on ALL parent menus
+                // This prevents scrollbar and allows nested menus to escape
+                // Apply to both top-level (nav-item) and nested (dropend)
+                if (this.classList.contains('nav-item') || this.classList.contains('dropend')) {
+                    menu.style.setProperty('overflow', 'visible', 'important');
+                    menu.style.setProperty('overflow-x', 'visible', 'important');
+                    menu.style.setProperty('overflow-y', 'visible', 'important');
+                    menu.style.setProperty('max-height', 'none', 'important');
                 }
+
+                // For dropend, CSS handles positioning (position: absolute; left: 100%)
+                // No JavaScript positioning needed - pure CSS solution
             }
 
             e.stopPropagation();
@@ -175,7 +174,10 @@ function initDropdownHover() {
 
         // Hide dropdown on mouse leave
         dropdown.addEventListener('mouseleave', function(e) {
-            const toggle = this.querySelector(':scope > [data-bs-toggle="dropdown"]');
+            let toggle = this.querySelector(':scope > [data-bs-toggle="dropdown"]');
+            if (!toggle) {
+                toggle = this.querySelector(':scope > a.dropdown-toggle');
+            }
             const menu = this.querySelector(':scope > .dropdown-menu');
 
             hideTimeout = setTimeout(function() {

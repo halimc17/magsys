@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Overflow Debug</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="style/bootstrap-custom.css" rel="stylesheet">
+    <style>
+        .debug-panel {
+            position: fixed;
+            right: 10px;
+            top: 60px;
+            background: white;
+            border: 2px solid red;
+            padding: 10px;
+            font-size: 10px;
+            max-width: 300px;
+            z-index: 99999;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary-custom mb-3" style="background-color:#1E3A8A !important;">
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse show">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item dropdown" id="testDropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                            PEMASARAN
+                        </a>
+                        <ul class="dropdown-menu" id="firstLevelMenu" style="overflow: visible !important; max-height: none !important;">
+                            <li class="dropdown dropend" id="nestedDropdown">
+                                <a class="dropdown-item dropdown-toggle" href="#">
+                                    <i class="bi bi-star-fill" style="font-size:8px;color:#FFC107;"></i> Transaksi
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="javascript:void(0)">
+                                        <i class="bi bi-star-fill" style="font-size:8px;color:#FFC107;"></i> Sales Order
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="javascript:void(0)">
+                                        <i class="bi bi-star-fill" style="font-size:8px;color:#FFC107;"></i> Invoice
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="javascript:void(0)">
+                                        <i class="bi bi-star-fill" style="font-size:8px;color:#FFC107;"></i> Payment
+                                    </a></li>
+                                </ul>
+                            </li>
+                            <li><a class="dropdown-item" href="javascript:void(0)">
+                                <i class="bi bi-star-fill" style="font-size:8px;color:#FFC107;"></i> Setup
+                            </a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <div class="card-header">Overflow Debug Test</div>
+            <div class="card-body">
+                <p>Hover pada PEMASARAN dan perhatikan debug panel di kanan atas.</p>
+                <p>Debug panel akan menunjukkan computed styles secara real-time.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="debug-panel" id="debugPanel">
+        <strong>First Level Menu Styles:</strong>
+        <div id="debugOutput">Hover on menu...</div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/bootstrap-init.js"></script>
+    <script>
+        // Monitor styles in real-time
+        setInterval(function() {
+            const menu = document.getElementById('firstLevelMenu');
+            const output = document.getElementById('debugOutput');
+
+            if (menu) {
+                const styles = window.getComputedStyle(menu);
+                const hasShow = menu.classList.contains('show');
+
+                output.innerHTML = `
+                    <strong>Class 'show': ${hasShow}</strong><br>
+                    overflow: ${styles.overflow}<br>
+                    overflow-x: ${styles.overflowX}<br>
+                    overflow-y: ${styles.overflowY}<br>
+                    max-height: ${styles.maxHeight}<br>
+                    display: ${styles.display}<br>
+                    position: ${styles.position}<br>
+                    <hr>
+                    <strong>Inline style:</strong><br>
+                    ${menu.getAttribute('style')}
+                `;
+            }
+        }, 100);
+    </script>
+</body>
+</html>

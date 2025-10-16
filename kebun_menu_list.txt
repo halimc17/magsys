@@ -1,0 +1,90 @@
+id	caption	action	parent	hide
+293	Pembukaan Lahan	kebun_bukalahan	338	0
+294	Pembibitan	kebun_pembibitan	338	0
+295	Pemeliharaan TBM	kebun_pemeliharaantbm	338	0
+296	Pemeliharaan TM	kebun_pemeliharaantm	338	0
+297	Kegiatan Panen	kebun_panen	338	0
+298	Sensus Produksi	kebun_rencanapanen	338	0
+607	Surat Pengantar Angkutan TBS	kebun_spb	338	0
+625	Curah Hujan	kebun_curahHujan	338	0
+869	Keluar-Masuk Bibit	bibit_keluar_masuk	338	0
+966	Premi Kemandoran(Input Harian)(tdk dipak	kebun_premiKemandoran	338	1
+743	Premi Pengawas(Input Bulanan)(tdk dipaka	kebun_premiPengawas	338	1
+677	Rekomendasi Pupuk(tdk dipakai_	kebun_rekomendasiPupuk	338	1
+909	Restan	kebun_restan	338	0
+914	Pemakaian Material SPK(tdk dipakai)	kebun_pemakaianMaterialSPK	338	1
+1001	Rekam Jejak Planter (tdk Dipakai)	kebun_crossblock	338	1
+1021	Taksasi Panen	kebun_taksasi	338	0
+1079	Rencana Sisip	kebun_rencanasisip	338	0
+1140	Penjualan TBS	kebun_penjualanTBS	338	0
+1150	Hasil Timbang TBS Ke Eksternal	kebun_timbangke_eksternal	338	0
+1179	LPJ KUD	kebun_lpjkud	338	0
+1208	Pengakuan Biaya Bibit	kebun_pengakuanbybibit	338	0
+1235	Bongkar Muat	kebun_bm	338	0
+1237	Upload Data AWS	kebun_uploadaws	338	0
+1273	Adj Panen (Afkir/Hilang/Temuan)	kebun_adjpanen	338	0
+1275	Inventaris Peralatan Kebun	log_invpanen	338	0
+1286	Kontrol Ancak Panen	kebun_cekancak	338	0
+1300	Adj Brondolan (Afkir/Hilang)	kebun_adjbrondol	338	0
+1305	RKB Rawat	kebun_rkb	338	0
+397	Areal Statement	kebun_2aresta	339	0
+398	Pemeliharaan	kebun_2pemeliharaan	339	0
+399	Panen	kebun_2panen	339	0
+400	Pengangkutan Panen	kebun_2pengangkutan	339	0
+401	Pemakaian Material	kebun_2pakaimaterial	339	0
+403	Stok Bibit	bibit_2_keluar_masuk	339	0
+970	Kartu Bibit	kebun_2kartuBibit	339	0
+626	Curah Hujan	kebun_2curahHujan	339	0
+741	Laporan Produksi	kebun_3laporanProduksi	339	0
+764	Biaya Kegiatan Per Blok	kebun_2biayaKegiatanPerBlok	339	0
+1136	Biaya per Blok	kebun_3laporanBiayaPerBlok	339	0
+921	Pemakaian Barang vs CU(tdk dipakai_	kebun_pemakaian_vs_cu	339	1
+922	Riwayat Sisipan	kebun_riwayat_sisipan	339	0
+926	Penggunaan HK	kebun_2penggunaanHK	339	0
+927	Laporan Restan	kebun_2laporan_restan	339	0
+928	Laporan Sensus Produksi	kebun_2sensusproduksi	339	0
+995	Laporan Pengiriman Bibit	kebun_2antarBibit	339	0
+997	Kehadiran per Mandor	kebun_2kehadiranpermandor	339	0
+1007	Produksi Per Blok	kebun_2produksiPerBlok	339	0
+1011	SPB vs Penerimaan	kebun_2spbvspenerimaan	339	0
+1024	Taksasi	kebun_2taksasipanen	339	0
+1081	Historis Aresta	kebun_2historisaresta	339	0
+1090	Laporan Rencana Sisip	kebun_2rencanasisip	339	0
+1182	Hasil Timbangan TBS Ke Eksternal	kebun_2hasiltimbangeksternal	339	0
+1183	LPJ KUD	kebun_2lpjkud	339	0
+1201	Statistik Crop per Blok	kebun_2crop	339	0
+1202	Bibitan vs BKM	kebun_2bbtvsbkm	339	0
+1204	Account Report	kebun_2accreport	339	0
+1212	BJR Harian	kebun_2bjr	339	0
+1221	LPJ	kebun_2LPJNoe.php	339	0
+1236	Rekap Restan	kebun_rekaprestan	339	0
+1238	Lap Data AWS	Action...	339	0
+1249	BJR Pabrik Per Blok Periodik	kebun_lapbjr	339	0
+1259	Laporan Penalty Pemanen	kebun_laporan_penalty_pemanen	339	0
+1274	Adjustment Panen	kebun_lap_adjpanen	339	0
+1284	Rekap Adjustment Panen	kebun_rkp_adjpanen	339	0
+1276	Monitoring Pusingan Panen	kebun_rotasipanen	339	0
+1287	Kontrol Losses Ancak Panen	kebun_lap_cekancak	339	0
+1290	Laporan Brondol Per Bulan	kebun_lap_brondol	339	0
+1301	Lap Adj Brondolan	kebun_lap_adjbrondol	339	0
+1302	Lap Langsir vs SPATBS	kebun_lap_langsir	339	0
+655	Ambil Kg. Timbangan	kebun_3AmbilKgTimbangan	340	0
+1017	Postin Transaksi(Administrator Only)	kebun_3postingtransaksi	340	1
+1080	Tutup Aresta	kebun_3tutuparesta	340	0
+1103	Alokasi RKB	kebun_3rkb_alokasi	340	0
+1104	Posting RKB	kebun_3rkb	340	0
+1232	Calculate BJR dan Restan	kebun_bjrlalu	340	0
+385	Status Tanam	kebun_5statustanaman	342	1
+1149	Kelas Pohon	kebun_5kelaspohon	342	0
+411	Tabel BJR	kebun_5bjr	342	0
+1068	Premi Siap Borong/ Premi Basis	kebun_5premibasis	342	0
+1153	Denda Panen	kebun_5dendapanen	342	0
+410	Tabel Budidaya	kebun_5budidaya	342	1
+414	Basis Pemeliharaan (TBM, TM)	kebun_5basispemeliharaan	342	1
+416	Tabel TPH	kebun_5tph	342	1
+892	Standar Produksi Kebun	kebun_5stproduksi	342	1
+993	Mandor	kebun_5mandor	342	1
+1159	Kode Denda Panen	kebun_5kodedendapanen	342	0
+1154	Alasan Rencana Sisip	kebun_5alasanrencanasisip	342	0
+1145	KUD	setup_kud	342	0
+1207	Harga Bibit	kebun_5hargabibit	342	0

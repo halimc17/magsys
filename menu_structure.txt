@@ -1,0 +1,677 @@
+id	type	caption	action	parent
+1	master	Administrator		0
+264	master	SETUP	null	0
+269	master	Keuangan	null	0
+271	master	Pengadaan	null	0
+272	master	Kebun	null	0
+273	master	Pabrik	null	0
+495	master	Traksi	null	0
+274	master	Pemasaran	null	0
+275	master	SDM	null	0
+771	master	ANGGARAN	null	0
+553	master	Umum	null	0
+476	master	PAD/GIS	null	0
+630	master	GUDANG LAPORAN	null	0
+180	master	My Account	null	0
+916	master	HELP	null	0
+949	master	IT	null	0
+13	parent	Menu Manager		1
+14	parent	Users Settings	Action...	1
+16	list	Organization Chart	main_orgChart	1
+266	list	Language Settings	main_languageSettings	1
+487	list	N.P.W.P Perusahaan	setup_org_npwp	1
+971	parent	Tools	tool_admin	1
+1048	list	Reset HM/KM	tool_resethmkm	1
+1144	list	User Activity Log	main_user_activity.php	1
+18	list	Menu Manager		13
+19	list			13
+20	list	Menu Settings	main_menuSettings	13
+21	list	User Privilege	main_userPrivillages	13
+967	list	Privileges by Table	main_privilage_by_table	13
+851	list	Copy Privileges	main_copy_privileges	13
+22	list	Parent-Child Menu Arranger	main_parentChild	13
+515	list	Detail Akses	main_detailakses	13
+1143	list	Admin List	admin_list	13
+49	list	User Settings:		14
+50	list			14
+51	list	Add New User	main_newUser	14
+52	list	Active/Deactive/Delete User	main_activeUser	14
+53	list	Reset Password	main_resetPassword	14
+181	list	Change Password	main_changePassword	180
+210	list	Show Home	master	180
+363	list	Periode Akuntansi	setup_periodeakuntansi	264
+376	list	Mata Uang dan Kurs	setup_mtuang	264
+472	list	Blok	setup_blok	264
+473	list	Kegiatan	setup_kegiatan	264
+486	list	Kelompok Kegiatan	setup_klpkegiatan	264
+489	list	Satuan Barang	setup_satuan	264
+691	list	Jenis Bibit	setup_jenisBibit	264
+718	list	Parameter Aplikasi	setup_parameterappl	264
+727	list	IP Timbangan	setup_remoteTimbangan	264
+730	list	Posting	setup_posting	264
+737	list	Pindah Lokasi Tugas	setup_pindahLokasiTugas	264
+934	list	Approval	setup_approval	264
+323	parent	Transaksi	null	269
+324	parent	Laporan	Laporan	269
+325	parent	Proses	Proses	269
+327	parent	Setup	Setup	269
+329	parent	Transaksi	null	271
+332	parent	Laporan	null	271
+333	parent	Proses	null	271
+335	parent	Setup	null	271
+338	parent	Transaksi	null	272
+339	parent	Laporan	null	272
+340	parent	Proses	null	272
+342	parent	Setup	null	272
+344	parent	Transaksi	null	273
+345	parent	Laporan	null	273
+346	parent	Proses	null	273
+348	parent	Setup	null	273
+349	parent	Transaksi	null	274
+350	parent	Laporan	null	274
+353	parent	Setup	null	274
+354	parent	Transaksi	null	275
+355	parent	Laporan	null	275
+356	parent	Proses	null	275
+358	parent	Setup	null	275
+277	list	Jurnal	keu_jurnal	323
+278	list	Kas Bank	keu_kasbank	323
+279	list	Penagihan	keu_penagihan	323
+280	list	Tagihan	keu_tagihan	323
+1091	list	Unpost Tagihan	keu_tagihan_unpost	323
+551	list	Daftar Asset	sdm_daftarAsset	323
+974	list	Jurnal Adjustment Audit	keu_jurnal_audit	323
+988	list	Alokasi IDC dan Biaya Umum	keu_2alokasiIDC	323
+1190	list	Pengakuan Penjualan	keu_pengakuanjual	323
+1255	list	Invoice Non Kontrak	keu_invoice_nonkontrak	323
+1296	list	Invoice Komoditi	keu_invoice_komoditi	323
+365	list	Jurnal	keu_2jurnal	324
+366	list	Neraca Saldo	keu_2bukubesar	324
+769	list	Buku Besar	keu_2bukubesar_v1	324
+768	list	Laporan Hutang/Piutang	keu_laporan_jurnal_piutang_staff	324
+729	list	Kas Harian	keu_2kasHarian	324
+628	list	Aging Schedule AP	keu_2agingSchedule	324
+754	list	Daftar Alokasi Gaji	sdm_2alokasigaji	324
+756	list	Penerimaan Alokasi Traksi	keu_2penerimaanAlokasiTraksi	324
+725	list	Summary Jurnal Memorial	keu_2summaryJMemorial	324
+724	list	Arus Kas Langsung	keu_2arusKasLangsung	324
+842	list	Daftar Aset	keu_2laporan_asset	324
+846	list	Daftar Hutang	keu_2daftarhutang	324
+854	list	Daftar Perkiraan	keu_2daftarPerkiraan	324
+856	list	Neraca Periodik	keu_2laporan_neracaPeriodeik	324
+857	list	Catatan Neraca	keu_2catatanNeraca	324
+871	list	Periksa Jurnal	keu_2periksaJurnal	324
+930	list	Periode Akuntansi	keu_2periodeAkuntansi	324
+962	list	Debit/Kredit Note	keu_2debitNote	324
+964	list	Tax Planning	keu_2taxplan	324
+973	list	Neraca Saldo By Unit	keu_neraca_per_unit	324
+999	parent	Laporan Keuangan	null	324
+1071	list	Buku Besar Hutang	keu_2bukubesar_hutang_v1	324
+1294	list	Laporan Uang Muka	keu_lap_UM	324
+1295	list	Aging Schedule AR	keu_lap_agingar	324
+1298	list	Laporan Invoice Komoditi	keu_lap_invkomoditi	324
+371	list	Proses Akhir Bulan	keu_3posting	325
+977	list	Alokasi Biaya HO/RO ke Kebun	keu_3alokasiByRo	325
+377	list	Tutup Buku Bulanan	keu_3tutupbulan	325
+979	list	Pengakuan Saldo Akhir Audited	keu_3tutupBukuAudit	325
+1075	list	Tutup Buku HO	keu_3tutupbulan_unittenggala	325
+372	list	Daftar Perkiraan	keu_5daftarperkiraan	327
+373	list	Kelompok Jurnal	keu_5kelompokjurnal	327
+374	list	Mesin Laporan	keu_5mesinlaporan	327
+375	list	Parameter Jurnal	keu_5paramjurnal	327
+475	list	Komponen Biaya	keu_5komponenbiaya	327
+548	list	Tipe Aset	sdm_5tipeAset	327
+749	list	Akun Intra/Interco	keu_5intraco	327
+994	list	Akun Bank	keu_5akunbankv2	327
+1020	list	Mapping Potongan Gaji Karyawan	keu_5pengakuanpotongan	327
+1137	list	Sub Tipe Asset	sdm_5subtipeasset	327
+1200	list	Faktur Pajak	keu_faktur	327
+282	list	Permintaan Pembelian	log_pp	329
+519	list	Persetujuan Permintaan Pembelian	log_persetuuanPp	329
+517	parent	Purchasing	null	329
+888	parent	Pengiriman Internal	Action...	329
+471	parent	Administrasi Gudang	null	329
+288	list	Kontrak Perintah Kerja	log_spk	329
+289	list	BA Pelaksanaan Pekerjaan	log_realisasispk	329
+1270	list	Inventaris Barang	log_invbarang	329
+380	list	Persediaan Fisik	log_2persediaanFisik	332
+527	list	Persediaan Fisik dan Harga	log_2persediaanFisikHarga	332
+381	list	Keluar / Masuk Persediaan	log_2keluarmasukbrg	332
+629	list	Riwayat Permintaan Barang	log_2riwayat_baru	332
+747	list	Daftar PO	log_2daftarPo	332
+382	list	Alokasi Biaya Pembelian	log_2alokasibiaya	332
+1184	list	Alokasi Pemakaian Barang	log_2pemakaianbarang	332
+512	list	Daftar Gudang	log_5daftarGudang	332
+938	parent	Purchasing	null	332
+752	list	Hutang Berdasarkan BPB	log_2hutangsupplier	332
+753	list	Laporan Alokasi Pemakaian Barang	log_2alokasi_pemakaiBrg	332
+757	list	Penerimaan-Pengeluaran/Barang	log_2transaksigudang	332
+789	list	Daftar Penerimaan Barang	log_2penerimaan	332
+911	list	Mutasi Stock	log_2kalkulasi_stock	332
+913	list	Realisasi PK	log_laporanRealisasiSPK	332
+920	list	Summary Progress PK	summary_progress_spk	332
+1055	list	Gudang Vs Accounting	log_2gdangAccounting	332
+1077	list	PO yang dibatalkan	log_2daftarPo_batal.php	332
+1097	list	Daftar Barang	log_2daftarbarang	332
+1138	list	Penerimaan Barang Inventaris	log_2pengeluaranBarangInventaris	332
+1148	list	Reminder Stok	log_2rb	332
+1211	list	Daftar Supplier	log_2skc	332
+1285	list	Daftar SPK	log_lap_spk	332
+1214	list	1. Integrity Check BKM (Sblm tutup buku)	log_3integrity	333
+788	list	2. Rekalkulasi Stock	log_3rekalkulasi_stock	333
+525	list	3. Tutup Buku Fisik	log_pindahPeriodeGudang	333
+392	list	Kelompok Barang	log_5kelompokbarang	335
+1188	list	Sub Kelompok Barang	log_5subkelompokbarang	335
+394	list	Master Barang	log_5masterbarang	335
+393	list	Konversi Satuan	log_5satuankonversi	335
+395	list	Kelompok Supplier	log_5kelompoksupplier	335
+396	list	Data Supplier/Kontraktor	log_5dataSupplier	335
+490	list	Rek.Bank Supplier/Kontraktor	log_5akunSupplier	335
+739	list	Master Franco	log_5masterfranco	335
+1089	list	Adjustment Stock Opname	log_5stocOpname	335
+1096	list	Kartu Bin	log_5kartubin	335
+1141	list	Syarat Bayar	log_5syaratbayar	335
+293	list	Pembukaan Lahan	kebun_bukalahan	338
+294	list	Pembibitan	kebun_pembibitan	338
+295	list	Pemeliharaan TBM	kebun_pemeliharaantbm	338
+296	list	Pemeliharaan TM	kebun_pemeliharaantm	338
+297	list	Kegiatan Panen	kebun_panen	338
+298	list	Sensus Produksi	kebun_rencanapanen	338
+607	list	Surat Pengantar Angkutan TBS	kebun_spb	338
+625	list	Curah Hujan	kebun_curahHujan	338
+869	list	Keluar-Masuk Bibit	bibit_keluar_masuk	338
+909	list	Restan	kebun_restan	338
+1021	list	Taksasi Panen	kebun_taksasi	338
+1079	list	Rencana Sisip	kebun_rencanasisip	338
+1140	list	Penjualan TBS	kebun_penjualanTBS	338
+1150	list	Hasil Timbang TBS Ke Eksternal	kebun_timbangke_eksternal	338
+1179	list	LPJ KUD	kebun_lpjkud	338
+1208	list	Pengakuan Biaya Bibit	kebun_pengakuanbybibit	338
+1235	list	Bongkar Muat	kebun_bm	338
+1237	list	Upload Data AWS	kebun_uploadaws	338
+1273	list	Adj Panen (Afkir/Hilang/Temuan)	kebun_adjpanen	338
+1275	list	Inventaris Peralatan Kebun	log_invpanen	338
+1286	list	Kontrol Ancak Panen	kebun_cekancak	338
+1300	list	Adj Brondolan (Afkir/Hilang)	kebun_adjbrondol	338
+1305	list	RKB Rawat	kebun_rkb	338
+397	list	Areal Statement	kebun_2aresta	339
+398	list	Pemeliharaan	kebun_2pemeliharaan	339
+399	list	Panen	kebun_2panen	339
+400	list	Pengangkutan Panen	kebun_2pengangkutan	339
+401	list	Pemakaian Material	kebun_2pakaimaterial	339
+403	list	Stok Bibit	bibit_2_keluar_masuk	339
+970	list	Kartu Bibit	kebun_2kartuBibit	339
+626	list	Curah Hujan	kebun_2curahHujan	339
+741	list	Laporan Produksi	kebun_3laporanProduksi	339
+764	list	Biaya Kegiatan Per Blok	kebun_2biayaKegiatanPerBlok	339
+1136	list	Biaya per Blok	kebun_3laporanBiayaPerBlok	339
+922	list	Riwayat Sisipan	kebun_riwayat_sisipan	339
+926	list	Penggunaan HK	kebun_2penggunaanHK	339
+927	list	Laporan Restan	kebun_2laporan_restan	339
+928	list	Laporan Sensus Produksi	kebun_2sensusproduksi	339
+995	list	Laporan Pengiriman Bibit	kebun_2antarBibit	339
+997	list	Kehadiran per Mandor	kebun_2kehadiranpermandor	339
+1007	list	Produksi Per Blok	kebun_2produksiPerBlok	339
+1011	list	SPB vs Penerimaan	kebun_2spbvspenerimaan	339
+1024	list	Taksasi	kebun_2taksasipanen	339
+1081	list	Historis Aresta	kebun_2historisaresta	339
+1090	list	Laporan Rencana Sisip	kebun_2rencanasisip	339
+1182	list	Hasil Timbangan TBS Ke Eksternal	kebun_2hasiltimbangeksternal	339
+1183	list	LPJ KUD	kebun_2lpjkud	339
+1201	list	Statistik Crop per Blok	kebun_2crop	339
+1202	list	Bibitan vs BKM	kebun_2bbtvsbkm	339
+1204	list	Account Report	kebun_2accreport	339
+1212	list	BJR Harian	kebun_2bjr	339
+1221	list	LPJ	kebun_2LPJNoe.php	339
+1236	list	Rekap Restan	kebun_rekaprestan	339
+1238	parent	Lap Data AWS	Action...	339
+1249	list	BJR Pabrik Per Blok Periodik	kebun_lapbjr	339
+1259	list	Laporan Penalty Pemanen	kebun_laporan_penalty_pemanen	339
+1274	list	Adjustment Panen	kebun_lap_adjpanen	339
+1284	list	Rekap Adjustment Panen	kebun_rkp_adjpanen	339
+1276	list	Monitoring Pusingan Panen	kebun_rotasipanen	339
+1287	list	Kontrol Losses Ancak Panen	kebun_lap_cekancak	339
+1290	list	Laporan Brondol Per Bulan	kebun_lap_brondol	339
+1301	list	Lap Adj Brondolan	kebun_lap_adjbrondol	339
+1302	list	Lap Langsir vs SPATBS	kebun_lap_langsir	339
+655	list	Ambil Kg. Timbangan	kebun_3AmbilKgTimbangan	340
+1080	list	Tutup Aresta	kebun_3tutuparesta	340
+1103	list	Alokasi RKB	kebun_3rkb_alokasi	340
+1104	list	Posting RKB	kebun_3rkb	340
+1232	list	Calculate BJR dan Restan	kebun_bjrlalu	340
+1149	list	Kelas Pohon	kebun_5kelaspohon	342
+411	list	Tabel BJR	kebun_5bjr	342
+1068	list	Premi Siap Borong/ Premi Basis	kebun_5premibasis	342
+1153	list	Denda Panen	kebun_5dendapanen	342
+1159	list	Kode Denda Panen	kebun_5kodedendapanen	342
+1154	list	Alasan Rencana Sisip	kebun_5alasanrencanasisip	342
+1145	list	KUD	setup_kud	342
+1207	list	Harga Bibit	kebun_5hargabibit	342
+301	list	Pengoperasian Pabrik	pabrik_pengolahan	344
+302	list	Pemeliharaan Mesin	pabrik_perbaikan	344
+303	list	Stok CPO/PK	pabrik_hasil	344
+721	list	Produksi Harian	pabrik_produksi	344
+853	list	Timbangan Pembeli	pabrik_timbangan_pembeli	344
+1066	list	Sortasi Buah	pabrik_sortasi2	344
+1155	list	Stok Produk Lain	pabrik_stokProduk	344
+1158	list	 BA Pengurangan Stok	pabrik_pembersihantangki	344
+1229	list	Data Press dan Air	pabrik_datapress	344
+1230	list	BA Transportir	pabrik_batransportir	344
+1245	list	Data Mesin	pabrik_machinery	344
+1239	list	HM/Jam Jalan	pabrik_hm	344
+1243	list	Pemeliharaan Prediktif	pabrik_prediktif	344
+1253	list	Thickness	pabrik_thickness	344
+1260	list	Verifikasi Ampere	pabrik_verifikasi_ampere	344
+1264	list	Earth Test	pabrik_earthtest	344
+1266	list	Preventatif Panel	pabrik_preventifpanel	344
+1268	list	Megger Test	pabrik_meggertest	344
+1271	list	Retur/Outspec	pabrik_outspec	344
+1277	list	Material Ballance	pabrik_materialballance	344
+1280	list	Limbah B3	pabrik_limbahb3	344
+1288	list	Grading Actual TBS	pabrik_sortasli	344
+783	list	Laporan Produksi Bulanan	pabrik_2produksiHarian_v1	345
+732	list	Laporan Produksi Tahunan	pabrik_2produksiHarian	345
+748	list	Laporan Penerimaan TBS	pabrik_2penerimaantbs	345
+750	list	Laporan Pengiriman	pabrik_2pengiriman	345
+627	list	Pemenuhan Kontrak	pmn_laporanPemenuhanKontrak	345
+419	list	Stok CPO/PK	pabrik_4persediaan	345
+621	list	Timbangan	pabrik_2timbangan	345
+1006	list	Pabrik Loses	pabrik_2loses	345
+418	list	Pengolahan	pabrik_2pengolahan_rev	345
+1004	list	Pengolahan Detail	pabrik_2pengolahanv2	345
+733	list	Laporan Sortasi Intenal	pabrik_2laporanSortasiPabrik	345
+1059	list	Stagnasi	pabrik_2stagnasi	345
+1060	list	Rekap DO	pmn_2rekapdo	345
+1078	list	Laporan Sortasi Eksternal	pabrik_2laporanSortasiPabrik2	345
+1152	list	Harga TBS	pabrik_2hargatbs	345
+1156	list	Job Card Report /  Perawatan Mesin	pabrik_2perbaikan	345
+1176	list	Biaya Pabrik	pabrik_2biaya	345
+1217	list	Rekap Budget vs Real Biaya PKS	pabrik_2biayav2	345
+1206	list	Sortasi v2	pabrik_2sortasi	345
+1216	list	Sortasi v3	pabrik_2sortasiv	345
+1073	list	Laporan Pembelian TBS	pabrik_2hargatbs	345
+1213	list	Stock Produk Lain	pabrik_2stokProduk	345
+1223	list	LHP	pabrik_lhp	345
+1257	list	Laporan Hutang Transportir	pmn_laphutangtransportir	345
+1242	list	Data Mesin	pabrik_lapmachinery	345
+1256	list	Penilaian Kondisi Mesin	pabrik_lapPenilaianmachinery	345
+1241	list	Laporan HM/Jam Jalan	pabrik_laphm	345
+1246	list	HM Service Mesin	pabrik_lapservicehm	345
+1244	list	Pemeliharaan Prediktif	pabrik_lapprediktif	345
+1254	list	Thickness	pabrik_lapthickness	345
+1261	list	Verifikasi Ampere	pabrik_lapverifikasi_ampere	345
+1265	list	Earth Test	pabrik_lap_earthtest	345
+1267	list	Preventatif Panel	pabrik_lap_preventifpanel	345
+1269	list	Megger Test	pabrik_lap_meggertest	345
+1258	list	Laporan Grading	pabrik_laporan_grading	345
+1278	list	Laporan Material Ballance	pabrik_lap_materialballance	345
+1281	list	Laporan Limbah B3	pabrik_lap_limbahb3	345
+1282	list	Laporan Retur/Outspec	pabrik_lap_outspec	345
+1289	list	Lap Grading Actual	pabrik_lapfull_grading	345
+728	list	Upload Data Vendor	pabrik_3uploadDataVendor	346
+735	list	Posting Perawatan Mesin	pabrik_3posting_perawatan_mesin	346
+428	list	Shift	pabrik_5shift	348
+429	list	Tangki	pabrik_5tangki	348
+1160	list	Kalibrasi Tinggi Tangki	pabrik_5tinggitangki	348
+1162	list	Suhu	pabrik_5suhu	348
+1163	list	Suhu Standard Kalibrasi	pabrik_5suhustandardkalibrasi	348
+734	list	Fraksi	pabrik_5fraksi	348
+877	list	Potongan Fraksi	pabrik_5potFraksi	348
+1151	list	Harga TBS	pabrik_5hargatbs	348
+1240	list	Setup HM Mesin	pabrik_hm_setup	348
+309	list	Kontrak Penjualan	pmn_kontrakjual	349
+940	list	Faktur Pajak	pmn_pajak	349
+1157	list	Harga Pasar Palm Product	pmn_hargaPasar	349
+1180	list	Surat Perintah Pengiriman	pmn_suratperintahpengiriman	349
+1186	list	Upload Harga Pasar	pmn_uploadhargapasar	349
+1225	list	Kontrak External	pmn_trader	349
+1226	list	Kirim dari External	pmn_deliveryext	349
+1297	list	Berita Acara Jual Beli	pmn_bajualbeli	349
+435	list	Penjualan	pmn_2penjualan	350
+436	list	Stok CPO/PK	pabrik_4persediaan	350
+622	list	Pemenuhan Kontrak	pmn_laporanPemenuhanKontrak	350
+929	list	Harga Harian Palm Product	pmn_2hargaharian	350
+1178	list	Realisasi Pengiriman Per transportir	pmn_2transportir	350
+1181	list	Rekap SPP	pmn_2suratperintahpengiriman	350
+1199	list	Rekap Kontrak, Invoice dan Faktur	pmn_2rekapkontrak	350
+1222	list	Rekap Penjualan	pmn_2rekappenjualan	350
+1227	list	Laporan Kontrak External	pmn_laporantrader	350
+1228	list	Laporan Hutang Transportir	pmn_laphutangtransportir	350
+1231	list	Lap. Penjualan Per Kontrak	pmn_lapjualperkontrak	350
+1263	list	Outstanding Kontrak Penjualan	pmn_lap_os_penjualan	350
+441	list	Kelompok Pelanggan	pmn_5klcustomer	353
+442	list	Pelanggan	pmn_5customer	353
+1165	list	Tempat Penyerahan	pmn_5franco	353
+1166	list	Termin Bayar	pmn_5terminbayar	353
+1177	list	Transportir	pmn_5transportir	353
+1191	list	Daftar Pasar	pmn_5pasar	353
+1192	list	TTD	pmn_5ttd	353
+1193	list	Tujuan Pengiriman Surat DO	pmn_5kepada	353
+1198	list	Franco	pmn_5franco	353
+581	parent	Administrasi Personalia	null	354
+320	list	Angsuran Karyawan	sdm_angsurankaryawan	354
+589	parent	Pengobatan Karyawan	null	354
+492	list	Data Karyawan	sdm_data_karyawan	354
+580	list	Penggantian Transport	sdm_penggantianTransport	354
+582	list	Promosi/Demosi/Mutasi	sdm_promosi	354
+615	parent	Perjalanan Dinas	null	354
+736	list	Mutasi Antar Kebun	sdm_rotasiSecurity	354
+604	list	Surat Peringatan	sdm_suratPeringatan	354
+845	parent	Pengajuan Ijin/Cuti	null	354
+1019	list	Struktur Jabatan	sdm_orgchart	354
+1084	list	Pesangon	sdm_pesangon	354
+1233	list	Training	sdm_training	354
+1247	list	Pencapaian Pekerjaan	sdm_pekerjaanharian	354
+575	list	Angsuran Karyawan	sdm_laporanAngsurankaryawan	355
+591	list	Pengobatan Karyawan	sdm_2laporanKlaimPengobatan	355
+1058	list	Biaya Pengobatan	sdm_2biayapengobatan	355
+443	list	Data Karyawan	sdm_2datakaryawan	355
+726	list	Hasil Kerja Perjalanan Dinas	sdm_2hasilKerjaPjd	355
+1172	list	Rekap Perjalanan Dinas	sdm_2rekapperjalanandinas	355
+714	list	Kehadiran Karyawan Unit	sdm_2laporanKehadiranUnit	355
+619	list	Laporan Cuti	sdm_laporanCuti	355
+574	parent	Penggajian(Unit)	null	355
+745	list	Laporan Lembur	sdm_2laporanLembur	355
+746	list	Laporan Potongan Pendapatan	sdm_2potongan_pendapatan	355
+751	list	Daftar Perjalanan Dinas	sdm_2laporanPjdinas	355
+744	list	Laporan Premi	sdm_2laporanPremi	355
+761	list	Premi Per Hari	sdm_2laporanPremiPerhari	355
+762	list	Premi Panen Per Kemandoran	sdm_2laporanPremiPerTransaksi	355
+766	list	Rincian Gaji per Bagian	sdm_2rincianGajiBagian	355
+786	list	Daftar Jamsostek	sdm_2daftarIuran_jamsostek	355
+787	list	Biaya Perjalanan Dinas	sdm_2perjalananDinas	355
+844	list	Daftar Ijin/Cuti	sdm_laporan_ijin_keluar_kantor	355
+919	list	Daftar Upah Remise I	sdm_2upah_remise	355
+931	list	Daftar Karyawan NPWP	sdm_2daftarKaryNpwp	355
+969	list	Laporan Catu Beras	sdm_2laporan_catu_beras	355
+992	list	Laporan Realisasi Gaji	sdm_2realisasiGaji	355
+1012	list	KPI-Input dan Posting	sdm_kpiData	355
+1054	list	Summary Karyawan	sdm_2summarykaryawan	355
+1164	list	BKM vs Finger Print	sdm_2bkmvsfp.php	355
+1171	list	Riwayat Perubahan Gaji	sdm_2histgaji	355
+1173	list	 LaporanTotal per Komponen Gaji	sdm_2totalkomponengaji	355
+1175	list	Laporan Training Karyawan	sdm_laporan_training	355
+1194	list	Riwayat Perubahan Data Karyawan	sdm_2histkaryawan	355
+1205	list	BPJS	sdm_2bpjs	355
+1224	list	Premi Mandor/Kerani Panen	sdm_2laporanPremiMandorPanen	355
+1234	list	Rekap Training	sdm_laporantraining	355
+1248	list	Lap. Pencapaian Pekerjaan	sdm_lappekerjaanharian	355
+1299	list	Perhitungan Premi Per Mandor Panen	sdm_2laporanPremiPerSupervisi	355
+1304	list	Laporan Absensi	sdm_lap_absensi	355
+318	list	Tunjangan	sdm_3tunjangan	356
+1169	list	UM / Tunj Absensi / Premi	sdm_3uangmakan	356
+447	list	Penggajian Bulanan	sdm_3prosesgjbulanan	356
+448	list	Penggajian Harian	sdm_3prosesgjharian	356
+759	list	Hapus Slip Gaji	sdm_3hapusSlipGaji	356
+849	list	Rapel	sdm_rapel_kebun	356
+1014	list	Revisi PJD	sdm_3revisipjd	356
+1209	list	Pendapatan Lain	sdm_3pl	356
+465	list	Absensi	sdm_5absensi	358
+716	list	Gaji Pokok	sdm_5gajipokok	358
+1170	list	Uang Muka PJD	sdm_5uangmukapjd	358
+611	list	Jenis Biaya Perjalanan Dinas	sdm_5jenisByPJD	358
+609	list	Jenis SP/PHK	sdm_5jenissp	358
+466	list	Lembur	sdm_5lembur	358
+467	list	Natura	sdm_5natura	358
+531	parent	Pengaturan Penggajian HO	null	358
+463	list	Pendidikan	sdm_5pendidikan	358
+586	parent	Pengobatan	null	358
+468	list	Periode Penggajian Unit	sdm_5periodegaji	358
+859	parent	Struktur	null	358
+862	list	Standard Uang Saku	sdm_5standarUsaku	358
+863	list	Harga Ticket	sdm_5hargaTicket	358
+864	list	Fasilitas MPP	sdm_5fasilitasMpp	358
+887	list	Hari Kerja Efektif	sdm_5hkEfektif	358
+912	list	Standard Tunjangan	sdm_5sttunjangan	358
+1016	list	ID Fingerprint	setup_fingerprint	358
+1053	list	Premi Tetap	sdm_5premitetap	358
+1085	parent	Perhitungan	null	358
+1088	list	Hari Libur	sdm_5harilibur	358
+1189	list	Pot BPJS	sdm_5bpjs	358
+1215	list	Jenis Training	sdm_5jenistraining	358
+719	list	Harian	sdm_2slipGajiHarian	444
+720	list	Bulanan	sdm_2slipGajiBulanan	444
+975	list	Slip Bonus THR	sdm_2slipBonusThr	444
+285	list	Penerimaan Barang Dari Supplier	log_penerimaanBarang	471
+286	list	Mutasi Barang	log_mutasibarang	471
+513	list	Penerimaan Barang Mutasi	log_penerimaanMutasi	471
+287	list	Pemakaian Barang	log_pakaibarang	471
+618	list	Retur Ke Gudang	log_returKeGudang	471
+524	list	Posting	log_postingGudang	471
+972	list	Retur Ke Supplier	log_returKeSupplier	471
+1142	list	Pembebanan Biaya Pengiriman	log_biayakirim	471
+1283	list	Pemakaian Bahan Baku ke Bahan Jadi	log_brgjadi	471
+477	parent	Rencana GRTT	.	476
+989	parent	Setup	null	476
+480	list	Pembebasan Lahan	pad_daftarPembebasan	477
+1010	list	Daftar Dokumen Pembebasan Lahan	pad_2pembebasanLahan	477
+503	parent	Transaksi	x	495
+595	parent	Proses	null	495
+592	parent	Laporan	null	495
+500	parent	Setup	x	495
+501	list	Tipe Vehicle	vhc_5jenisvhc	500
+502	list	Master Vehicle	vhc_5mastervhc	500
+583	list	Jenis Kegiatan	vhc_5jenisKegiatan	500
+588	list	Operator	vhc_5operator	500
+506	list	Service	vhc_service	503
+507	list	Pekerjaan	vhc_pekerjaan	503
+983	list	Project	vhc_project	503
+518	list	Verifikasi PP	log_verifikasiPp	517
+283	list	Riwayat Perbandingan Harga	log_pnwrharga	517
+526	list	Persetujuan Order Pembelian	log_persetujuan_po	517
+284	list	PO Pusat	log_po	517
+567	list	PO Lokal	log_POLokal	517
+528	list	PO Release 	log_release_po	517
+530	list	Cetak PO	log_cetak_po	517
+464	list	Komponen Gaji	sdm_5komponengajiHO	531
+529	list	Pengguna Payroll	sdm_5payrollUserHO	531
+532	list	Sinkronisasi Data	sdm_5sinkronisasiDataHO	531
+534	list	Assign Payroll Operator	sdm_5assignPayrolloperatorHO	531
+535	list	Data Rekening dan JMS	sdm_5dataRekeningDanJMSHO	531
+559	list	Bonus	sdm_5setupBonusHO	531
+560	list	THR	sdm_5setupTHRHO	531
+562	list	PPh21 Tarif	sdm_5pph21tarifHO	531
+563	list	PPh 21 Komponen	sdm_5komponenPPh21HO	531
+1196	list	Uang Makan	sdm_5uangmakan	531
+550	list	Perumahan	sdm_perumahan	553
+881	list	Prasarana	sdm_prasarana	553
+882	list	Kondisi Prasarana	sdm_5kondisi_prasarana	553
+981	list	Preventive Maintenance	sdm_preventivemaintenance	553
+1002	list	Reservasi Ruang Rapat	sdm_ruangrapat	553
+1013	list	User OWL	sdm_2userowl	553
+991	list	File Upload(Data)	rencana_gis	553
+910	list	Struktur Unit	master_laporan_organisasi	553
+555	parent	Laporan	null	553
+1074	list	Login Report	sdm_2loginreport	553
+883	parent	Setup	null	553
+557	list	Penghuni Rumah	sdm_laporanPenghuniRumah	555
+558	list	Prabot Rumah	sdm_laporanPrabotRumah	555
+886	list	Prasarana	sdm_2prasarana	555
+1018	list	Daftar File	umum_2daftarfile	555
+572	list	Gaji Reguler	sdm_gajiRegulerHO	568
+571	list	THR	sdm_buatTHRHO	568
+570	list	Bonus	sdm_buatBonusHO	568
+569	list	Gaji Pokok	sdm_gajiPokokHO	568
+445	list	PPh 21	sdm_2pajak	574
+444	parent	Print Slip Gaji	null	574
+316	list	Absensi	sdm_absensi	581
+317	list	Lembur	sdm_lembur	581
+313	list	Administrasi Cuti	sdm_cuti	581
+624	list	Potongan	sdm_potongan	581
+740	list	Pembagian Catu	sdm_pembagianCatu	581
+852	list	Potongan Premi Sudah Dibayar/Hk	sdm_potongan_premi_sby	581
+1135	list	Upload Absensi	sdm_uploadabsensi	581
+1272	list	Verifikasi Lembur	sdm_lemburverifikasi	581
+1293	list	Upload Data Karyawan	sdm_upload_data_karyawan	581
+1303	list	Upload Finger Print	sdm_uploadfinger	581
+514	list	Plafon Pengobatan	sdm_5plafonPengobatan	586
+584	list	Rumah Sakit/Apotik/Klinik	sdm_5rumahSakit	586
+1168	list	Kelompok Diagnosa	sdm_5kldiagnosa	586
+585	list	Daftar Diagnosa	sdm_5diagnosa	586
+587	list	Jenis Biaya Pengobatan	sdm_5jenisBiayaPengobatan	586
+590	list	Pembayaran Claim	sdm_pembayaranKlaim	589
+315	list	Klaim Pengobatan	sdm_pengobatan	589
+593	list	Kerja Kendaraan/Alat berat	vhc_laporanKerjakendaraan	592
+594	list	Laporan Penggunaan Komponen	vhc_laporanPenggunaanKomponen	592
+731	list	Daftar Kend/AB/Mesin	3daftarKendaraan	592
+755	list	Biaya Total per Kendaraan	vhc_2biayatotalperkendaraan	592
+758	list	Jam Kerja Kend./AB	vhc_2laporanJamKerja	592
+872	list	Biaya Rinci per Kendaraan	vhc2_biayaRinci	592
+873	list	Biaya Penggunaan Bahan	vhc_2penggunaanBahan	592
+932	list	Biaya Bengkel	traksi_2biayaBengkel	592
+985	list	Project	vhc_2project	592
+1065	list	Ratio Penggunaan BBM	traksi_rasioBBM	592
+1195	list	Breakdown Unit	vhc_2breakdownunit	592
+1203	list	Daftar Operator	vhc_daftaroperator	592
+596	list	Posting Service	vhc_postingPenggunaanKomponen	595
+598	list	Posting Pekerjaan	vhc_postingPekerjaan	595
+314	list	Pengajuan Perjalanan Dinas	sdm_pjdinas	615
+1218	list	Persetujuan Perjalanan Dinas	sdm_3persetujuanPJD	615
+613	list	Pembayaran uang Muka PJD	sdm_pembayaranUMukaPJD	615
+614	list	Pertanggung-jawaban PJD	sdm_pertanggungjawabanPJD	615
+616	list	Verifikasi Pertanggungjawaban PJD	sdm_verifikasiPertanggungjawabanPJD	615
+617	list	Penyelesaian Biaya PJD	sdm_penyelesaianPJD	615
+879	list	LBM-Kebun	lbm_main	630
+915	list	LHD -Kebun	lha_main	630
+936	list	LBM-PKS	lbm_main_pks	630
+944	parent	Management Report	null	630
+978	list	LBM-Procurement	lbm_main_procurement	630
+1070	list	LBM-HRD	lbm_hrd	630
+1082	parent	Agronomi	null	630
+1250	list	Transaksi Belum Posting	kebun_lapposting	630
+776	parent	Transaksi	null	771
+822	parent	Laporan	null	771
+772	parent	Setup	null	771
+792	list	Tipe Budget	budget_tipe_budget	772
+793	list	Kode Budget	budget_kode_budget	772
+815	list	Regional	budget_regional	772
+816	list	Assignment Regional	budget_regional_assignment	772
+774	list	Harga Barang Anggaran	budget_5hargabarang	772
+775	list	Hari Kerja	budget_5harikerja	772
+890	list	Sebaran Admin	bgt_sebaran_nol	772
+982	list	Revisi Anggaran	bgt_tool_query	772
+777	parent	Traksi	null	776
+794	parent	Kebun	null	776
+795	parent	PKS	null	776
+809	list	Budget Kapital	bgt_kapital	776
+850	list	Budget Region	budget_by_umum	776
+923	list	Permintaan Tambahan Anggaran	pta_buat	776
+925	list	Persetujuan PTA	pta_persetujuan	776
+800	list	Master		777
+784	list	Upah-TRK	budget_upah	777
+801	list			777
+802	list	Anggaran		777
+790	list	1. Total Jam Bengkel	budget_traksi_total_jam_bengkel	777
+791	list	2. Total Alokasi Jam Kendaraan	budget_total_jam_vhc	777
+781	list	3. Budget Biaya Bengkel	budget_ws_biaya	777
+782	list	4. Budget Kendaraan-Mesin-Alat Berat	budget_vhc	777
+865	list	5. Biaya Umum	budget_by_umum	777
+803	list	Master		794
+797	list	2. Upah-EST	budget_upah	794
+773	list	3. Blok Anggaran	budget_5blok	794
+785	list	4. BJR	budget_bjr	794
+804	list			794
+805	list	Anggaran		794
+810	list	5. Produksi-EST	bgt_prosuksi_kebun	794
+819	list	7. Borong Panen	bgt_borong_panen	794
+811	list	6. Budget Kebun	bgt_budget_kebun	794
+812	list	8. Biaya Umum	budget_by_umum	794
+866	list	9. Alokasi Supervisi	bgt_alokasi_supervisi	794
+1076	list	Uploader Anggaran	bgt_uploaderkebun	794
+1185	list	Sebaran Budget	bgt_budget_sebaran	794
+1262	list	Budget Unit	bgt_unit	794
+806	list	Master		795
+799	list	2. Upah-PKS	budget_upah	795
+818	list	3. jam Operasional PKS	bgt_jam_operasional_pks	795
+807	list			795
+808	list	Anggaran		795
+813	list	4. Produksi-PKS	bgt_produksi_pks	795
+814	list	5. Budget PKS	budget_budget_pks	795
+820	list	6. Biaya Umum	budget_by_umum	795
+823	parent	Kebun	null	822
+824	parent	PKS	null	822
+825	parent	Traksi	null	822
+838	list	Harga Barang	bgt_laporan_harga_barang	822
+839	list	Rp/Jam Bengkel	bgt_laporan_rp_jam_bengkel	822
+840	list	Rp/Jam Kendaraan	bgt_laporan_rp_jam_kendaraan	822
+841	list	Kapital	bgt_laporan_kapital	822
+848	list	Laporan Budget Departemen	bgt_laporan_budget_departemen	822
+855	list	Hari Kerja	bgt_laporanHariKerja	822
+858	list	Budget Detail	bgt_laporan_detail	822
+868	list	Data Rinci	bgt_laporan_freeQuery	822
+876	list	Laporan Keuangan Budget	bgt_laporan_arusKas	822
+878	list	Budget Material	bgt_laporan_budget_material	822
+968	list	Budget Per PT	bgt_2pt	822
+976	list	Varian Harga	bgt_varianharga	822
+1069	list	Rekap Budget	bgt_laporan_rekap	822
+826	list	Areal Statement	bgt_laporan_arealstatement	823
+827	list	Produksi Kebun	bgt_laporan_produksi	823
+828	list	Biaya Langsung	bgt_laporan_biaya_lngs_kebun	823
+829	list	Biaya Tidak Langsung Kebun	bgt_laporan_biaya_tdk_lngs_kebun	823
+830	list	Tenaga Kerja	bgt_laporan_tenaga_kerja	823
+831	list	Rp/Kg	bgt_laporan_rp_kg_kebun	823
+875	list	Biaya Langsung Per Akun	bgt_laporan_biaya_lngs_kebun2	823
+832	list	Produksi	bgt_laporan_produksi_pks	824
+833	list	Biaya Langsung PKS	bgt_laporan_biaya_langsung_pks	824
+834	list	Tenaga Kerja	bgt_laporan_tenaga_kerja	824
+835	list	Rp/KG CPO	bgt_laporan_rp_kg_pks	824
+843	list	Biaya Tidak Langsung PKS	bgt_laporan_by_tdklangsung_pks	824
+836	list	Biaya Bengkel	bgt_laporan_biaya_bengkel	825
+837	list	Biaya Kendaraan	bgt_laporan_biaya_kendaraan	825
+870	list	Daftar Kendaraan	bgt_laporan_daftar_kendaraan	825
+1306	list	Pengajuan Cuti Tahunan	sdm_ijin_meninggalkan_kantor	845
+1307	list	Pengajuan Ijin/Cuti Khusus	sdm_ijin_cuti_khusus	845
+1308	list	Cuti Bersama	sdm_cutibersama	845
+460	list	Golongan	sdm_5golongan	859
+461	list	Jabatan	sdm_5jabatan	859
+493	list	Departemen	sdm_5departemen	859
+494	list	Tipe Karyawan	sdm_5tipekaryawan	859
+884	list	Kelompok Prasarana	sdm_5kl_prasarana	883
+885	list	Jenis Prasarana	sdm_5jenis_prasarana	883
+990	list	Jenis File dan Data	rencana_5jenisData	883
+1092	list	Packing List	log_packing	888
+1093	list	Surat Jalan	log_suratjalan	888
+1146	list	Penerimaan Surat Jalan	log_psj	888
+917	parent	Tambah	help_tambah	916
+918	parent	Bantuan	help_bantuan	916
+1042	list	ID	help_tambah	917
+1043	list	EN	help_tambah_en	917
+1044	list	Bahasa Indonesia	help_bantuan	918
+1045	list	English(US)	help_bantuan_en	918
+742	list	Detail Pembelian	log_2detail_pembelian	938
+760	list	Detail Pembelian Per Barang	log_2detail_pembelian_brg	938
+880	list	Laporan PP	log_2pp_histori	938
+933	list	Laporan Status PO	log_2laporan_statuspo	938
+817	list	Pembelian Terakhir	log_2pembelian_terakhir	938
+939	list	Laporan Produktivitas	log_2produktivitas	938
+965	list	Laporan Status Pengiriman Barang	log_2posisiBarang	938
+986	list	Riwayat Pembayaran	log_2pembayaran	938
+1003	list	PP BLM Realisasi	lbm_proc_pprealisasi	938
+945	list	Biaya TBM	mr_biayaTbm	944
+946	list	Biaya TM	mr_biayaTm	944
+947	list	Produksi TBS	mr_produksiTbs	944
+948	list	Biaya Produksi TBS	mr_biayaProduksiTbs	944
+960	list	Produksi TBS Bulanan	mr_produksiTbs_bulanan	944
+954	list	Request Management	it_requestManagement	949
+955	list	Request Response	it_requestResponse	949
+951	list	Permintaan Layanan	it_permintaanUser	949
+961	list	Prestasi Staf IT	it_2prestasi	949
+956	parent	Setup	null	949
+957	list	Standard Nilai Kegiatan	it_5stNilaiKegiatan	956
+958	list	Standard Nilai Kepuasan	it_5stKepuasan	956
+959	list	Porsi Nilai	it_5porsiNilai	956
+1062	list	Revisi PO	log_updatepo.php	971
+1063	list	Admin Tools	tool_admin	971
+1064	list	AutoR/K Checker	tool_mutasi_check.php	971
+1009	list	Desa Lingkungan	pad_5desa	989
+1008	list	Daftar Masyarakat	pad_5masyarakat	989
+1106	list	LK - Neraca	keu_2neraca	999
+1147	list	LK - Laba Rugi	keu_2laporankeuanganLabaRugiv1	999
+1219	list	LK - L/R Periodik	keu_2lr_periodik	999
+1220	list	Neraca Periodik	keu_2laporan_neracaPeriodeik	999
+1083	list	Cost Element	agro_2costelement	1082
+1279	list	Biaya Blok Per Tahun	kebun_biayaperblok	1082
+1086	list	Pensiun	sdm_5pensiun.php	1085
+1087	list	Pajak Pesangon	sdm_5pajakpesangon.php	1085
+1251	list	Laporan Data AWS	kebun_laporan_aws	1238
+1252	list	Rekap Data AWS	kebun_rekap_aws	1238

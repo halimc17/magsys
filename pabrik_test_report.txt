@@ -1,0 +1,558 @@
+PABRIK MODULE TEST REPORT
+=========================
+
+
+Transaksi (25 items)
+--------------------------------------------------
+
+[301] Pengoperasian Pabrik
+    URL: http://localhost/erpmill/pabrik_pengolahan.php
+    File: pabrik_pengolahan.php
+    File Exists: YES
+    File Size: 3670 bytes
+    Status: SUCCESS
+
+[302] Pemeliharaan Mesin
+    URL: http://localhost/erpmill/pabrik_perbaikan.php
+    File: pabrik_perbaikan.php
+    File Exists: YES
+    File Size: 16233 bytes
+    Status: SUCCESS
+
+[303] Stok CPO/PK
+    URL: http://localhost/erpmill/pabrik_hasil.php
+    File: pabrik_hasil.php
+    File Exists: YES
+    File Size: 3049 bytes
+    Status: SUCCESS
+
+[300] Sortasi Buah(lama tdk dipakai)
+    URL: http://localhost/erpmill/pabrik_sortasi.php
+    File: pabrik_sortasi.php
+    File Exists: YES
+    File Size: 3976 bytes
+    Status: SUCCESS
+
+[620] Timbangan
+    URL: http://localhost/erpmill/pabrik_timbangan.php
+    File: pabrik_timbangan.php
+    File Exists: YES
+    File Size: 3879 bytes
+    Status: SUCCESS
+
+[721] Produksi Harian
+    URL: http://localhost/erpmill/pabrik_produksi.php
+    File: pabrik_produksi.php
+    File Exists: YES
+    File Size: 16973 bytes
+    Status: SUCCESS
+
+[853] Timbangan Pembeli
+    URL: http://localhost/erpmill/pabrik_timbangan_pembeli.php
+    File: pabrik_timbangan_pembeli.php
+    File Exists: YES
+    File Size: 5247 bytes
+    Status: SUCCESS
+
+[1047] Target Eksternal
+    URL: http://localhost/erpmill/pabrik_taksasi.php
+    File: pabrik_taksasi.php
+    File Exists: YES
+    File Size: 7302 bytes
+    Status: SUCCESS
+
+[1066] Sortasi Buah
+    URL: http://localhost/erpmill/pabrik_sortasi2.php
+    File: pabrik_sortasi2.php
+    File Exists: YES
+    File Size: 5437 bytes
+    Status: SUCCESS
+
+[1155] Stok Produk Lain
+    URL: http://localhost/erpmill/pabrik_stokProduk.php
+    File: pabrik_stokProduk.php
+    File Exists: YES
+    File Size: 6364 bytes
+    Status: SUCCESS
+
+[1158]  BA Pengurangan Stok
+    URL: http://localhost/erpmill/pabrik_pembersihantangki.php
+    File: pabrik_pembersihantangki.php
+    File Exists: YES
+    File Size: 9074 bytes
+    Status: SUCCESS
+
+[1229] Data Press dan Air
+    URL: http://localhost/erpmill/pabrik_datapress.php
+    File: pabrik_datapress.php
+    File Exists: YES
+    File Size: 11374 bytes
+    Status: SUCCESS
+
+[1230] BA Transportir
+    URL: http://localhost/erpmill/pabrik_batransportir.php
+    File: pabrik_batransportir.php
+    File Exists: YES
+    File Size: 6333 bytes
+    Status: SUCCESS
+
+[1245] Data Mesin
+    URL: http://localhost/erpmill/pabrik_machinery.php
+    File: pabrik_machinery.php
+    File Exists: YES
+    File Size: 13541 bytes
+    Status: SUCCESS
+
+[1239] HM/Jam Jalan
+    URL: http://localhost/erpmill/pabrik_hm.php
+    File: pabrik_hm.php
+    File Exists: YES
+    File Size: 7211 bytes
+    Status: SUCCESS
+
+[1243] Pemeliharaan Prediktif
+    URL: http://localhost/erpmill/pabrik_prediktif.php
+    File: pabrik_prediktif.php
+    File Exists: YES
+    File Size: 15030 bytes
+    Status: SUCCESS
+
+[1253] Thickness
+    URL: http://localhost/erpmill/pabrik_thickness.php
+    File: pabrik_thickness.php
+    File Exists: YES
+    File Size: 7335 bytes
+    Status: SUCCESS
+
+[1260] Verifikasi Ampere
+    URL: http://localhost/erpmill/pabrik_verifikasi_ampere.php
+    File: pabrik_verifikasi_ampere.php
+    File Exists: YES
+    File Size: 6547 bytes
+    Status: SUCCESS
+
+[1264] Earth Test
+    URL: http://localhost/erpmill/pabrik_earthtest.php
+    File: pabrik_earthtest.php
+    File Exists: YES
+    File Size: 4987 bytes
+    Status: SUCCESS
+
+[1266] Preventatif Panel
+    URL: http://localhost/erpmill/pabrik_preventifpanel.php
+    File: pabrik_preventifpanel.php
+    File Exists: YES
+    File Size: 7162 bytes
+    Status: SUCCESS
+
+[1268] Megger Test
+    URL: http://localhost/erpmill/pabrik_meggertest.php
+    File: pabrik_meggertest.php
+    File Exists: YES
+    File Size: 6643 bytes
+    Status: SUCCESS
+
+[1271] Retur/Outspec
+    URL: http://localhost/erpmill/pabrik_outspec.php
+    File: pabrik_outspec.php
+    File Exists: YES
+    File Size: 6713 bytes
+    Status: SUCCESS
+
+[1277] Material Ballance
+    URL: http://localhost/erpmill/pabrik_materialballance.php
+    File: pabrik_materialballance.php
+    File Exists: YES
+    File Size: 46276 bytes
+    Status: SUCCESS
+
+[1280] Limbah B3
+    URL: http://localhost/erpmill/pabrik_limbahb3.php
+    File: pabrik_limbahb3.php
+    File Exists: YES
+    File Size: 6621 bytes
+    Status: SUCCESS
+
+[1288] Grading Actual TBS
+    URL: http://localhost/erpmill/pabrik_sortasli.php
+    File: pabrik_sortasli.php
+    File Exists: YES
+    File Size: 5065 bytes
+    Status: SUCCESS
+
+Laporan (40 items)
+--------------------------------------------------
+
+[783] Laporan Produksi Bulanan
+    URL: http://localhost/erpmill/pabrik_2produksiHarian_v1.php
+    File: pabrik_2produksiHarian_v1.php
+    File Exists: YES
+    File Size: 2179 bytes
+    Status: SUCCESS
+
+[732] Laporan Produksi Tahunan
+    URL: http://localhost/erpmill/pabrik_2produksiHarian.php
+    File: pabrik_2produksiHarian.php
+    File Exists: YES
+    File Size: 2430 bytes
+    Status: SUCCESS
+
+[748] Laporan Penerimaan TBS
+    URL: http://localhost/erpmill/pabrik_2penerimaantbs.php
+    File: pabrik_2penerimaantbs.php
+    File Exists: YES
+    File Size: 19836 bytes
+    Status: SUCCESS
+
+[750] Laporan Pengiriman
+    URL: http://localhost/erpmill/pabrik_2pengiriman.php
+    File: pabrik_2pengiriman.php
+    File Exists: YES
+    File Size: 6957 bytes
+    Status: SUCCESS
+
+[627] Pemenuhan Kontrak
+    URL: http://localhost/erpmill/pmn_laporanPemenuhanKontrak.php
+    File: pmn_laporanPemenuhanKontrak.php
+    File Exists: YES
+    File Size: 9436 bytes
+    Status: SUCCESS
+
+[419] Stok CPO/PK
+    URL: http://localhost/erpmill/pabrik_4persediaan.php
+    File: pabrik_4persediaan.php
+    File Exists: YES
+    File Size: 9920 bytes
+    Status: SUCCESS
+
+[621] Timbangan
+    URL: http://localhost/erpmill/pabrik_2timbangan.php
+    File: pabrik_2timbangan.php
+    File Exists: YES
+    File Size: 3918 bytes
+    Status: SUCCESS
+
+[1006] Pabrik Loses
+    URL: http://localhost/erpmill/pabrik_2loses.php
+    File: pabrik_2loses.php
+    File Exists: YES
+    File Size: 4836 bytes
+    Status: SUCCESS
+
+[418] Pengolahan
+    URL: http://localhost/erpmill/pabrik_2pengolahan_rev.php
+    File: pabrik_2pengolahan_rev.php
+    File Exists: YES
+    File Size: 3521 bytes
+    Status: SUCCESS
+
+[1004] Pengolahan Detail
+    URL: http://localhost/erpmill/pabrik_2pengolahanv2.php
+    File: pabrik_2pengolahanv2.php
+    File Exists: YES
+    File Size: 3707 bytes
+    Status: SUCCESS
+
+[610] Perawatan Mesin (TIDAK DI PAKAI)
+    URL: http://localhost/erpmill/pabrik_laporanPerawatanMesin.php
+    File: pabrik_laporanPerawatanMesin.php
+    File Exists: YES
+    File Size: 3416 bytes
+    Status: SUCCESS
+
+[733] Laporan Sortasi Intenal
+    URL: http://localhost/erpmill/pabrik_2laporanSortasiPabrik.php
+    File: pabrik_2laporanSortasiPabrik.php
+    File Exists: YES
+    File Size: 4556 bytes
+    Status: SUCCESS
+
+[1059] Stagnasi
+    URL: http://localhost/erpmill/pabrik_2stagnasi.php
+    File: pabrik_2stagnasi.php
+    File Exists: YES
+    File Size: 3812 bytes
+    Status: SUCCESS
+
+[1060] Rekap DO
+    URL: http://localhost/erpmill/pmn_2rekapdo.php
+    File: pmn_2rekapdo.php
+    File Exists: YES
+    File Size: 2968 bytes
+    Status: SUCCESS
+
+[1078] Laporan Sortasi Eksternal
+    URL: http://localhost/erpmill/pabrik_2laporanSortasiPabrik2.php
+    File: pabrik_2laporanSortasiPabrik2.php
+    File Exists: YES
+    File Size: 3628 bytes
+    Status: SUCCESS
+
+[1152] Harga TBS
+    URL: http://localhost/erpmill/pabrik_2hargatbs.php
+    File: pabrik_2hargatbs.php
+    File Exists: YES
+    File Size: 3348 bytes
+    Status: SUCCESS
+
+[1156] Job Card Report /  Perawatan Mesin
+    URL: http://localhost/erpmill/pabrik_2perbaikan.php
+    File: pabrik_2perbaikan.php
+    File Exists: YES
+    File Size: 7379 bytes
+    Status: SUCCESS
+
+[1176] Biaya Pabrik
+    URL: http://localhost/erpmill/pabrik_2biaya.php
+    File: pabrik_2biaya.php
+    File Exists: YES
+    File Size: 2910 bytes
+    Status: SUCCESS
+
+[1217] Rekap Budget vs Real Biaya PKS
+    URL: http://localhost/erpmill/pabrik_2biayav2.php
+    File: pabrik_2biayav2.php
+    File Exists: YES
+    File Size: 3068 bytes
+    Status: SUCCESS
+
+[1206] Sortasi v2
+    URL: http://localhost/erpmill/pabrik_2sortasi.php
+    File: pabrik_2sortasi.php
+    File Exists: YES
+    File Size: 2825 bytes
+    Status: SUCCESS
+
+[1216] Sortasi v3
+    URL: http://localhost/erpmill/pabrik_2sortasiv.php
+    File: pabrik_2sortasiv.php
+    File Exists: YES
+    File Size: 4226 bytes
+    Status: SUCCESS
+
+[1073] Laporan Pembelian TBS
+    URL: http://localhost/erpmill/pabrik_2hargatbs.php
+    File: pabrik_2hargatbs.php
+    File Exists: YES
+    File Size: 3348 bytes
+    Status: SUCCESS
+
+[1213] Stock Produk Lain
+    URL: http://localhost/erpmill/pabrik_2stokProduk.php
+    File: pabrik_2stokProduk.php
+    File Exists: YES
+    File Size: 3069 bytes
+    Status: SUCCESS
+
+[1223] LHP
+    URL: http://localhost/erpmill/pabrik_lhp.php
+    File: pabrik_lhp.php
+    File Exists: YES
+    File Size: 2179 bytes
+    Status: SUCCESS
+
+[1257] Laporan Hutang Transportir
+    URL: http://localhost/erpmill/pmn_laphutangtransportir.php
+    File: pmn_laphutangtransportir.php
+    File Exists: YES
+    File Size: 9140 bytes
+    Status: SUCCESS
+
+[1242] Data Mesin
+    URL: http://localhost/erpmill/pabrik_lapmachinery.php
+    File: pabrik_lapmachinery.php
+    File Exists: YES
+    File Size: 4892 bytes
+    Status: SUCCESS
+
+[1256] Penilaian Kondisi Mesin
+    URL: http://localhost/erpmill/pabrik_lapPenilaianmachinery.php
+    File: pabrik_lapPenilaianmachinery.php
+    File Exists: YES
+    File Size: 4918 bytes
+    Status: SUCCESS
+
+[1241] Laporan HM/Jam Jalan
+    URL: http://localhost/erpmill/pabrik_laphm.php
+    File: pabrik_laphm.php
+    File Exists: YES
+    File Size: 6462 bytes
+    Status: SUCCESS
+
+[1246] HM Service Mesin
+    URL: http://localhost/erpmill/pabrik_lapservicehm.php
+    File: pabrik_lapservicehm.php
+    File Exists: YES
+    File Size: 4915 bytes
+    Status: SUCCESS
+
+[1244] Pemeliharaan Prediktif
+    URL: http://localhost/erpmill/pabrik_lapprediktif.php
+    File: pabrik_lapprediktif.php
+    File Exists: YES
+    File Size: 8548 bytes
+    Status: SUCCESS
+
+[1254] Thickness
+    URL: http://localhost/erpmill/pabrik_lapthickness.php
+    File: pabrik_lapthickness.php
+    File Exists: YES
+    File Size: 6051 bytes
+    Status: SUCCESS
+
+[1261] Verifikasi Ampere
+    URL: http://localhost/erpmill/pabrik_lapverifikasi_ampere.php
+    File: pabrik_lapverifikasi_ampere.php
+    File Exists: YES
+    File Size: 6099 bytes
+    Status: SUCCESS
+
+[1265] Earth Test
+    URL: http://localhost/erpmill/pabrik_lap_earthtest.php
+    File: pabrik_lap_earthtest.php
+    File Exists: YES
+    File Size: 5501 bytes
+    Status: SUCCESS
+
+[1267] Preventatif Panel
+    URL: http://localhost/erpmill/pabrik_lap_preventifpanel.php
+    File: pabrik_lap_preventifpanel.php
+    File Exists: YES
+    File Size: 6423 bytes
+    Status: SUCCESS
+
+[1269] Megger Test
+    URL: http://localhost/erpmill/pabrik_lap_meggertest.php
+    File: pabrik_lap_meggertest.php
+    File Exists: YES
+    File Size: 6063 bytes
+    Status: SUCCESS
+
+[1258] Laporan Grading
+    URL: http://localhost/erpmill/pabrik_laporan_grading.php
+    File: pabrik_laporan_grading.php
+    File Exists: YES
+    File Size: 8178 bytes
+    Status: SUCCESS
+
+[1278] Laporan Material Ballance
+    URL: http://localhost/erpmill/pabrik_lap_materialballance.php
+    File: pabrik_lap_materialballance.php
+    File Exists: YES
+    File Size: 11473 bytes
+    Status: SUCCESS
+
+[1281] Laporan Limbah B3
+    URL: http://localhost/erpmill/pabrik_lap_limbahb3.php
+    File: pabrik_lap_limbahb3.php
+    File Exists: YES
+    File Size: 5457 bytes
+    Status: SUCCESS
+
+[1282] Laporan Retur/Outspec
+    URL: http://localhost/erpmill/pabrik_lap_outspec.php
+    File: pabrik_lap_outspec.php
+    File Exists: YES
+    File Size: 5660 bytes
+    Status: SUCCESS
+
+[1289] Lap Grading Actual
+    URL: http://localhost/erpmill/pabrik_lapfull_grading.php
+    File: pabrik_lapfull_grading.php
+    File Exists: YES
+    File Size: 11384 bytes
+    Status: SUCCESS
+
+Proses (2 items)
+--------------------------------------------------
+
+[728] Upload Data Vendor
+    URL: http://localhost/erpmill/pabrik_3uploadDataVendor.php
+    File: pabrik_3uploadDataVendor.php
+    File Exists: YES
+    File Size: 2785 bytes
+    Status: SUCCESS
+
+[735] Posting Perawatan Mesin
+    URL: http://localhost/erpmill/pabrik_3posting_perawatan_mesin.php
+    File: pabrik_3posting_perawatan_mesin.php
+    File Exists: YES
+    File Size: 5139 bytes
+    Status: SUCCESS
+
+Setup (9 items)
+--------------------------------------------------
+
+[428] Shift
+    URL: http://localhost/erpmill/pabrik_5shift.php
+    File: pabrik_5shift.php
+    File Exists: YES
+    File Size: 5791 bytes
+    Status: SUCCESS
+
+[429] Tangki
+    URL: http://localhost/erpmill/pabrik_5tangki.php
+    File: pabrik_5tangki.php
+    File Exists: YES
+    File Size: 3413 bytes
+    Status: SUCCESS
+
+[1160] Kalibrasi Tinggi Tangki
+    URL: http://localhost/erpmill/pabrik_5tinggitangki.php
+    File: pabrik_5tinggitangki.php
+    File Exists: YES
+    File Size: 4198 bytes
+    Status: SUCCESS
+
+[1162] Suhu
+    URL: http://localhost/erpmill/pabrik_5suhu.php
+    File: pabrik_5suhu.php
+    File Exists: YES
+    File Size: 4112 bytes
+    Status: SUCCESS
+
+[1163] Suhu Standard Kalibrasi
+    URL: http://localhost/erpmill/pabrik_5suhustandardkalibrasi.php
+    File: pabrik_5suhustandardkalibrasi.php
+    File Exists: YES
+    File Size: 4678 bytes
+    Status: SUCCESS
+
+[734] Fraksi
+    URL: http://localhost/erpmill/pabrik_5fraksi.php
+    File: pabrik_5fraksi.php
+    File Exists: YES
+    File Size: 2742 bytes
+    Status: SUCCESS
+
+[877] Potongan Fraksi
+    URL: http://localhost/erpmill/pabrik_5potFraksi.php
+    File: pabrik_5potFraksi.php
+    File Exists: YES
+    File Size: 3648 bytes
+    Status: SUCCESS
+
+[1151] Harga TBS
+    URL: http://localhost/erpmill/pabrik_5hargatbs.php
+    File: pabrik_5hargatbs.php
+    File Exists: YES
+    File Size: 5233 bytes
+    Status: SUCCESS
+
+[1240] Setup HM Mesin
+    URL: http://localhost/erpmill/pabrik_hm_setup.php
+    File: pabrik_hm_setup.php
+    File Exists: YES
+    File Size: 6309 bytes
+    Status: SUCCESS
+
+
+SUMMARY
+=======
+Total menu items tested: 76
+Total successful: 76
+Total failed: 0
+Success rate: 100%
+
+
+Test completed at: 2025-10-16 08:12:44

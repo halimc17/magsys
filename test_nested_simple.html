@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Nested Dropdown - Pure CSS</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="style/bootstrap-custom.css" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary-custom mb-3" style="background-color:#1E3A8A !important;">
+        <div class="container-fluid">
+            <div class="collapse navbar-collapse show" id="mainNavbar">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button">
+                            PEMASARAN
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li class="dropdown dropend">
+                                <a class="dropdown-item dropdown-toggle" href="#">
+                                    <i class="bi bi-star-fill" style="font-size:8px;color:#FFC107;"></i> Transaksi
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="javascript:void(0)">
+                                        <i class="bi bi-star-fill" style="font-size:8px;color:#FFC107;"></i> Sales Order
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="javascript:void(0)">
+                                        <i class="bi bi-star-fill" style="font-size:8px;color:#FFC107;"></i> Invoice
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="javascript:void(0)">
+                                        <i class="bi bi-star-fill" style="font-size:8px;color:#FFC107;"></i> Payment
+                                    </a></li>
+                                </ul>
+                            </li>
+                            <li class="dropdown dropend">
+                                <a class="dropdown-item dropdown-toggle" href="#">
+                                    <i class="bi bi-star-fill" style="font-size:8px;color:#FFC107;"></i> Laporan
+                                </a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="javascript:void(0)">
+                                        <i class="bi bi-star-fill" style="font-size:8px;color:#FFC107;"></i> Laporan Penjualan
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="javascript:void(0)">
+                                        <i class="bi bi-star-fill" style="font-size:8px;color:#FFC107;"></i> Laporan Customer
+                                    </a></li>
+                                </ul>
+                            </li>
+                            <li><a class="dropdown-item" href="javascript:void(0)">
+                                <i class="bi bi-star-fill" style="font-size:8px;color:#FFC107;"></i> Setup
+                            </a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <div class="card-header">Test Nested Dropdown - Pure CSS</div>
+            <div class="card-body">
+                <h5>Testing Instructions:</h5>
+                <ol>
+                    <li>Hover pada menu <strong>PEMASARAN</strong></li>
+                    <li>Hover pada <strong>Transaksi</strong> atau <strong>Laporan</strong></li>
+                    <li>Submenu HARUS muncul di <strong>sebelah kanan</strong>, bukan di bawah</li>
+                </ol>
+                <p class="text-muted">Using pure CSS with position: absolute and left: 100%</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/bootstrap-init.js"></script>
+</body>
+</html>
